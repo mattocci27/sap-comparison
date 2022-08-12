@@ -1,2 +1,21 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-five_spp_csv|stem|2d8e718c46488e56|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19214.3743309817s|4413ce7c117b3b1c|2164|file|local|vector|||0||
+.Random.seed|object|05c7e1eb815ed607|||||||||||||||
+anova_data|stem|0654de29528673ce|608addf990c78f5b|7da7a4080908ef43|-960880509||t19216.3141874587s|c06f9c1553a82b6a|586|rds|local|vector|||0.127||
+fit_anova_data|stem|fc8601711f3a418e|693f73b00c97928b|92f3cdc548ec2fc9|-552287873||t19216.2938869732s|bd37230314bbd1ee|539|qs|local|vector|||0||
+fit_anova_diagnostics_anova|stem|591d8a3988260201|b380558409fd5a06|0831d40161fc6fe1|-1434702107||t19216.2955853933s|949fba1834af9b74|78074|fst_tbl|local|vector|||0.001||
+fit_anova_draws_anova|stem|1fab04f7c333ab98|142e1195b99ce67c|0831d40161fc6fe1|-1121524250||t19216.2955841742s|51a72abc08821f48|1778335|fst_tbl|local|vector|||0.003||
+fit_anova_file_anova|stem|87853dddcef2fd92|b70044280424a1f5|ef46db3751d8e999|863269485|stan/anova.stan|t19216.2956672695s|a3d57c2e496c00b4|1018|file|local|vector|||0.001||
+fit_anova_mcmc_anova|stem|46d2eb5408587528|7e7ef9f87471e033|09906f43734a9da1|-1776832544||t19216.2955769836s|47376470af2ff0fa|1659627|qs|local|vector|||10.248|validate_csv is deprecated. Please use diagnostics instead.|
+fit_anova_summary_anova|stem|1a2f2458a438071e|315b9aa384c8f88e|0f0a1157099672ef|2001892175||t19216.2955833111s|e37ac487a2dbc7ea|5632|fst_tbl|local|vector|||0.449||
+fit1_data|stem|fc8601711f3a418e|693f73b00c97928b|92f3cdc548ec2fc9|1284455465||t19216.2988275349s|bd37230314bbd1ee|539|qs|local|vector|||0||
+fit1_diagnostics_anova|stem|591d8a3988260201|1ae0eaf697f99691|760d1eda24b60e09|-1864003676||t19216.3050440771s|949fba1834af9b74|78074|fst_tbl|local|vector|||0.002||
+fit1_draws_anova|stem|4923317722145b6d|b43b0c52eb81880c|760d1eda24b60e09|-1025727223||t19216.3050565073s|409fa0b9e462c603|2261212|fst_tbl|local|vector|||0.006||
+fit1_file_anova|stem|da9f1b2112a5b378|b70044280424a1f5|ef46db3751d8e999|147565582|stan/anova.stan|t19216.3048632811s|519c4c3e5705e4ce|1157|file|local|vector|||0||
+fit1_mcmc_anova|stem|efda25f8e01ba1f0|39ee16e53a84498f|68ca9c367fea8ac5|1946670068||t19216.3050351312s|35750d5ad1f9d332|2060996|qs|local|vector|||10.268|validate_csv is deprecated. Please use diagnostics instead.|
+fit1_summary_anova|stem|3e2342f23a84daf1|bf3f4c017607f3ef|7edfc8c493dc1256|-436562052||t19216.3050630939s|32ae7e6a3d0724ab|6864|fst_tbl|local|vector|||0.715||
+five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19216.308133889s|7a461a341c947b38|2227|file|local|vector|||0.024||
+generate_anova_data|function|a13e19ed28a00e0f|||||||||||||||
+my_theme|function|8bd495fdb3e8fdb4|||||||||||||||
+report_html|stem||c2826156df415a04|025c058c6e5ee296|1483737400||t19216.2986100961s||0|file|local|vector|||49.811||System command quarto failed, exit status 1, stdout  stderr were printed
+sma_scatter|function|c420b87a3fc6904e|||||||||||||||
+sma_scatter_plot|stem|cd3cf635d8e62908|e268ef9d2781699c|d0fa49e9f2877dcd|-651295624||t19216.3254612259s|6f3edfd303724075|83446|rds|local|vector|||0.162||

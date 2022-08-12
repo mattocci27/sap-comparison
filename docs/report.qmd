@@ -1,0 +1,87 @@
+---
+title: "report"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+# link-citations: yes
+# csl: templates/ecology-letters.csl
+# bibliography: templates/seedling.bib
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    self-contained: true
+    smooth-scroll: true
+    highlight-style: github
+  pdf:
+    toc: true
+    keep-tex: true
+    pdf-engine: pdflatex
+    highlight-style: github
+    include-in-header:
+      text: |
+        \usepackage{xr}
+        \usepackage[default]{sourcesanspro}
+        \usepackage{sourcecodepro}
+        \usepackage{fancyhdr}
+        \usepackage{fvextra}
+        \pagestyle{fancy}
+        \fancypagestyle{plain}{\pagestyle{fancy}}
+        \renewcommand{\headrulewidth}{0pt}
+        \fancyhead[RE,RO]{Song \textit{et al}. --Ecology Letters-- Appendix SX}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  docx:
+    toc: true
+    number-sections: false
+    highlight-style: github
+    html-math-method: katex
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r}
+library(tarchetypes)
+targets::tar_read(sma_scatter_plot)
+```
+
+```{r}
+targets::tar_load(anova_data)
+
+d <- read_csv("data-raw/pres_tens_five_spp.csv")
+
+d |>
+  mutate(jk = paste(data$species, data$pressure, sep = "_")) |>
+  mutate(jk_fct = as.factor(jk) |> as.numeric())
+
+```
+
+```{r}
+targets::tar_load(fit1_summary_anova)
+fit1_summary_anova |>
+  head(20)
+```
+
+```{r}
+targets::tar_load(fit1_draws_anova)
+pred_draws <- create_stan_tab(fit1_draws_anova)
+
+```
+```{r}
+targets::tar_visnetwork()
+```
+
+```{r}
+devtools::session_info()
+```
