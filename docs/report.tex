@@ -114,6 +114,20 @@
 \def\fps@figure{htbp}
 \makeatother
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{xr}
 \usepackage[default]{sourcesanspro}
 \usepackage{sourcecodepro}
@@ -194,11 +208,11 @@
 
 \title{report}
 \author{Masatoshi Katabuchi}
-\date{August 12, 2022}
+\date{August 13, 2022}
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, frame hidden, breakable, sharp corners, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -208,14 +222,37 @@
 }
 \begin{Shaded}
 \begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
 \FunctionTok{library}\NormalTok{(tarchetypes)}
+\FunctionTok{library}\NormalTok{(here)}
+\FunctionTok{library}\NormalTok{(kableExtra)}
+\FunctionTok{source}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"stan.R"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_read}\NormalTok{(sma\_scatter\_plot)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{report_files/figure-pdf/unnamed-chunk-1-1.pdf}
+{\centering \includegraphics{report_files/figure-pdf/unnamed-chunk-2-1.pdf}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_read}\NormalTok{(sma\_scatter\_log\_plot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{report_files/figure-pdf/unnamed-chunk-3-1.pdf}
 
 }
 
@@ -224,25 +261,264 @@
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(anova\_data)}
+\NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(anova\_data\_log)}
+
+\CommentTok{\# d \textless{}{-} read\_csv("data{-}raw/pres\_tens\_five\_spp.csv")}
+
+\CommentTok{\# d |\textgreater{}}
+\CommentTok{\#   mutate(jk = paste(d$species, d$pressure, sep = "\_")) |\textgreater{}}
+\CommentTok{\#   mutate(jk\_fct = as.factor(jk) |\textgreater{} as.numeric()) |\textgreater{}}
+\CommentTok{\#   dplyr::select(jk, jk\_fct) |\textgreater{}}
+\CommentTok{\#   unique() |\textgreater{}}
+\CommentTok{\#   arrange(jk\_fct)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(fit1\_summary\_anova)}
-\NormalTok{fit1\_summary\_anova }\SpecialCharTok{|\textgreater{}} \FunctionTok{tail}\NormalTok{()}
-\CommentTok{\#\textgreater{} \# A tibble: 6 x 11}
-\CommentTok{\#\textgreater{}   variable  mean median    sd   mad      q5   q95  rhat ess\_bulk ess\_tail}
-\CommentTok{\#\textgreater{}   \textless{}chr\textgreater{}    \textless{}dbl\textgreater{}  \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
-\CommentTok{\#\textgreater{} 1 pred[10] 0.805  0.797 0.389 0.370  0.186   1.46 0.999    4453.    3739.}
-\CommentTok{\#\textgreater{} 2 pred[11] 0.742  0.732 0.395 0.380  0.109   1.41 1.00     4274.    3667.}
-\CommentTok{\#\textgreater{} 3 pred[12] 1.18   1.15  0.443 0.437  0.517   1.94 1.00     2643.    3377.}
-\CommentTok{\#\textgreater{} 4 pred[13] 0.612  0.605 0.371 0.347  0.0158  1.23 1.00     5290.    3634.}
-\CommentTok{\#\textgreater{} 5 pred[14] 0.590  0.597 0.374 0.354 {-}0.0466  1.19 1.00     4170.    3659.}
-\CommentTok{\#\textgreater{} 6 pred[15] 1.01   0.981 0.413 0.397  0.400   1.74 1.00     3206.    3501.}
-\CommentTok{\#\textgreater{} \# ... with 1 more variable: .join\_data \textless{}dbl\textgreater{}}
+\NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(fit2\_summary\_anova)}
+\CommentTok{\#knitr::knit\_exit()}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\NormalTok{fit1\_summary\_anova}
+\CommentTok{\#\textgreater{} \# A tibble: 70 x 11}
+\CommentTok{\#\textgreater{}    variable     mean  median    sd   mad      q5     q95  rhat ess\_bulk ess\_tail}
+\CommentTok{\#\textgreater{}    \textless{}chr\textgreater{}       \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{}  1 lp\_\_      {-}42.1   {-}41.8   4.43  4.39  {-}49.7   {-}35.4    1.00    1128.    1833.}
+\CommentTok{\#\textgreater{}  2 mu\_hat      0.596   0.607 0.628 0.427  {-}0.376   1.50   1.00    1402.     996.}
+\CommentTok{\#\textgreater{}  3 sigma       1.07    1.06  0.130 0.124   0.880   1.30   1.00    3860.    2917.}
+\CommentTok{\#\textgreater{}  4 alpha\_ra\textasciitilde{}  {-}0.247  {-}0.261 0.817 0.804  {-}1.56    1.11   1.00    2833.    2851.}
+\CommentTok{\#\textgreater{}  5 alpha\_ra\textasciitilde{}  {-}0.254  {-}0.271 0.838 0.795  {-}1.60    1.16   1.00    3139.    2248.}
+\CommentTok{\#\textgreater{}  6 alpha\_ra\textasciitilde{}  {-}0.278  {-}0.280 0.844 0.818  {-}1.67    1.12   1.00    3177.    2926.}
+\CommentTok{\#\textgreater{}  7 alpha\_ra\textasciitilde{}   0.586   0.593 0.841 0.805  {-}0.806   1.93   1.00    3639.    3009.}
+\CommentTok{\#\textgreater{}  8 alpha\_ra\textasciitilde{}   0.229   0.224 0.838 0.784  {-}1.17    1.64   1.00    3567.    2208.}
+\CommentTok{\#\textgreater{}  9 beta\_raw\textasciitilde{}  {-}0.310  {-}0.306 0.762 0.731  {-}1.57    0.916  1.00    2291.    2055.}
+\CommentTok{\#\textgreater{} 10 beta\_raw\textasciitilde{}  {-}0.304  {-}0.281 0.748 0.708  {-}1.55    0.883  1.00    2350.    2304.}
+\CommentTok{\#\textgreater{} \# ... with 60 more rows, and 1 more variable: .join\_data \textless{}dbl\textgreater{}}
+
+\NormalTok{fit2\_summary\_anova}
+\CommentTok{\#\textgreater{} \# A tibble: 70 x 11}
+\CommentTok{\#\textgreater{}    variable    mean  median     sd    mad      q5    q95  rhat ess\_bulk ess\_tail}
+\CommentTok{\#\textgreater{}    \textless{}chr\textgreater{}      \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{}  \textless{}dbl\textgreater{}  \textless{}dbl\textgreater{}   \textless{}dbl\textgreater{}  \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{}  1 lp\_\_     16.1    16.5    5.39   5.19    6.47   24.2    1.02     364.    366. }
+\CommentTok{\#\textgreater{}  2 mu\_hat    0.338   0.327  0.256  0.161  {-}0.0241  0.771  1.02     297.     85.6}
+\CommentTok{\#\textgreater{}  3 sigma     0.270   0.266  0.0343 0.0331  0.220   0.331  1.01     861.   1211. }
+\CommentTok{\#\textgreater{}  4 alpha\_r\textasciitilde{}  0.680   0.662  0.704  0.657  {-}0.428   1.84   1.00    1820.   2181. }
+\CommentTok{\#\textgreater{}  5 alpha\_r\textasciitilde{} {-}0.751  {-}0.758  0.679  0.652  {-}1.85    0.358  1.00    1761.   2139. }
+\CommentTok{\#\textgreater{}  6 alpha\_r\textasciitilde{}  0.325   0.293  0.679  0.615  {-}0.772   1.47   1.01    1880.    826. }
+\CommentTok{\#\textgreater{}  7 alpha\_r\textasciitilde{}  0.370   0.368  0.664  0.610  {-}0.697   1.47   1.01    2367.   1864. }
+\CommentTok{\#\textgreater{}  8 alpha\_r\textasciitilde{} {-}0.704  {-}0.722  0.694  0.643  {-}1.87    0.413  1.00    2225.   1566. }
+\CommentTok{\#\textgreater{}  9 beta\_ra\textasciitilde{}  0.0657  0.0708 0.834  0.793  {-}1.34    1.40   1.01     724.    649. }
+\CommentTok{\#\textgreater{} 10 beta\_ra\textasciitilde{} {-}0.274  {-}0.267  0.828  0.783  {-}1.64    1.09   1.01     670.    858. }
+\CommentTok{\#\textgreater{} \# ... with 60 more rows, and 1 more variable: .join\_data \textless{}dbl\textgreater{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(fit1\_draws\_anova)}
+\NormalTok{pred1\_draws }\OtherTok{\textless{}{-}} \FunctionTok{create\_stan\_tab}\NormalTok{(fit1\_draws\_anova)}
+\NormalTok{pred1\_draws[, }\DecValTok{2}\SpecialCharTok{:}\DecValTok{6}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(pred1\_draws[, }\DecValTok{2}\SpecialCharTok{:}\DecValTok{6}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\NormalTok{pred1\_draws }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{str\_detect}\NormalTok{(para, }\StringTok{"raw"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{para =} \FunctionTok{cell\_spec}\NormalTok{(para, }\AttributeTok{bold=} \FunctionTok{ifelse}\NormalTok{(q2\_5 }\SpecialCharTok{*}\NormalTok{ q97\_5 }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\ConstantTok{TRUE}\NormalTok{, }\ConstantTok{FALSE}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{kbl}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{kable\_styling}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r}
+\hline
+para & mean\_ & q2\_5 & q5 & q95 & q97\_5\\
+\hline
+alpha\textbackslash{}\_1 & -0.108 & -0.839 & -0.681 & 0.215 & 0.503\\
+\hline
+alpha\textbackslash{}\_2 & -0.112 & -0.874 & -0.701 & 0.204 & 0.464\\
+\hline
+alpha\textbackslash{}\_3 & -0.112 & -0.852 & -0.694 & 0.221 & 0.526\\
+\hline
+alpha\textbackslash{}\_4 & 0.242 & -0.277 & -0.180 & 0.697 & 1.124\\
+\hline
+alpha\textbackslash{}\_5 & 0.096 & -0.502 & -0.355 & 0.480 & 0.826\\
+\hline
+beta\textbackslash{}\_1 & -0.166 & -1.520 & -1.133 & 0.387 & 1.194\\
+\hline
+beta\textbackslash{}\_2 & -0.162 & -1.463 & -1.118 & 0.385 & 1.168\\
+\hline
+beta\textbackslash{}\_3 & 0.380 & -0.766 & -0.386 & 1.088 & 1.964\\
+\hline
+gamma\textbackslash{}\_1 & -0.033 & -0.591 & -0.456 & 0.211 & 0.472\\
+\hline
+gamma\textbackslash{}\_2 & -0.001 & -0.535 & -0.405 & 0.263 & 0.549\\
+\hline
+gamma\textbackslash{}\_3 & -0.039 & -0.633 & -0.478 & 0.209 & 0.435\\
+\hline
+gamma\textbackslash{}\_4 & -0.035 & -0.601 & -0.460 & 0.213 & 0.454\\
+\hline
+gamma\textbackslash{}\_5 & -0.020 & -0.578 & -0.411 & 0.224 & 0.461\\
+\hline
+gamma\textbackslash{}\_6 & -0.019 & -0.614 & -0.445 & 0.235 & 0.509\\
+\hline
+gamma\textbackslash{}\_7 & -0.034 & -0.629 & -0.467 & 0.212 & 0.450\\
+\hline
+gamma\textbackslash{}\_8 & -0.015 & -0.581 & -0.429 & 0.245 & 0.470\\
+\hline
+gamma\textbackslash{}\_9 & -0.034 & -0.595 & -0.462 & 0.216 & 0.496\\
+\hline
+gamma\textbackslash{}\_10 & 0.042 & -0.418 & -0.321 & 0.338 & 0.640\\
+\hline
+gamma\textbackslash{}\_11 & -0.016 & -0.528 & -0.403 & 0.234 & 0.498\\
+\hline
+gamma\textbackslash{}\_12 & 0.113 & -0.309 & -0.221 & 0.450 & 0.852\\
+\hline
+gamma\textbackslash{}\_13 & -0.008 & -0.535 & -0.406 & 0.241 & 0.466\\
+\hline
+gamma\textbackslash{}\_14 & -0.027 & -0.598 & -0.432 & 0.225 & 0.463\\
+\hline
+gamma\textbackslash{}\_15 & 0.101 & -0.333 & -0.233 & 0.439 & 0.787\\
+\hline
+pred\textbackslash{}\_1 & 0.289 & -0.506 & -0.379 & 0.788 & 1.015\\
+\hline
+pred\textbackslash{}\_2 & 0.325 & -0.452 & -0.309 & 0.788 & 1.045\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_3\} & 0.829 & 0.034 & 0.141 & 1.341 & 1.606\\
+\hline
+pred\textbackslash{}\_4 & 0.282 & -0.521 & -0.363 & 0.761 & 1.007\\
+\hline
+pred\textbackslash{}\_5 & 0.301 & -0.502 & -0.336 & 0.772 & 1.023\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_6\} & 0.844 & 0.034 & 0.171 & 1.360 & 1.619\\
+\hline
+pred\textbackslash{}\_7 & 0.284 & -0.495 & -0.386 & 0.774 & 1.034\\
+\hline
+pred\textbackslash{}\_8 & 0.306 & -0.465 & -0.335 & 0.782 & 1.048\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_9\} & 0.830 & 0.004 & 0.166 & 1.343 & 1.615\\
+\hline
+pred\textbackslash{}\_10 & 0.713 & -0.065 & 0.069 & 1.245 & 1.561\\
+\hline
+pred\textbackslash{}\_11 & 0.660 & -0.130 & 0.001 & 1.181 & 1.497\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_12\} & 1.330 & 0.522 & 0.643 & 1.908 & 2.260\\
+\hline
+pred\textbackslash{}\_13 & 0.517 & -0.247 & -0.111 & 1.003 & 1.292\\
+\hline
+pred\textbackslash{}\_14 & 0.503 & -0.259 & -0.120 & 0.984 & 1.278\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_15\} & 1.173 & 0.430 & 0.519 & 1.692 & 2.007\\
+\hline
+mu\textbackslash{}\_hat & 0.596 & -0.839 & -0.376 & 1.246 & 1.856\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\NormalTok{targets}\SpecialCharTok{::}\FunctionTok{tar\_load}\NormalTok{(fit2\_draws\_anova)}
+\NormalTok{pred2\_draws }\OtherTok{\textless{}{-}} \FunctionTok{create\_stan\_tab}\NormalTok{(fit2\_draws\_anova)}
+\NormalTok{pred2\_draws[, }\DecValTok{2}\SpecialCharTok{:}\DecValTok{6}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(pred2\_draws[, }\DecValTok{2}\SpecialCharTok{:}\DecValTok{6}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\NormalTok{pred2\_draws }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{str\_detect}\NormalTok{(para, }\StringTok{"raw"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{para =} \FunctionTok{cell\_spec}\NormalTok{(para, }\AttributeTok{bold=} \FunctionTok{ifelse}\NormalTok{(q2\_5 }\SpecialCharTok{*}\NormalTok{ q97\_5 }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\ConstantTok{TRUE}\NormalTok{, }\ConstantTok{FALSE}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{kbl}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{kable\_styling}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r}
+\hline
+para & mean\_ & q2\_5 & q5 & q95 & q97\_5\\
+\hline
+alpha\textbackslash{}\_1 & 0.158 & -0.155 & -0.091 & 0.372 & 0.539\\
+\hline
+alpha\textbackslash{}\_2 & -0.178 & -0.567 & -0.470 & 0.014 & 0.136\\
+\hline
+alpha\textbackslash{}\_3 & 0.075 & -0.248 & -0.182 & 0.274 & 0.443\\
+\hline
+alpha\textbackslash{}\_4 & 0.085 & -0.251 & -0.166 & 0.280 & 0.437\\
+\hline
+alpha\textbackslash{}\_5 & -0.166 & -0.557 & -0.463 & 0.025 & 0.142\\
+\hline
+beta\textbackslash{}\_1 & 0.005 & -0.590 & -0.306 & 0.156 & 0.416\\
+\hline
+beta\textbackslash{}\_2 & -0.047 & -0.726 & -0.371 & 0.096 & 0.316\\
+\hline
+beta\textbackslash{}\_3 & 0.012 & -0.591 & -0.300 & 0.175 & 0.445\\
+\hline
+gamma\textbackslash{}\_1 & -0.003 & -0.233 & -0.175 & 0.123 & 0.242\\
+\hline
+gamma\textbackslash{}\_2 & 0.057 & -0.130 & -0.094 & 0.214 & 0.350\\
+\hline
+gamma\textbackslash{}\_3 & 0.028 & -0.177 & -0.133 & 0.171 & 0.299\\
+\hline
+gamma\textbackslash{}\_4 & -0.060 & -0.353 & -0.287 & 0.054 & 0.125\\
+\hline
+gamma\textbackslash{}\_5 & -0.038 & -0.330 & -0.267 & 0.082 & 0.166\\
+\hline
+gamma\textbackslash{}\_6 & 0.008 & -0.227 & -0.168 & 0.136 & 0.241\\
+\hline
+gamma\textbackslash{}\_7 & -0.023 & -0.270 & -0.213 & 0.091 & 0.194\\
+\hline
+gamma\textbackslash{}\_8 & 0.021 & -0.190 & -0.149 & 0.161 & 0.278\\
+\hline
+gamma\textbackslash{}\_9 & 0.053 & -0.145 & -0.105 & 0.206 & 0.347\\
+\hline
+gamma\textbackslash{}\_10 & 0.137 & -0.050 & -0.026 & 0.351 & 0.499\\
+\hline
+gamma\textbackslash{}\_11 & -0.061 & -0.339 & -0.278 & 0.055 & 0.142\\
+\hline
+gamma\textbackslash{}\_12 & -0.031 & -0.273 & -0.224 & 0.081 & 0.185\\
+\hline
+gamma\textbackslash{}\_13 & -0.031 & -0.317 & -0.245 & 0.088 & 0.184\\
+\hline
+gamma\textbackslash{}\_14 & -0.029 & -0.305 & -0.244 & 0.091 & 0.186\\
+\hline
+gamma\textbackslash{}\_15 & -0.021 & -0.284 & -0.222 & 0.098 & 0.200\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_1\} & 0.496 & 0.254 & 0.297 & 0.647 & 0.735\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_2\} & 0.505 & 0.262 & 0.302 & 0.667 & 0.759\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_3\} & 0.536 & 0.299 & 0.334 & 0.691 & 0.783\\
+\hline
+pred\textbackslash{}\_4 & 0.105 & -0.145 & -0.103 & 0.260 & 0.354\\
+\hline
+pred\textbackslash{}\_5 & 0.074 & -0.185 & -0.135 & 0.229 & 0.317\\
+\hline
+pred\textbackslash{}\_6 & 0.180 & -0.051 & -0.017 & 0.335 & 0.422\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_7\} & 0.394 & 0.135 & 0.184 & 0.551 & 0.632\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_8\} & 0.388 & 0.137 & 0.183 & 0.542 & 0.623\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_9\} & 0.478 & 0.245 & 0.282 & 0.629 & 0.722\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_10\} & 0.564 & 0.297 & 0.335 & 0.764 & 0.878\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_11\} & 0.314 & 0.044 & 0.089 & 0.477 & 0.565\\
+\hline
+\textbackslash{}textbf\{pred\textbackslash{}\_12\} & 0.404 & 0.150 & 0.194 & 0.562 & 0.633\\
+\hline
+pred\textbackslash{}\_13 & 0.145 & -0.094 & -0.059 & 0.302 & 0.384\\
+\hline
+pred\textbackslash{}\_14 & 0.095 & -0.147 & -0.110 & 0.252 & 0.333\\
+\hline
+pred\textbackslash{}\_15 & 0.162 & -0.078 & -0.038 & 0.315 & 0.397\\
+\hline
+mu\textbackslash{}\_hat & 0.338 & -0.176 & -0.024 & 0.589 & 1.065\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -274,7 +550,7 @@
 
 \begin{figure}[H]
 
-{\centering \includegraphics{report_files/figure-pdf/unnamed-chunk-4-1.pdf}
+{\centering \includegraphics{report_files/figure-pdf/unnamed-chunk-8-1.pdf}
 
 }
 
@@ -293,7 +569,7 @@
 \CommentTok{\#\textgreater{}  collate  en\_US.UTF{-}8}
 \CommentTok{\#\textgreater{}  ctype    en\_US.UTF{-}8}
 \CommentTok{\#\textgreater{}  tz       Asia/Shanghai}
-\CommentTok{\#\textgreater{}  date     2022{-}08{-}12}
+\CommentTok{\#\textgreater{}  date     2022{-}08{-}13}
 \CommentTok{\#\textgreater{}  pandoc   2.19 @ /opt/homebrew/bin/ (via rmarkdown)}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} {-} Packages {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
@@ -308,38 +584,48 @@
 \CommentTok{\#\textgreater{}  callr         3.7.0     2021{-}04{-}20 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  car           3.0{-}12    2021{-}11{-}06 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  carData       3.0{-}5     2022{-}01{-}06 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  cellranger    1.1.0     2016{-}07{-}27 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  cli           3.3.0     2022{-}04{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  codetools     0.2{-}18    2020{-}11{-}04 [2] CRAN (R 4.2.1)}
 \CommentTok{\#\textgreater{}  colorspace    2.0{-}3     2022{-}02{-}21 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  crayon        1.5.1     2022{-}03{-}26 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  data.table    1.14.2    2021{-}09{-}27 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  DBI           1.1.2     2021{-}12{-}20 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  dbplyr        2.1.1     2021{-}04{-}06 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  desc          1.4.1     2022{-}03{-}06 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  devtools      2.4.3     2021{-}11{-}30 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  digest        0.6.29    2021{-}12{-}01 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  dplyr         1.0.8     2022{-}02{-}08 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  dplyr       * 1.0.8     2022{-}02{-}08 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  ellipsis      0.3.2     2021{-}04{-}29 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  evaluate      0.15      2022{-}02{-}18 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  fansi         1.0.3     2022{-}03{-}24 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  farver        2.1.0     2021{-}02{-}28 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  fastmap       1.1.0     2021{-}01{-}25 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  forcats     * 0.5.1     2021{-}01{-}27 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  fs            1.5.2     2021{-}12{-}08 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  fst           0.9.8     2022{-}02{-}08 [1] CRAN (R 4.2.1)}
 \CommentTok{\#\textgreater{}  fstcore     * 0.9.12    2022{-}03{-}23 [1] CRAN (R 4.2.1)}
 \CommentTok{\#\textgreater{}  generics      0.1.2     2022{-}01{-}31 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  ggplot2       3.3.5     2021{-}06{-}25 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  ggplot2     * 3.3.5     2021{-}06{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  ggpubr        0.4.0.999 2022{-}08{-}10 [1] Github (mattocci27/ggpubr@901fdeb)}
 \CommentTok{\#\textgreater{}  ggsignif      0.6.3     2021{-}09{-}09 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  ggsma         0.1.0     2022{-}08{-}10 [1] Github (mattocci27/ggsma@2b56c57)}
 \CommentTok{\#\textgreater{}  glue          1.6.2     2022{-}02{-}24 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  gtable        0.3.0     2019{-}03{-}25 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  haven         2.5.0     2022{-}04{-}15 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  here        * 1.0.1     2020{-}12{-}13 [1] CRAN (R 4.2.1)}
+\CommentTok{\#\textgreater{}  hms           1.1.1     2021{-}09{-}26 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  htmltools     0.5.2     2021{-}08{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  htmlwidgets   1.5.4     2021{-}09{-}08 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  httr          1.4.2     2020{-}07{-}20 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  igraph        1.3.4     2022{-}07{-}19 [1] CRAN (R 4.2.1)}
+\CommentTok{\#\textgreater{}  janitor       2.1.0     2021{-}01{-}05 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  jsonlite      1.8.0     2022{-}02{-}22 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  kableExtra  * 1.3.4     2021{-}02{-}20 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  knitr       * 1.38      2022{-}03{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  labeling      0.4.2     2020{-}10{-}20 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  lifecycle     1.0.1     2021{-}09{-}24 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  lubridate     1.8.0     2021{-}10{-}07 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  magrittr      2.0.3     2022{-}03{-}30 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  memoise       2.0.1     2021{-}11{-}26 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  modelr        0.1.8     2020{-}05{-}19 [1] CRAN (R 4.2.0)}
@@ -351,31 +637,43 @@
 \CommentTok{\#\textgreater{}  prettyunits   1.1.1     2020{-}01{-}24 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  processx      3.5.3     2022{-}03{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  ps            1.7.0     2022{-}04{-}23 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  purrr         0.3.4     2020{-}04{-}17 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  purrr       * 0.3.4     2020{-}04{-}17 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  R6            2.5.1     2021{-}08{-}19 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  Rcpp          1.0.8.3   2022{-}03{-}17 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  readr       * 2.1.2     2022{-}01{-}30 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  readxl        1.4.0     2022{-}03{-}28 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  remotes       2.4.2     2021{-}11{-}30 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  reprex        2.0.1     2021{-}08{-}05 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  rlang         1.0.2     2022{-}03{-}04 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  rmarkdown     2.14      2022{-}04{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  rprojroot     2.0.3     2022{-}04{-}02 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  rstatix       0.7.0     2021{-}02{-}13 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  rstudioapi    0.13      2020{-}11{-}12 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  rvest         1.0.2     2021{-}10{-}16 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  scales        1.2.0     2022{-}04{-}13 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  sessioninfo   1.2.2     2021{-}12{-}06 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  snakecase     0.11.0    2019{-}05{-}25 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  stringi       1.7.6     2021{-}11{-}29 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  stringr       1.4.0     2019{-}02{-}10 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  stringr     * 1.4.0     2019{-}02{-}10 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  svglite       2.1.0     2022{-}02{-}03 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  systemfonts   1.0.4     2022{-}02{-}11 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  tarchetypes * 0.7.0     2022{-}08{-}05 [1] CRAN (R 4.2.1)}
 \CommentTok{\#\textgreater{}  targets       0.12.0    2022{-}04{-}19 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  testthat      3.1.3     2022{-}03{-}29 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  tibble        3.1.6     2021{-}11{-}07 [1] CRAN (R 4.2.0)}
-\CommentTok{\#\textgreater{}  tidyr         1.2.0     2022{-}02{-}01 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  tibble      * 3.1.6     2021{-}11{-}07 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  tidyr       * 1.2.0     2022{-}02{-}01 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  tidyselect    1.1.2     2022{-}02{-}21 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  tidyverse   * 1.3.1     2021{-}04{-}15 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  tzdb          0.3.0     2022{-}03{-}28 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  usethis       2.1.5     2021{-}12{-}09 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  utf8          1.2.2     2021{-}07{-}24 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  vctrs         0.4.1     2022{-}04{-}13 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  viridisLite   0.4.0     2021{-}04{-}13 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  visNetwork    2.1.0     2021{-}09{-}29 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  webshot       0.5.3     2022{-}04{-}14 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  withr         2.5.0     2022{-}03{-}03 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  xfun          0.30      2022{-}03{-}02 [1] CRAN (R 4.2.0)}
+\CommentTok{\#\textgreater{}  xml2          1.3.3     2021{-}11{-}30 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{}  yaml          2.3.5     2022{-}02{-}21 [1] CRAN (R 4.2.0)}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{}  [1] /opt/homebrew/lib/R/4.2/site{-}library}

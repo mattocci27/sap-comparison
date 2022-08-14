@@ -1,21 +1,27 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|05c7e1eb815ed607|||||||||||||||
-anova_data|stem|0654de29528673ce|608addf990c78f5b|7da7a4080908ef43|-960880509||t19216.3141874587s|c06f9c1553a82b6a|586|rds|local|vector|||0.127||
-fit_anova_data|stem|fc8601711f3a418e|693f73b00c97928b|92f3cdc548ec2fc9|-552287873||t19216.2938869732s|bd37230314bbd1ee|539|qs|local|vector|||0||
-fit_anova_diagnostics_anova|stem|591d8a3988260201|b380558409fd5a06|0831d40161fc6fe1|-1434702107||t19216.2955853933s|949fba1834af9b74|78074|fst_tbl|local|vector|||0.001||
-fit_anova_draws_anova|stem|1fab04f7c333ab98|142e1195b99ce67c|0831d40161fc6fe1|-1121524250||t19216.2955841742s|51a72abc08821f48|1778335|fst_tbl|local|vector|||0.003||
-fit_anova_file_anova|stem|87853dddcef2fd92|b70044280424a1f5|ef46db3751d8e999|863269485|stan/anova.stan|t19216.2956672695s|a3d57c2e496c00b4|1018|file|local|vector|||0.001||
-fit_anova_mcmc_anova|stem|46d2eb5408587528|7e7ef9f87471e033|09906f43734a9da1|-1776832544||t19216.2955769836s|47376470af2ff0fa|1659627|qs|local|vector|||10.248|validate_csv is deprecated. Please use diagnostics instead.|
-fit_anova_summary_anova|stem|1a2f2458a438071e|315b9aa384c8f88e|0f0a1157099672ef|2001892175||t19216.2955833111s|e37ac487a2dbc7ea|5632|fst_tbl|local|vector|||0.449||
-fit1_data|stem|fc8601711f3a418e|693f73b00c97928b|92f3cdc548ec2fc9|1284455465||t19216.2988275349s|bd37230314bbd1ee|539|qs|local|vector|||0||
-fit1_diagnostics_anova|stem|591d8a3988260201|1ae0eaf697f99691|760d1eda24b60e09|-1864003676||t19216.3050440771s|949fba1834af9b74|78074|fst_tbl|local|vector|||0.002||
-fit1_draws_anova|stem|4923317722145b6d|b43b0c52eb81880c|760d1eda24b60e09|-1025727223||t19216.3050565073s|409fa0b9e462c603|2261212|fst_tbl|local|vector|||0.006||
-fit1_file_anova|stem|da9f1b2112a5b378|b70044280424a1f5|ef46db3751d8e999|147565582|stan/anova.stan|t19216.3048632811s|519c4c3e5705e4ce|1157|file|local|vector|||0||
-fit1_mcmc_anova|stem|efda25f8e01ba1f0|39ee16e53a84498f|68ca9c367fea8ac5|1946670068||t19216.3050351312s|35750d5ad1f9d332|2060996|qs|local|vector|||10.268|validate_csv is deprecated. Please use diagnostics instead.|
-fit1_summary_anova|stem|3e2342f23a84daf1|bf3f4c017607f3ef|7edfc8c493dc1256|-436562052||t19216.3050630939s|32ae7e6a3d0724ab|6864|fst_tbl|local|vector|||0.715||
-five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19216.308133889s|7a461a341c947b38|2227|file|local|vector|||0.024||
-generate_anova_data|function|a13e19ed28a00e0f|||||||||||||||
+.Random.seed|object|6007c52a1d859e2c|||||||||||||||
+anova_data|stem|0654de29528673ce|608addf990c78f5b|39a204b550401a39|-960880509||t19217.3150591552s|c06f9c1553a82b6a|586|rds|local|vector|||0.154||
+anova_data_log|stem|7180d5a6b655e84d|d63e9a4f4809c86e|39a204b550401a39|-1005727767||t19217.319950012s|19771bd61353bf7e|592|rds|local|vector|||0.166||
+create_stan_tab|function|35025f81617a17a4|||||||||||||||
+fit1_data|stem|fc8601711f3a418e|693f73b00c97928b|92f3cdc548ec2fc9|1284455465||t19217.3150609733s|bd37230314bbd1ee|539|qs|local|vector|||0||
+fit1_diagnostics_anova|stem|0507b26d568f7d29|1ae0eaf697f99691|91afb081d05fee66|-1864003676||t19217.3368203378s|f4d63e20680dee1e|79876|fst_tbl|local|vector|||0.001||
+fit1_draws_anova|stem|d15ecff523882780|b43b0c52eb81880c|91afb081d05fee66|-1025727223||t19217.3368268685s|9592ccfd66fef160|2261180|fst_tbl|local|vector|||0.004||
+fit1_file_anova|stem|d2cde04a44824773|b70044280424a1f5|ef46db3751d8e999|147565582|stan/anova.stan|t19217.6236031419s|099b7a4f96e543d1|1241|file|local|vector|||0||
+fit1_mcmc_anova|stem|305a5af1029e90ec|39ee16e53a84498f|1562bdefcd585fc8|1946670068||t19217.3368116996s||2078879|qs|local|vector|||10.632|validate_csv is deprecated. Please use diagnostics instead.. Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
+fit1_summary_anova|stem|a018a67c6afa0b09|bf3f4c017607f3ef|a680577682cf7567|-436562052||t19217.3368258242s|32ae7e6a3d0724ab|6864|fst_tbl|local|vector|||0.396||
+fit2_data|stem|baf37beb7b607c3b|0ae2f00af3316057|f6a3e2025532f84b|1850425565||t19217.3199517768s|e31411335ec9539f|533|qs|local|vector|||0||
+fit2_diagnostics_anova|stem|26a90ff8eda5a885|b8c42085f3d61724|4705b3a59bf99f57|151287352||t19217.336819475s|bc27a55dd769a38e|79861|fst_tbl|local|vector|||0.001||
+fit2_draws_anova|stem|52ece2e4d9e3f3d6|ede7ad98687bc7c2|4705b3a59bf99f57|1158939824||t19217.3368185148s|a1a8fe0658346410|2261230|fst_tbl|local|vector|||0.004||
+fit2_file_anova|stem|d2cde04a44824773|b70044280424a1f5|ef46db3751d8e999|-712602894|stan/anova.stan|t19217.6236031419s|099b7a4f96e543d1|1241|file|local|vector|||0.001||
+fit2_mcmc_anova|stem|d08c7caaf649b226|8a45592ff26a2ff2|18ab619a75081ff0|-1453546014||t19217.3367990145s||2074987|qs|local|vector|||0.362|validate_csv is deprecated. Please use diagnostics instead.. Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
+fit2_summary_anova|stem|0ab3bdb862db1dc3|2ce65b382bca6d0b|71f6f071f2e98041|-427344673||t19217.3368175142s|32ae7e6a3d0724ab|6864|fst_tbl|local|vector|||0.415||
+five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19216.308133889s|7a461a341c947b38|2227|file|local|vector|||0.049||
+generate_anova_data|function|2ad5e433aba74612|||||||||||||||
+ks_five_spp_csv|stem|bd98f7ac61c45835|c8ca3219a79d86e9|ef46db3751d8e999|1333421173|data-raw/ks_pres_tens_five_spp.csv|t19218.4062070323s|b8431078dd598537|1574|file|local|vector|||0.046||
 my_theme|function|8bd495fdb3e8fdb4|||||||||||||||
-report_html|stem||c2826156df415a04|025c058c6e5ee296|1483737400||t19216.2986100961s||0|file|local|vector|||49.811||System command quarto failed, exit status 1, stdout  stderr were printed
-sma_scatter|function|c420b87a3fc6904e|||||||||||||||
-sma_scatter_plot|stem|cd3cf635d8e62908|e268ef9d2781699c|d0fa49e9f2877dcd|-651295624||t19216.3254612259s|6f3edfd303724075|83446|rds|local|vector|||0.162||
+report_html|stem|98fb794c677e1ad9|b581ca706457559c|5e3311c476423a32|1483737400|docs/report.docx*docs/report.html*docs/report.pdf*docs/report.qmd|t19217.3783394834s||2171476|file|local|vector|||42.304||System command quarto failed, exit status 1, stdout  stderr were printed
+sma_scatter|function|da3d505366cf8c8f|||||||||||||||
+sma_scatter_ks_log_plot|stem|585fe924ad363a26|fca86bc0db0e8ac7|d2eb25a92f12ac67|-50195053||t19218.406302128s|79793d1444196217|122494|rds|local|vector|||0.149||
+sma_scatter_ks_plot|stem|2753b43b519ea580|db9b3fd3537541a3|d2eb25a92f12ac67|106148634||t19218.4063037324s|b6873aaeb9c102bf|87110|rds|local|vector|||0.026||
+sma_scatter_log_plot|stem|f60b608b4ba30b31|bb5ee286cdf8edc2|33b108698fa59ef4|1411685232||t19217.6059340447s|1fa59636a38a606f|122896|rds|local|vector|||0.257||
+sma_scatter_plot|stem|2ae44c0ebd6266c2|e268ef9d2781699c|33b108698fa59ef4|-651295624||t19217.6059107051s|ece7c8a1c41034dd|87341|rds|local|vector|||0.265||

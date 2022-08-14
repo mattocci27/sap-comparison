@@ -26,7 +26,7 @@ transformed parameters{
   for (i in 1:3) tau[i] = 2.5 * tan(tau_unif[i]);
   alpha = alpha_raw * tau[1];
   beta = beta_raw * tau[2];
-  gamma = gamma_raw * tau[2];
+  gamma = gamma_raw * tau[3];
 }
 
 model {
@@ -40,8 +40,10 @@ model {
 
 generated quantities {
   vector[JK] pred;
+  vector[JK] effect;
   for (n in 1:N) {
     pred[jk[n]] = mu_hat + alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
+    effect[jk[n]] = alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
   }
 }
 
