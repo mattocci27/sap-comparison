@@ -8101,189 +8101,25 @@ HTMLWidgets.widget({
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#knitr::knit_exit()</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(dummy_data)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>dummy_data</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $y</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   [1]  4.922737e-01  5.441997e-01  1.337266e-02  1.275613e+00  9.334059e-01</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   [6]  2.876509e-01  1.483627e+00  1.069951e+00  7.091836e-01  1.304282e+00</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [11]  1.295786e+00  1.267510e+00  1.201039e+00  1.133678e+00  8.257635e-01</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [16]  7.037380e-01  6.664838e-01  5.093658e-01  7.527607e-01  2.240211e-01</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [21]  1.941197e+00  1.460700e+00  2.951650e-01  6.552769e-01  6.233916e-01</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [26]  1.246702e+00  8.150348e-01  9.833786e-01  8.424459e-01  8.352841e-01</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [31]  1.362548e+00  5.653613e-01  1.436482e+00 -9.612958e-02  9.705537e-01</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [36]  7.401739e-01  7.862176e-01  8.680666e-01  4.270851e-01  5.116431e-01</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [41]  1.689591e-01  1.423512e-01  8.300111e-01  9.023517e-01  7.047489e-01</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [46]  1.139381e+00  1.703289e+00  4.327312e-01 -4.763376e-01  1.181116e+00</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [51]  3.236464e-01  3.342425e-01  1.191033e+00  5.358603e-01  6.788797e-02</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [56]  7.688986e-01  6.088011e-01  6.811289e-01  8.708870e-01  4.929168e-01</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [61]  1.156163e+00  7.237312e-01  9.998655e-01  1.382394e+00  1.051565e+00</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [66]  6.710087e-01  1.408378e+00  1.330726e+00  1.108173e+00  9.533403e-01</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [71]  5.200214e-01  1.514301e+00  5.338447e-01  1.927641e+00  1.600280e+00</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [76]  7.161243e-01  3.207640e-01  4.787712e-01  9.624163e-01  7.106285e-01</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [81]  6.602032e-01  3.581652e-01  8.114606e-01  4.415222e-01  3.500740e-06</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [86]  6.438612e-01  1.293473e+00  5.463010e-01  1.137957e+00  2.503311e-02</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [91]  1.308087e+00  1.595572e+00  1.486445e+00  1.388706e+00  1.015515e+00</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [96]  9.110162e-01  8.238040e-01  1.394692e+00  8.621311e-01  1.090590e+00</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [101]  1.207822e+00  2.257799e+00  1.009893e+00  1.453562e+00  1.374849e+00</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [106]  8.549401e-01  1.300214e+00  2.058144e+00  1.561620e+00  1.356485e+00</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [111]  1.124620e+00  3.092448e-01  1.901537e+00  6.055484e-01  1.705842e+00</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [116]  2.290420e+00  6.139218e-01  1.686761e+00  1.204770e+00  5.497963e-01</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [121]  3.399921e-01  2.965578e-01  8.318727e-01  3.664481e-01  1.441284e+00</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [126]  2.147380e+00  4.538107e-01  1.491195e+00  1.481847e+00  1.263427e+00</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [131]  5.931376e-01  1.037600e+00  9.571283e-01  1.378821e+00  9.111066e-01</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [136]  1.585813e+00  9.100355e-01  1.623682e+00  5.727374e-01  4.672483e-01</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [141]  2.717846e+00  8.888971e-01  1.246440e+00  1.415611e+00  8.554356e-01</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [146]  1.355757e+00  1.281808e+00  9.896357e-01  1.129972e+00  1.080292e+00</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [151]  1.729330e+00  2.944358e-01  1.171057e-01  6.839980e-01  8.203442e-01</span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [156]  8.833656e-01  4.359212e-01  1.334408e-01  1.296696e+00  4.902786e-01</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [161]  2.323474e-01  5.469640e-01  5.665159e-01  1.220064e+00  7.074725e-01</span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [166]  1.042131e+00  4.154578e-01  7.723265e-01  5.027609e-01  7.123956e-01</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [171]  2.174221e-01  9.703056e-03  1.663711e+00  9.654582e-01  3.946814e-02</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [176]  3.595209e-01  7.236378e-02  1.764509e+00  1.321310e+00  5.325313e-01</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [181]  2.227212e+00  1.748445e+00  1.717491e+00  1.561313e+00  1.658306e+00</span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [186]  2.781069e+00  1.928601e+00  2.015237e+00  2.077459e+00  2.571853e+00</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [191]  1.697583e+00  1.459361e+00  2.793463e+00  1.735033e+00  1.594082e+00</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [196]  1.337478e+00  1.313257e+00  1.668628e+00  2.264608e+00  2.510539e+00</span></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [201]  2.309409e+00  1.773786e+00  1.985490e+00  1.603317e+00  1.597006e+00</span></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [206]  2.397940e+00  1.447819e+00  2.933262e+00  1.910455e+00  2.062884e+00</span></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [211]  2.038347e+00  2.120417e+00  1.749103e+00  2.316149e+00  2.617103e+00</span></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [216]  2.569764e+00  2.016843e+00  2.013300e+00  2.156512e+00  3.155642e+00</span></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [221]  1.838960e+00  2.318086e+00  3.358792e+00  2.357124e+00  1.727691e+00</span></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [226]  2.075227e+00  2.650341e+00  2.219810e+00  2.126673e+00  2.235653e+00</span></span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [231]  2.452860e+00  3.206866e+00  2.363329e+00  2.948011e+00  2.722988e+00</span></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [236]  2.350791e+00  1.641160e+00  2.147053e+00  2.162676e+00  2.431189e+00</span></span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [241]  2.325796e+00  2.822237e+00  2.449488e+00  1.609122e+00  7.974334e-01</span></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [246]  1.481307e+00  1.720301e+00  2.098204e+00  2.156961e+00  2.017852e+00</span></span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [251]  9.780599e-01  2.100519e+00  1.452418e+00  1.763098e+00  1.712973e+00</span></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [256]  1.889780e+00  1.688035e+00  8.419595e-01  2.043945e+00  1.868710e+00</span></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [261]  1.542871e+00  1.734769e+00  1.742716e+00  1.786207e+00  2.496120e+00</span></span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [266]  1.566172e+00  1.759730e+00  2.259889e+00  2.202788e+00  2.248329e+00</span></span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [271]  4.995480e-01  1.789523e+00  8.216325e-01  1.721708e+00  1.128307e-01</span></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [276]  7.987738e-01  1.413239e+00  4.306610e-01  4.119376e-01  3.190127e-01</span></span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [281]  2.620254e-01  5.697023e-01  9.538716e-01 -2.188232e-01  8.942723e-01</span></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [286]  1.406620e+00  1.807069e+00  1.438870e+00  1.166669e+00 -7.508315e-02</span></span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [291]  4.875287e-01  6.122588e-01  1.140044e+00  7.354464e-01  1.589577e-01</span></span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [296]  1.630500e+00  1.243978e+00  9.069972e-01  1.397336e+00  1.188949e-01</span></span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [301]  1.668254e+00  1.076388e+00  1.679717e+00  1.307433e+00  1.654325e+00</span></span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [306]  2.005603e+00  1.341489e+00  1.846624e+00  7.436272e-01  9.770420e-01</span></span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [311]  2.097453e+00  1.526538e+00  3.117328e-01  6.558255e-01  1.237454e+00</span></span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [316]  1.770734e+00  1.286903e+00  1.649938e+00  1.817347e+00  2.173372e+00</span></span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [321]  1.365853e+00  1.311853e+00  4.612255e-01  1.387508e+00  1.051919e+00</span></span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [326]  8.508394e-01  1.247891e+00  1.845316e+00  3.414700e-01  1.124205e+00</span></span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [331]  6.987232e-01  1.938007e-01  8.073560e-01  8.461195e-01  6.238864e-01</span></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [336] -5.925446e-01  1.926134e+00  5.377549e-01  9.660012e-01  7.772878e-01</span></span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [341]  1.152741e+00  1.049234e+00  5.355079e-01  8.294884e-01  1.677001e-01</span></span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [346]  1.068866e+00  4.098854e-01  1.848791e+00 -1.851199e-01  4.084109e-01</span></span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [351]  1.053094e+00  8.954708e-01  3.456640e-01  1.420142e-01  7.126424e-01</span></span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [356]  6.332508e-01 -2.547361e-01  6.576801e-01  7.355197e-01  7.277677e-01</span></span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [361]  5.598012e-01  1.325376e+00  1.776595e+00  1.315428e+00  5.195155e-01</span></span>
-<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [366]  8.694870e-01  1.260362e+00  7.637869e-01  8.486586e-03  1.529435e+00</span></span>
-<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [371]  6.725709e-01  8.005296e-01  1.839260e+00  7.002373e-01  1.510176e+00</span></span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [376]  4.569683e-01  9.100386e-01  1.050532e+00  5.029840e-01  7.699356e-01</span></span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [381]  1.072889e+00  1.422658e+00  2.620365e-01  9.124326e-01  1.465513e+00</span></span>
-<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [386]  8.179052e-01  1.200956e+00  1.333424e+00  1.221227e+00  1.413939e+00</span></span>
-<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [391]  1.030080e+00  8.845964e-01 -2.301398e-01  1.044964e+00  1.306577e+00</span></span>
-<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [396]  1.359134e+00  8.137955e-01  1.981186e+00  1.234647e+00  1.154593e+00</span></span>
-<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [401]  1.727568e+00  7.322015e-01  8.662653e-01  2.290161e+00  1.096999e+00</span></span>
-<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [406]  1.908219e+00  3.721813e-01  9.961762e-01  1.280647e+00  1.241454e+00</span></span>
-<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [411]  5.886165e-01  1.101064e+00  5.527243e-01  1.447786e+00  1.633822e+00</span></span>
-<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [416] -2.105921e-02  1.709281e+00  4.709124e-01  1.318819e+00  1.421386e+00</span></span>
-<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [421]  4.038854e-01  1.812733e-01  5.864908e-01  7.232396e-01  9.454817e-01</span></span>
-<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [426] -5.223382e-01 -3.143593e-01  1.219031e+00  1.027145e+00  7.214748e-01</span></span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [431]  8.614195e-01  9.624177e-01 -8.266311e-01  1.058969e+00  2.613365e-01</span></span>
-<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [436]  6.191387e-01  3.562514e-01  9.398128e-01  3.295941e-01  7.630822e-01</span></span>
-<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [441]  3.084878e-01 -4.256332e-02  1.108836e+00  8.742803e-01  1.365961e+00</span></span>
-<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [446]  5.364073e-01  1.066332e+00  1.491540e+00  3.630892e-01 -1.576453e-01</span></span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $J</span></span>
-<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span>
-<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $K</span></span>
-<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span>
-<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $JK</span></span>
-<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 15</span></span>
-<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $N</span></span>
-<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 450</span></span>
-<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $jj</span></span>
-<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
-<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
-<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [75] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
-<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [112] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
-<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [149] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3</span></span>
-<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [186] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
-<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [223] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [260] 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</span></span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [297] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</span></span>
-<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [334] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5</span></span>
-<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [371] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5</span></span>
-<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [408] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5</span></span>
-<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [445] 5 5 5 5 5 5</span></span>
-<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $kk</span></span>
-<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2</span></span>
-<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [38] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
-<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [75] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
-<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [112] 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
-<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [149] 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1</span></span>
-<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [186] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
-<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [223] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
-<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [260] 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
-<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [297] 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3</span></span>
-<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [334] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1</span></span>
-<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [371] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
-<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [408] 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
-<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [445] 3 3 3 3 3 3</span></span>
-<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $jk</span></span>
-<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   [1]  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1</span></span>
-<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [26]  1  1  1  1  1  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2</span></span>
-<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [51]  2  2  2  2  2  2  2  2  2  2  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3</span></span>
-<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [76]  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  4  4  4  4  4  4  4  4  4  4</span></span>
-<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [101]  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  5  5  5  5  5</span></span>
-<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [126]  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5</span></span>
-<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [151]  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6</span></span>
-<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [176]  6  6  6  6  6  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7</span></span>
-<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [201]  7  7  7  7  7  7  7  7  7  7  8  8  8  8  8  8  8  8  8  8  8  8  8  8  8</span></span>
-<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [226]  8  8  8  8  8  8  8  8  8  8  8  8  8  8  8  9  9  9  9  9  9  9  9  9  9</span></span>
-<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [251]  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9  9 10 10 10 10 10</span></span>
-<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [276] 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10</span></span>
-<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [301] 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11</span></span>
-<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [326] 11 11 11 11 11 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12</span></span>
-<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [351] 12 12 12 12 12 12 12 12 12 12 13 13 13 13 13 13 13 13 13 13 13 13 13 13 13</span></span>
-<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [376] 13 13 13 13 13 13 13 13 13 13 13 13 13 13 13 14 14 14 14 14 14 14 14 14 14</span></span>
-<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [401] 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 15 15 15 15 15</span></span>
-<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [426] 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15</span></span>
-<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $alpha</span></span>
-<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.28023782 -0.11508874  0.77935416  0.03525420  0.06464387</span></span>
-<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $beta</span></span>
-<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  0.34301300  0.09218324 -0.25301225</span></span>
-<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $gamma</span></span>
-<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] -0.20605586 -0.13369859  0.36722454  0.10794415  0.12023144  0.03320481</span></span>
-<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] -0.16675234  0.53607394  0.14935514 -0.58998515  0.21040677 -0.14183742</span></span>
-<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] -0.32034711 -0.06539247 -0.30780133</span></span>
-<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit0_draws_anova)</span>
-<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a>pred0_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit0_draws_anova)</span>
-<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>pred0_draws</span>
-<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 77 × 6</span></span>
-<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    para         mean_    q2_5     q5    q95 q97_5</span></span>
-<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 alpha_raw_1 -0.528 -1.60   -1.42  0.131  0.453</span></span>
-<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 alpha_raw_2 -0.187 -1.18   -0.997 0.445  0.769</span></span>
-<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 alpha_raw_3  1.40   0.0648  0.248 2.36   2.92 </span></span>
-<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_raw_4 -0.318 -1.38   -1.20  0.325  0.621</span></span>
-<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_raw_5 -0.373 -1.39   -1.22  0.272  0.583</span></span>
-<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_1     -0.325 -1.19   -0.962 0.0937 0.394</span></span>
-<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_2     -0.121 -0.916  -0.710 0.297  0.607</span></span>
-<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_3      0.826  0.0603  0.214 1.27   1.58 </span></span>
-<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 alpha_4     -0.199 -1.02   -0.820 0.220  0.510</span></span>
-<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 alpha_5     -0.232 -1.05   -0.860 0.183  0.529</span></span>
-<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 67 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># dummy_data</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit0_draws_anova)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pred0_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit0_draws_anova)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>pred0_draws</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 77 × 6</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    para         mean_   q2_5     q5   q95 q97_5</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 alpha_raw_1 -0.557 -1.66  -1.45  0.136 0.430</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 alpha_raw_2 -0.263 -1.27  -1.13  0.391 0.734</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 alpha_raw_3  1.51   0.184  0.382 2.45  2.97 </span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_raw_4 -0.305 -1.30  -1.15  0.344 0.668</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_raw_5 -0.397 -1.46  -1.27  0.265 0.577</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_1     -0.562 -1.78  -1.58  0.155 0.655</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_2     -0.264 -1.50  -1.21  0.446 0.972</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_3      1.52   0.293  0.544 2.28  2.80 </span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 alpha_4     -0.310 -1.60  -1.27  0.413 0.953</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 alpha_5     -0.402 -1.69  -1.39  0.319 0.787</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 67 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(anova_data)</span>
@@ -8305,52 +8141,89 @@ HTMLWidgets.widget({
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>para_name <span class="ot">&lt;-</span> <span class="fu">c</span>(sp_lab, pres_lab, <span class="fu">rep</span>(int_lab, <span class="dv">3</span>), <span class="st">&quot;mu&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit1_summary_anova)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit2_summary_anova)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#knitr::knit_exit()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit0_summary_anova)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit1_summary_anova)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit2_summary_anova)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit3_summary_anova_gamma)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#knitr::knit_exit()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit1_summary_anova</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 85 × 11</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    variable     mean  median    sd   mad      q5     q95  rhat ess_bulk ess_tail</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 lp__      -69.6   -69.3   4.50  4.45  -77.6   -62.7    1.00    1086.    1737.</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 mu_hat      1.29    1.28  0.963 0.712  -0.164   2.77   1.00    1425.    1030.</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 sigma       2.06    2.04  0.244 0.239   1.70    2.51   1.00    4024.    2672.</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_ra…   0.249   0.260 0.802 0.743  -1.04    1.55   1.00    3368.    2839.</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_ra…  -0.367  -0.372 0.786 0.748  -1.63    0.922  1.00    3518.    2926.</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_ra…  -0.335  -0.345 0.776 0.749  -1.59    0.930  1.00    3280.    2645.</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_ra…   0.838   0.834 0.829 0.770  -0.519   2.20   1.00    3042.    2324.</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_ra…  -0.380  -0.374 0.784 0.721  -1.65    0.922  1.00    3323.    2615.</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 beta_raw…   0.282   0.276 0.828 0.802  -1.07    1.63   1.00    2614.    2685.</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 beta_raw…  -0.360  -0.364 0.820 0.809  -1.71    1.01   1.00    3227.    2709.</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 75 more rows, and 1 more variable: .join_data &lt;dbl&gt;</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>fit2_summary_anova</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 85 × 11</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    variable    mean  median     sd    mad      q5    q95  rhat ess_bulk ess_tail</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 lp__     16.8    16.9    5.00   4.85    8.17   24.9    1.00     951.   1564. </span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 mu_hat    0.324   0.327  0.290  0.170  -0.0954  0.748  1.03     169.     99.2</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 sigma     0.272   0.269  0.0355 0.0333  0.220   0.336  1.00    2399.   2192. </span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_r… -0.714  -0.692  0.664  0.637  -1.83    0.326  1.00    2225.   1998. </span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_r… -0.749  -0.737  0.676  0.661  -1.88    0.330  1.01    1412.   2019. </span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_r…  0.720   0.706  0.652  0.628  -0.320   1.81   1.00    2012.   2027. </span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_r…  0.396   0.372  0.626  0.581  -0.582   1.46   1.01    2028.   2847. </span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_r…  0.371   0.354  0.641  0.585  -0.649   1.47   1.01    2258.   2632. </span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 beta_ra…  0.0614  0.0610 0.793  0.764  -1.29    1.39   1.01     741.    457. </span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 beta_ra… -0.248  -0.243  0.803  0.793  -1.58    1.08   1.01     817.   1627. </span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 75 more rows, and 1 more variable: .join_data &lt;dbl&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit0_summary_anova <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">str_detect</span>(variable, <span class="st">&quot;tau|sigma|mu&quot;</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 11</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   variable      mean median     sd    mad       q5   q95  rhat ess_bulk ess_tail</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 mu_hat      1.77   1.75   1.31   1.01   -0.225   3.90   1.01    1396.    1413.</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 sigma       1.98   1.98   0.0660 0.0654  1.88    2.10   1.00    4816.    2668.</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 tau_unif[1] 0.423  0.393  0.162  0.141   0.221   0.735  1.00    1468.    1768.</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 tau_unif[2] 0.549  0.502  0.238  0.230   0.239   1.02   1.00    1758.    1703.</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 tau_unif[3] 0.0840 0.0699 0.0680 0.0582  0.00738 0.209  1.00    1622.    1680.</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 tau[1]      1.18   1.04   0.591  0.413   0.561   2.26   1.00    1468.    1768.</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 tau[2]      1.73   1.37   1.23   0.732   0.608   4.06   1.00    1758.    1703.</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 tau[3]      0.212  0.175  0.175  0.146   0.0184  0.530  1.00    1622.    1680.</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more variable: .join_data &lt;dbl&gt;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>fit1_summary_anova <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">str_detect</span>(variable, <span class="st">&quot;tau|sigma|mu&quot;</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 11</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   variable     mean median    sd   mad      q5   q95  rhat ess_bulk ess_tail</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 mu_hat      1.29   1.28  0.963 0.712 -0.164  2.77   1.00    1425.    1030.</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 sigma       2.06   2.04  0.244 0.239  1.70   2.51   1.00    4024.    2672.</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 tau_unif[1] 0.344  0.317 0.221 0.212  0.0358 0.758  1.00    1258.    1521.</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 tau_unif[2] 0.302  0.236 0.250 0.207  0.0260 0.839  1.00    1545.    1420.</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 tau_unif[3] 0.189  0.167 0.137 0.144  0.0128 0.446  1.00    1661.    1603.</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 tau[1]      0.971  0.820 0.777 0.584  0.0896 2.37   1.00    1258.    1521.</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 tau[2]      0.885  0.602 0.968 0.543  0.0651 2.78   1.00    1545.    1420.</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 tau[3]      0.491  0.421 0.373 0.369  0.0320 1.19   1.00    1661.    1603.</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more variable: .join_data &lt;dbl&gt;</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>fit2_summary_anova</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 130 × 11</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    variable    mean  median     sd    mad      q5    q95  rhat ess_bulk ess_tail</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 lp__     16.8    16.9    5.00   4.85    8.17   24.9    1.00     951.   1564. </span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 mu_hat    0.324   0.327  0.290  0.170  -0.0954  0.748  1.03     169.     99.2</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 sigma     0.272   0.269  0.0355 0.0333  0.220   0.336  1.00    2399.   2192. </span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_r… -0.714  -0.692  0.664  0.637  -1.83    0.326  1.00    2225.   1998. </span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_r… -0.749  -0.737  0.676  0.661  -1.88    0.330  1.01    1412.   2019. </span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_r…  0.720   0.706  0.652  0.628  -0.320   1.81   1.00    2012.   2027. </span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_r…  0.396   0.372  0.626  0.581  -0.582   1.46   1.01    2028.   2847. </span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_r…  0.371   0.354  0.641  0.585  -0.649   1.47   1.01    2258.   2632. </span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 beta_ra…  0.0614  0.0610 0.793  0.764  -1.29    1.39   1.01     741.    457. </span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 beta_ra… -0.248  -0.243  0.803  0.793  -1.58    1.08   1.01     817.   1627. </span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 120 more rows, and 1 more variable: .join_data &lt;dbl&gt;</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>fit3_summary_anova_gamma</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 130 × 11</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    variable    mean  median    sd   mad       q5     q95  rhat ess_bulk ess_tail</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 lp__     -93.4   -93.2   4.88  4.81  -102.    -85.7    1.00    1028.    1913.</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 mu_hat     1.39    1.39  0.350 0.299    0.821   1.93   1.00    1252.    1437.</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 sigma      2.95    2.92  0.673 0.661    1.94    4.15   1.00    2624.    2692.</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 alpha_r…  -0.913  -0.901 0.661 0.634   -2.03    0.120  1.00    2405.    2584.</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 alpha_r…  -0.576  -0.556 0.638 0.600   -1.64    0.447  1.00    2670.    2941.</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 alpha_r…   0.637   0.624 0.712 0.708   -0.466   1.83   1.00    2491.    2659.</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 alpha_r…   0.249   0.227 0.633 0.606   -0.756   1.35   1.00    2271.    2523.</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 alpha_r…   0.479   0.477 0.723 0.683   -0.696   1.67   1.00    2881.    2350.</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 beta_ra…   0.208   0.204 0.769 0.738   -1.04    1.46   1.00    2810.    2545.</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 beta_ra…  -0.325  -0.313 0.798 0.772   -1.65    0.942  1.00    2679.    2345.</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 120 more rows, and 1 more variable: .join_data &lt;dbl&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit1_draws_anova)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit1_draws_anova)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pred1_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(pred1_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="sc">|&gt;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(para, <span class="st">&quot;raw&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(para_name) <span class="sc">|&gt;</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">para_name =</span> <span class="fu">cell_spec</span>(para_name, <span class="at">bold=</span> <span class="fu">ifelse</span>(q2_5 <span class="sc">*</span> q97_5 <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>, <span class="at">longtable =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(loo_)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">loo_compare</span>(loo_[[<span class="dv">1</span>]], loo_[[<span class="dv">2</span>]],loo_[[<span class="dv">3</span>]])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        elpd_diff se_diff</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; model2   0.0       0.0  </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; model3 -71.7       7.8  </span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; model1 -90.2       8.3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit1_draws_anova)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit1_draws_anova)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pred1_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(pred1_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="sc">|&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(para, <span class="st">&quot;raw&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(para_name) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">para_name =</span> <span class="fu">cell_spec</span>(para_name, <span class="at">bold=</span> <span class="fu">ifelse</span>(q2_5 <span class="sc">*</span> q97_5 <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>, <span class="at">longtable =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -8856,16 +8729,16 @@ HTMLWidgets.widget({
 </table>
 
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit2_draws_anova)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pred2_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit2_draws_anova)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>pred2_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(pred2_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>pred2_draws <span class="sc">|&gt;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(para, <span class="st">&quot;raw&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(para_name) <span class="sc">|&gt;</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">para_name =</span> <span class="fu">cell_spec</span>(para_name, <span class="at">bold=</span> <span class="fu">ifelse</span>(q2_5 <span class="sc">*</span> q97_5 <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>, <span class="at">longtable =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit2_draws_anova)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>pred2_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit2_draws_anova)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>pred2_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(pred2_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>pred2_draws <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(para, <span class="st">&quot;raw&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(para_name) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">para_name =</span> <span class="fu">cell_spec</span>(para_name, <span class="at">bold=</span> <span class="fu">ifelse</span>(q2_5 <span class="sc">*</span> q97_5 <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>, <span class="at">longtable =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -9371,165 +9244,684 @@ HTMLWidgets.widget({
 </table>
 
 </div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit1_draws_anova)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_visnetwork</span>()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2 3.3.5     ✔ purrr   0.3.4</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ tibble  3.1.6     ✔ dplyr   1.0.8</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ tidyr   1.2.0     ✔ stringr 1.4.0</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ readr   2.1.2     ✔ forcats 0.5.1</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; This is cmdstanr version 0.5.1.9000</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStanR documentation and vignettes: mc-stan.org/cmdstanr</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStan path: /Users/mattocci/.cmdstan/cmdstan-2.29.2</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStan version: 2.29.2</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A newer version of CmdStan is available. See ?install_cmdstan() to install it.</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To disable this check set option or environment variable CMDSTANR_NO_VER_CHECK=TRUE.</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: future</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: ‘languageserver’</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following object is masked from ‘package:future’:</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     run</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(fit3_draws_anova_gamma)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>pred3_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit3_draws_anova_gamma)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>pred3_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(pred3_draws[, <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>pred3_draws <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(para, <span class="st">&quot;raw&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(para_name) <span class="sc">|&gt;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">para_name =</span> <span class="fu">cell_spec</span>(para_name, <span class="at">bold=</span> <span class="fu">ifelse</span>(q2_5 <span class="sc">*</span> q97_5 <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>, <span class="at">longtable =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="htmlwidget-ef2c34fb71c0f167603c" style="width:100%;height:464px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ef2c34fb71c0f167603c">{"x":{"nodes":{"name":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","function","function","function","function","function","function"],"status":["uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","started","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate"],"seconds":[0.019,0.123,0.059,0.001,0.001,0.011,0,9.742,0.508,0,0.001,0.004,0.001,0.93,0.489,0,0.001,0.005,0,10.239,0.525,0,0.034,0.049,0.14,0.158,0.066,38.977,0.154,0.029,0.031,0.022,null,null,null,null,null,null],"bytes":[582,591,3924,3641,84017,2744012,1241,2473725,8115,537,74562,2744038,1241,2503744,8115,531,82193,2744092,1241,2489471,8115,2227,63909,1579,63960,3556,3565,2281348,122501,87471,122835,87799,null,null,null,null,null,null],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"color":["#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#DC863B","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823"],"id":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"level":[2,2,2,3,5,5,1,4,5,3,5,5,1,4,5,3,5,5,1,4,5,1,7,1,7,6,6,8,3,3,3,3,1,1,1,1,2,2],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","triangle","triangle","triangle","triangle","triangle","triangle"]},"edges":{"from":["my_theme","my_theme","anova_data","anova_data_log","dummy_data","fit0_draws_anova","fit1_draws_anova","fit1_summary_anova","fit2_draws_anova","fit2_summary_anova","ks_bar_plot","ks_log_bar_plot","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","create_stan_tab","fit2_draws_anova","generate_anova_data","ks_five_spp_csv","fit2_mcmc_anova","generate_anova_data","ks_five_spp_csv","anova_data","ks_bars","ks_five_spp_csv","ks_log_pred_draws","fit0_mcmc_anova","anova_data_log","fit0_mcmc_anova","five_spp_csv","sma_scatter","fit2_data","fit2_mcmc_anova","ks_five_spp_csv","sma_scatter","fit1_mcmc_anova","create_stan_tab","fit1_draws_anova","fit1_data","fit1_mcmc_anova","ks_bars","ks_five_spp_csv","ks_pred_draws","fit2_mcmc_anova","fit1_data","fit1_file_anova","five_spp_csv","sma_scatter","fit0_data","fit0_mcmc_anova","fit0_data","fit0_file_anova","fit2_data","fit2_file_anova","fit1_mcmc_anova","generate_dummy_data","ks_five_spp_csv","sma_scatter","dummy_data"],"to":["ks_bars","sma_scatter","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","ks_log_pred_draws","ks_log_pred_draws","anova_data_log","anova_data_log","fit2_diagnostics_anova","anova_data","anova_data","fit1_data","ks_log_bar_plot","ks_log_bar_plot","ks_log_bar_plot","fit0_diagnostics_anova","fit2_data","fit0_draws_anova","sma_scatter_plot","sma_scatter_plot","fit2_summary_anova","fit2_summary_anova","sma_scatter_ks_log_plot","sma_scatter_ks_log_plot","fit1_draws_anova","ks_pred_draws","ks_pred_draws","fit1_summary_anova","fit1_summary_anova","ks_bar_plot","ks_bar_plot","ks_bar_plot","fit2_draws_anova","fit1_mcmc_anova","fit1_mcmc_anova","sma_scatter_log_plot","sma_scatter_log_plot","fit0_summary_anova","fit0_summary_anova","fit0_mcmc_anova","fit0_mcmc_anova","fit2_mcmc_anova","fit2_mcmc_anova","fit1_diagnostics_anova","dummy_data","sma_scatter_ks_plot","sma_scatter_ks_plot","fit0_data"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Started","Stem","Function"],"color":["#354823","#DC863B","#899DA4","#899DA4"],"shape":["dot","dot","dot","triangle"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> para </th>
+   <th style="text-align:right;"> mean_ </th>
+   <th style="text-align:right;"> q2_5 </th>
+   <th style="text-align:right;"> q5 </th>
+   <th style="text-align:right;"> q95 </th>
+   <th style="text-align:right;"> q97_5 </th>
+   <th style="text-align:left;"> para_name </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> alpha_1 </td>
+   <td style="text-align:right;"> -0.230 </td>
+   <td style="text-align:right;"> -0.620 </td>
+   <td style="text-align:right;"> -0.538 </td>
+   <td style="text-align:right;"> -0.022 </td>
+   <td style="text-align:right;"> 0.083 </td>
+   <td style="text-align:left;"> <span style="     ">AP</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> alpha_2 </td>
+   <td style="text-align:right;"> -0.150 </td>
+   <td style="text-align:right;"> -0.558 </td>
+   <td style="text-align:right;"> -0.468 </td>
+   <td style="text-align:right;"> 0.045 </td>
+   <td style="text-align:right;"> 0.193 </td>
+   <td style="text-align:left;"> <span style="     ">HB</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> alpha_3 </td>
+   <td style="text-align:right;"> 0.163 </td>
+   <td style="text-align:right;"> -0.201 </td>
+   <td style="text-align:right;"> -0.118 </td>
+   <td style="text-align:right;"> 0.415 </td>
+   <td style="text-align:right;"> 0.574 </td>
+   <td style="text-align:left;"> <span style="     ">HH</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> alpha_4 </td>
+   <td style="text-align:right;"> 0.051 </td>
+   <td style="text-align:right;"> -0.306 </td>
+   <td style="text-align:right;"> -0.233 </td>
+   <td style="text-align:right;"> 0.251 </td>
+   <td style="text-align:right;"> 0.400 </td>
+   <td style="text-align:left;"> <span style="     ">TG</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> alpha_5 </td>
+   <td style="text-align:right;"> 0.122 </td>
+   <td style="text-align:right;"> -0.261 </td>
+   <td style="text-align:right;"> -0.182 </td>
+   <td style="text-align:right;"> 0.366 </td>
+   <td style="text-align:right;"> 0.532 </td>
+   <td style="text-align:left;"> <span style="     ">VM</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> beta_1 </td>
+   <td style="text-align:right;"> 0.031 </td>
+   <td style="text-align:right;"> -0.407 </td>
+   <td style="text-align:right;"> -0.231 </td>
+   <td style="text-align:right;"> 0.204 </td>
+   <td style="text-align:right;"> 0.524 </td>
+   <td style="text-align:left;"> <span style="     ">0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> beta_2 </td>
+   <td style="text-align:right;"> -0.046 </td>
+   <td style="text-align:right;"> -0.508 </td>
+   <td style="text-align:right;"> -0.339 </td>
+   <td style="text-align:right;"> 0.098 </td>
+   <td style="text-align:right;"> 0.374 </td>
+   <td style="text-align:left;"> <span style="     ">0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> beta_3 </td>
+   <td style="text-align:right;"> 0.020 </td>
+   <td style="text-align:right;"> -0.428 </td>
+   <td style="text-align:right;"> -0.240 </td>
+   <td style="text-align:right;"> 0.186 </td>
+   <td style="text-align:right;"> 0.511 </td>
+   <td style="text-align:left;"> <span style="     ">0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_1 </td>
+   <td style="text-align:right;"> -0.043 </td>
+   <td style="text-align:right;"> -0.281 </td>
+   <td style="text-align:right;"> -0.228 </td>
+   <td style="text-align:right;"> 0.058 </td>
+   <td style="text-align:right;"> 0.134 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_2 </td>
+   <td style="text-align:right;"> -0.029 </td>
+   <td style="text-align:right;"> -0.276 </td>
+   <td style="text-align:right;"> -0.219 </td>
+   <td style="text-align:right;"> 0.078 </td>
+   <td style="text-align:right;"> 0.155 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_3 </td>
+   <td style="text-align:right;"> -0.015 </td>
+   <td style="text-align:right;"> -0.262 </td>
+   <td style="text-align:right;"> -0.204 </td>
+   <td style="text-align:right;"> 0.091 </td>
+   <td style="text-align:right;"> 0.177 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_4 </td>
+   <td style="text-align:right;"> -0.042 </td>
+   <td style="text-align:right;"> -0.314 </td>
+   <td style="text-align:right;"> -0.247 </td>
+   <td style="text-align:right;"> 0.071 </td>
+   <td style="text-align:right;"> 0.150 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_5 </td>
+   <td style="text-align:right;"> -0.019 </td>
+   <td style="text-align:right;"> -0.274 </td>
+   <td style="text-align:right;"> -0.217 </td>
+   <td style="text-align:right;"> 0.098 </td>
+   <td style="text-align:right;"> 0.177 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_6 </td>
+   <td style="text-align:right;"> 0.010 </td>
+   <td style="text-align:right;"> -0.217 </td>
+   <td style="text-align:right;"> -0.155 </td>
+   <td style="text-align:right;"> 0.132 </td>
+   <td style="text-align:right;"> 0.223 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_7 </td>
+   <td style="text-align:right;"> 0.001 </td>
+   <td style="text-align:right;"> -0.249 </td>
+   <td style="text-align:right;"> -0.191 </td>
+   <td style="text-align:right;"> 0.137 </td>
+   <td style="text-align:right;"> 0.256 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_8 </td>
+   <td style="text-align:right;"> 0.039 </td>
+   <td style="text-align:right;"> -0.169 </td>
+   <td style="text-align:right;"> -0.121 </td>
+   <td style="text-align:right;"> 0.186 </td>
+   <td style="text-align:right;"> 0.326 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_9 </td>
+   <td style="text-align:right;"> 0.022 </td>
+   <td style="text-align:right;"> -0.189 </td>
+   <td style="text-align:right;"> -0.150 </td>
+   <td style="text-align:right;"> 0.162 </td>
+   <td style="text-align:right;"> 0.294 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_10 </td>
+   <td style="text-align:right;"> 0.123 </td>
+   <td style="text-align:right;"> -0.052 </td>
+   <td style="text-align:right;"> -0.026 </td>
+   <td style="text-align:right;"> 0.308 </td>
+   <td style="text-align:right;"> 0.448 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_11 </td>
+   <td style="text-align:right;"> -0.071 </td>
+   <td style="text-align:right;"> -0.331 </td>
+   <td style="text-align:right;"> -0.275 </td>
+   <td style="text-align:right;"> 0.035 </td>
+   <td style="text-align:right;"> 0.112 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_12 </td>
+   <td style="text-align:right;"> -0.023 </td>
+   <td style="text-align:right;"> -0.251 </td>
+   <td style="text-align:right;"> -0.197 </td>
+   <td style="text-align:right;"> 0.089 </td>
+   <td style="text-align:right;"> 0.182 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_13 </td>
+   <td style="text-align:right;"> -0.008 </td>
+   <td style="text-align:right;"> -0.261 </td>
+   <td style="text-align:right;"> -0.199 </td>
+   <td style="text-align:right;"> 0.118 </td>
+   <td style="text-align:right;"> 0.246 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_14 </td>
+   <td style="text-align:right;"> 0.017 </td>
+   <td style="text-align:right;"> -0.229 </td>
+   <td style="text-align:right;"> -0.176 </td>
+   <td style="text-align:right;"> 0.157 </td>
+   <td style="text-align:right;"> 0.290 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> gamma_15 </td>
+   <td style="text-align:right;"> 0.033 </td>
+   <td style="text-align:right;"> -0.199 </td>
+   <td style="text-align:right;"> -0.146 </td>
+   <td style="text-align:right;"> 0.186 </td>
+   <td style="text-align:right;"> 0.319 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_1 </td>
+   <td style="text-align:right;"> -0.241 </td>
+   <td style="text-align:right;"> -0.811 </td>
+   <td style="text-align:right;"> -0.643 </td>
+   <td style="text-align:right;"> 0.023 </td>
+   <td style="text-align:right;"> 0.319 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_2 </td>
+   <td style="text-align:right;"> -0.304 </td>
+   <td style="text-align:right;"> -0.868 </td>
+   <td style="text-align:right;"> -0.699 </td>
+   <td style="text-align:right;"> -0.036 </td>
+   <td style="text-align:right;"> 0.243 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_3 </td>
+   <td style="text-align:right;"> -0.224 </td>
+   <td style="text-align:right;"> -0.789 </td>
+   <td style="text-align:right;"> -0.629 </td>
+   <td style="text-align:right;"> 0.045 </td>
+   <td style="text-align:right;"> 0.327 </td>
+   <td style="text-align:left;"> <span style="     ">AP_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_4 </td>
+   <td style="text-align:right;"> -0.161 </td>
+   <td style="text-align:right;"> -0.774 </td>
+   <td style="text-align:right;"> -0.594 </td>
+   <td style="text-align:right;"> 0.134 </td>
+   <td style="text-align:right;"> 0.414 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_5 </td>
+   <td style="text-align:right;"> -0.214 </td>
+   <td style="text-align:right;"> -0.810 </td>
+   <td style="text-align:right;"> -0.652 </td>
+   <td style="text-align:right;"> 0.080 </td>
+   <td style="text-align:right;"> 0.329 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_6 </td>
+   <td style="text-align:right;"> -0.120 </td>
+   <td style="text-align:right;"> -0.732 </td>
+   <td style="text-align:right;"> -0.562 </td>
+   <td style="text-align:right;"> 0.187 </td>
+   <td style="text-align:right;"> 0.462 </td>
+   <td style="text-align:left;"> <span style="     ">HB_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_7 </td>
+   <td style="text-align:right;"> 0.196 </td>
+   <td style="text-align:right;"> -0.411 </td>
+   <td style="text-align:right;"> -0.259 </td>
+   <td style="text-align:right;"> 0.526 </td>
+   <td style="text-align:right;"> 0.808 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_8 </td>
+   <td style="text-align:right;"> 0.157 </td>
+   <td style="text-align:right;"> -0.461 </td>
+   <td style="text-align:right;"> -0.304 </td>
+   <td style="text-align:right;"> 0.486 </td>
+   <td style="text-align:right;"> 0.761 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_9 </td>
+   <td style="text-align:right;"> 0.205 </td>
+   <td style="text-align:right;"> -0.431 </td>
+   <td style="text-align:right;"> -0.251 </td>
+   <td style="text-align:right;"> 0.547 </td>
+   <td style="text-align:right;"> 0.809 </td>
+   <td style="text-align:left;"> <span style="     ">HH_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_10 </td>
+   <td style="text-align:right;"> 0.206 </td>
+   <td style="text-align:right;"> -0.355 </td>
+   <td style="text-align:right;"> -0.219 </td>
+   <td style="text-align:right;"> 0.520 </td>
+   <td style="text-align:right;"> 0.805 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_11 </td>
+   <td style="text-align:right;"> -0.066 </td>
+   <td style="text-align:right;"> -0.645 </td>
+   <td style="text-align:right;"> -0.489 </td>
+   <td style="text-align:right;"> 0.211 </td>
+   <td style="text-align:right;"> 0.503 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_12 </td>
+   <td style="text-align:right;"> 0.049 </td>
+   <td style="text-align:right;"> -0.520 </td>
+   <td style="text-align:right;"> -0.363 </td>
+   <td style="text-align:right;"> 0.329 </td>
+   <td style="text-align:right;"> 0.628 </td>
+   <td style="text-align:left;"> <span style="     ">TG_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_13 </td>
+   <td style="text-align:right;"> 0.146 </td>
+   <td style="text-align:right;"> -0.470 </td>
+   <td style="text-align:right;"> -0.324 </td>
+   <td style="text-align:right;"> 0.477 </td>
+   <td style="text-align:right;"> 0.761 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_14 </td>
+   <td style="text-align:right;"> 0.094 </td>
+   <td style="text-align:right;"> -0.527 </td>
+   <td style="text-align:right;"> -0.363 </td>
+   <td style="text-align:right;"> 0.430 </td>
+   <td style="text-align:right;"> 0.699 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> effect_15 </td>
+   <td style="text-align:right;"> 0.176 </td>
+   <td style="text-align:right;"> -0.438 </td>
+   <td style="text-align:right;"> -0.266 </td>
+   <td style="text-align:right;"> 0.505 </td>
+   <td style="text-align:right;"> 0.807 </td>
+   <td style="text-align:left;"> <span style="     ">VM_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_1 </td>
+   <td style="text-align:right;"> 112.976 </td>
+   <td style="text-align:right;"> 67.742 </td>
+   <td style="text-align:right;"> 74.158 </td>
+   <td style="text-align:right;"> 146.541 </td>
+   <td style="text-align:right;"> 169.616 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">AP_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_2 </td>
+   <td style="text-align:right;"> 81.948 </td>
+   <td style="text-align:right;"> 48.772 </td>
+   <td style="text-align:right;"> 53.648 </td>
+   <td style="text-align:right;"> 106.753 </td>
+   <td style="text-align:right;"> 124.473 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">AP_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_3 </td>
+   <td style="text-align:right;"> 64.138 </td>
+   <td style="text-align:right;"> 37.608 </td>
+   <td style="text-align:right;"> 41.554 </td>
+   <td style="text-align:right;"> 84.609 </td>
+   <td style="text-align:right;"> 97.282 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">AP_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_4 </td>
+   <td style="text-align:right;"> 13.103 </td>
+   <td style="text-align:right;"> 7.650 </td>
+   <td style="text-align:right;"> 8.333 </td>
+   <td style="text-align:right;"> 17.228 </td>
+   <td style="text-align:right;"> 20.094 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HB_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_5 </td>
+   <td style="text-align:right;"> 14.268 </td>
+   <td style="text-align:right;"> 8.297 </td>
+   <td style="text-align:right;"> 9.069 </td>
+   <td style="text-align:right;"> 18.910 </td>
+   <td style="text-align:right;"> 22.059 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HB_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_6 </td>
+   <td style="text-align:right;"> 14.409 </td>
+   <td style="text-align:right;"> 8.241 </td>
+   <td style="text-align:right;"> 9.064 </td>
+   <td style="text-align:right;"> 19.153 </td>
+   <td style="text-align:right;"> 22.513 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HB_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_7 </td>
+   <td style="text-align:right;"> 5.055 </td>
+   <td style="text-align:right;"> 2.769 </td>
+   <td style="text-align:right;"> 3.030 </td>
+   <td style="text-align:right;"> 6.849 </td>
+   <td style="text-align:right;"> 8.151 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HH_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_8 </td>
+   <td style="text-align:right;"> 4.772 </td>
+   <td style="text-align:right;"> 2.536 </td>
+   <td style="text-align:right;"> 2.850 </td>
+   <td style="text-align:right;"> 6.563 </td>
+   <td style="text-align:right;"> 7.857 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HH_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_9 </td>
+   <td style="text-align:right;"> 5.608 </td>
+   <td style="text-align:right;"> 3.020 </td>
+   <td style="text-align:right;"> 3.375 </td>
+   <td style="text-align:right;"> 7.691 </td>
+   <td style="text-align:right;"> 9.096 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">HH_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_10 </td>
+   <td style="text-align:right;"> 41.618 </td>
+   <td style="text-align:right;"> 22.358 </td>
+   <td style="text-align:right;"> 24.726 </td>
+   <td style="text-align:right;"> 56.498 </td>
+   <td style="text-align:right;"> 68.337 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">TG_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_11 </td>
+   <td style="text-align:right;"> 41.075 </td>
+   <td style="text-align:right;"> 23.989 </td>
+   <td style="text-align:right;"> 26.264 </td>
+   <td style="text-align:right;"> 53.510 </td>
+   <td style="text-align:right;"> 62.819 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">TG_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_12 </td>
+   <td style="text-align:right;"> 45.213 </td>
+   <td style="text-align:right;"> 26.152 </td>
+   <td style="text-align:right;"> 28.739 </td>
+   <td style="text-align:right;"> 59.408 </td>
+   <td style="text-align:right;"> 69.134 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">TG_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_13 </td>
+   <td style="text-align:right;"> 3.950 </td>
+   <td style="text-align:right;"> 2.086 </td>
+   <td style="text-align:right;"> 2.327 </td>
+   <td style="text-align:right;"> 5.360 </td>
+   <td style="text-align:right;"> 6.364 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">VM_0.02</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_14 </td>
+   <td style="text-align:right;"> 3.501 </td>
+   <td style="text-align:right;"> 1.870 </td>
+   <td style="text-align:right;"> 2.081 </td>
+   <td style="text-align:right;"> 4.792 </td>
+   <td style="text-align:right;"> 5.657 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">VM_0.05</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> pred_15 </td>
+   <td style="text-align:right;"> 4.897 </td>
+   <td style="text-align:right;"> 2.616 </td>
+   <td style="text-align:right;"> 2.909 </td>
+   <td style="text-align:right;"> 6.671 </td>
+   <td style="text-align:right;"> 7.874 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">VM_0.08</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mu_hat </td>
+   <td style="text-align:right;"> 1.385 </td>
+   <td style="text-align:right;"> 0.653 </td>
+   <td style="text-align:right;"> 0.821 </td>
+   <td style="text-align:right;"> 1.778 </td>
+   <td style="text-align:right;"> 2.058 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    ">mu</span> </td>
+  </tr>
+</tbody>
+</table>
+
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Session info ───────────────────────────────────────────────────────────────</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  setting  value</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  version  R version 4.2.1 (2022-06-23)</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  os       macOS Monterey 12.5</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  system   aarch64, darwin21.5.0</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ui       unknown</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  language (EN)</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tz       Asia/Shanghai</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  date     2022-08-15</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pandoc   2.19 @ /opt/homebrew/bin/ (via rmarkdown)</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  package     * version   date (UTC) lib source</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  abind         1.4-5     2016-07-21 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  assertthat    0.2.1     2019-03-21 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  backports     1.4.1     2021-12-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  base64url     1.4       2018-05-14 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit           4.0.4     2020-08-04 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit64         4.0.5     2020-08-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  brio          1.1.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  broom         0.8.0     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cachem        1.0.6     2021-08-19 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  callr         3.7.0     2021-04-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  car           3.0-12    2021-11-06 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  carData       3.0-5     2022-01-06 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger    1.1.0     2016-07-27 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli           3.3.0     2022-04-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  codetools     0.2-18    2020-11-04 [2] CRAN (R 4.2.1)</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  colorspace    2.0-3     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  crayon        1.5.1     2022-03-26 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  data.table    1.14.2    2021-09-27 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI           1.1.2     2021-12-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr        2.1.1     2021-04-06 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  desc          1.4.1     2022-03-06 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  devtools      2.4.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest        0.6.29    2021-12-01 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr       * 1.0.8     2022-02-08 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ellipsis      0.3.2     2021-04-29 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate      0.15      2022-02-18 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fansi         1.0.3     2022-03-24 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver        2.1.0     2021-02-28 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap       1.1.0     2021-01-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  forcats     * 0.5.1     2021-01-27 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fs            1.5.2     2021-12-08 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fst           0.9.8     2022-02-08 [1] CRAN (R 4.2.1)</span></span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fstcore     * 0.9.12    2022-03-23 [1] CRAN (R 4.2.1)</span></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics      0.1.2     2022-01-31 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2     * 3.3.5     2021-06-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggpubr        0.4.0.999 2022-08-10 [1] Github (mattocci27/ggpubr@901fdeb)</span></span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsignif      0.6.3     2021-09-09 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsma         0.1.0     2022-08-10 [1] Github (mattocci27/ggsma@2b56c57)</span></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue          1.6.2     2022-02-24 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable        0.3.0     2019-03-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  haven         2.5.0     2022-04-15 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  here        * 1.0.1     2020-12-13 [1] CRAN (R 4.2.1)</span></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  hms           1.1.1     2021-09-26 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools     0.5.2     2021-08-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets   1.5.4     2021-09-08 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  httr          1.4.2     2020-07-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  igraph        1.3.4     2022-07-19 [1] CRAN (R 4.2.1)</span></span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janitor       2.1.0     2021-01-05 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite      1.8.0     2022-02-22 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  kableExtra  * 1.3.4     2021-02-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr       * 1.38      2022-03-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling      0.4.2     2020-10-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle     1.0.1     2021-09-24 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lubridate     1.8.0     2021-10-07 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr      2.0.3     2022-03-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  memoise       2.0.1     2021-11-26 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  modelr        0.1.8     2020-05-19 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  munsell       0.5.0     2018-06-12 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar        1.7.0     2022-02-01 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgbuild      1.3.1     2021-12-20 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig     2.0.3     2019-09-22 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgload       1.2.4     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  prettyunits   1.1.1     2020-01-24 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  processx      3.5.3     2022-03-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ps            1.7.0     2022-04-23 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr       * 0.3.4     2020-04-17 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6            2.5.1     2021-08-19 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp          1.0.8.3   2022-03-17 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readr       * 2.1.2     2022-01-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl        1.4.0     2022-03-28 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  remotes       2.4.2     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reprex        2.0.1     2021-08-05 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang         1.0.2     2022-03-04 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown     2.14      2022-04-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rprojroot     2.0.3     2022-04-02 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstatix       0.7.0     2021-02-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstudioapi    0.13      2020-11-12 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rvest         1.0.2     2021-10-16 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales        1.2.0     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo   1.2.2     2021-12-06 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  snakecase     0.11.0    2019-05-25 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi       1.7.6     2021-11-29 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringr     * 1.4.0     2019-02-10 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  svglite       2.1.0     2022-02-03 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  systemfonts   1.0.4     2022-02-11 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tarchetypes * 0.7.0     2022-08-05 [1] CRAN (R 4.2.1)</span></span>
-<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  targets       0.12.0    2022-04-19 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  testthat      3.1.3     2022-03-29 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble      * 3.1.6     2021-11-07 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr       * 1.2.0     2022-02-01 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect    1.1.2     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyverse   * 1.3.1     2021-04-15 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tzdb          0.3.0     2022-03-28 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  usethis       2.1.5     2021-12-09 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8          1.2.2     2021-07-24 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs         0.4.1     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridisLite   0.4.0     2021-04-13 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  visNetwork    2.1.0     2021-09-29 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vroom         1.5.7     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  webshot       0.5.3     2022-04-14 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr         2.5.0     2022-03-03 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun          0.30      2022-03-02 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xml2          1.3.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml          2.3.5     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
-<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /opt/homebrew/lib/R/4.2/site-library</span></span>
-<span id="cb13-123"><a href="#cb13-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /opt/homebrew/Cellar/r/4.2.1_2/lib/R/library</span></span>
-<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pred1_draws <span class="ot">&lt;-</span> <span class="fu">create_stan_tab</span>(fit1_draws_anova)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_visnetwork</span>()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2 3.3.5     ✔ purrr   0.3.4</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ tibble  3.1.6     ✔ dplyr   1.0.8</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ tidyr   1.2.0     ✔ stringr 1.4.0</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ readr   2.1.2     ✔ forcats 0.5.1</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; This is cmdstanr version 0.5.1.9000</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStanR documentation and vignettes: mc-stan.org/cmdstanr</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStan path: /Users/mattocci/.cmdstan/cmdstan-2.29.2</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; - CmdStan version: 2.29.2</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A newer version of CmdStan is available. See ?install_cmdstan() to install it.</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To disable this check set option or environment variable CMDSTANR_NO_VER_CHECK=TRUE.</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: future</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: ‘languageserver’</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following object is masked from ‘package:future’:</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     run</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="htmlwidget-8a78960c0b36c1a573bc" style="width:100%;height:464px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8a78960c0b36c1a573bc">{"x":{"nodes":{"name":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","fit3_data","fit3_diagnostics_anova_gamma","fit3_draws_anova_gamma","fit3_file_anova_gamma","fit3_mcmc_anova_gamma","fit3_summary_anova_gamma","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","loo_","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","function","function","function","function","function","function"],"status":["uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","started","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate"],"seconds":[0.199,0.162,0.048,0.032,0.001,1.008,0.001,24.609,3.859,0,0.002,0.006,0.001,15.05,2.119,0,0.005,0.006,0,15.196,1.594,0.065,0.001,0.011,0.001,12.286,0.763,0,0.034,0.049,0.14,0.261,0.389,0.348,41.309,0.154,0.029,0.031,0.022,null,null,null,null,null,null],"bytes":[1299,1332,3975,3743,82261,17228823,1319,14096603,44452,1194,74562,4192615,1319,3691665,11954,1199,82193,4192858,1319,3734744,11954,1194,77076,4192588,1429,3733865,11954,2227,63909,1579,63960,3556,3565,6403,2281348,122501,87471,122835,87799,null,null,null,null,null,null],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","fit3_data","fit3_diagnostics_anova_gamma","fit3_draws_anova_gamma","fit3_file_anova_gamma","fit3_mcmc_anova_gamma","fit3_summary_anova_gamma","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","loo_","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"color":["#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#DC863B","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823"],"id":["anova_data","anova_data_log","dummy_data","fit0_data","fit0_diagnostics_anova","fit0_draws_anova","fit0_file_anova","fit0_mcmc_anova","fit0_summary_anova","fit1_data","fit1_diagnostics_anova","fit1_draws_anova","fit1_file_anova","fit1_mcmc_anova","fit1_summary_anova","fit2_data","fit2_diagnostics_anova","fit2_draws_anova","fit2_file_anova","fit2_mcmc_anova","fit2_summary_anova","fit3_data","fit3_diagnostics_anova_gamma","fit3_draws_anova_gamma","fit3_file_anova_gamma","fit3_mcmc_anova_gamma","fit3_summary_anova_gamma","five_spp_csv","ks_bar_plot","ks_five_spp_csv","ks_log_bar_plot","ks_log_pred_draws","ks_pred_draws","loo_","report_html","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","my_theme","generate_anova_data","create_stan_tab","generate_dummy_data","ks_bars","sma_scatter"],"level":[2,2,2,3,5,5,1,4,5,3,5,5,1,4,5,3,5,5,1,4,5,3,5,5,1,4,5,1,7,1,7,6,6,5,8,3,3,3,3,1,1,1,1,2,2],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","triangle","triangle","triangle","triangle","triangle","triangle"]},"edges":{"from":["my_theme","my_theme","create_stan_tab","fit1_draws_anova","anova_data","fit1_mcmc_anova","fit2_mcmc_anova","fit3_mcmc_anova_gamma","five_spp_csv","sma_scatter","generate_anova_data","ks_five_spp_csv","fit0_mcmc_anova","fit1_data","fit1_file_anova","fit3_mcmc_anova_gamma","fit1_mcmc_anova","ks_bars","ks_five_spp_csv","ks_log_pred_draws","fit0_data","fit0_file_anova","fit2_mcmc_anova","fit1_data","fit1_mcmc_anova","create_stan_tab","fit2_draws_anova","fit3_mcmc_anova_gamma","generate_dummy_data","ks_five_spp_csv","sma_scatter","generate_anova_data","ks_five_spp_csv","fit2_data","fit2_file_anova","fit2_mcmc_anova","fit0_mcmc_anova","dummy_data","five_spp_csv","sma_scatter","fit1_mcmc_anova","ks_bars","ks_five_spp_csv","ks_pred_draws","fit2_data","fit2_mcmc_anova","anova_data","anova_data_log","dummy_data","fit0_draws_anova","fit0_summary_anova","fit1_draws_anova","fit1_summary_anova","fit2_draws_anova","fit2_summary_anova","fit3_draws_anova_gamma","fit3_summary_anova_gamma","ks_bar_plot","ks_log_bar_plot","loo_","sma_scatter_ks_log_plot","sma_scatter_ks_plot","sma_scatter_log_plot","sma_scatter_plot","ks_five_spp_csv","sma_scatter","fit3_data","fit3_mcmc_anova_gamma","anova_data","fit3_data","fit3_file_anova_gamma","fit0_data","fit0_mcmc_anova","anova_data_log"],"to":["ks_bars","sma_scatter","ks_pred_draws","ks_pred_draws","fit3_data","loo_","loo_","loo_","sma_scatter_log_plot","sma_scatter_log_plot","anova_data_log","anova_data_log","fit0_diagnostics_anova","fit1_mcmc_anova","fit1_mcmc_anova","fit3_diagnostics_anova_gamma","fit1_diagnostics_anova","ks_log_bar_plot","ks_log_bar_plot","ks_log_bar_plot","fit0_mcmc_anova","fit0_mcmc_anova","fit2_draws_anova","fit1_summary_anova","fit1_summary_anova","ks_log_pred_draws","ks_log_pred_draws","fit3_draws_anova_gamma","dummy_data","sma_scatter_ks_log_plot","sma_scatter_ks_log_plot","anova_data","anova_data","fit2_mcmc_anova","fit2_mcmc_anova","fit2_diagnostics_anova","fit0_draws_anova","fit0_data","sma_scatter_plot","sma_scatter_plot","fit1_draws_anova","ks_bar_plot","ks_bar_plot","ks_bar_plot","fit2_summary_anova","fit2_summary_anova","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","report_html","sma_scatter_ks_plot","sma_scatter_ks_plot","fit3_summary_anova_gamma","fit3_summary_anova_gamma","fit1_data","fit3_mcmc_anova_gamma","fit3_mcmc_anova_gamma","fit0_summary_anova","fit0_summary_anova","fit2_data"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Started","Stem","Function"],"color":["#354823","#DC863B","#899DA4","#899DA4"],"shape":["dot","dot","dot","triangle"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Session info ───────────────────────────────────────────────────────────────</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  setting  value</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  version  R version 4.2.1 (2022-06-23)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  os       macOS Monterey 12.5</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  system   aarch64, darwin21.5.0</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ui       unknown</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  language (EN)</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tz       Asia/Shanghai</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  date     2022-08-15</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pandoc   2.19 @ /opt/homebrew/bin/ (via rmarkdown)</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  package     * version   date (UTC) lib source</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  abind         1.4-5     2016-07-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  assertthat    0.2.1     2019-03-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  backports     1.4.1     2021-12-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  base64url     1.4       2018-05-14 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit           4.0.4     2020-08-04 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit64         4.0.5     2020-08-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  brio          1.1.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  broom         0.8.0     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cachem        1.0.6     2021-08-19 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  callr         3.7.0     2021-04-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  car           3.0-12    2021-11-06 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  carData       3.0-5     2022-01-06 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger    1.1.0     2016-07-27 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  checkmate     2.1.0     2022-04-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli           3.3.0     2022-04-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  codetools     0.2-18    2020-11-04 [2] CRAN (R 4.2.1)</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  colorspace    2.0-3     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  crayon        1.5.1     2022-03-26 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  data.table    1.14.2    2021-09-27 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI           1.1.2     2021-12-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr        2.1.1     2021-04-06 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  desc          1.4.1     2022-03-06 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  devtools      2.4.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest        0.6.29    2021-12-01 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr       * 1.0.8     2022-02-08 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ellipsis      0.3.2     2021-04-29 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate      0.15      2022-02-18 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fansi         1.0.3     2022-03-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver        2.1.0     2021-02-28 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap       1.1.0     2021-01-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  forcats     * 0.5.1     2021-01-27 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fs            1.5.2     2021-12-08 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fst           0.9.8     2022-02-08 [1] CRAN (R 4.2.1)</span></span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fstcore     * 0.9.12    2022-03-23 [1] CRAN (R 4.2.1)</span></span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics      0.1.2     2022-01-31 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2     * 3.3.5     2021-06-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggpubr        0.4.0.999 2022-08-10 [1] Github (mattocci27/ggpubr@901fdeb)</span></span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsignif      0.6.3     2021-09-09 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsma         0.1.0     2022-08-10 [1] Github (mattocci27/ggsma@2b56c57)</span></span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue          1.6.2     2022-02-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable        0.3.0     2019-03-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  haven         2.5.0     2022-04-15 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  here        * 1.0.1     2020-12-13 [1] CRAN (R 4.2.1)</span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  hms           1.1.1     2021-09-26 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools     0.5.2     2021-08-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets   1.5.4     2021-09-08 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  httr          1.4.2     2020-07-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  igraph        1.3.4     2022-07-19 [1] CRAN (R 4.2.1)</span></span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janitor       2.1.0     2021-01-05 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite      1.8.0     2022-02-22 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  kableExtra  * 1.3.4     2021-02-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr       * 1.38      2022-03-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling      0.4.2     2020-10-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle     1.0.1     2021-09-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  loo         * 2.5.1     2022-03-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lubridate     1.8.0     2021-10-07 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr      2.0.3     2022-03-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  matrixStats   0.62.0    2022-04-19 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  memoise       2.0.1     2021-11-26 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  modelr        0.1.8     2020-05-19 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  munsell       0.5.0     2018-06-12 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar        1.7.0     2022-02-01 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgbuild      1.3.1     2021-12-20 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig     2.0.3     2019-09-22 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgload       1.2.4     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  prettyunits   1.1.1     2020-01-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  processx      3.5.3     2022-03-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ps            1.7.0     2022-04-23 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr       * 0.3.4     2020-04-17 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6            2.5.1     2021-08-19 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp          1.0.8.3   2022-03-17 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readr       * 2.1.2     2022-01-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl        1.4.0     2022-03-28 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  remotes       2.4.2     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reprex        2.0.1     2021-08-05 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang         1.0.2     2022-03-04 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown     2.14      2022-04-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rprojroot     2.0.3     2022-04-02 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstatix       0.7.0     2021-02-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstudioapi    0.13      2020-11-12 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rvest         1.0.2     2021-10-16 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales        1.2.0     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo   1.2.2     2021-12-06 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  snakecase     0.11.0    2019-05-25 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi       1.7.6     2021-11-29 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringr     * 1.4.0     2019-02-10 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  svglite       2.1.0     2022-02-03 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  systemfonts   1.0.4     2022-02-11 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tarchetypes * 0.7.0     2022-08-05 [1] CRAN (R 4.2.1)</span></span>
+<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  targets       0.12.0    2022-04-19 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  testthat      3.1.3     2022-03-29 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble      * 3.1.6     2021-11-07 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr       * 1.2.0     2022-02-01 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect    1.1.2     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyverse   * 1.3.1     2021-04-15 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tzdb          0.3.0     2022-03-28 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  usethis       2.1.5     2021-12-09 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-114"><a href="#cb15-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8          1.2.2     2021-07-24 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-115"><a href="#cb15-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs         0.4.1     2022-04-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridisLite   0.4.0     2021-04-13 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  visNetwork    2.1.0     2021-09-29 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vroom         1.5.7     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  webshot       0.5.3     2022-04-14 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr         2.5.0     2022-03-03 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun          0.30      2022-03-02 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xml2          1.3.3     2021-11-30 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml          2.3.5     2022-02-21 [1] CRAN (R 4.2.0)</span></span>
+<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /opt/homebrew/lib/R/4.2/site-library</span></span>
+<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /opt/homebrew/Cellar/r/4.2.1_2/lib/R/library</span></span>
+<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </main>

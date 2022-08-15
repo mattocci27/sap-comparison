@@ -6,7 +6,13 @@ data {
   array[N] int<lower=1,upper=J> jj; // species
   array[N] int<lower=1,upper=K> kk; // pressure
   array[N] int<lower=1,upper=JK> jk; // species x pressure
-  vector[N] y; // pres_calib - tens_calib
+  vector[N] y1; // pres_calib
+  vector[N] y2; // tens_calib
+}
+
+transformed data{
+  vector[N] log_y2;
+  log_y2 = log(y2);
 }
 
 parameters{
@@ -34,8 +40,8 @@ model {
   to_vector(alpha_raw) ~ std_normal();
   to_vector(beta_raw) ~ std_normal();
   to_vector(gamma_raw) ~ std_normal();
-  mu = mu_hat + alpha[jj] + beta[kk] + gamma[jk];
-  y ~ normal(mu, sigma);
+  mu = mu_hat + alpha[jj] + beta[kk] + gamma[jk] + log_y2;
+  y1 ~ gamma(exp(mu), sigma);
 }
 
 generated quantities {
@@ -43,9 +49,9 @@ generated quantities {
   vector[JK] pred;
   vector[JK] effect;
   for (n in 1:N) {
-    pred[jk[n]] = mu_hat + alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
+    pred[jk[n]] = exp(mu_hat + alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]] + log_y2[n]);
     effect[jk[n]] = alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
-    log_lik[n] = normal_lpdf(y[n] | pred[jk[n]], sigma);
+    log_lik[n] = gamma_lpdf(y1[n] | pred[jk[n]], sigma);
   }
 }
 

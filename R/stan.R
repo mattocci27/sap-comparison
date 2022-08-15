@@ -7,11 +7,15 @@ generate_anova_data <- function(data, log = FALSE) {
     kk = data$pressure |>  as.factor() |> as.numeric(),
     jk = paste(data$species, data$pressure, sep = "_")
       |> as.factor() |> as.numeric(),
-    y = data$pres_calib - data$tens_calib
+    y = data$pres_calib - data$tens_calib,
+    y1 = data$pres_calib,
+    y2 = data$tens_calib
   )
 
   if (log) {
     list_data$y <- log(data$pres_calib / data$tens_calib)
+    list_data$y1 <- log(data$pres_calib)
+    list_data$y2 <- log(data$tens_calib)
   }
 
   list_data$J <- unique(data$species) |> length()
@@ -20,7 +24,7 @@ generate_anova_data <- function(data, log = FALSE) {
   list_data
 }
 
-generate_dummy_data <- function(n = 30, sigma_alpha = 0.5, sigma_beta = 0.2, sigma_gamma = 0.3, mu_hat = 1, sigma = 0.5, seed = 123) {
+generate_dummy_data <- function(n = 30, sigma_alpha = 0.9, sigma_beta = 0.9, sigma_gamma = 0.5, mu_hat = 1.3, sigma = 2, seed = 123) {
   set.seed(seed)
   # sigma_alpha <- 3
   # sigma_beta <- 3

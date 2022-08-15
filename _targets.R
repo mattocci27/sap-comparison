@@ -121,7 +121,33 @@ list(
      max_treedepth = 15,
      seed = 123
   ),
-
+  tar_stan_mcmc(
+     fit3,
+     "stan/anova_gamma.stan",
+     data = anova_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.95,
+     max_treedepth = 15,
+     seed = 123
+  ),
+  tar_target(
+    loo_,
+    lapply(
+      list(
+           fit1_mcmc_anova,
+           fit2_mcmc_anova,
+           fit3_mcmc_anova_gamma
+        ),
+    \(x)x$loo(cores = parallel::detectCores())
+    )
+  ),
   tar_target(
     ks_pred_draws,
     create_stan_tab(fit1_draws_anova)

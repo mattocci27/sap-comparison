@@ -56,6 +56,7 @@ library(tidyverse)
 library(tarchetypes)
 library(here)
 library(kableExtra)
+library(loo)
 source(here("R", "stan.R"))
 ```
 
@@ -101,10 +102,10 @@ Fig. 1B-F (log)
 targets::tar_read(ks_log_bar_plot)
 ```
 
-```{r}
+```{r,}
 #knitr::knit_exit()
 targets::tar_load(dummy_data)
-dummy_data
+# dummy_data
 
 targets::tar_load(fit0_draws_anova)
 pred0_draws <- create_stan_tab(fit0_draws_anova)
@@ -132,16 +133,27 @@ para_name <- c(sp_lab, pres_lab, rep(int_lab, 3), "mu")
 ```
 
 ```{r}
+targets::tar_load(fit0_summary_anova)
 targets::tar_load(fit1_summary_anova)
 targets::tar_load(fit2_summary_anova)
+targets::tar_load(fit3_summary_anova_gamma)
 #knitr::knit_exit()
+
 ```
 
 
 
 ```{r}
-fit1_summary_anova
+fit0_summary_anova |> filter(str_detect(variable, "tau|sigma|mu"))
+fit1_summary_anova |> filter(str_detect(variable, "tau|sigma|mu"))
 fit2_summary_anova
+fit3_summary_anova_gamma
+```
+
+```{r}
+targets::tar_load(loo_)
+
+loo_compare(loo_[[1]], loo_[[2]],loo_[[3]])
 ```
 
 ```{r}
@@ -164,6 +176,18 @@ pred2_draws |>
   mutate(para_name = cell_spec(para_name, bold= ifelse(q2_5 * q97_5 > 0, TRUE, FALSE))) |>
   kbl(booktabs = TRUE, escape = FALSE, format = "html", longtable = TRUE) |>
   kable_styling()
+
+
+targets::tar_load(fit3_draws_anova_gamma)
+pred3_draws <- create_stan_tab(fit3_draws_anova_gamma)
+pred3_draws[, 2:6] <- round(pred3_draws[, 2:6], digits = 3)
+pred3_draws |>
+  filter(!str_detect(para, "raw")) |>
+  mutate(para_name) |>
+  mutate(para_name = cell_spec(para_name, bold= ifelse(q2_5 * q97_5 > 0, TRUE, FALSE))) |>
+  kbl(booktabs = TRUE, escape = FALSE, format = "html", longtable = TRUE) |>
+  kable_styling()
+
 ```
 
 ```{r}
