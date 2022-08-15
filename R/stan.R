@@ -20,6 +20,37 @@ generate_anova_data <- function(data, log = FALSE) {
   list_data
 }
 
+generate_dummy_data <- function(n = 30, sigma_alpha = 0.5, sigma_beta = 0.2, sigma_gamma = 0.3, mu_hat = 1, sigma = 0.5, seed = 123) {
+  set.seed(seed)
+  # sigma_alpha <- 3
+  # sigma_beta <- 3
+  # sigma_gamma <- 2
+  # sigma <- 0.01
+  # mu_hat <- 1
+  # n <- 3
+  alpha <- rnorm(5, 0, sigma_alpha)
+  beta <- rnorm(3, 0, sigma_beta)
+  gamma <- rnorm(15, 0, sigma_gamma)
+
+  effect_raw <- rep(alpha, each = 3) + rep(beta, 5) + gamma
+  effect <- mapply(rnorm, n, effect_raw, sigma) |> as.numeric()
+  mu <- mu_hat + effect
+
+  list_data <- list()
+  list_data$y <- mu
+  list_data$J <- 5
+  list_data$K <- 3
+  list_data$JK <- 15
+  list_data$N <- length(mu)
+  list_data$jj <- rep(1:5, each = 3) |> rep(each = n)
+  list_data$kk <- rep(1:3, 5) |> rep(each = n)
+  list_data$jk <- rep(1:15, each = n)
+  list_data$alpha <- alpha
+  list_data$beta <- beta
+  list_data$gamma <- gamma
+  list_data
+}
+
 #' @title Create summary table for posteriors
 create_stan_tab <- function(draws) {
   tmp <- draws |>

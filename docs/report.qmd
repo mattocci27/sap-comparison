@@ -51,7 +51,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
+```{r,include=FALSE}
 library(tidyverse)
 library(tarchetypes)
 library(here)
@@ -59,12 +59,15 @@ library(kableExtra)
 source(here("R", "stan.R"))
 ```
 
-```{r}
+```{r,include=FALSE}
 d <- read_csv(here("data-raw", "ks_pres_tens_five_spp.csv"))
 # hist(d$pres_calib)
 ```
 
-Fig. 1A
+Non-log scale compares if the difference between flow rate by pressure and flow rate under tension (flow rate by pressure - flow rate under tension) is different from zero, whereas log scale compares the ratio between the two (log[flow rate by pressure / flow rate under tension]) is different from log one (log(1) = 0).
+
+
+Fig. 1A (non-long)
 
 ```{r}
 targets::tar_read(sma_scatter_plot)
@@ -85,7 +88,7 @@ targets::tar_read(sma_scatter_log_plot)
 targets::tar_read(sma_scatter_ks_log_plot)
 ```
 
-Fig. 1B-F
+Fig. 1B-F (non-log)
 
 ```{r, fig.width = 2, fig.height = 6}
 targets::tar_read(ks_bar_plot)
@@ -99,7 +102,13 @@ targets::tar_read(ks_log_bar_plot)
 ```
 
 ```{r}
-knitr::knit_exit()
+#knitr::knit_exit()
+targets::tar_load(dummy_data)
+dummy_data
+
+targets::tar_load(fit0_draws_anova)
+pred0_draws <- create_stan_tab(fit0_draws_anova)
+pred0_draws
 ```
 
 ```{r, fig.width = 3.5, fig.height = 3.5}

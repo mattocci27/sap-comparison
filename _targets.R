@@ -69,6 +69,26 @@ list(
     anova_data_log,
     generate_anova_data(ks_five_spp_csv, log = TRUE)
   ),
+  tar_target(
+    dummy_data,
+    generate_dummy_data(n = 30)
+  ),
+  tar_stan_mcmc(
+     fit0,
+     "stan/anova.stan",
+     data = dummy_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.95,
+     max_treedepth = 15,
+     seed = 123
+  ),
   tar_stan_mcmc(
      fit1,
      "stan/anova.stan",
