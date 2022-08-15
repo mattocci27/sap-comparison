@@ -8,7 +8,6 @@ my_theme <- function(){
 }
 
 # theme_set(my_theme)
-
 sma_scatter <- function(data, log = FALSE) {
 #  targets::tar_load(five_spp_csv)
 #  data <- five_spp_csv
@@ -49,6 +48,28 @@ sma_scatter <- function(data, log = FALSE) {
         label = "1:1 line", angle = 45, col = "grey60") +
       coord_cartesian(
         xlim = c(0,max(c(data$tens_calib, data$pres_calib))),
-        ylim = c(0,max(c(data$tens_calib, data$pres_calib))))
+        ylim = c(0,max(c(data$tens_calib, data$pres_calib)))) +
+      coord_fixed()
    }
+}
+
+
+ks_bars <- function(data, pred_draws) {
+  data2 <- read_csv(data) |>
+    mutate(sp = as.factor(species)) |>
+    mutate(pres = as.factor(pressure)) |>
+    mutate(jk = paste(species, pressure, sep = "_")) |>
+    mutate(jk_fct = as.factor(jk) |> as.numeric()) |>
+    dplyr::select(sp, pres, jk, jk_fct) |>
+    unique() |>
+    arrange(jk_fct)
+  pred_draws2 <- pred_draws |>
+    filter(str_detect(para, "effect")) |>
+    bind_cols(data2)
+  ggplot(pred_draws2, aes(x = pres)) +
+    geom_point(aes(y = mean_)) +
+    geom_errorbar(aes(ymin = q2_5, ymax = q97_5), width = 0) +
+    geom_hline(yintercept = 0, linetype = 2, colour = "grey60") +
+    facet_grid(sp ~ .) +
+    my_theme()
 }

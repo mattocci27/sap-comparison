@@ -24,7 +24,7 @@ generate_anova_data <- function(data, log = FALSE) {
 create_stan_tab <- function(draws) {
   tmp <- draws |>
     janitor::clean_names() |>
-    dplyr::select(contains(c("alpha", "beta", "gamma", "pred", "mu_hat")))
+    dplyr::select(contains(c("alpha", "beta", "gamma", "effect", "pred", "mu_hat")))
   mean_ <- apply(tmp, 2, mean)
   q2_5 <- apply(tmp, 2, \(x)(quantile(x, 0.025)))
   q5 <- apply(tmp, 2, \(x)(quantile(x, 0.05)))

@@ -63,11 +63,11 @@ list(
 
   tar_target(
     anova_data,
-    generate_anova_data(five_spp_csv)
+    generate_anova_data(ks_five_spp_csv)
   ),
   tar_target(
     anova_data_log,
-    generate_anova_data(five_spp_csv, log = TRUE)
+    generate_anova_data(ks_five_spp_csv, log = TRUE)
   ),
   tar_stan_mcmc(
      fit1,
@@ -101,6 +101,25 @@ list(
      max_treedepth = 15,
      seed = 123
   ),
+
+  tar_target(
+    ks_pred_draws,
+    create_stan_tab(fit1_draws_anova)
+  ),
+  tar_target(
+    ks_log_pred_draws,
+    create_stan_tab(fit2_draws_anova)
+  ),
+
+  tar_target(
+    ks_bar_plot,
+    ks_bars(ks_five_spp_csv, ks_pred_draws)
+  ),
+  tar_target(
+    ks_log_bar_plot,
+    ks_bars(ks_five_spp_csv, ks_log_pred_draws)
+  ),
+
   tar_quarto(
     report_html,
     "docs/report.qmd"
