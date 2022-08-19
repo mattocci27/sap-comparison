@@ -47,3 +47,6 @@ vignettes/*.pdf
 *.pdf
 *.docx
 *.xlsx
+
+data
+data-raw
