@@ -6,6 +6,7 @@ library(cmdstanr)
 library(furrr)
 library(languageserver)
 
+source("R/data_clean.R")
 source("R/stan.R")
 source("R/figs.R")
 
@@ -32,8 +33,8 @@ tar_option_set(
 
 # cmdstan_version()
 
-list(
-  # data cleaning ----------------------------------
+ # raw data ----------------------------------
+raw_data_list <- list(
   tar_target(
     five_spp_csv,
     "data-raw/pres_tens_five_spp.csv",
@@ -44,6 +45,21 @@ list(
     "data-raw/ks_pres_tens_five_spp.csv",
     format = "file"
   ),
+  tar_target(
+    ks_five_trees_raw_csv,
+    "data-raw/ks_pres_tens_trees_raw.csv",
+    format = "file"
+  ),
+  tar_target(
+    ks_trees_csv,
+    clean_ks_trees(ks_five_trees_raw_csv),
+    format = "file"
+  ),
+  NULL
+)
+
+ # main analysis ----------------------------------
+main_list <- list(
   tar_target(
     sma_scatter_plot,
     sma_scatter(five_spp_csv)
@@ -61,6 +77,18 @@ list(
     sma_scatter(ks_five_spp_csv, log = TRUE)
   ),
 
+  tar_target(
+    anova_mvn_data,
+    generate_anova_mvn_data(ks_trees_csv, model_type = "normal")
+  ),
+  tar_target(
+    anova_lmvn_data,
+    generate_anova_mvn_data(ks_trees_csv, model_type = "log-normal")
+  ),
+  tar_target(
+    anova_gmvn_data,
+    generate_anova_mvn_data(ks_trees_csv, model_type = "gamma")
+  ),
   tar_target(
     anova_data,
     generate_anova_data(ks_five_spp_csv)
@@ -137,6 +165,60 @@ list(
      max_treedepth = 15,
      seed = 123
   ),
+  tar_stan_mcmc(
+     fit_mvn,
+     "stan/anova_mvn.stan",
+     data = anova_mvn_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123
+  ),
+  tar_stan_mcmc(
+     fit_lmvn,
+     "stan/anova_mvn.stan",
+     data = anova_lmvn_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123
+  ),
+  tar_stan_mcmc(
+     fit_gmvn,
+     "stan/anova_mvn.stan",
+     data = anova_gmvn_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123
+  ),
+
+
+
+
+
+
   tar_target(
     loo_,
     lapply(
@@ -169,5 +251,10 @@ list(
   tar_quarto(
     report_html,
     "docs/report.qmd"
-  )
+  ),
+
+  NULL
+
 )
+
+append(raw_data_list, main_list)

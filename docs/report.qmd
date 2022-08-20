@@ -56,8 +56,85 @@ library(tidyverse)
 library(tarchetypes)
 library(here)
 library(kableExtra)
+library(targets)
 library(loo)
 source(here("R", "stan.R"))
+```
+
+
+```{r}
+tar_load(ks_trees_csv)
+d <- read_csv(ks_trees_csv)
+
+d |>
+  filter(species == "HH") |>
+  filter(pressure == 0.02) |>
+  filter(pres_type == "pres")
+
+d |>
+  filter(species == "HH") |>
+  mutate(pres_fct = as.factor(pressure)) |>
+ggplot(aes(y = ks, x = pres_type, fill = pres_fct)) +
+  geom_violin() +
+  geom_point(position = position_dodge(width = 0.90)) +
+  facet_grid(pres_fct ~species)# +
+  # scale_y_log10()
+```
+
+```{r}
+targets::tar_load(anova_mvn_data)
+anova_mvn_data
+
+hist(anova_mvn_data$y)
+
+
+targets::tar_load(fit4_summary_anova_mvn)
+fit4_summary_anova_mvn
+
+fit4_summary_anova_mvn |>
+  filter(str_detect(variable, "diff"))
+```
+
+```{r}
+targets::tar_load(fit_mvn_summary_anova_mvn)
+targets::tar_load(fit_lmvn_summary_anova_mvn)
+targets::tar_load(fit_gmvn_summary_anova_mvn)
+
+fit_mvn_summary_anova_mvn |>
+  filter(str_detect(variable, "diff"))
+
+fit_lmvn_summary_anova_mvn |>
+  filter(str_detect(variable, "alpha"))
+
+fit_lmvn_summary_anova_mvn |>
+  filter(str_detect(variable, "delta"))
+
+fit_lmvn_summary_anova_mvn |>
+  filter(str_detect(variable, "tau"))
+
+
+fit_gmvn_summary_anova_mvn |>
+  filter(str_detect(variable, "diff"))
+```
+
+```{r}
+targets::tar_load(fit_mvn_draws_anova_mvn)
+targets::tar_load(fit_lmvn_draws_anova_mvn)
+targets::tar_load(fit_gmvn_draws_anova_mvn)
+
+mvn_draws <- create_stan_tab(fit_mvn_draws_anova_mvn)
+lmvn_draws <- create_stan_tab(fit_lmvn_draws_anova_mvn)
+gmvn_draws <- create_stan_tab(fit_gmvn_draws_anova_mvn)
+
+mvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
+lmvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
+gmvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
 ```
 
 ```{r,include=FALSE}
@@ -66,7 +143,6 @@ d <- read_csv(here("data-raw", "ks_pres_tens_five_spp.csv"))
 ```
 
 Non-log scale compares if the difference between flow rate by pressure and flow rate under tension (flow rate by pressure - flow rate under tension) is different from zero, whereas log scale compares the ratio between the two (log[flow rate by pressure / flow rate under tension]) is different from log one (log(1) = 0).
-
 
 Fig. 1A (non-long)
 
@@ -83,7 +159,6 @@ Fig. 1A (log)
 ```{r}
 targets::tar_read(sma_scatter_log_plot)
 ```
-
 
 ```{r, include=FALSE}
 targets::tar_read(sma_scatter_ks_log_plot)
@@ -156,7 +231,44 @@ targets::tar_load(loo_)
 loo_compare(loo_[[1]], loo_[[2]],loo_[[3]])
 ```
 
+```{r, fig.width = 3.5, fig.height = 3.5}
+# tar_load(anova_mvn_data)
+
+d <- read_csv(here("data", "ks_pres_tens_trees.csv"))
+
+d2 <- d |>
+  mutate(jk = paste(d$species, d$pressure, sep = "_")) |>
+  mutate(jk_fct = as.factor(jk) |> as.numeric()) |>
+  dplyr::select(jk, jk_fct) |>
+  # unique() |>
+  arrange(jk_fct)
+
+sp_lab <- as.factor(d$species)# |> levels()
+pres_lab <- as.factor(d$pressure)# |> levels()
+int_lab <- as.factor(d2$jk) #|> levels()
+
+para_name <- c(sp_lab, pres_lab, rep(int_lab, 3), "mu")
+
+pred1_draws |>
+  filter(!str_detect(para, "raw"))  |>
+  pull(para)
+
+```
+
+
 ```{r}
+targets::tar_load(fit_lmvn_draws_anova_mvn)
+pred1_draws <- create_stan_tab(fit_lmvn_draws_anova_mvn)
+pred1_draws[, 2:6] <- round(pred1_draws[, 2:6], digits = 3)
+pred1_draws |>
+  filter(!str_detect(para, "raw")) |>
+  # mutate(para_name) |>
+  # mutate(para_name = cell_spec(para_name, bold= ifelse(q2_5 * q97_5 > 0, TRUE, FALSE))) |>
+  kbl(booktabs = TRUE, escape = FALSE, format = "html", longtable = TRUE) |>
+  kable_styling()
+```
+
+```{r,eval=FALSE}
 targets::tar_load(fit1_draws_anova)
 pred1_draws <- create_stan_tab(fit1_draws_anova)
 pred1_draws[, 2:6] <- round(pred1_draws[, 2:6], digits = 3)
@@ -187,12 +299,10 @@ pred3_draws |>
   mutate(para_name = cell_spec(para_name, bold= ifelse(q2_5 * q97_5 > 0, TRUE, FALSE))) |>
   kbl(booktabs = TRUE, escape = FALSE, format = "html", longtable = TRUE) |>
   kable_styling()
-
 ```
 
 ```{r}
 pred1_draws <- create_stan_tab(fit1_draws_anova)
-
 ```
 
 ```{r}
@@ -203,3 +313,4 @@ targets::tar_visnetwork()
 ```{r}
 devtools::session_info()
 ```
+

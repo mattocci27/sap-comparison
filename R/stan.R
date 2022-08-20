@@ -59,7 +59,7 @@ generate_dummy_data <- function(n = 30, sigma_alpha = 0.9, sigma_beta = 0.9, sig
 create_stan_tab <- function(draws) {
   tmp <- draws |>
     janitor::clean_names() |>
-    dplyr::select(contains(c("alpha", "beta", "gamma", "effect", "pred", "mu_hat")))
+    dplyr::select(contains(c("alpha", "beta", "gamma","delta", "effect", "pred", "mu_hat")))
   mean_ <- apply(tmp, 2, mean)
   q2_5 <- apply(tmp, 2, \(x)(quantile(x, 0.025)))
   q5 <- apply(tmp, 2, \(x)(quantile(x, 0.05)))
@@ -67,3 +67,41 @@ create_stan_tab <- function(draws) {
   q95 <- apply(tmp, 2, \(x)(quantile(x, 0.9)))
   tibble(para = names(mean_), mean_, q2_5, q5, q95, q97_5)
 }
+
+# targets::tar_load(ks_trees)
+# data <- read_csv(ks_trees)
+
+generate_anova_mvn_data <- function(data, model_type = c("normal", "log-normal", "gamma")) {
+  data <- read_csv(data) |>
+    filter(!is.na(ks))
+  list_data <- list(
+    N = nrow(data),
+    jj = data$species |>  as.factor() |> as.numeric(),
+    kk = data$pressure |>  as.factor() |> as.numeric(),
+    jk = paste(data$species, data$pressure, sep = "_")
+      |> as.factor() |> as.numeric(),
+    ll = data$pres_type |>  as.factor() |> as.numeric(),
+    mm = data$tree_id |>  as.factor() |> as.numeric(),
+    y = data$ks
+  )
+    list_data$J <- unique(data$species) |> length()
+    list_data$K <- unique(data$pressure) |> length()
+    list_data$JK <- unique(list_data$jk) |> length()
+    list_data$L <- unique(list_data$ll) |> length()
+    list_data$M <- unique(list_data$mm) |> length()
+
+    list_data$model_type <- case_when(
+      model_type == "normal" ~ 1,
+      model_type == "log-normal" ~ 2,
+      model_type == "gamma" ~ 3,
+    )
+
+  list_data
+}
+# hoge <- data |>
+#   group_by(species, tree_id, pres_type, pressure) |>
+#   summarize(mean_ = mean(ks), var_ = var(ks))
+
+# plot(mean_ ~ var_ , hoge, log = "xy")
+
+#tar_read(anova_mvn_data)
