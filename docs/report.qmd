@@ -189,10 +189,25 @@ mcmc_intervals(
 
 # GLM
 
-```{r}
-d <- dummy_data$data
+- species: random
+- pressure: fixed
 
-fit <- glm(y ~ as.factor(species) * as.factor(pressure), data = d)
+
+
+
+```{r}
+#d <- dummy_data$data
+
+d2 <- d |>
+  mutate(y = pres_calib - tens_calib)
+
+fit2 <- glm(y ~ as.factor(species) * as.factor(pressure), data = d2)
+
+fit3 <- stan_glm(y ~ as.factor(species) * as.factor(pressure), data = d2)
+
+
+
+fit <- glm(log(pres_calib) ~ as.factor(species) * as.factor(pressure), offset = log(tens_calib), data = d)
 
 ```
 
