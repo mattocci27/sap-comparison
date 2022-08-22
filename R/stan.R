@@ -24,34 +24,57 @@ generate_anova_data <- function(data, log = FALSE) {
   list_data
 }
 
-generate_dummy_data <- function(n = 30, sigma_alpha = 0.9, sigma_beta = 0.9, sigma_gamma = 0.5, mu_hat = 1.3, sigma = 2, seed = 123) {
+generate_dummy_data <- function(n = 30, n_alpha = 5, n_beta = 5, sigma_alpha = 0.9, sigma_beta = 0.9, sigma_gamma = 0.5, mu_hat = 1.3, sigma = 2, seed = 123) {
   set.seed(seed)
+  # set.seed(123)
   # sigma_alpha <- 3
   # sigma_beta <- 3
-  # sigma_gamma <- 2
-  # sigma <- 0.01
+  # sigma_gamma <- 0.2
+  # sigma <- 1
   # mu_hat <- 1
   # n <- 3
-  alpha <- rnorm(5, 0, sigma_alpha)
-  beta <- rnorm(3, 0, sigma_beta)
-  gamma <- rnorm(15, 0, sigma_gamma)
+  # n_alpha <- 5
+  # n_beta <- 3
+  n_gamma <- n_alpha * n_beta
+  alpha <- rnorm(n_alpha, 0, sigma_alpha)
+  beta <- rnorm(n_beta, 0, sigma_beta)
+  gamma <- rnorm(n_alpha * n_beta, 0, sigma_gamma)
 
-  effect_raw <- rep(alpha, each = 3) + rep(beta, 5) + gamma
+  effect_raw <- rep(alpha, each = n_beta) + rep(beta, n_alpha) + gamma
+  # effect <- mapply(rnorm, n, effect_raw, sigma) |> as.numeric() |> round(2)
   effect <- mapply(rnorm, n, effect_raw, sigma) |> as.numeric()
   mu <- mu_hat + effect
 
   list_data <- list()
   list_data$y <- mu
-  list_data$J <- 5
-  list_data$K <- 3
-  list_data$JK <- 15
+  list_data$J <- n_alpha
+  list_data$K <- n_beta
+  list_data$JK <- n_alpha * n_beta
   list_data$N <- length(mu)
-  list_data$jj <- rep(1:5, each = 3) |> rep(each = n)
-  list_data$kk <- rep(1:3, 5) |> rep(each = n)
-  list_data$jk <- rep(1:15, each = n)
+  list_data$jj <- rep(1:n_alpha, each = n_beta) |> rep(each = n)
+  list_data$kk <- rep(1:n_beta, n_alpha) |> rep(each = n)
+  list_data$jk <- rep(1:n_gamma, each = n)
   list_data$alpha <- alpha
   list_data$beta <- beta
   list_data$gamma <- gamma
+
+  alpha_ <- rep(alpha, each = n_beta) |> rep(each = n)
+  beta_ <- rep(beta, n_alpha) |> rep(each = n)
+  gamma_ <- rep(gamma, each = n)
+  # alpha_ <- rep(alpha, each = 3) |> rep(each = n) |> round(2)
+  # beta_ <- rep(beta, 5) |> rep(each = n) |> round(2)
+  # gamma_ <- rep(gamma, each = n) |> round(2)
+
+  # tibble(alpha_, beta_, gamma_, effect, jj = list_data$jj, kk = list_data$kk, jk = list_data$jk) |>
+  #   DT::datatable()
+
+  list_data$data <- tibble(
+    y = mu,
+    species = list_data$jj,
+    pressure = list_data$kk,
+    inter = list_data$jk,
+    effect = alpha_ + beta_ + gamma_
+  )
   list_data
 }
 

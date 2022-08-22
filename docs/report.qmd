@@ -137,10 +137,114 @@ gmvn_draws |>
   filter(str_detect(para, "diff"))
 ```
 
+```{r}
+targets::tar_load(fit_lmvn_simple_summary_anova_mvn_simple)
+fit_lmvn_simple_summary_anova_mvn_simple
+```
+
+```{r}
+targets::tar_load(dummy_data)
+
+dummy_data$data |>
+  mutate(species = as.factor(species)) |>
+  mutate(pressure = as.factor(pressure)) |>
+  ggplot(aes(y = y, x = pressure, col = pressure)) +
+  geom_violin() +
+  geom_point(position = position_dodge(width = 0.90)) +
+  facet_wrap(~ species)
+
+dummy_data$data |>
+  mutate(species = as.factor(species)) |>
+  mutate(pressure = as.factor(pressure)) |>
+  ggplot(aes(y = y, x = species, col = pressure)) +
+  geom_violin() +
+  geom_point(position = position_dodge(width = 0.90)) +
+  facet_wrap(~ pressure)
+
+```
+
+```{r}
+# targets::tar_load(fit00_summary_test)
+# fit00_summary_test |>
+#   #head(20)
+#   filter(str_detect(variable, "beta|gamma|mu"))
+targets::tar_load(fit0_summary_anova)
+fit0_summary_anova |>
+  filter(str_detect(variable, "beta|gamma|mu"))
+
+library(bayesplot)
+
+targets::tar_load(fit0_draws_anova)
+targets::tar_load(dummy_data)
+dummy_data
+
+mcmc_intervals(
+  fit0_draws_anova,
+#  pars = c("mu_hat"),
+  prob = 0.8,
+  regex_pars = "alpha\\[[1-5]\\]|beta\\[[1-9]\\]")
+  #regex_pars = "alpha\\[[1-5]\\]")
+
+```
+
+# GLM
+
+```{r}
+d <- dummy_data$data
+
+fit <- glm(y ~ as.factor(species) * as.factor(pressure), data = d)
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+targets::tar_load(fit_mvn_simple_draws_anova_mvn_simple)
+targets::tar_load(fit_lmvn_simple_draws_anova_mvn_simple)
+targets::tar_load(fit_gmvn_simple_draws_anova_mvn_simple)
+
+mvn_draws <- create_stan_tab(fit_mvn_simple_draws_anova_mvn_simple)
+lmvn_draws <- create_stan_tab(fit_lmvn_simple_draws_anova_mvn_simple)
+gmvn_draws <- create_stan_tab(fit_gmvn_simple_draws_anova_mvn_simple)
+
+mvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
+lmvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
+gmvn_draws |>
+  filter(q2_5 * q97_5 > 0) |>
+  filter(str_detect(para, "diff"))
+```
+
+```{r}
+tar_load(dummy_data)
+tar_load(fit0_draws_anova)
+tar_load(fit0_summary_anova)
+
+fit0_summary_anova
+
+dummy_data
+draws <- create_stan_tab(fit0_draws_anova)
+
+
+draws |>
+ filter(str_detect(para, "beta"))
+
+draws |>
+ filter(q2_5 * q97_5 > 0) #|>
+  # filter(str_detect(para, "a"))
+```
+
 ```{r,include=FALSE}
 d <- read_csv(here("data-raw", "ks_pres_tens_five_spp.csv"))
 # hist(d$pres_calib)
 ```
+
 
 Non-log scale compares if the difference between flow rate by pressure and flow rate under tension (flow rate by pressure - flow rate under tension) is different from zero, whereas log scale compares the ratio between the two (log[flow rate by pressure / flow rate under tension]) is different from log one (log(1) = 0).
 
