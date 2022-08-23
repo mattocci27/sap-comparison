@@ -134,6 +134,58 @@ d |>
 library(patchwork)
 tar_load(sma_scatter_log_plot)
 tar_load(ks_box_plot)
-
 sma_scatter_log_plot + ks_box_plot
+```
+
+
+```{r}
+tar_load(fit_anova_noint_err_log_draws_anova_noint_err)
+draws <- fit_anova_noint_err_log_draws_anova_noint_err
+
+
+mcmc_intervals(
+  draws,
+  pars = c("sigma"),
+  prob = 0.5,
+  prob_outer = 0.95,
+  regex_pars = "tau\\[[1-9]\\]")
+
+
+```
+
+```{r}
+tmp <- draws |>
+    janitor::clean_names()  |>
+    dplyr::select(tau_1, tau_2, sigma) |>
+    mutate(var_ = tau_1^2 + tau_2^2 + sigma^2) |>
+    mutate(var_tau_1 = tau_1^2 / var_) |>
+    mutate(var_tau_2 = tau_2^2 / var_) |>
+    mutate(var_sigma = sigma^2 / var_)
+
+apply(tmp * 100, 2, mean) |> round(2)
+apply(tmp, 2, \(x)quantile(x * 100, 0.025)) |> round(2)
+apply(tmp, 2, \(x)quantile(x * 100, 0.975)) |> round(2)
+
+intervals_data <- mcmc_intervals_data(
+  draws,
+  pars = c("sigma"),
+  point_est = "median",
+  prob = 0.5,
+  prob_outer = 0.95,
+  regex_pars = "tau\\[[1-9]\\]") |>
+  mutate(para = case_when(
+    parameter == "sigma" ~ "Residuals",
+    parameter == "tau[1]" ~ "Species",
+    parameter == "tau[2]" ~ "Pressure",
+  )) |>
+  mutate(para = factor(para,
+    levels = c("species", "Pressure", "Residuals")))
+
+ggplot(intervals_data, aes(y = para)) +
+  geom_linerange(aes(xmin = ll, xmax = hh)) +
+  geom_linerange(aes(xmin = l, xmax = h), size = 1.5) +
+  geom_point(aes(x = m), size = 3)
+
+
+
 ```

@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|f691c05f3302dd56|||||||||||||||
+.Random.seed|object|4b547c3c6b7098e7|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -122,11 +122,11 @@ main_list|object|ac55c7cdbdbd0a02|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 raw_data_list|object|d7f8c188182cbf40|||||||||||||||
 sma_ks|function|9c2566642d19c117|||||||||||||||
-sma_ks_plot|stem|f99e9fd3ec646b67|485c43262953e24b|2b26552788664ace|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19227.4774877193s|bbc446e080ba68ff|294562|file|local|vector|||1.25|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
-sma_ks_plot2|stem|6bcfadda7035b2e0|2e46791360070116|4ba733f268cf27b0|635610121|figs/sma_ks2.png*figs/sma_ks2.pdf|t19227.4723965698s|3fd6ce94c6c5a707|260848|file|local|vector|||1.341|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks_plot|stem|cff7e3c19e714e71|485c43262953e24b|60419d9d6880d4a8|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19227.6082428569s|6a559e0329ad97cb|301258|file|local|vector|||4.381|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks_plot2|stem|267728ce163e9b61|2e46791360070116|3d7e088ec33b051c|635610121|figs/sma_ks2.png*figs/sma_ks2.pdf|t19227.6082472552s|07a0b969fe5e293d|262537|file|local|vector|||4.593|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 sma_ks2|function|c3a72f68902bc689|||||||||||||||
-sma_scatter|function|690497de4a103983|||||||||||||||
-sma_scatter_ks_log_plot|stem|bdb8c00bb4df2cf4|fca86bc0db0e8ac7|e967a4dcdb3872c1|-50195053||t19227.4618132079s|b85d657c995d1a00|122599|rds|local|vector|||0.242||
-sma_scatter_ks_plot|stem|744008c51dc33928|db9b3fd3537541a3|e967a4dcdb3872c1|106148634||t19227.4618170968s|cec578fd58e3fdac|87533|rds|local|vector|||0.217||
-sma_scatter_log_plot|stem|bd40a7ac7808b87b|bb5ee286cdf8edc2|781e8b8c7597b5de|1411685232||t19227.4618116801s|a05d9f208e2a12e6|122926|rds|local|vector|||0.226||
-sma_scatter_plot|stem|16153085dc12d309|e268ef9d2781699c|781e8b8c7597b5de|-651295624||t19227.4618167265s|bdbb6b1d38873930|87855|rds|local|vector|||0.03||
+sma_scatter|function|62942711b2459e09|||||||||||||||
+sma_scatter_ks_log_plot|stem|d6894876503578d1|fca86bc0db0e8ac7|a26a67131ba89213|-50195053||t19227.6082047545s|826e4c55330b376e|122666|rds|local|vector|||0.226||
+sma_scatter_ks_plot|stem|e11c885e8fdf88a7|db9b3fd3537541a3|a26a67131ba89213|106148634||t19227.6082060972s|f81f72cbf82b677e|87530|rds|local|vector|||0.222||
+sma_scatter_log_plot|stem|fed51c20148db0ca|bb5ee286cdf8edc2|55553f999e410373|1411685232||t19227.6081891062s|a6a4c63ae71e3f79|122993|rds|local|vector|||0.221||
+sma_scatter_plot|stem|31cc0e1694383f87|e268ef9d2781699c|55553f999e410373|-651295624||t19227.6081908192s|bdbb6b1d38873930|87855|rds|local|vector|||0.209||

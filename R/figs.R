@@ -23,7 +23,7 @@ sma_scatter <- function(data, log = FALSE) {
     mutate(pres_fac = paste(pressure, "MPa") |> as.factor()) |>
     ggplot(aes(x = pres_calib, y = tens_calib)) +
     geom_abline(slope = 1, intercept = 0, lty = 2, col = "grey60") +
-    geom_sma(se = FALSE) +
+    geom_sma(se = TRUE) +
     geom_point(aes(col = pres_fac)) +
     ylab(expression("Flow rate under tension "~(g~s^{-1}))) +
     xlab(expression("Flow rate by pressure "~(g~s^{-1}))) +
@@ -31,8 +31,8 @@ sma_scatter <- function(data, log = FALSE) {
       values = my_col,
       name = "") +
     stat_cor(
-        label.x.npc = 0.25,
-        label.y.npc = 0.02,
+        label.x.npc = 0.35,
+        label.y.npc = 0.1,
         vjust = 1,
         p.accuracy = 0.0001,
         aes(label = paste(..rr.label.., ..p.label.. ,sep = "~`,`~"))
@@ -46,8 +46,10 @@ sma_scatter <- function(data, log = FALSE) {
      p +
       annotate(geom = "text", x = 3.5, y = 6,
         label = "1:1 line", angle = 45, col = "grey60") +
-      scale_x_log10() +
-      scale_y_log10() +
+      # scale_x_log10(limits = c(min(data$pres_calib, data$tens_calib), max(data$pres_calib, data$tens_calib))) +
+      # scale_y_log10(limits = c(min(data$pres_calib, data$tens_calib), max(data$pres_calib, data$tens_calib))) +
+      scale_x_log10(limits = c(0.1, max(data$pres_calib, data$tens_calib))) +
+      scale_y_log10(limits = c(0.1, max(data$pres_calib, data$tens_calib))) +
       coord_fixed()
    } else {
      p +
@@ -160,3 +162,4 @@ sma_ks2 <- function(p1, p2) {
       axis.title = element_text(size = 9)
     )
 }
+
