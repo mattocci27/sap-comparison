@@ -50,3 +50,7 @@ vignettes/*.pdf
 
 data
 data-raw
+
+*.sif
+*.html
+*.Renvion

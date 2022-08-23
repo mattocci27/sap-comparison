@@ -17,6 +17,11 @@ generate_anova_data <- function(data, log = FALSE) {
     list_data$y1 <- log(data$pres_calib)
     list_data$y2 <- log(data$tens_calib)
   }
+  # if (inter) {
+  #   list_data$inter <- 1
+  # } else {
+  #   list_data$inter <- 0
+  # }
 
   list_data$J <- unique(data$species) |> length()
   list_data$K <- unique(data$pressure) |> length()
@@ -57,6 +62,10 @@ generate_dummy_data <- function(n = 30, n_alpha = 5, n_beta = 5, sigma_alpha = 0
   list_data$alpha <- alpha
   list_data$beta <- beta
   list_data$gamma <- gamma
+  list_data$sigma_alpha <- sigma_alpha
+  list_data$sigma_beta <- sigma_beta
+  list_data$sigma_gamma <- sigma_gamma
+  list_data$sigma <- sigma
 
   alpha_ <- rep(alpha, each = n_beta) |> rep(each = n)
   beta_ <- rep(beta, n_alpha) |> rep(each = n)
