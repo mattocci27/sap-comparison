@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|e1792f1ee1be0462|||||||||||||||
+.Random.seed|object|7ae1cb6d0d37af87|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -105,18 +105,28 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 generate_anova_data|function|6bc05b28ae02757c|||||||||||||||
 generate_anova_mvn_data|function|391bc75c8ab3a47c|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
-ks_bars|function|aafb41c0821d88a7|||||||||||||||
+ks_bars|function|1ffc68245cc35275|||||||||||||||
+ks_box|function|539b720c13f06579|||||||||||||||
+ks_box_plot|stem|cc4eb996f1c12346|ca7cb3fcbe785765|3e3da7ac79ca8b81|-1202217080||t19227.464146902s|e0d3b2db227cb277|120071|rds|local|vector|||0.209||
+ks_box_plot2|stem|01b375e22b05be75|61c97d5e0575ca70|6c463b9d9beec2cf|-2077899878||t19227.4666102279s|791ea366b65f71d2|120431|rds|local|vector|||0.208||
+ks_box2|function|1f17b33f5d25bcb0|||||||||||||||
 ks_five_spp_csv|stem|49ad0f4be76f4e78|c8ca3219a79d86e9|ef46db3751d8e999|1333421173|data-raw/ks_pres_tens_five_spp.csv|t19226.3455544303s|a9458198ac48eede|1579|file|local|vector|||0.054||
 ks_five_trees_raw_csv|stem|04b80edf4750b95a|a7dbdc2b72006ed1|ef46db3751d8e999|84872374|data-raw/ks_pres_tens_trees_raw.csv|t19226.3463033357s|e3b663f73242eb85|3994|file|local|vector|||0.057||
+ks_ratio_html|stem|f069b65e04aa6085|c58219e3e1737d02|d84d7cdd1c3c4b08|1988494476|docs/ks_ratio.html*docs/ks_ratio.qmd|t19227.4585399626s|b35b0d88352d102e|1838678|file|local|vector|||10.348||
 ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|278756334|data/ks_pres_tens_spp_err.csv|t19227.3687799443s|dbf852b7f874f1df|3842|file|local|vector|||0.22||
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-2862566|data/ks_pres_tens_trees.csv|t19226.6868902716s|a86c3ec47ea93832|7649|file|local|vector|||0.155||
 ks_trees_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-499024047|data/ks_pres_tens_spp_err.csv|t19227.2432636726s|dbf852b7f874f1df|3842|file|local|vector|||0.227||
+lma_ld_plot|stem||da0d77b5cb426e64|29ce79553dc756a6|-1333039547||t19227.4266798758s||0|file|local|vector|||0.001||could not find function lma_ld_wrap_point
 loo_|stem|5831975043a47421|314ad55798c2cf32|631e07af5c133032|1440272382||t19227.2835268389s|0cb5736d43de31db|8386|rds|local|vector|||0.643|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|b26812ddbff34486|||||||||||||||
-my_theme|function|8bd495fdb3e8fdb4|||||||||||||||
-raw_data_list|object|bdc59ca1042aa877|||||||||||||||
-sma_scatter|function|b80172b4ccff3347|||||||||||||||
-sma_scatter_ks_log_plot|stem|dc550a7fe4454ccf|fca86bc0db0e8ac7|7c6e067744e6d12f|-50195053||t19226.6869036978s|33281baca0ac2a48|122560|rds|local|vector|||0.213||
-sma_scatter_ks_plot|stem|e4adc43c3755f304|db9b3fd3537541a3|7c6e067744e6d12f|106148634||t19226.6868977717s|5492609cb8141810|87492|rds|local|vector|||0.198||
-sma_scatter_log_plot|stem|ebe857ac010d4466|bb5ee286cdf8edc2|11e28f07d6eee75f|1411685232||t19226.6869018922s|a8cb1f1bb318ede7|122892|rds|local|vector|||0.135||
-sma_scatter_plot|stem|2510116ebc7bf93e|e268ef9d2781699c|11e28f07d6eee75f|-651295624||t19226.6869052256s|5f1d1301fac0b28d|87815|rds|local|vector|||0.212||
+main_list|object|33d8bebfb94db3d8|||||||||||||||
+my_theme|function|63e26270112a0b32|||||||||||||||
+raw_data_list|object|d7f8c188182cbf40|||||||||||||||
+sma_ks|function|b7d1e193bb5d6743|||||||||||||||
+sma_ks_plot|stem|24bd52be10513d7d|4106407b9b56794b|96ca8674ed134e14|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19227.4658307248s|f7729a6bf773d0c6|227667|file|local|vector|||1.192|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks_plot2|stem|6bcfadda7035b2e0|2e46791360070116|4ba733f268cf27b0|635610121|figs/sma_ks2.png*figs/sma_ks2.pdf|t19227.4723965698s|3fd6ce94c6c5a707|260848|file|local|vector|||1.341|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks2|function|c3a72f68902bc689|||||||||||||||
+sma_scatter|function|690497de4a103983|||||||||||||||
+sma_scatter_ks_log_plot|stem|bdb8c00bb4df2cf4|fca86bc0db0e8ac7|e967a4dcdb3872c1|-50195053||t19227.4618132079s|b85d657c995d1a00|122599|rds|local|vector|||0.242||
+sma_scatter_ks_plot|stem|744008c51dc33928|db9b3fd3537541a3|e967a4dcdb3872c1|106148634||t19227.4618170968s|cec578fd58e3fdac|87533|rds|local|vector|||0.217||
+sma_scatter_log_plot|stem|bd40a7ac7808b87b|bb5ee286cdf8edc2|781e8b8c7597b5de|1411685232||t19227.4618116801s|a05d9f208e2a12e6|122926|rds|local|vector|||0.226||
+sma_scatter_plot|stem|16153085dc12d309|e268ef9d2781699c|781e8b8c7597b5de|-651295624||t19227.4618167265s|bdbb6b1d38873930|87855|rds|local|vector|||0.03||

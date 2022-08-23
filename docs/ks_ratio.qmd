@@ -1,0 +1,139 @@
+---
+title: "your title"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    self-contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+
+```{r,include=FALSE}
+library(tidyverse)
+library(targets)
+library(tarchetypes)
+library(kableExtra)
+library(here)
+library(loo)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "figs.R"))
+```
+
+```{r}
+d <- read_csv(here("data", "ks_pres_tens_trees.csv"))
+
+d_tens <- d |>
+  filter(pres_type == "tens") |>
+  rename(tens_calib = "ks") |>
+  dplyr::select(!pres_type) |>
+  dplyr::select(!sample_id)
+
+d3 <- NULL
+for (i in 1:20) {
+
+d_tens_rand <- d_tens |>
+  group_by(species, tree_id, pressure) |>
+  summarise(tens_calib = sample(tens_calib)) |>
+  ungroup() |>
+  arrange(species, pressure, tree_id) |>
+  mutate(new_sample_id = 1:nrow(d_tens))
+
+# d_tens  |>
+#   arrange(species, pressure, tree_id)
+
+# d_tens2  |>
+#   filter(tree_id == 12)
+
+d_pres <- d |>
+  filter(pres_type == "pres") |>
+  rename(pres_calib = "ks") |>
+  dplyr::select(!pres_type) |>
+  dplyr::select(!sample_id) |>
+  arrange(species, pressure, tree_id) |>
+  mutate(new_sample_id = 1:nrow(d_tens))
+
+d2 <- full_join(d_pres, d_tens_rand) |>
+  mutate(sp = as.factor(species)) |>
+  mutate(pres = as.factor(pressure))
+
+d3 <- bind_rows(d3, d2)
+}
+
+d3 |>
+ # filter(species == "HH") |>
+  mutate(ks_ratio = pres_calib / tens_calib) |>
+  ggplot(aes(y = ks_ratio, x = pres, fill = pres)) +
+  # geom_violin() +
+  geom_boxplot() +
+  geom_point(position = position_dodge(width = 0.90)) +
+  facet_grid( ~ sp) +
+  theme_bw()
+
+
+d2 |>
+ # filter(species == "HH") |>
+  mutate(ks_diff = pres_calib - tens_calib) |>
+  ggplot(aes(y = ks_diff, x = pres, fill = pres)) +
+  geom_violin() +
+  geom_point(position = position_dodge(width = 0.90)) +
+  facet_grid( ~ sp) +
+  theme_bw()
+  # scale_y_log10()
+```
+
+
+```{r}
+library(RColorBrewer)
+
+my_col <- RColorBrewer::brewer.pal(3, "RdBu")
+d |>
+  mutate(calib_type = ifelse(pres_type == "pres",
+   "Pressure", "Tension")) |>
+  mutate(species = factor(species,
+    levels = c("HH", "VM", "HB", "TG", "AP"))) |>
+  ggplot(aes(y = ks, x = as.factor(pressure), fill = calib_type)) +
+  #geom_violin() +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge(jitter.width = 0), alpha = 0.5) +
+  # facet_wrap( ~ species, ncol = 1, scale = "free") +
+  facet_grid(rows = vars(species), scale = "free") +
+  scale_y_log10() +
+  ylab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+  xlab("Pressure (MPa)") +
+  scale_fill_manual(
+    name = "Calibration",
+    values = my_col[-2],
+    ) +
+  my_theme() +
+  theme(
+    legend.position = "top")
+
+```
+
+```{r,eval=FALSE}
+library(patchwork)
+tar_load(sma_scatter_log_plot)
+tar_load(ks_box_plot)
+
+sma_scatter_log_plot + ks_box_plot
+```

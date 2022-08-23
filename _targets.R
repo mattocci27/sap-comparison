@@ -17,6 +17,7 @@ options(clustermq.scheduler = "multicore")
 
 tar_option_set(packages = c(
   "tidyverse",
+  "patchwork",
   "httpgd",
   "ggsma",
   "ggpubr",
@@ -77,6 +78,14 @@ main_list <- list(
   tar_target(
     sma_scatter_plot,
     sma_scatter(five_spp_csv)
+  ),
+  tar_target(
+    ks_box_plot,
+    ks_box(ks_trees_csv)
+  ),
+  tar_target(
+    ks_box_plot2,
+    ks_box2(ks_trees_csv)
   ),
   tar_target(
     sma_scatter_log_plot,
@@ -346,6 +355,47 @@ main_list <- list(
     )
   ),
 
+  tar_target(
+    sma_ks_plot, {
+      p <- sma_ks(sma_scatter_log_plot, ks_box_plot)
+      ggsave(
+        "figs/sma_ks.png",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+      ggsave(
+        "figs/sma_ks.pdf",
+        p,
+        width = 6.81,
+        height = 6
+      )
+      paste0("figs/sma_ks", c(".png", ".pdf"))
+    },
+    format = "file"
+  ),
+  tar_target(
+    sma_ks_plot2, {
+      p <- sma_ks2(sma_scatter_log_plot, ks_box_plot2)
+      ggsave(
+        "figs/sma_ks2.png",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+      ggsave(
+        "figs/sma_ks2.pdf",
+        p,
+        width = 6.81,
+        height = 6
+      )
+      paste0("figs/sma_ks2", c(".png", ".pdf"))
+    },
+    format = "file"
+  ),
+
   # tar_target(
   #   ks_pred_draws,
   #   create_stan_tab(fit1_draws_anova)
@@ -372,6 +422,10 @@ main_list <- list(
   tar_quarto(
     dummy_html,
     "docs/dummy.qmd"
+  ),
+  tar_quarto(
+    ks_ratio_html,
+    "docs/ks_ratio.qmd"
   ),
 
   NULL

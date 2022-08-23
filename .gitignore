@@ -55,3 +55,4 @@ data-raw
 *.html
 *.Renvion
 docs/dummy_files/
+*.png
