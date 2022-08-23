@@ -363,7 +363,7 @@ main_list <- list(
         p,
         dpi = 300,
         width = 6.81,
-        height = 4.4
+        height = 6.81
       )
       ggsave(
         "figs/sma_ks.pdf",

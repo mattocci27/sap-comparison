@@ -143,11 +143,11 @@ ks_box2 <- function(data) {
 
 sma_ks <- function(p1, p2) {
   p1 + p2 +
-    # plot_layout(nrow = 1, width = c(3, 1)) +
+    plot_layout(nrow = 1, width = c(1.8, 1)) +
     plot_annotation(tag_levels = "a") &
     theme(
-      # plot.margin = unit(c(0, 0, 0, 0), "cm"),
-      axis.title = element_text(size = 9)
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12)
     )
 }
 

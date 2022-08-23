@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|7ae1cb6d0d37af87|||||||||||||||
+.Random.seed|object|f691c05f3302dd56|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -118,11 +118,11 @@ ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-2862566|da
 ks_trees_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-499024047|data/ks_pres_tens_spp_err.csv|t19227.2432636726s|dbf852b7f874f1df|3842|file|local|vector|||0.227||
 lma_ld_plot|stem||da0d77b5cb426e64|29ce79553dc756a6|-1333039547||t19227.4266798758s||0|file|local|vector|||0.001||could not find function lma_ld_wrap_point
 loo_|stem|5831975043a47421|314ad55798c2cf32|631e07af5c133032|1440272382||t19227.2835268389s|0cb5736d43de31db|8386|rds|local|vector|||0.643|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|33d8bebfb94db3d8|||||||||||||||
+main_list|object|ac55c7cdbdbd0a02|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 raw_data_list|object|d7f8c188182cbf40|||||||||||||||
-sma_ks|function|b7d1e193bb5d6743|||||||||||||||
-sma_ks_plot|stem|24bd52be10513d7d|4106407b9b56794b|96ca8674ed134e14|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19227.4658307248s|f7729a6bf773d0c6|227667|file|local|vector|||1.192|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks|function|9c2566642d19c117|||||||||||||||
+sma_ks_plot|stem|f99e9fd3ec646b67|485c43262953e24b|2b26552788664ace|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19227.4774877193s|bbc446e080ba68ff|294562|file|local|vector|||1.25|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 sma_ks_plot2|stem|6bcfadda7035b2e0|2e46791360070116|4ba733f268cf27b0|635610121|figs/sma_ks2.png*figs/sma_ks2.pdf|t19227.4723965698s|3fd6ce94c6c5a707|260848|file|local|vector|||1.341|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 sma_ks2|function|c3a72f68902bc689|||||||||||||||
 sma_scatter|function|690497de4a103983|||||||||||||||
