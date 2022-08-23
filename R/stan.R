@@ -1,31 +1,35 @@
 
-generate_anova_data <- function(data, log = FALSE) {
+generate_anova_data <- function(data, log = FALSE, err = FALSE) {
   data <- read_csv(data)
   list_data <- list(
     N = nrow(data),
     jj = data$species |>  as.factor() |> as.numeric(),
     kk = data$pressure |>  as.factor() |> as.numeric(),
+    mm = data$tree_id |>  as.factor() |> as.numeric(),
+    mk = paste(data$tree_id, data$pressure, sep = "_")
+      |> as.factor() |> as.numeric(),
     jk = paste(data$species, data$pressure, sep = "_")
       |> as.factor() |> as.numeric(),
-    y = data$pres_calib - data$tens_calib,
-    y1 = data$pres_calib,
-    y2 = data$tens_calib
+    y = data$pres_calib_mean - data$tens_calib_mean,
+    y1 = data$pres_calib_mean,
+    y2 = data$tens_calib_mean
   )
 
   if (log) {
-    list_data$y <- log(data$pres_calib / data$tens_calib)
-    list_data$y1 <- log(data$pres_calib)
-    list_data$y2 <- log(data$tens_calib)
+    list_data$y <- log(data$pres_calib_mean / data$tens_calib_mean)
+    list_data$y1 <- log(data$pres_calib_mean)
+    list_data$y2 <- log(data$tens_calib_mean)
   }
-  # if (inter) {
-  #   list_data$inter <- 1
-  # } else {
-  #   list_data$inter <- 0
-  # }
+  if (err) {
+    list_data$sig1 <- data$pres_calib_sd
+    list_data$sig2 <- data$tens_calib_sd
+  }
 
   list_data$J <- unique(data$species) |> length()
   list_data$K <- unique(data$pressure) |> length()
+  list_data$M <- unique(data$tree_id) |> length()
   list_data$JK <- unique(list_data$jk) |> length()
+  list_data$MK <- unique(list_data$mk) |> length()
   list_data
 }
 

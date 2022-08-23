@@ -58,6 +58,17 @@ raw_data_list <- list(
     clean_ks_trees(ks_five_trees_raw_csv),
     format = "file"
   ),
+  tar_target(
+    ks_spp_err_csv,
+    clean_ks_trees_err(ks_trees_csv),
+    format = "file"
+  ),
+  # tar_target(
+  #   ks_spp_err_csv,
+  #   "data/ks_pres_tens_spp_err.csv",
+  #   format = "file"
+  # ),
+
   NULL
 )
 
@@ -94,11 +105,15 @@ main_list <- list(
   ),
   tar_target(
     anova_data,
-    generate_anova_data(ks_five_spp_csv)
+    generate_anova_data(ks_spp_err_csv)
   ),
   tar_target(
     anova_data_log,
-    generate_anova_data(ks_five_spp_csv, log = TRUE)
+    generate_anova_data(ks_spp_err_csv, log = TRUE)
+  ),
+  tar_target(
+    anova_data_err,
+    generate_anova_data(ks_spp_err_csv, err = TRUE)
   ),
   tar_target(
     dummy_data,
@@ -153,6 +168,39 @@ main_list <- list(
      max_treedepth = 15,
      seed = 123
   ),
+
+  tar_stan_mcmc(
+     fit_anova_noint_err_log,
+     "stan/anova_noint_err.stan",
+     data = anova_data_err,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.99,
+     max_treedepth = 15,
+     seed = 123
+   ),
+  tar_stan_mcmc(
+     fit_anova_int_err_log,
+     "stan/anova_int_err.stan",
+     data = anova_data_err,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     draws = TRUE,
+     diagnostics = TRUE,
+     summary = TRUE,
+     adapt_delta = 0.99,
+     max_treedepth = 15,
+     seed = 123
+   ),
 
   tar_stan_mcmc(
      fit_anova_inter,

@@ -9,22 +9,30 @@ clean_ks_trees <- function(data) {
     )) |>
   write_csv("data/ks_pres_tens_trees.csv")
   paste("data/ks_pres_tens_trees.csv")
-  # d_pres <- d2 |>
-  #   filter(pres_type != "tens") |>
-  #   rename(pres_calib = "ks") |>
-  #   dplyr::select(!pres_type)
+}
 
-  # d_tens <- d2 |>
-  #   filter(pres_type == "tens") |>
-  #   rename(tens_calib = "ks") |>
-  #   dplyr::select(!pres_type)
+#' @para data  e.g., ks_trees_csv
+clean_ks_trees_err <- function(data) {
+#  d <- read_csv("data/ks_pres_tens_trees.csv") |>
+  d <- read_csv(data) |>
+    group_by(species, tree_id, pres_type, pressure) |>
+    summarize(ks_mean = mean(ks, na.rm = TRUE),
+     ks_sd = sd(ks, na.rm = TRUE)) |>
+    ungroup()
 
-  # full_join(d_pres, d_tens) |>
-  #   mutate(pressure = case_when(
-  #     pressure == "p_2" ~ 0.02,
-  #     pressure == "p_5"  ~ 0.05,
-  #     pressure == "p_8"  ~ 0.08
-  #   )) |>
-  # write_csv("data/ks_pres_tens_trees.csv")
-  # paste("data/ks_pres_tens_trees.csv")
+    d_tens <- d |>
+      filter(pres_type == "tens") |>
+      rename(tens_calib_mean = "ks_mean") |>
+      rename(tens_calib_sd = "ks_sd") |>
+      dplyr::select(!pres_type)
+
+    d_pres <- d |>
+      filter(pres_type == "pres") |>
+      rename(pres_calib_mean = "ks_mean") |>
+      rename(pres_calib_sd = "ks_sd") |>
+      dplyr::select(!pres_type)
+
+    full_join(d_pres, d_tens) |>
+      write_csv("data/ks_pres_tens_spp_err.csv")
+    paste("data/ks_pres_tens_spp_err.csv")
 }
