@@ -164,7 +164,7 @@ sma_ks2 <- function(p1, p2) {
 }
 
 
-coef_sd <- function(draws) {
+coef_intervals_sd <- function(draws) {
   intervals_data <- mcmc_intervals_data(
     draws,
     pars = c("sigma"),
@@ -187,6 +187,111 @@ coef_sd <- function(draws) {
     ylab("") +
     xlab("Standard deviation") +
     my_theme()
+}
+
+coef_intervals_mean <- function(draws) {
+  intervals_data <- mcmc_intervals_data(
+    draws,
+    pars = c("mu_hat"),
+    point_est = "median",
+    prob = 0.5,
+    prob_outer = 0.95,
+    regex_pars = "alpha\\[[1-9]\\]|beta\\[[1-9]\\]") |>
+    mutate(para = case_when(
+      parameter == "beta[1]" ~ "p_2",
+      parameter == "beta[2]" ~ "p_5",
+      parameter == "beta[3]" ~ "p_8",
+      parameter == "alpha[1]" ~ "AP",
+      parameter == "alpha[2]" ~ "HB",
+      parameter == "alpha[3]" ~ "HH",
+      parameter == "alpha[4]" ~ "TG",
+      parameter == "alpha[5]" ~ "VM",
+      parameter == "mu_hat" ~ "ks_ratio",
+    )) |>
+    mutate(para = factor(para,
+      levels = c("ks_ratio",
+      "AP", "HB", "HH", "TG", "VM",
+      "p_2", "p_5", "p_8"
+      ) |> rev()))
+
+  ggplot(intervals_data, aes(y = para)) +
+    geom_vline(xintercept = 0, lty = 2, col = "grey60") +
+    geom_linerange(aes(xmin = ll, xmax = hh)) +
+    geom_linerange(aes(xmin = l, xmax = h), size = 2) +
+    geom_point(aes(x = m), size = 3) +
+    ylab("") +
+    xlab("Posterior estimates") +
+    my_theme()
+}
+
+coef_intervals_diff <- function(draws) {
+  tmp <- tibble(x = 1:5, sp_x = c("AP",
+      "HB",
+      "HH",
+      "TG",
+      "VM"))
+  tmp2 <- tmp |>
+    rename(y = x) |>
+    rename(sp_y = sp_x)
+
+  tmp3 <- expand_grid(x = 1:5, y = 1:5) |>
+    full_join(tmp) |>
+    full_join(tmp2) |>
+    mutate(para = paste0("alpha_", x, y)) |>
+    mutate(para_name = paste(sp_x, "-", sp_y))
+
+  tmp4 <- tribble(~ para, ~ para_name,
+    "beta_12", "p_2 - p_5",
+    "beta_13", "p_2 - p_8",
+    "beta_23", "p_5 - p_8"
+  )
+
+  tmp5 <- tmp3 |>
+  dplyr::select(para, para_name) |>
+    bind_rows(tmp4) |>
+    mutate(para_name = factor(para_name,
+    levels = c(tmp3$para_name, tmp4$para_name) |> rev()))
+
+  intervals_data <- mcmc_intervals_data(
+    draws,
+    # pars = c("mu_hat"),
+    point_est = "median",
+    prob = 0.5,
+    prob_outer = 0.95,
+    regex_pars = "alpha_[1-5]|beta_[1-9]") |>
+    left_join(tmp5, by = c("parameter" = "para"))
+
+  ggplot(intervals_data, aes(y = para_name)) +
+    geom_vline(xintercept = 0, lty = 2, col = "grey60") +
+    geom_linerange(aes(xmin = ll, xmax = hh)) +
+    geom_linerange(aes(xmin = l, xmax = h), size = 2) +
+    geom_point(aes(x = m), size = 3) +
+    ylab("") +
+    xlab("Posterior estimates") +
+    my_theme()
+}
+
+coef_density_sd <- function(draws) {
+# library(tidyverse)
+# library(targets)
+# library(ggridges)
+# tar_load(fit_anova_noint_err_log_draws_anova_noint_err)
+# draws <- fit_anova_noint_err_log_draws_anova_noint_err
+
+# draws_data <- draws |>
+#     janitor::clean_names()  |>
+#     dplyr::select(tau_1, tau_2, sigma) |>
+#     rename(Species = tau_1) |>
+#     rename(Pressure = tau_2) |>
+#     rename(Residuals = sigma) |>
+#     pivot_longer(1:3)
+  mcmc_areas(
+    draws,
+    pars = c("tau[1]", "tau[2]", "sigma"),
+    prob = 0.5
+    ) +
+    # xlim(c(0, 2)) +
+    scale_y_discrete(labels = c("Species", "Pressure", "Residuals"))
 }
 
 my_ggsave <- function(filename, plot, units = c("in", "cm",

@@ -7,6 +7,7 @@ library(furrr)
 library(languageserver)
 library(clustermq)
 library(quarto)
+library(bayesplot)
 
 source("R/data_clean.R")
 source("R/stan.R")
@@ -20,8 +21,10 @@ tar_option_set(packages = c(
   "patchwork",
   "bayesplot",
   "httpgd",
+  "smatr",
   "ggsma",
   "ggpubr",
+  "ggridges",
   "RColorBrewer"
 ))
 
@@ -384,18 +387,65 @@ main_list <- list(
   ),
 
   tar_target(
-    coef_sd_plot, {
-      p <- coef_sd(fit_anova_noint_err_log_draws_anova_noint_err)
+    coef_intervals_sd_plot, {
+      p <- coef_intervals_sd(fit_anova_noint_err_log_draws_anova_noint_err)
       my_ggsave(
-        "figs/coef_sd",
+        "figs/coef_intervals_sd",
         p,
         dpi = 300,
-        width = 3.2,
-        height = 3.2
+        width = 8.5,
+        height = 8.5,
+        units = "cm"
       )
     },
     format = "file"
   ),
+
+  tar_target(
+    coef_intervals_mean_plot, {
+      p <- coef_intervals_mean(fit_anova_noint_err_log_draws_anova_noint_err)
+      my_ggsave(
+        "figs/coef_intervals_mean",
+        p,
+        dpi = 300,
+        width = 8.5,
+        height = 8.5,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
+  tar_target(
+    coef_intervals_diff_plot, {
+      p <- coef_intervals_diff(fit_anova_noint_err_log_draws_anova_noint_err)
+      my_ggsave(
+        "figs/coef_intervals_diff",
+        p,
+        dpi = 300,
+        width = 8.5,
+        height = 8.5,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
+  tar_target(
+    coef_density_sd_plot, {
+      p <- coef_density_sd(fit_anova_noint_err_log_draws_anova_noint_err)
+      my_ggsave(
+        "figs/coef_density_sd",
+        p,
+        dpi = 300,
+        width = 8.5,
+        height = 8.5,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
   tar_target(
     anova_yml,
     write_anova_yml(

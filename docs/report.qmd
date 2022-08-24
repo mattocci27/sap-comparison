@@ -1,5 +1,5 @@
 ---
-title: "report"
+title: "Figures"
 author: "Masatoshi Katabuchi"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 fontsize: 11pt
@@ -33,30 +33,176 @@ library(here)
 library(kableExtra)
 library(targets)
 library(loo)
+library(smatr)
 source(here("R", "stan.R"))
+anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
 
 # Fig. 1
 
+## Summary
+
+- Pressure induced flow rates tend to be greater than tension induced flow rates (positive $\mu$ = `ks_ratio`; the equation and the barplot for means).
+Although it's not signifcant, the difference looks kinda clear from Fig. 1ab and the hierarchical model.
+
+- Species effects on the difference (ratio) between pressure and tension are relatively large (`r str_split(anova_yml$species, " ")[[1]][1]`) but pressure-level effects are small (`r str_split(anova_yml$pressure, " ")[[1]][1]`) .
+
+
 ## Visualization
 
-Non-log scale compares if the difference between flow rate by pressure and flow rate under tension (flow rate by pressure - flow rate under tension) is different from zero, whereas log scale compares the ratio between the two (log[flow rate by pressure / flow rate under tension]) is different from log one (log(1) = 0).
+(a): **Note that this standard major axis (SMA) regression is not that appropriate** because the data points include both interspecific and intraspecific variations, and thus residuals should not be independent.
+Visualization itself is probably fine.
+The thick line indicates SMA regression and shaded area indicates 95% confidence intervals.
+
+Having said that, both elevation and slope shifted significantly (table below and Fig. 1a), suggesting that flow rates tend to be greater for pressure calibration.
+
+(b): Each data point indicates each raw measurement (each tree has 3 measurements).
+
+It looks:
+
+- Pressure > tension for HH and VM
+- Pressure < tension for AP.
+
+The effect of pressure gradient is not clear.
+
+We can check the patterns in more detail using hierarchical models below.
 
 ![](`r here::here("figs/sma_ks.png")`)
 
-## Analysis
 
-Posterior medians, 50%, and 95% credible intervals for standard deviations estiamted from the difference between pressure and tension indcued flows.
+```{r, include=FALSE}
+tar_load(ks_spp_err_csv)
+d <- read_csv(ks_spp_err_csv)
+sma_fit <- sma(log(tens_calib_mean) ~ log(pres_calib_mean), d)
+```
 
-![](`r here::here("figs/coef_sd.png")`)
+```{r}
+sma_fit
+```
 
+
+## Analysis (ANOVA-like hierarchical model)
+
+We can make the hierarchical model like the previous model, but we can include measurment errors from the raw data too.
+We don't want to waste the data!
+
+$$
+y^{meas}_{1ijk} \sim N(y_{1ijk}, \sigma_{y1ijk})
+$$
+
+$$
+y^{meas}_{2ijk} \sim N(y_{2ijk}, \sigma_{y2ijk})
+$$
+
+$$
+\mathrm{ln}\; y_{1ijk} = \mu + \alpha_j + \beta_k + \mathrm{ln}\; y_{2ijk} + \epsilon_{i}
+$$
+
+$$
+\alpha_j \sim N(0, \sigma_{\alpha})
+$$
+$$
+\beta_j \sim N(0, \sigma_{\beta})
+$$
+
+$$
+\mathrm{ln}\; y_{1ijk} \sim N(\mu + \alpha_j + \beta_k + \mathrm{ln}\; y_{2ijk}, \sigma)
+$$
+
+- *i*: Obervation
+
+- *j*: Species
+
+- *k*: Pressure level
+
+- $y^{meas}_{1ijk}$: Measured mean pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
+$y^{meas}_{2ijk}$ is for tension calibration.
+
+- $y_{1ijk}$: True pressure indicuded flow rates for *i*th obervation from *j*th species, under *k*th pressure level (parameter).
+$y_{2ijk}$ is for tension calibration.
+
+- $\sigma_{y1jk}$: Standard deviation of pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
+This data can be estimated from the raw data with multiple measurements.
+$\sigma_{y2jk}$ is for tension calibration.
+
+- $\mu$: Overall (species and pressure-level independet) effects.
+
+- $\alpha_j$: Species effect
+
+- $\beta_k$: Pressure-leve effect
+
+- $\sigma_{\alpha}$: Standard deviaiton of the species effect
+
+- $\sigma_{\beta}$: Standard deviaiton of the pressure-level effect
+
+- $\sigma$: Standard deviaiton of the model (i.e., residuals)
+
+
+I will show several figures from this single analysis.
+
+### Variance
+
+Posterior medians, 50%, and 95% credible intervals (CIs) for standard deviations estiamted from the difference between pressure and tension induced flows.
+
+![](`r here::here("figs/coef_intervals_sd.png")`){ width=350 }
+
+Posterior medians, and 50% CIs for standard deviations estiamted from the difference between pressure and tension induced flows.
+The data to draw the figure is the same with the above, but you can clearly see the distribution of the true estimates.
+Upper bounds of these estimates (especially pressure) tend to become very large due to the small group number (3-levels: 0.02, 0.05, and 0.08 MPa).
+Using 50% CI instead of 95% CI might be OK but I'm not very sure.
+Half of the shaded area (50% CI) should contain the true values.
+
+![](`r here::here("figs/coef_density_sd.png")`){ width=350 }
+
+We can translate the posterior distribution of standard deviations into an ANOVA like statement.
+
+For example, we can calculate the species effect like:
+
+$$
+\frac{\sigma^2_{\alpha}}{\sigma^2_{\alpha} + \sigma^2_{\beta} + \sigma^2} \times 100\;(\%)
+$$
+
+**Species account for `r str_split(anova_yml$species, " ")[[1]][1]` of total variance for the ratio between pressure and tension induced flow rates, whereas pressure gradients account for only `r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance.**
+**Although pressure gradients do not affect the differences in the two estimates, species effects are important.**
+The effect of interactions was not selected after model selections.
+
+- median and 50% CIs
+
+- Species: `r anova_yml$species`
+
+- Pressure: `r anova_yml$pressure`
+
+- Residuals: `r anova_yml$residuals`
+
+### Mean
+
+Posterior medians, 50%, and 95% credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
+Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
+
+Pressure induced flow rates tend to be greater than tension induced flow rates (positive ks_ratio parameter).
+This suggests a probablity of getting larger values for pressure induced flow rates than for tension induced flow rates is about 90% (but less than 95%).
+This is consistent with Fig. 1ab.
+
+![](`r here::here("figs/coef_intervals_mean.png")`){ width=350 }
+
+Here is a multiple comparison-like visualization.
+The estimates for AP is smaller than HH, TG, and VM, suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM given that the overall effects is positive,
+HB shows the similar pattern with AP.
+This is consistent with Fig. 1b.
+
+![](`r here::here("figs/coef_intervals_diff.png")`){ width=350 }
+
+
+# Fig. 2
+
+Later
 
 ```{r, eval=FALSE}
 targets::tar_visnetwork()
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 devtools::session_info()
 ```
 

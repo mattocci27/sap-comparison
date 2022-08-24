@@ -53,6 +53,6 @@ data-raw
 
 *.sif
 *.html
-*.Renvion
 docs/dummy_files/
+docs/report_files/
 *.png
