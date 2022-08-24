@@ -78,7 +78,7 @@ We can check the patterns in more detail using hierarchical models below.
 ```{r, include=FALSE}
 tar_load(ks_spp_err_csv)
 d <- read_csv(ks_spp_err_csv)
-sma_fit <- sma(log(tens_calib_mean) ~ log(pres_calib_mean), d)
+sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
 ```
 
 ```{r}
@@ -163,8 +163,8 @@ $$
 \frac{\sigma^2_{\alpha}}{\sigma^2_{\alpha} + \sigma^2_{\beta} + \sigma^2} \times 100\;(\%)
 $$
 
-**Species account for `r str_split(anova_yml$species, " ")[[1]][1]` of total variance for the ratio between pressure and tension induced flow rates, whereas pressure gradients account for only `r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance.**
-**Although pressure gradients do not affect the differences in the two estimates, species effects are important.**
+**Species account for `r str_split(anova_yml$species, " ")[[1]][1]` of total variance for the ratio between pressure and tension induced flow rates, whereas pressure levels account for only `r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance.**
+**Although pressure levels do not affect the differences in the two estimates, species effects are important.**
 The effect of interactions was not selected after model selections.
 
 - median and 50% CIs
