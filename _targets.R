@@ -18,6 +18,7 @@ options(clustermq.scheduler = "multicore")
 tar_option_set(packages = c(
   "tidyverse",
   "patchwork",
+  "bayesplot",
   "httpgd",
   "ggsma",
   "ggpubr",
@@ -358,44 +359,51 @@ main_list <- list(
   tar_target(
     sma_ks_plot, {
       p <- sma_ks(sma_scatter_log_plot, ks_box_plot)
-      ggsave(
-        "figs/sma_ks.png",
+      my_ggsave(
+        "figs/sma_ks",
         p,
         dpi = 300,
         width = 6.81,
-        height = 6.81
+        height = 4.4
       )
-      ggsave(
-        "figs/sma_ks.pdf",
-        p,
-        width = 6.81,
-        height = 6
-      )
-      paste0("figs/sma_ks", c(".png", ".pdf"))
     },
     format = "file"
   ),
   tar_target(
     sma_ks_plot2, {
       p <- sma_ks2(sma_scatter_log_plot, ks_box_plot2)
-      ggsave(
-        "figs/sma_ks2.png",
+      my_ggsave(
+        "figs/sma_ks2",
         p,
         dpi = 300,
         width = 6.81,
         height = 4.4
       )
-      ggsave(
-        "figs/sma_ks2.pdf",
-        p,
-        width = 6.81,
-        height = 6
-      )
-      paste0("figs/sma_ks2", c(".png", ".pdf"))
     },
     format = "file"
   ),
 
+  tar_target(
+    coef_sd_plot, {
+      p <- coef_sd(fit_anova_noint_err_log_draws_anova_noint_err)
+      my_ggsave(
+        "figs/coef_sd",
+        p,
+        dpi = 300,
+        width = 3.2,
+        height = 3.2
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    anova_yml,
+    write_anova_yml(
+      "yml/anova.yml",
+      fit_anova_noint_err_log_draws_anova_noint_err,
+      ll = 0.25, hh = 0.75),
+    format = "file"
+  ),
   # tar_target(
   #   ks_pred_draws,
   #   create_stan_tab(fit1_draws_anova)
@@ -414,10 +422,10 @@ main_list <- list(
   #   ks_bars(ks_five_spp_csv, ks_log_pred_draws)
   # ),
 
-  # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
-  # ),
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
 
   tar_quarto(
     dummy_html,

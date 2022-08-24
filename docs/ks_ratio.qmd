@@ -150,7 +150,6 @@ mcmc_intervals(
   prob_outer = 0.95,
   regex_pars = "tau\\[[1-9]\\]")
 
-
 ```
 
 ```{r}
@@ -162,9 +161,31 @@ tmp <- draws |>
     mutate(var_tau_2 = tau_2^2 / var_) |>
     mutate(var_sigma = sigma^2 / var_)
 
-apply(tmp * 100, 2, mean) |> round(2)
-apply(tmp, 2, \(x)quantile(x * 100, 0.025)) |> round(2)
-apply(tmp, 2, \(x)quantile(x * 100, 0.975)) |> round(2)
+median_ <- apply(tmp * 100, 2, median) |> round(1)
+q2_5 <- apply(tmp, 2, \(x)quantile(x * 100, 0.025)) |> round(1)
+q97_5 <- apply(tmp, 2, \(x)quantile(x * 100, 0.975)) |> round(1)
+
+paste0(median_["var_tau_1"], " [",
+  q2_5["var_tau_1"],
+  ", ",
+  q97_5["var_tau_1"],
+  "]"
+)
+
+paste0(median_["var_tau_2"], " [",
+  q2_5["var_tau_2"],
+  ", ",
+  q97_5["var_tau_2"],
+  "]"
+)
+
+paste0(median_["var_sigma"], " [",
+  q2_5["var_sigma"],
+  ", ",
+  q97_5["var_sigma"],
+  "]"
+)
+
 
 intervals_data <- mcmc_intervals_data(
   draws,
@@ -179,13 +200,14 @@ intervals_data <- mcmc_intervals_data(
     parameter == "tau[2]" ~ "Pressure",
   )) |>
   mutate(para = factor(para,
-    levels = c("species", "Pressure", "Residuals")))
+    levels = c("Species", "Pressure", "Residuals") |> rev()))
 
 ggplot(intervals_data, aes(y = para)) +
   geom_linerange(aes(xmin = ll, xmax = hh)) +
   geom_linerange(aes(xmin = l, xmax = h), size = 1.5) +
-  geom_point(aes(x = m), size = 3)
-
-
+  geom_point(aes(x = m), size = 3) +
+  ylab("") +
+  xlab("Standard deviation") +
+  my_theme()
 
 ```

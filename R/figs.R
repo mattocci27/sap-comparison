@@ -163,3 +163,54 @@ sma_ks2 <- function(p1, p2) {
     )
 }
 
+
+coef_sd <- function(draws) {
+  intervals_data <- mcmc_intervals_data(
+    draws,
+    pars = c("sigma"),
+    point_est = "median",
+    prob = 0.5,
+    prob_outer = 0.95,
+    regex_pars = "tau\\[[1-9]\\]") |>
+    mutate(para = case_when(
+      parameter == "sigma" ~ "Residuals",
+      parameter == "tau[1]" ~ "Species",
+      parameter == "tau[2]" ~ "Pressure",
+    )) |>
+    mutate(para = factor(para,
+      levels = c("Species", "Pressure", "Residuals") |> rev()))
+
+  ggplot(intervals_data, aes(y = para)) +
+    geom_linerange(aes(xmin = ll, xmax = hh)) +
+    geom_linerange(aes(xmin = l, xmax = h), size = 2) +
+    geom_point(aes(x = m), size = 3) +
+    ylab("") +
+    xlab("Standard deviation") +
+    my_theme()
+}
+
+my_ggsave <- function(filename, plot, units = c("in", "cm",
+        "mm", "px"), height = NA, width = NA, dpi = 300, ...) {
+
+  ggsave(
+    filename = paste0(filename, ".png"),
+    plot = plot,
+    height = height,
+    width = width,
+    units = units,
+    dpi = dpi,
+    ...
+  )
+
+  ggsave(
+    filename = paste0(filename, ".pdf"),
+    plot = plot,
+    height = height,
+    width = width,
+    units = units,
+    dpi = dpi,
+    ...
+  )
+
+  paste0(filename, c(".png", ".pdf"))
+}

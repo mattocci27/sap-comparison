@@ -141,3 +141,55 @@ generate_anova_mvn_data <- function(data, model_type = c("normal", "log-normal",
 # plot(mean_ ~ var_ , hoge, log = "xy")
 
 #tar_read(anova_mvn_data)
+
+
+write_anova_yml <- function(output, draws, ll = 0.025, hh = 0.975) {
+  tmp <- draws |>
+      janitor::clean_names()  |>
+      dplyr::select(tau_1, tau_2, sigma) |>
+      mutate(var_ = tau_1^2 + tau_2^2 + sigma^2) |>
+      mutate(var_tau_1 = tau_1^2 / var_) |>
+      mutate(var_tau_2 = tau_2^2 / var_) |>
+      mutate(var_sigma = sigma^2 / var_)
+
+  median_ <- apply(tmp * 100, 2, median) |> round(1)
+  lwr <- apply(tmp, 2, \(x)quantile(x * 100, ll)) |> round(1)
+  upr <- apply(tmp, 2, \(x)quantile(x * 100, hh)) |> round(1)
+
+  out <- file(paste(output), "w") # write
+  writeLines(
+    paste0("species: ",
+      median_["var_tau_1"], "% [",
+      lwr["var_tau_1"],
+      ", ",
+      upr["var_tau_1"],
+      "]"
+    ),
+    out,
+    sep = "\n")
+  writeLines(
+    paste0("pressure: ",
+      median_["var_tau_2"], "% [",
+      lwr["var_tau_2"],
+      ", ",
+      upr["var_tau_2"],
+      "]"
+    ),
+    out,
+    sep = "\n")
+  writeLines(
+    paste0("residuals: ",
+      median_["var_sigma"], "% [",
+      lwr["var_sigma"],
+      ", ",
+      upr["var_sigma"],
+      "]"
+    ),
+    out,
+    sep = "\n")
+
+   close(out)
+   # The return value must be a vector of paths to the files we write:
+   paste(output)
+}
+
