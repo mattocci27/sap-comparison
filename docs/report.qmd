@@ -42,28 +42,33 @@ anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 
 ## Summary
 
-- Pressure induced flow rates tend to be greater than tension induced flow rates (positive $\mu$ = `ks_ratio`; the equation and the barplot for means).
+- **Pressure > tension?**
+Pressure induced flow rates tend to be greater than tension induced flow rates (positive $\mu$ = `ks_ratio`; the equation and the barplot for means).
 Although it's not signifcant, the difference looks kinda clear from Fig. 1ab and the hierarchical model.
 
-- Species effects on the difference (ratio) between pressure and tension are relatively large (`r str_split(anova_yml$species, " ")[[1]][1]`) but pressure-level effects are small (`r str_split(anova_yml$pressure, " ")[[1]][1]`) .
+- **There are species effects.**
+Species effects on the difference (ratio) between pressure and tension are relatively large (`r str_split(anova_yml$species, " ")[[1]][1]` of the total variance) but pressure-level effects are small (`r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance) .
 
 
 ## Visualization
 
 (a): **Note that this standard major axis (SMA) regression is not that appropriate** because the data points include both interspecific and intraspecific variations, and thus residuals should not be independent.
+
+Having said that, both elevation and slope shifted significantly (table below and Fig. 1a), suggesting that flow rates tend to be greater for pressure calibration.
 Visualization itself is probably fine.
 The thick line indicates SMA regression and shaded area indicates 95% confidence intervals.
 
-Having said that, both elevation and slope shifted significantly (table below and Fig. 1a), suggesting that flow rates tend to be greater for pressure calibration.
 
 (b): Each data point indicates each raw measurement (each tree has 3 measurements).
+**This is just visualization but I think it's more useful and intuitive than just showing model estimates.**
+**Analysis for this data is in the next section.**
 
 It looks:
 
 - Pressure > tension for HH and VM
 - Pressure < tension for AP.
 
-The effect of pressure gradient is not clear.
+The effect of pressure-level is not clear.
 
 We can check the patterns in more detail using hierarchical models below.
 
@@ -92,10 +97,6 @@ $$
 
 $$
 y^{meas}_{2ijk} \sim N(y_{2ijk}, \sigma_{y2ijk})
-$$
-
-$$
-\mathrm{ln}\; y_{1ijk} = \mu + \alpha_j + \beta_k + \mathrm{ln}\; y_{2ijk} + \epsilon_{i}
 $$
 
 $$
@@ -188,7 +189,7 @@ This is consistent with Fig. 1ab.
 Here is a multiple comparison-like visualization.
 The estimates for AP is smaller than HH, TG, and VM, suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM given that the overall effects is positive,
 HB shows the similar pattern with AP.
-This is consistent with Fig. 1b.
+This is also consistent with Fig. 1b.
 
 ![](`r here::here("figs/coef_intervals_diff.png")`){ width=350 }
 
