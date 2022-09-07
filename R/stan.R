@@ -193,3 +193,25 @@ write_anova_yml <- function(output, draws, ll = 0.025, hh = 0.975) {
    paste(output)
 }
 
+
+generate_logistic_stan_data <- function(data) {
+  # library(tidyverse)
+  # library(targets)
+  tar_load(cond_count_csv)
+  data <- cond_count_csv
+
+  d <- read_csv(data) |>
+    filter(!is.na(count))
+
+  list(
+    N = nrow(d),
+    J = unique(d$species) |> length(),
+    K = 4,
+    jj = as.factor(d$species) |> as.numeric(),
+    y = d$count,
+    total = d$total,
+    x = d$pressure,
+    u = t(as.matrix(rep(1, 5)))
+  )
+
+}

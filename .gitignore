@@ -1,8 +1,7 @@
+# Compiled Object files without extensions
 *
 !*/
 !*.*
-
-.DS_Store
 
 # History files
 .Rhistory
@@ -10,6 +9,7 @@
 
 # Session Data files
 .RData
+.RDataTmp
 
 # User-specific files
 .Ruserdata
@@ -44,15 +44,31 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-*.pdf
-*.docx
-*.xlsx
+# pkgdown site
+# docs/
 
-data
-data-raw
+# translation temp files
+po/*~
 
+# RStudio Connect folder
+rsconnect/
+
+.DS_Store
+
+# binary files
 *.sif
-*.html
-docs/dummy_files/
-docs/report_files/
+*.pdf
+*.eps
+*.csv
 *.png
+*.docx
+*.pptx
+*.xslx
+*.html
+*.fdb_latexmk
+
+# cache from quarto
+*_files/
+
+# it's better to ignore
+#!ms/manuscript.pdf

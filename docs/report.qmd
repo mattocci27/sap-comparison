@@ -196,7 +196,57 @@ This is also consistent with Fig. 1b.
 
 # Fig. 2
 
-Later
+```{r,eval=TRUE}
+tar_load(cond_count_csv)
+d <- read_csv(cond_count_csv)
+
+ggplot(d, aes(x = as.factor(pressure), y = count/total * 100)) +
+  geom_boxplot() +
+  facet_wrap(~species)
+
+ggplot(d, aes(x = pressure, y = count/total * 100)) +
+  geom_point() +
+  scale_x_log10() +
+  facet_wrap(~species)
+
+ggplot(d, aes(x = pressure, y = count/total * 100)) +
+  geom_point() +
+  facet_wrap(~species)
+```
+
+```{r}
+library(lme4)
+fit <- glmer(cbind(count, total - count) ~ pressure + (pressure | species),
+  family = binomial, data = d)
+```
+
+```{r,eval=FALSE}
+tar_load(logistic_stan_data)
+logistic_stan_data
+
+tar_load(logistic_summary_piecewise_logistic)
+tar_load(logistic_draws_piecewise_logistic)
+
+logistic_summary_piecewise_logistic |>
+  filter(str_detect(variable, "gamma"))
+
+logistic_summary_piecewise_logistic |>
+  filter(str_detect(variable, "beta"))
+
+logistic_summary_piecewise_logistic |>
+  filter(str_detect(variable, "beta\\[2"))
+
+library(bayesplot)
+
+mcmc_intervals(logistic_draws_piecewise_logistic, regex_pars = "beta\\[")
+hist(rnorm(100))
+
+c(1:4) %*% t(rep(1,5))
+
+
+
+```
+
 
 ```{r, eval=FALSE}
 targets::tar_visnetwork()

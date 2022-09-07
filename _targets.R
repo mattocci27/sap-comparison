@@ -59,6 +59,11 @@ raw_data_list <- list(
     format = "file"
   ),
   tar_target(
+    cond_count_raw_csv,
+    "data-raw/cond_count_raw.csv",
+    format = "file"
+  ),
+  tar_target(
     ks_trees_csv,
     clean_ks_trees(ks_five_trees_raw_csv),
     format = "file"
@@ -66,6 +71,12 @@ raw_data_list <- list(
   tar_target(
     ks_spp_err_csv,
     clean_ks_trees_err(ks_trees_csv),
+    format = "file"
+  ),
+  tar_target(
+    cond_count_csv,
+    clean_cond_count(cond_count_raw_csv,
+    "data/cond_count.csv"),
     format = "file"
   ),
   # tar_target(
@@ -141,9 +152,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123
@@ -157,9 +165,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123
@@ -174,9 +179,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -191,9 +193,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.99,
      max_treedepth = 15,
      seed = 123
@@ -207,9 +206,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.99,
      max_treedepth = 15,
      seed = 123
@@ -224,9 +220,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -240,9 +233,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -256,9 +246,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -272,9 +259,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -290,9 +274,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
@@ -306,9 +287,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123
@@ -322,9 +300,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123
@@ -338,9 +313,6 @@ main_list <- list(
      parallel_chains = getOption("mc.cores", 4),
      iter_warmup = 1000,
      iter_sampling = 1000,
-     draws = TRUE,
-     diagnostics = TRUE,
-     summary = TRUE,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123
@@ -471,11 +443,39 @@ main_list <- list(
   #   ks_log_bar_plot,
   #   ks_bars(ks_five_spp_csv, ks_log_pred_draws)
   # ),
-
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
+  # fig2 ------------------------------------------
+  tar_target(
+   logistic_stan_data,
+   generate_logistic_stan_data(cond_count_csv)
   ),
+  tar_stan_mcmc(
+    logistic,
+    "stan/piecewise_logistic.stan",
+    data = logistic_stan_data,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   tar_quarto(
     dummy_html,
@@ -487,7 +487,6 @@ main_list <- list(
   ),
 
   NULL
-
 )
 
 append(raw_data_list, main_list)
