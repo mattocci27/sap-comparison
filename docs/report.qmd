@@ -196,6 +196,8 @@ This is also consistent with Fig. 1b.
 
 # Fig. 2
 
+## Check the raw data
+
 ```{r,eval=TRUE}
 tar_load(cond_count_csv)
 d <- read_csv(cond_count_csv)
@@ -205,16 +207,29 @@ ggplot(d, aes(x = as.factor(pressure), y = count/total * 100)) +
   facet_wrap(~species)
 
 ggplot(d, aes(x = pressure, y = count/total * 100)) +
-  geom_point() +
-  scale_x_log10() +
-  facet_wrap(~species)
-
-ggplot(d, aes(x = pressure, y = count/total * 100)) +
-  geom_point() +
+  geom_point(aes(size = total), alpha = 0.6) +
+#  scale_x_log10() +
+#  geom_smooth(method = "lm") +
   facet_wrap(~species)
 ```
 
-```{r}
+## For main text
+
+**Legend:**
+Changes in proportion of silicon-stained vessels along perfusion pressures.
+Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
+Size of data points (in blue) is proportional to the total number of vessels.
+
+![](`r here::here("figs/count_pressure.png")`){ width=200 }
+
+## For supporting information
+
+
+
+
+
+
+```{r,eval=FALSE}
 library(lme4)
 fit <- glmer(cbind(count, total - count) ~ pressure + (pressure | species),
   family = binomial, data = d)
@@ -224,8 +239,143 @@ fit <- glmer(cbind(count, total - count) ~ pressure + (pressure | species),
 tar_load(logistic_stan_data)
 logistic_stan_data
 
-tar_load(logistic_summary_piecewise_logistic)
-tar_load(logistic_draws_piecewise_logistic)
+tar_load(quad_logistic_diagnostics_hierarchical_logistic)
+tar_load(quad_logistic_mcmc_hierarchical_logistic)
+tar_load(quad_logistic_summary_hierarchical_logistic)
+tar_load(quad_logistic_draws_hierarchical_logistic)
+tar_load(simple_logistic_summary_hierarchical_logistic)
+tar_load(simple_logistic_draws_hierarchical_logistic)
+tar_load(simple_logistic_mcmc_hierarchical_logistic)
+
+simple_logistic_mcmc_hierarchical_logistic$loo()
+quad_logistic_mcmc_hierarchical_logistic$loo()
+quad_logistic_diagnostics_hierarchical_logistic
+
+quad_logistic_summary_hierarchical_logistic |>
+  filter(str_detect(variable, "gamma|beta"))
+
+library(bayesplot)
+
+mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "gamma\\[")
+
+hist(rnorm(100))
+library(loo)
+
+
+d <- read_csv("data/cond_count.csv") |>
+   filter(!is.na(count))
+
+x_mean <- mean(d$pressure)
+x_sd <- sd(d$pressure)
+
+draws <- quad_logistic_draws_hierarchical_logistic
+
+gamma_ <- draws |>
+  janitor::clean_names() |>
+  dplyr::select(contains("gamma")) |>
+  as.matrix()
+
+beta_ <- draws |>
+  janitor::clean_names() |>
+  dplyr::select(contains("beta"))
+
+tmp <- list()
+for (i in 1:5) {
+  tmp[[i]] <- beta_ |>
+  dplyr::select(matches(str_c("_", i, "$"))) |>
+  as.matrix()
+}
+
+xx_raw <- seq(0.02, 0.08, length = 80)
+xx <- (xx_raw - x_mean) / x_sd
+xx_mat <- cbind(1, xx, xx^2)
+
+sp <- d$species |> unique() |> as.factor() |> sort()
+tmp2 <- tibble(data = map(tmp, \(x) x %*% t(xx_mat))) |>
+  mutate(pred_m = map(data, \(x)apply(x, 2, quantile, 0.5))) |>
+  mutate(pred_l = map(data, \(x)apply(x, 2, quantile, 0.25))) |>
+  mutate(pred_h = map(data, \(x)apply(x, 2, quantile, 0.75))) |>
+  mutate(pred_ll = map(data, \(x)apply(x, 2, quantile, 0.025))) |>
+  mutate(pred_hh = map(data, \(x)apply(x, 2, quantile, 0.975))) |>
+  dplyr::select(-data) |>
+  mutate(species = sp) |>
+  # mutate(xx = list(xx)) |>
+  unnest(cols = c(pred_m, pred_l, pred_h, pred_ll, pred_hh))
+
+logit <- function(z) {
+  1 / (1 + exp(-z)) * 100
+}
+
+fig_data <- tmp2 |>
+  mutate_if(is.numeric, logit) |>
+  mutate(xx = rep(xx_raw, 5))
+
+ggplot(fig_data) +
+  geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total), alpha = 0.05) +
+  geom_line(aes(x = xx, y = pred_m)) +
+  geom_ribbon(aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
+  geom_ribbon(aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4) +
+  # facet_wrap(~sp) +
+  facet_grid(rows = vars(species), scale = "free") +
+  my_theme()
+
+
+  ggplot(d, aes(x = pressure, y = count/total * 100)) +
+  geom_point(aes(size = total), alpha = 0.6) +
+#  scale_x_log10() +
+#  geom_smooth(method = "lm") +
+  facet_wrap(~species)
+
+
+tmp3 <- logit(tmp2)
+as_tibble(tmp3)
+
+
+tmp %*% t(xx_mat)
+
+
+
+xx_raw <- seq(0.02, 0.08, length = 80)
+xx <- (xx_raw - x_mean) / x_sd
+
+xx_mat <- cbind(1, xx, xx^2)
+pred <- gamma_ %*% t(xx_mat)
+
+pred <- beta_ %*% t(xx_mat_beta)
+
+
+
+
+pred_m <- apply(pred, 2, quantile, 0.5) |> logit()
+pred_l <- apply(pred, 2, quantile, 0.25) |> logit()
+pred_ll <- apply(pred, 2, quantile, 0.025) |> logit()
+pred_h <- apply(pred, 2, quantile, 0.75) |> logit()
+pred_hh <- apply(pred, 2, quantile, 0.975) |> logit()
+
+fig_data <- tibble(xx, pred_m, pred_ll, pred_l ,pred_h, pred_h)
+
+
+
+
+ggplot(fig_data) +
+  geom_line(aes(x = xx, y = pred_m)) +
+  geom_ribbon(aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
+  geom_ribbon(aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4)
+
+
+plot(xx_raw, logit(pred_h), type = "l")
+
+
+logistic_summary_quad_logistic |>
+  filter(str_detect(variable, "gamma"))
+logistic_summary_quad_logistic |>
+  filter(str_detect(variable, "beta"))
+
+quad_logistic_summary_quad_logistic |>
+  filter(str_detect(variable, "gamma"))
+
+quad_logistic_summary_quad_logistic |>
+  filter(str_detect(variable, "beta"))
 
 logistic_summary_piecewise_logistic |>
   filter(str_detect(variable, "gamma"))
@@ -242,8 +392,6 @@ mcmc_intervals(logistic_draws_piecewise_logistic, regex_pars = "beta\\[")
 hist(rnorm(100))
 
 c(1:4) %*% t(rep(1,5))
-
-
 
 ```
 

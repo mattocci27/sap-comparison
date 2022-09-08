@@ -319,3 +319,89 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
 
   paste0(filename, c(".png", ".pdf"))
 }
+
+
+logit <- function(z) {
+  1 / (1 + exp(-z)) * 100
+}
+
+plot_logistic_sp <- function(draws, data_file) {
+  d <- read_csv(data_file) |>
+   filter(!is.na(count))
+
+  x_mean <- mean(d$pressure)
+  x_sd <- sd(d$pressure)
+  xx_raw <- seq(0.02, 0.08, length = 80)
+  xx <- (xx_raw - x_mean) / x_sd
+  xx_mat <- cbind(1, xx, xx^2)
+
+  sp <- d$species |> unique() |> as.factor() |> sort()
+
+  gamma_ <- draws |>
+    janitor::clean_names() |>
+    dplyr::select(contains("gamma")) |>
+    as.matrix()
+
+  beta_ <- draws |>
+    janitor::clean_names() |>
+    dplyr::select(contains("beta"))
+
+  tmp <- list()
+  for (i in 1:5) {
+    tmp[[i]] <- beta_ |>
+    dplyr::select(matches(str_c("_", i, "$"))) |>
+    as.matrix()
+  }
+
+  tmp2 <- tibble(data = map(tmp, \(x) x %*% t(xx_mat))) |>
+    mutate(pred_m = map(data, \(x)apply(x, 2, quantile, 0.5))) |>
+    mutate(pred_l = map(data, \(x)apply(x, 2, quantile, 0.25))) |>
+    mutate(pred_h = map(data, \(x)apply(x, 2, quantile, 0.75))) |>
+    mutate(pred_ll = map(data, \(x)apply(x, 2, quantile, 0.025))) |>
+    mutate(pred_hh = map(data, \(x)apply(x, 2, quantile, 0.975))) |>
+    dplyr::select(-data) |>
+    mutate(species = sp) |>
+    unnest(cols = c(pred_m, pred_l, pred_h, pred_ll, pred_hh))
+
+  fig_data <- tmp2 |>
+    mutate_if(is.numeric, logit) |>
+    mutate(xx = rep(xx_raw, 5))
+
+  my_col <- RColorBrewer::brewer.pal(3, "Set2")
+
+# "#66C2A5"
+# "#FC8D62"
+# "#8DA0CB"
+
+  tag_data <- tibble(
+    species = sp,
+    label = str_c(LETTERS[1:5], ": ", sp),
+    x = 0.03,
+    y = 95
+  )
+
+  ggplot() +
+    geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total), alpha = 0.2, col = my_col[3]) +
+    geom_line(data = fig_data, aes(x = xx, y = pred_m), size = 0.5) +
+    geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
+    geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4) +
+    ylab("Proportion of vessel with silicon (%)") +
+    xlab("Pressure (MPa)") +
+    geom_text(data = tag_data,
+      aes(x = x, y = y, label = label),
+      size = 3,
+      col = "grey10"
+      ) +
+    coord_cartesian(xlim = c(0.015, 0.085)) +
+    scale_x_continuous(breaks = c(0.02, 0.05, 0.08)) +
+    facet_grid(rows = vars(species), scale = "fixed") +
+    my_theme() +
+    theme(
+      legend.position = "none",
+        strip.background = element_blank(),
+        strip.text.y = element_blank()
+        # plot.margin = unit(c(1,1,1,1) , units = "lines" )
+    )
+
+}
+

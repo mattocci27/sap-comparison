@@ -445,13 +445,13 @@ main_list <- list(
   # ),
   # fig2 ------------------------------------------
   tar_target(
-   logistic_stan_data,
-   generate_logistic_stan_data(cond_count_csv)
+   piecewise_logistic_stan_data,
+   generate_piecewise_logistic_stan_data(cond_count_csv)
   ),
   tar_stan_mcmc(
-    logistic,
+    piecewise_logistic,
     "stan/piecewise_logistic.stan",
-    data = logistic_stan_data,
+    data = piecewise_logistic_stan_data,
     refresh = 0,
     chains = 4,
     parallel_chains = getOption("mc.cores", 4),
@@ -472,10 +472,72 @@ main_list <- list(
     )
   ),
 
-  # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
-  # ),
+  tar_stan_mcmc(
+    quad_logistic,
+    "stan/hierarchical_logistic.stan",
+    data = generate_logistic_stan_data(cond_count_csv, quad = TRUE),
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+  tar_stan_mcmc(
+    simple_logistic,
+    "stan/hierarchical_logistic.stan",
+    data = generate_logistic_stan_data(cond_count_csv, quad = FALSE),
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+
+  tar_target(
+    logistic_sp_plot, {
+      p <- plot_logistic_sp(quad_logistic_draws_hierarchical_logistic, "data/cond_count.csv")
+      my_ggsave(
+        "figs/count_pressure",
+        p,
+        dpi = 300,
+        width = 4.3,
+        height = 16.2,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
 
   tar_quarto(
     dummy_html,

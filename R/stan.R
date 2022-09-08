@@ -1,4 +1,3 @@
-
 generate_anova_data <- function(data, log = FALSE, err = FALSE) {
   data <- read_csv(data)
   list_data <- list(
@@ -193,16 +192,13 @@ write_anova_yml <- function(output, draws, ll = 0.025, hh = 0.975) {
    paste(output)
 }
 
-
-generate_logistic_stan_data <- function(data) {
+generate_piecewise_logistic_stan_data <- function(data) {
   # library(tidyverse)
   # library(targets)
-  tar_load(cond_count_csv)
-  data <- cond_count_csv
-
+  # tar_load(cond_count_csv)
+  # data <- cond_count_csv
   d <- read_csv(data) |>
     filter(!is.na(count))
-
   list(
     N = nrow(d),
     J = unique(d$species) |> length(),
@@ -213,5 +209,25 @@ generate_logistic_stan_data <- function(data) {
     x = d$pressure,
     u = t(as.matrix(rep(1, 5)))
   )
+}
 
+generate_logistic_stan_data <- function(data, quad = FALSE) {
+  d <- read_csv(data) |>
+    filter(!is.na(count))
+  scale_d <- scale(d$pressure)
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$species) |> length(),
+    K = 2,
+    jj = as.factor(d$species) |> as.numeric(),
+    y = d$count,
+    total = d$total,
+    x = cbind(1, scale_d),
+    u = t(as.matrix(rep(1, 5)))
+  )
+  if (quad) {
+    stan_data$K <- 3
+    stan_data$x <- cbind(1, scale_d, scale_d^2)
+  }
+  stan_data
 }

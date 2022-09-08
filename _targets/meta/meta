@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|c7974249b9183c58|||||||||||||||
+.Random.seed|object|f96cb1d438f6db14|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -108,7 +108,9 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 generate_anova_data|function|6bc05b28ae02757c|||||||||||||||
 generate_anova_mvn_data|function|391bc75c8ab3a47c|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
-generate_logistic_stan_data|function|8dbbd7be1fe5240f|||||||||||||||
+generate_logistic_stan_data|function|3fc36a50ea29a681|||||||||||||||
+generate_piecewise_logistic_stan_data|function|2978e927557631bf|||||||||||||||
+generate_quad_logistic_stan_data|function|a1cfd745b5700cdb|||||||||||||||
 ks_bars|function|1ffc68245cc35275|||||||||||||||
 ks_box|function|539b720c13f06579|||||||||||||||
 ks_box_plot|stem|cc4eb996f1c12346|ca7cb3fcbe785765|3e3da7ac79ca8b81|-1202217080||t19227.464146902s|e0d3b2db227cb277|120071|rds|local|vector|||0.209||
@@ -119,22 +121,57 @@ ks_five_trees_raw_csv|stem|04b80edf4750b95a|a7dbdc2b72006ed1|ef46db3751d8e999|84
 ks_ratio_html|stem|c359f2afe44b68b5|ecd04e8fa7c42077|5449634bf6cd2758|1988494476|docs/ks_ratio.html*docs/ks_ratio.qmd|t19228.2923428043s|bca1943ebfe1ffc6|1891031|file|local|vector|||10.015||
 ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|278756334|data/ks_pres_tens_spp_err.csv|t19227.3687799443s|dbf852b7f874f1df|3842|file|local|vector|||0.22||
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-2862566|data/ks_pres_tens_trees.csv|t19226.6868902716s|a86c3ec47ea93832|7649|file|local|vector|||0.155||
-logistic_data|stem|9ec6139c101c9467|15d37ece492552b7|6aa28e65a69aba06|647779724||t19242.1096668345s|257b15927dfb4d82|1372|qs|local|vector|||0||
+logistic_data|stem|5769dd34fdb2273c|15d37ece492552b7|3adb868f65d1b2f9|647779724||t19242.1424818314s|b83e223494d999b0|1459|qs|local|vector|||0.001||
 logistic_diagnostics_piecewise_logistic|stem|bcb842ca8aadaa21|31a45801a4b90ab5|df92b750b58a99d9|-1112438777||t19242.1125188271s|a79d0c805adfc589|137040|fst_tbl|local|vector|||0.001||
+logistic_diagnostics_quad_logistic|stem|e828abdb85a75e11|d7fef4a7e61bfaad|551eb3ba00cdb31a|2087144566||t19242.1428704029s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 logistic_draws_piecewise_logistic|stem|c3f6cf5c2ec4a41b|48dfbec41049154d|df92b750b58a99d9|-313115838||t19242.1125164196s|20d596b59a28c997|34025314|fst_tbl|local|vector|||0.051||
-logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db3751d8e999|-1525910729|stan/piecewise_logistic.stan|t19242.1109294947s|517f53a615cf3573|1244|file|local|vector|||0.001||
+logistic_draws_quad_logistic|stem|8ef7f9385d12424b|b4a1d99d4c729ae0|551eb3ba00cdb31a|228655443||t19242.1428742919s|9f2070aa368f91a1|1859207|fst_tbl|local|vector|||0.011||
+logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db3751d8e999|-1525910729|stan/piecewise_logistic.stan|t19242.1300475051s|517f53a615cf3573|1244|file|local|vector|||0.001||
+logistic_file_quad_logistic|stem|6e706b338b6b934d|a3b553fbd153cc4d|ef46db3751d8e999|-1610283948|stan/quad_logistic.stan|t19242.1318822563s|45ffbd1e22a1fd76|904|file|local|vector|||0.001||
 logistic_mcmc_piecewise_logistic|stem|922c26e83c52a34d|abd58d5dc3a53e5e|469cfd35159fb52c|-1049660624||t19242.1125135029s|54aa7bbb36e5dd26|5634994|qs|local|vector|||131.932||
-logistic_stan_data|stem|e2c39c9e8c7e4be2|52b6380e2238466a|3575f20ec876d4d8|-1896619038||t19242.1096653993s|05dddead137fffcf|1715|rds|local|vector|||0.132||
+logistic_mcmc_quad_logistic|stem|00d5c5f479ad2f7e|f53c1f70fcd1b847|89b3b756839f6edc|1565196133||t19242.1428662362s|cdb6c591ed8cc866|1695528|qs|local|vector|||32.962||
+logistic_sp_plot|stem|67a7acc2fc6ec78d|04f946400d104d69|a6ff64b81e6dd33d|-707568403|figs/count_pressure.png*figs/count_pressure.pdf|t19243.1494850948s|dd8efdbd26416658|295114|file|local|vector|||1.528||
+logistic_stan_data|stem|8905a5262f0c83d8|52b6380e2238466a|b910f2a54ea6939d|-1896619038||t19242.142479424s|8bf3fed57bcfb730|1762|rds|local|vector|||0.198||
 logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|f0d54b46e11030cb|9e19fdf62e87ad6e|1797567265||t19242.1125891986s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.941||
+logistic_summary_quad_logistic|stem|828f417df57d7d14|266cf1a30b9dbc93|8379215fa7824eb0|1340602732||t19242.1428773475s|55803e1e28bb6578|4763|fst_tbl|local|vector|||0.576||
+logit|function|85b2eccc2fdb02b5|||||||||||||||
 logit_data|stem|24c45d1656cdb625|15d37ece492552b7|928229b9e37b1058|-547518601||t19241.6421325117s|1b40636b5a59ba47|1347|qs|local|vector|||0||
 logit_file_piecewise_logistic|stem|d614e42cbed54351|88a74045587c1ee8|ef46db3751d8e999|1511951583|stan/piecewise_logistic.stan|t19241.6376437807s|99ca1a3e994211b6|1158|file|local|vector|||0.001||
 logit_mcmc_piecewise_logistic|stem|2fa32652472178ca|2ac59fd87609f9f6|d429e29d3c26c877|-1307546118||t19241.6421395025s|34e03681dc298ef3|40743|qs|local|vector|||0.484|EBFMI not computed because it is undefined for posterior chains of length less than 3.|
 loo_|stem|5831975043a47421|314ad55798c2cf32|ac856df788b994fa|1440272382||t19241.634955218s|0cb5736d43de31db|8386|rds|local|vector|||1.872|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|706106b57a2b75a3|||||||||||||||
+main_list|object|f0ab1dba87aebf4c|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
-raw_data_list|object|7590f8d747ea3e4c|||||||||||||||
-report_html|stem|918bcdb72330dc81|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19241.681728452s|d1f26a0c09296107|1474079|file|local|vector|||247.182||
+piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|fd9b5ff6ce5a469f|100578318||t19242.1381884688s|257b15927dfb4d82|1372|qs|local|vector|||0.001||
+piecewise_logistic_diagnostics_piecewise_logistic|stem|bcb842ca8aadaa21|8a0b2bb054593c22|b3e0a54580b18d70|916581309||t19242.1397576172s|a79d0c805adfc589|137040|fst_tbl|local|vector|||0.003||
+piecewise_logistic_draws_piecewise_logistic|stem|c3f6cf5c2ec4a41b|f74a4223fdf17c7b|b3e0a54580b18d70|-2031418130||t19242.1397668767s|20d596b59a28c997|34025314|fst_tbl|local|vector|||0.169||
+piecewise_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db3751d8e999|1792498367|stan/piecewise_logistic.stan|t19242.1300475051s|517f53a615cf3573|1244|file|local|vector|||0.001||
+piecewise_logistic_mcmc_piecewise_logistic|stem|6316862787800eef|13f6a7fe6e5c4c13|2f41908871432436|2134540686||t19242.1397427096s|76b5ad8e3eef2349|5621754|qs|local|vector|||133.737||
+piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f71598|998900439||t19242.1381859688s|05dddead137fffcf|1715|rds|local|vector|||0.208||
+piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19242.1398174331s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
+plot_logistic_sp|function|a32d9f8364a603b8|||||||||||||||
+quad_logistic_data|stem|3b2c788409de8019|bfe08f945a1ef032|0f05a3a92b4677ce|838584692||t19242.1496826011s|ccfa23508eb18bd8|1663|qs|local|vector|||0.202||
+quad_logistic_diagnostics_hierarchical_logistic|stem|b07bbc4c2e939654|cd7139a20a683806|f09bcae75494958f|-1718178995||t19242.1532401139s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.004||
+quad_logistic_diagnostics_quad_logistic|stem|b07bbc4c2e939654|da6da716c4b11b0b|b43fbfc2f956b096|45674135||t19242.1455465596s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.004||
+quad_logistic_draws_hierarchical_logistic|stem|7f49ebcd52a08da1|ba67c2309f179ee0|f09bcae75494958f|-727744604||t19242.1532499289s|37c4d45610afc716|32666880|fst_tbl|local|vector|||0.161||
+quad_logistic_draws_quad_logistic|stem|30f0c8419621d339|b0789323a124c475|b43fbfc2f956b096|706645465||t19242.1455455874s|30b817f98292db94|2888826|fst_tbl|local|vector|||0.006||
+quad_logistic_file_hierarchical_logistic|stem|228d981780eab6ee|b6eec3be33ee34d4|ef46db3751d8e999|-1709203410|stan/hierarchical_logistic.stan|t19242.1522052819s|b143953d2d8dd8f4|1053|file|local|vector|||0.001||
+quad_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db3751d8e999|477957073|stan/piecewise_logistic.stan|t19242.1291881397s|517f53a615cf3573|1244|file|local|vector|||0.001||
+quad_logistic_file_quad_logistic|stem|6e706b338b6b934d|a3b553fbd153cc4d|ef46db3751d8e999|573638003|stan/quad_logistic.stan|t19242.1318822563s|45ffbd1e22a1fd76|904|file|local|vector|||0.001||
+quad_logistic_mcmc_hierarchical_logistic|stem|38caf8710083ed0c|6b25f2f80d63dbad|c636d923a7a00a9b|1505615404||t19242.1532262248s|9662f11046d659c6|26280233|qs|local|vector|||80.54||
+quad_logistic_mcmc_piecewise_logistic|stem||d7d43dd8235b28ee|305fc9bd18819ff6|-1354711647||t19242.1286661713s||0|qs|local|vector|||11.672|Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
+quad_logistic_mcmc_quad_logistic|stem|2e73708c4784f751|9d4f6820c14bccc7|b5458d101e404c6d|1733013217||t19242.1455414669s|1d8c84e88804fdc3|2558434|qs|local|vector|||66.541||
+quad_logistic_stan_data|stem|93dfe78ea80c976a|bca8022469e5e655|fa536c8bdd9a3535|86374461||t19242.1447643704s|f33139973f0a70dc|1852|rds|local|vector|||0.201||
+quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d31d3653f2e6f7a2|1770241141||t19242.1533016427s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.036||
+quad_logistic_summary_quad_logistic|stem|fbbda52f2a6a7d9e|1e4bdb44419e667b|f73023b390523473|-2114738469||t19242.145556745s|5c654808f39ca279|6821|fst_tbl|local|vector|||0.715||
+raw_data_list|object|1c8697b61952c445|||||||||||||||
+report_html|stem|9bcdfa33f5fe0390|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19243.1539441s|3ab318d2c9be1f83|2600177|file|local|vector|||8.442||
+simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
+simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|c92b6edd8282f1ff|-738841485||t19242.1528636725s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
+simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|c92b6edd8282f1ff|-1956970355||t19242.1528611724s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.043||
+simple_logistic_file_hierarchical_logistic|stem|228d981780eab6ee|b6eec3be33ee34d4|ef46db3751d8e999|1379966212|stan/hierarchical_logistic.stan|t19242.1522052819s|b143953d2d8dd8f4|1053|file|local|vector|||0||
+simple_logistic_mcmc_hierarchical_logistic|stem|88c040e6cc520fde|a53546305c8cfd0d|8046224c1d1c17be|655890227||t19242.1528437184s|f2ace5b10b21c430|25251116|qs|local|vector|||45.892||
+simple_logistic_summary_hierarchical_logistic|stem|681c1cfb1c79c683|8cdaadf5cffca266|0d8da2662eaf60ca|33623541||t19242.1529204327s|80a8b00c2e91c1dd|55534|fst_tbl|local|vector|||5.782||
 sma_ks|function|9c2566642d19c117|||||||||||||||
 sma_ks_plot|stem|2e0720d42dbb0865|01cd5f58a2f2b36f|dc44f1f2666e79a1|-1942115763|figs/sma_ks.png*figs/sma_ks.pdf|t19228.1214458183s|87cdd557c22e5b62|257127|file|local|vector|||4.212|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 sma_ks_plot2|stem|5075891722ba1141|6c63bf1eeacc86a0|c1850778d9fd9061|635610121|figs/sma_ks2.png*figs/sma_ks2.pdf|t19228.121446235s|2a353b33bbd79c83|262267|file|local|vector|||4.407|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
