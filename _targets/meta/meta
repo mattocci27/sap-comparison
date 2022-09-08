@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|32f8b9cb321434a3|||||||||||||||
+.Random.seed|object|ac94e5d5cbeb070b|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -133,8 +133,8 @@ logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db37
 logistic_file_quad_logistic|stem|6e706b338b6b934d|a3b553fbd153cc4d|ef46db3751d8e999|-1610283948|stan/quad_logistic.stan|t19242.1318822563s|45ffbd1e22a1fd76|904|file|local|vector|||0.001||
 logistic_mcmc_piecewise_logistic|stem|922c26e83c52a34d|abd58d5dc3a53e5e|469cfd35159fb52c|-1049660624||t19242.1125135029s|54aa7bbb36e5dd26|5634994|qs|local|vector|||131.932||
 logistic_mcmc_quad_logistic|stem|00d5c5f479ad2f7e|f53c1f70fcd1b847|89b3b756839f6edc|1565196133||t19242.1428662362s|cdb6c591ed8cc866|1695528|qs|local|vector|||32.962||
-logistic_sp_plot|stem|bdd9cf2a4f9711d6|f184c52b13460ed0|e836287ce3359af0|-707568403|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19243.286313974s|dd8efdbd26416658|295114|file|local|vector|||1.487||
-logistic_sp_plot_linear|stem|5b82d326ee937f86|bcc0c695f024ff75|03e53a1e1cdeaf1b|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.2859020231s|e16f37c522501685|289464|file|local|vector|||1.672||
+logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568403|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19243.3606855175s|781403b097f5e3f9|311383|file|local|vector|||1.553||
+logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logistic_stan_data|stem|8905a5262f0c83d8|52b6380e2238466a|b910f2a54ea6939d|-1896619038||t19242.142479424s|8bf3fed57bcfb730|1762|rds|local|vector|||0.198||
 logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|f0d54b46e11030cb|9e19fdf62e87ad6e|1797567265||t19242.1125891986s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.941||
 logistic_summary_quad_logistic|stem|828f417df57d7d14|266cf1a30b9dbc93|8379215fa7824eb0|1340602732||t19242.1428773475s|55803e1e28bb6578|4763|fst_tbl|local|vector|||0.576||
@@ -153,7 +153,7 @@ piecewise_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee
 piecewise_logistic_mcmc_piecewise_logistic|stem|6316862787800eef|13f6a7fe6e5c4c13|2f41908871432436|2134540686||t19242.1397427096s|76b5ad8e3eef2349|5621754|qs|local|vector|||133.737||
 piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f71598|998900439||t19242.1381859688s|05dddead137fffcf|1715|rds|local|vector|||0.208||
 piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19242.1398174331s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
-plot_logistic_sp|function|73fc425d979baa3b|||||||||||||||
+plot_logistic_sp|function|440d27054e51566a|||||||||||||||
 quad_logistic_data|stem|3b2c788409de8019|bfe08f945a1ef032|0f05a3a92b4677ce|838584692||t19242.1496826011s|ccfa23508eb18bd8|1663|qs|local|vector|||0.202||
 quad_logistic_diagnostics_hierarchical_logistic|stem|b07bbc4c2e939654|cd7139a20a683806|67ee91a7aab60c21|-1718178995||t19243.2862920292s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.003||
 quad_logistic_diagnostics_quad_logistic|stem|b07bbc4c2e939654|da6da716c4b11b0b|b43fbfc2f956b096|45674135||t19242.1455465596s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.004||

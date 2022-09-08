@@ -370,11 +370,7 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
     mutate_if(is.numeric, logistic) |>
     mutate(xx = rep(xx_raw, 5))
 
-  my_col <- RColorBrewer::brewer.pal(3, "Set2")
-
-# "#66C2A5"
-# "#FC8D62"
-# "#8DA0CB"
+  my_col <- RColorBrewer::brewer.pal(11, "RdYlBu")
 
   tag_data <- tibble(
     species = sp,
@@ -384,7 +380,9 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
   )
 
   ggplot() +
-    geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total), alpha = 0.2, col = my_col[3]) +
+    geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total),
+    alpha = 0.3,
+    col = my_col[10]) +
     geom_line(data = fig_data, aes(x = xx, y = pred_m), size = 0.5) +
     geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
     geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4) +
