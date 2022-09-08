@@ -523,7 +523,7 @@ main_list <- list(
     logistic_sp_plot, {
       p <- plot_logistic_sp(quad_logistic_draws_hierarchical_logistic, "data/cond_count.csv")
       my_ggsave(
-        "figs/count_pressure",
+        "figs/count_pressure_quadratic",
         p,
         dpi = 300,
         width = 4.3,
@@ -533,6 +533,36 @@ main_list <- list(
     },
     format = "file"
   ),
+  tar_target(
+    logistic_sp_plot_linear, {
+      p <- plot_logistic_sp(simple_logistic_draws_hierarchical_logistic, "data/cond_count.csv", quad = FALSE)
+      my_ggsave(
+        "figs/count_pressure_simple",
+        p,
+        dpi = 300,
+        width = 4.3,
+        height = 16.2,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
+  tar_target(
+    coef_intervals_logistic_plot, {
+      p <- coef_intervals_logistic(quad_logistic_draws_hierarchical_logistic)
+      my_ggsave(
+        "figs/coef_intervals_logistic",
+        p,
+        dpi = 300,
+        width = 8.5,
+        height = 8.5,
+        units = "cm"
+      )
+    },
+    format = "file"
+  ),
+
 
   tar_quarto(
     report_html,

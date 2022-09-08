@@ -321,11 +321,11 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
 }
 
 
-logit <- function(z) {
+logistic <- function(z) {
   1 / (1 + exp(-z)) * 100
 }
 
-plot_logistic_sp <- function(draws, data_file) {
+plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
   d <- read_csv(data_file) |>
    filter(!is.na(count))
 
@@ -334,6 +334,9 @@ plot_logistic_sp <- function(draws, data_file) {
   xx_raw <- seq(0.02, 0.08, length = 80)
   xx <- (xx_raw - x_mean) / x_sd
   xx_mat <- cbind(1, xx, xx^2)
+  if (!quad) {
+    xx_mat <- cbind(1, xx)
+  }
 
   sp <- d$species |> unique() |> as.factor() |> sort()
 
@@ -364,7 +367,7 @@ plot_logistic_sp <- function(draws, data_file) {
     unnest(cols = c(pred_m, pred_l, pred_h, pred_ll, pred_hh))
 
   fig_data <- tmp2 |>
-    mutate_if(is.numeric, logit) |>
+    mutate_if(is.numeric, logistic) |>
     mutate(xx = rep(xx_raw, 5))
 
   my_col <- RColorBrewer::brewer.pal(3, "Set2")
@@ -405,3 +408,43 @@ plot_logistic_sp <- function(draws, data_file) {
 
 }
 
+
+coef_intervals_logistic <- function(draws) {
+   sp <- c("AP",
+      "HB",
+      "HH",
+      "TG",
+      "VM") |> as.factor() |> sort() |> as.character()
+
+  intervals_data <- mcmc_intervals_data(
+    draws,
+    regex_pars = "beta\\[|gamma\\[",
+    prob = 0.5,
+    prob_outer = 0.95) |>
+    mutate(para = case_when(
+      str_detect(parameter, "\\[1") ~ "Intercept",
+      str_detect(parameter, "\\[2") ~ "Linear",
+      str_detect(parameter, "\\[3") ~ "Quadratic",
+    )) |>
+    mutate(sp = case_when(
+      str_detect(parameter, "gamma") ~ "All",
+      str_detect(parameter, "1\\]") ~ sp[1],
+      str_detect(parameter, "2\\]") ~ sp[2],
+      str_detect(parameter, "3\\]") ~ sp[3],
+      str_detect(parameter, "4\\]") ~ sp[4],
+      str_detect(parameter, "5\\]") ~ sp[5],
+    )) |>
+    # mutate(para = str_c(sp, "-", para0)) |>
+    mutate(para = factor(para,
+      levels = c("Intercept", "Linear", "Quadratic") |> rev()))
+
+    ggplot(intervals_data, aes(y = para)) +
+      geom_vline(xintercept = 0, lty = 2, col = "grey60") +
+      geom_linerange(aes(xmin = ll, xmax = hh)) +
+      geom_linerange(aes(xmin = l, xmax = h), size = 2) +
+      geom_point(aes(x = m), size = 3) +
+      facet_wrap(~sp) +
+      ylab("") +
+      xlab("Posterior estimates") +
+      my_theme()
+}

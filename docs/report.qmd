@@ -215,27 +215,106 @@ ggplot(d, aes(x = pressure, y = count/total * 100)) +
 
 ## For main text
 
+We modeled the probability of a vessel filled with silicon as linear and quadratic logistic functions of perfusion pressures with varying- intercepts and slopes by species (Supporting information X).
+Model selection using Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO; @Vehtari2014; @Vehtari2017) suggested that the quadratic model performed better (the difference in expected log pointwise predictive accuracies between the two models was 207.9), and thus we only report the result of the quadratic model.
+
 **Legend:**
 Changes in proportion of silicon-stained vessels along perfusion pressures.
 Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
 Size of data points (in blue) is proportional to the total number of vessels.
 
-![](`r here::here("figs/count_pressure.png")`){ width=200 }
+![](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
 
 ## For supporting information
 
+**Legend:**
+Posterior medians, 50%, and 95% credible intervals (CIs) for model coefficients of the effects of perfusion pressure on the probability of a vessel filled with silicon.
+All, Common effects across all the species;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*.
 
+![](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
 
+### Stan code
 
-
+```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge"}
+```
 
 ```{r,eval=FALSE}
+# library(loo)
+# tar_load(quad_logistic_mcmc_hierarchical_logistic)
+# tar_load(simple_logistic_mcmc_hierarchical_logistic)
+# loo(quad_logistic_mcmc_hierarchical_logistic)
+
+# loo1 <- simple_logistic_mcmc_hierarchical_logistic$loo()
+# loo2 <- quad_logistic_mcmc_hierarchical_logistic$loo()
+# loo_compare(loo1, loo2)
+```
+
+
+
+```{r,eval=FALSE, include=FALSE}
 library(lme4)
 fit <- glmer(cbind(count, total - count) ~ pressure + (pressure | species),
   family = binomial, data = d)
 ```
 
-```{r,eval=FALSE}
+```{r,eval=FALSE, include=FALSE}
+
+library(bayesplot)
+
+tar_load(quad_logistic_summary_hierarchical_logistic)
+tar_load(quad_logistic_draws_hierarchical_logistic)
+quad_logistic_summary_hierarchical_logistic |>
+  filter(str_detect(variable, "gamma|beta"))
+
+
+mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "gamma\\[|beta\\[")
+
+mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "beta\\[")
+
+tar_load(cond_count_csv)
+d <- read_csv(cond_count_csv)
+sp <- as.factor(d$species) |> unique() |> sort() |> as.character()
+
+intervals_data <- mcmc_intervals_data(
+  quad_logistic_draws_hierarchical_logistic,
+  regex_pars = "beta\\[|gamma\\[",
+  prob = 0.5,
+  prob_outer = 0.95) |>
+  mutate(para = case_when(
+    str_detect(parameter, "\\[1") ~ "Intercept",
+    str_detect(parameter, "\\[2") ~ "Linear",
+    str_detect(parameter, "\\[3") ~ "Quadratic",
+  )) |>
+  mutate(sp = case_when(
+    str_detect(parameter, "gamma") ~ "All",
+    str_detect(parameter, "1\\]") ~ sp[1],
+    str_detect(parameter, "2\\]") ~ sp[2],
+    str_detect(parameter, "3\\]") ~ sp[3],
+    str_detect(parameter, "4\\]") ~ sp[4],
+    str_detect(parameter, "5\\]") ~ sp[5],
+  )) |>
+  # mutate(para = str_c(sp, "-", para0)) |>
+  mutate(para = factor(para,
+    levels = c("Intercept", "Linear", "Quadratic") |> rev()))
+
+  ggplot(intervals_data, aes(y = para)) +
+    geom_vline(xintercept = 0, lty = 2, col = "grey60") +
+    geom_linerange(aes(xmin = ll, xmax = hh)) +
+    geom_linerange(aes(xmin = l, xmax = h), size = 2) +
+    geom_point(aes(x = m), size = 3) +
+    facet_wrap(~sp) +
+    ylab("") +
+    xlab("Posterior estimates") +
+    my_theme()
+
+```
+
+```{r,eval=FALSE, include=FALSE}
 tar_load(logistic_stan_data)
 logistic_stan_data
 
@@ -392,7 +471,6 @@ mcmc_intervals(logistic_draws_piecewise_logistic, regex_pars = "beta\\[")
 hist(rnorm(100))
 
 c(1:4) %*% t(rep(1,5))
-
 ```
 
 

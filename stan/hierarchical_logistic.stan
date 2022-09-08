@@ -1,10 +1,10 @@
 data {
   int<lower=0> N; // number of samples
   int<lower=0> J; // number of species
-  int<lower=0> K; // number of parameters (int, beta1, beta2, bp)
+  int<lower=0> K; // number of predictors (simple: 2, quadratic: 3)
   array[N] int<lower=1,upper=J> jj; // species
-  array[N] int<lower=0> y; // count
-  array[N] int<lower=0> total; // total
+  array[N] int<lower=0> y; // no. vessels with silicon
+  array[N] int<lower=0> total; // total vessels
   matrix[N, K] x; // tree-level predictor
   matrix[1, J] u; // sp-level intercept
 }
