@@ -72,3 +72,6 @@ rsconnect/
 
 # it's better to ignore
 #!ms/manuscript.pdf
+
+
+!data-raw/*.csv
