@@ -254,6 +254,111 @@ AP, *Acacia pennata*.
 # loo_compare(loo1, loo2)
 ```
 
+# Fig. 3
+
+This is something different from balanced/unbalanced data, I need to check if that kind of analysis works fine first.
+
+```{r}
+library(tidyverse)
+
+d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  janitor::clean_names()
+
+d2 <- d |>
+  filter(species_name == "Hevea brasiliensis")
+
+hist(d$p_2)
+
+ggplot(d, aes(x = k, y = fd, col = xylem_type)) +
+  geom_point() +
+  facet_wrap(~ species_name, scale = "free")
+
+p1 <-
+  d2 |> filter(p_2 <= 0.02) |>
+  ggplot(aes(x = k, y = fd, col = xylem_type)) +
+  geom_point() +
+  facet_wrap(~ species_name, scale = "free") +
+  ggtitle("P <= 0.02")
+
+p2 <- d2 |> filter(p_2 <= 0.05) |>
+  ggplot(aes(x = k, y = fd, col = xylem_type)) +
+  geom_point() +
+  facet_wrap(~ species_name, scale = "free") +
+  ggtitle("P <= 0.05")
+
+
+```
+
+```{r}
+
+n <- 10
+p_raw <- seq(0.03, 0.08, by = 0.01)
+x_raw <- seq(0, 1, length = n)
+
+data_raw <- tibble(p = rep(p_raw, each = n), x = rep(x_raw, length(p_raw)))
+
+nd <- data_raw |>
+  group_by(p) |>
+  nest() |>
+  ungroup()
+
+filter_cum <- function(nd, p_val) {
+  nd |>
+    filter(p <= {{p_val}})  |>
+    mutate(p_cum = {{p_val}}) |>
+    unnest(cols = data)
+}
+
+data <- bind_rows(
+  filter_cum(nd, 0.03),
+  filter_cum(nd, 0.04),
+  filter_cum(nd, 0.05),
+  filter_cum(nd, 0.06),
+  filter_cum(nd, 0.07),
+  filter_cum(nd, 0.08)
+)
+
+a <- 119 + 50 * p_raw
+b <- 1.231 + 2 * p_raw
+
+data2 <- data |>
+  group_by(p_cum) |>
+  nest() |>
+  ungroup() |>
+  mutate(a = a) |>
+  mutate(b = b) |>
+  unnest(cols = data) |>
+  mutate(log_mu = log(a) + b * x)
+
+sig <- 0.2
+
+log_y <- rnorm(nrow(data2), data2$log_mu, sig)
+
+data3 <- data2 |>
+  mutate(log_y = log_y) |>
+  mutate(y = exp(log_y)) |>
+  mutate(p_cum2 = as.factor(p_cum))
+
+ggplot(data3, aes(x = x, y = y, col = as.factor(p_cum))) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+ggplot(data3, aes(x = x, y = y, col = as.factor(p_cum))) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  facet_wrap(~ p_cum2)
+
+
+p <- rep(p_raw, each = n)
+
+sig <- 0.01
+mu <- alpha + beta * p
+y <- rnorm(n * length(p_raw), mu, sig)
+
+tibble(y, mu, p) +
+  ggplot(aes(x = ))
+
+```
 
 
 ```{r,eval=FALSE, include=FALSE}
