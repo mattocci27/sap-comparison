@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|ac94e5d5cbeb070b|||||||||||||||
+.Random.seed|object|33a7670ed16adf58|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -169,7 +169,7 @@ quad_logistic_stan_data|stem|93dfe78ea80c976a|bca8022469e5e655|fa536c8bdd9a3535|
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quad_logistic_summary_quad_logistic|stem|fbbda52f2a6a7d9e|1e4bdb44419e667b|f73023b390523473|-2114738469||t19242.145556745s|5c654808f39ca279|6821|fst_tbl|local|vector|||0.715||
 raw_data_list|object|1c8697b61952c445|||||||||||||||
-report_html|stem|cd1951a3d9557123|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19243.3181249393s|2db116bde8ed6d44|2593374|file|local|vector|||9.207||
+report_html|stem|f490dd7808e3b837|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19245.3820322393s|44d237fc920c7559|3459057|file|local|vector|||14.14||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19243.2858748467s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|27ca53b1660a164b|-1956970355||t19243.2858775319s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.162||

@@ -34,6 +34,7 @@ library(kableExtra)
 library(targets)
 library(loo)
 library(smatr)
+library(GGally)
 source(here("R", "stan.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
@@ -254,328 +255,342 @@ AP, *Acacia pennata*.
 # loo_compare(loo1, loo2)
 ```
 
-# Fig. 3
+# Fig. 3-5
 
-This is something different from balanced/unbalanced data, I need to check if that kind of analysis works fine first.
+## Data check
 
 ```{r}
-library(tidyverse)
-
 d <- read_csv("data-raw/calibration_raw_data.csv") |>
   janitor::clean_names()
+```
 
-d2 <- d |>
-  filter(species_name == "Hevea brasiliensis")
 
-hist(d$p_2)
-
+```{r, fig.width=10, fig.height=10}
 ggplot(d, aes(x = k, y = fd, col = xylem_type)) +
   geom_point() +
   facet_wrap(~ species_name, scale = "free")
+```
 
-p1 <-
-  d2 |> filter(p_2 <= 0.02) |>
-  ggplot(aes(x = k, y = fd, col = xylem_type)) +
+```{r,eval=F}
+p1 <- d2 |>
+  ggplot(aes(x = k, y = fd, col = p_2)) +
   geom_point() +
-  facet_wrap(~ species_name, scale = "free") +
-  ggtitle("P <= 0.02")
+  facet_wrap(~ species_name, scale = "free")
+```
 
-p2 <- d2 |> filter(p_2 <= 0.05) |>
-  ggplot(aes(x = k, y = fd, col = xylem_type)) +
-  geom_point() +
-  facet_wrap(~ species_name, scale = "free") +
-  ggtitle("P <= 0.05")
+Non-log.
+```{r}
+trait_long <- d |>
+  dplyr::select(wood_density, swc, dh, vaf, vf, ks) |>
+  pivot_longer(1:6)
 
+ggplot(trait_long, aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~ name, scale = "free")
+```
 
+Log.
+
+```{r}
+ggplot(trait_long, aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~ name, scale = "free") +
+  scale_x_log10()
+```
+
+```{r message=FALSE, warning=FALSE}
+d |>
+  mutate(
+    log_swc = log(swc),
+    log_dh = log(dh),
+    log_vaf = log(vaf),
+    log_vf = log(vf),
+    log_ks = log(ks),
+    log_k = log(k),
+    log_k = log(k),
+    log_fd = log(fd)
+  ) |>
+  dplyr::select(log_fd, log_k, wood_density, log_swc, log_dh, log_vaf, log_vf, log_ks) |>
+  ggpairs()
 ```
 
 ```{r}
+d |>
+  filter(!is.na(k)) |>
+  filter(!is.na(fd)) |>
+  filter(!is.na(p_2)) |>
+  nrow()
 
-n <- 10
-p_raw <- seq(0.03, 0.08, by = 0.01)
-x_raw <- seq(0, 1, length = n)
+d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks)) |>
+  filter(!is.na(k)) |>
+  filter(!is.na(fd)) |>
+  filter(!is.na(p_2)) |>
+  nrow()
 
-data_raw <- tibble(p = rep(p_raw, each = n), x = rep(x_raw, length(p_raw)))
+d |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(ks)) |>
+  filter(!is.na(k)) |>
+  filter(!is.na(fd)) |>
+  filter(!is.na(p_2)) |>
+  nrow()
+```
 
-nd <- data_raw |>
-  group_by(p) |>
-  nest() |>
-  ungroup()
+```{r}
+d2 <- d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks)) |>
+  filter(!is.na(k)) |>
+  filter(!is.na(fd)) |>
+  filter(!is.na(p_2))
 
-filter_cum <- function(nd, p_val) {
-  nd |>
-    filter(p <= {{p_val}})  |>
-    mutate(p_cum = {{p_val}}) |>
-    unnest(cols = data)
-}
+d3 <- d |>
+  filter(!is.na(vaf))
+d$species_name |> unique() |> length()
+d2$species_name |> unique() |> length()
+d3$species_name |> unique() |> length()
 
-data <- bind_rows(
-  filter_cum(nd, 0.03),
-  filter_cum(nd, 0.04),
-  filter_cum(nd, 0.05),
-  filter_cum(nd, 0.06),
-  filter_cum(nd, 0.07),
-  filter_cum(nd, 0.08)
+x <- cbind(
+   rep(1, nrow(d2)),
+   d2$k)
+
+u_data <- d2 |>
+  group_by(species_name, location, xylem_type, sample_number) |>
+  summarize_at(
+    c(
+   "wood_density",
+   "dh",
+   "vaf",
+   "vf",
+   "ks"),
+    mean, na.rm = TRUE
+  ) |>
+  ungroup() |>
+  mutate(sp_sample = str_c(species_name, "_", sample_number)) |>
+  mutate(group_id = as.factor(sp_sample) |> as.numeric())
+
+u <- cbind(
+   rep(1, nrow(u_data)),
+   scale(u_data$wood_density),
+   log(u_data$dh) |> scale(),
+   log(u_data$vaf) |> scale(),
+   log(u_data$vf) |> scale(),
+   log(u_data$ks) |> scale()
 )
 
-a <- 119 + 50 * p_raw
-b <- 1.231 + 2 * p_raw
+stan_data <- list(
+  Ni = nrow(d2),
+  Nj = u_data$group_id |> unique() |> length(),
+  Nk = u_data$species_name |> unique() |> length(),
+  Nl = u_data$xylem_type |> unique() |> length(),
+  K = 2,
+  L = ncol(u),
+  jj = u_data$group_id,
+  log_fd = log(d2$fd),
+  log_k = log(d2$k),
+  x = x,
+  u = u
+)
 
-data2 <- data |>
-  group_by(p_cum) |>
-  nest() |>
-  ungroup() |>
-  mutate(a = a) |>
-  mutate(b = b) |>
-  unnest(cols = data) |>
-  mutate(log_mu = log(a) + b * x)
+str(stan_data)
+```
 
-sig <- 0.2
+```{r}
+set.seed(123)
+n_measure <- 6
+delta_p <- seq(0, 1, length = n_measure)
+#rho <-
+n_tree <- 9
+n_sp <- 20
+n_xy <- 4
 
-log_y <- rnorm(nrow(data2), data2$log_mu, sig)
+tmp <- n_sp / n_xy
+tmp_end <- seq(tmp, 4*tmp, length = n_xy)
+tmp_start <- seq(1, 3*tmp + 1, length = n_xy)
+
+alpha0_xy <- rnorm(n_xy, 0, 1)
+alpha1_xy <- rnorm(n_xy, 0, 1)
+alpha2_xy <- rnorm(n_xy, 0, 1)
+
+beta0_xy <- rnorm(n_xy, 0, 1)
+beta1_xy <- rnorm(n_xy, 0, 1)
+beta2_xy <- rnorm(n_xy, 0, 1)
+
+rho_xy <- rnorm(n_xy, 1)
+alpha0_sp_raw <- mapply(rnorm, n_sp, alpha0_xy, 0.8)
+alpha1_sp_raw <- mapply(rnorm, n_sp, alpha1_xy, 0.8)
+alpha2_sp_raw <- mapply(rnorm, n_sp, alpha2_xy, 0.8)
+beta0_sp_raw <- mapply(rnorm, n_sp, beta0_xy, 0.8)
+beta1_sp_raw <- mapply(rnorm, n_sp, beta1_xy, 0.8)
+beta2_sp_raw <- mapply(rnorm, n_sp, beta2_xy, 0.8)
+rho_sp_raw <- mapply(rnorm, n_sp, rho_xy, 0.8)
+
+alpha0_sp <- c(
+ alpha0_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ alpha0_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ alpha0_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ alpha0_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+alpha1_sp <- c(
+ alpha1_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ alpha1_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ alpha1_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ alpha1_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+alpha2_sp <- c(
+ alpha2_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ alpha2_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ alpha2_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ alpha2_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+
+beta0_sp <- c(
+ beta0_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ beta0_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ beta0_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ beta0_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+beta1_sp <- c(
+ beta1_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ beta1_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ beta1_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ beta1_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+beta2_sp <- c(
+ beta2_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ beta2_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ beta2_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ beta2_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+
+rho_sp <- c(
+ rho_sp_raw[tmp_start[1]:tmp_end[1], 1],
+ rho_sp_raw[tmp_start[2]:tmp_end[2], 2],
+ rho_sp_raw[tmp_start[3]:tmp_end[3], 3],
+ rho_sp_raw[tmp_start[4]:tmp_end[4], 4]
+)
+
+alpha0_samp <- mapply(rnorm, n_tree, alpha0_sp, 0.2) |> as.numeric()
+alpha1_samp <- mapply(rnorm, n_tree, alpha1_sp, 0.2) |> as.numeric()
+
+beta0_samp <- mapply(rnorm, n_tree, beta0_sp, 0.2) |> as.numeric()
+beta1_samp <- mapply(rnorm, n_tree, beta1_sp, 0.2) |> as.numeric()
+
+
+rho_samp <- mapply(rnorm, n_tree, rho_sp, 0.2) |> as.numeric()
+# alpha2_samp <- mapply(rnorm, n_tree, alpha2_sp, 0.2) |> as.numeric()
+
+group_data <- tibble(
+  tree = rep(1:n_tree, n_sp),
+  sp = rep(1:n_sp, each = n_tree),
+  xy = rep(1:n_xy, each = n_sp * n_tree / n_xy)) |>
+  mutate(rho_samp = rho_samp) |>
+  mutate(alpha0_samp = alpha0_samp) |>
+  mutate(alpha1_samp = alpha1_samp) |>
+  mutate(beta0_samp = beta0_samp) |>
+  mutate(beta1_samp = beta1_samp) |>
+  mutate(alpha2_sp = rep(alpha2_sp, each = n_tree)) |>
+  mutate(beta2_sp = rep(beta2_sp, each = n_tree))
+
+
+data <- NULL
+for (i in 1:n_measure) {
+  data_tmp <- group_data |>
+    mutate(measure_id = i) |>
+    mutate(delta_p = delta_p[i])
+  data <- bind_rows(data, data_tmp)
+}
+
+k <- rnorm(nrow(data), 0, 1)
+data <- data |>
+  mutate(k = k) |>
+  mutate(mu_a = alpha0_samp + alpha1_samp * delta_p + alpha2_sp * rho_samp) |>
+  mutate(mu_b = beta0_samp + beta1_samp * delta_p + beta2_sp * rho_samp) |>
+  mutate(a = rnorm(nrow(data), mu_a, 0.1)) |>
+  mutate(b = rnorm(nrow(data), mu_b, 0.1)) |>
+  mutate(fd = rnorm(nrow(data), a + b * k, 0.1))
+
+ggplot(data, aes(x = k, y = fd)) +
+  geom_point() +
+  facet_wrap(~ sp)
+
+ggplot(data, aes(x = delta_p, y = a)) +
+  geom_point() +
+  facet_wrap(~ sp)
+
+ggplot(data, aes(x = rho_samp, y = a)) +
+  geom_point() +
+  facet_wrap(~ sp, scale = "free")
+
+data |>
+  arrange(measure_id) |>
+  arrange(tree) |>
+  arrange(sp)
+
+str(alpha0_samp)
+str(alpha0_sp)
+
+alpha0_sp <- rnorm(n_sp, alpha0_xy)
+alpha1_sp <- rnorm(n_xy, 0, 1)
+
+# a <- 119
+# log_a <- log(a)
+# b <- 1.231
+k <- seq(0, 1, length = n_tree) |> rep(nsp)
+xx <- rnorm(n_tree) |> rep(n_sp)
+
+alpha_0_hat_raw <- 4.779
+alpha_1_hat_raw <- 0.6
+alpha_0_hat <- rnorm(n_sp, alpha_0_hat_raw, 0.1)
+alpha_0 <- mapply(rnorm, n_tree, alpha_0_hat, 0.05) |> as.numeric()
+alpha_1_hat <- rnorm(n_sp, alpha_1_hat_raw, 0.1)
+alpha_1 <- mapply(rnorm, n_tree, alpha_1_hat, 0.05) |> as.numeric()
+
+
+log_a <- rnorm(n_tree * n_sp, alpha_0 + alpha_1 * xx, 1)
+
+beta_0_hat_raw <- 1.231
+beta_1_hat_raw <- 0.01
+beta_0_hat <- rnorm(n_sp, beta_0_hat_raw, 0.1)
+beta_0 <- mapply(rnorm, n_tree, beta_0_hat, 0.05) |> as.numeric()
+beta_1_hat <- rnorm(n_sp, beta_1_hat_raw, 0.01)
+beta_1 <- mapply(rnorm, n_tree, beta_1_hat, 0.005) |> as.numeric()
+b <- rnorm(n_tree * n_sp, beta_0 + beta_1 * xx, 0.1)
+b
+
+summary(b)
+
+data <- tibble(
+  log_a, b, xx,
+  tree = rep(1:n_tree, n_sp),
+  sp = rep(1:n_sp, each = n_tree)) |>
+  mutate(sp_tree = str_c(sp, "_", tree))
+
+data2 <- NULL
+for (i in 1:n_measure) {
+  data2 <- bind_rows(data2, data |> mutate(measure_id = i))
+}
 
 data3 <- data2 |>
-  mutate(log_y = log_y) |>
-  mutate(y = exp(log_y)) |>
-  mutate(p_cum2 = as.factor(p_cum))
-
-ggplot(data3, aes(x = x, y = y, col = as.factor(p_cum))) +
-  geom_point() +
-  geom_smooth(se = FALSE)
-
-ggplot(data3, aes(x = x, y = y, col = as.factor(p_cum))) +
-  geom_point() +
-  geom_smooth(se = FALSE) +
-  facet_wrap(~ p_cum2)
-
-
-p <- rep(p_raw, each = n)
-
-sig <- 0.01
-mu <- alpha + beta * p
-y <- rnorm(n * length(p_raw), mu, sig)
-
-tibble(y, mu, p) +
-  ggplot(aes(x = ))
-
-```
-
-
-```{r,eval=FALSE, include=FALSE}
-library(lme4)
-fit <- glmer(cbind(count, total - count) ~ pressure + (pressure | species),
-  family = binomial, data = d)
-```
-
-```{r,eval=FALSE, include=FALSE}
-
-library(bayesplot)
-
-tar_load(quad_logistic_summary_hierarchical_logistic)
-tar_load(quad_logistic_draws_hierarchical_logistic)
-quad_logistic_summary_hierarchical_logistic |>
-  filter(str_detect(variable, "gamma|beta"))
-
-
-mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "gamma\\[|beta\\[")
-
-mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "beta\\[")
-
-tar_load(cond_count_csv)
-d <- read_csv(cond_count_csv)
-sp <- as.factor(d$species) |> unique() |> sort() |> as.character()
-
-intervals_data <- mcmc_intervals_data(
-  quad_logistic_draws_hierarchical_logistic,
-  regex_pars = "beta\\[|gamma\\[",
-  prob = 0.5,
-  prob_outer = 0.95) |>
-  mutate(para = case_when(
-    str_detect(parameter, "\\[1") ~ "Intercept",
-    str_detect(parameter, "\\[2") ~ "Linear",
-    str_detect(parameter, "\\[3") ~ "Quadratic",
-  )) |>
-  mutate(sp = case_when(
-    str_detect(parameter, "gamma") ~ "All",
-    str_detect(parameter, "1\\]") ~ sp[1],
-    str_detect(parameter, "2\\]") ~ sp[2],
-    str_detect(parameter, "3\\]") ~ sp[3],
-    str_detect(parameter, "4\\]") ~ sp[4],
-    str_detect(parameter, "5\\]") ~ sp[5],
-  )) |>
-  # mutate(para = str_c(sp, "-", para0)) |>
-  mutate(para = factor(para,
-    levels = c("Intercept", "Linear", "Quadratic") |> rev()))
-
-  ggplot(intervals_data, aes(y = para)) +
-    geom_vline(xintercept = 0, lty = 2, col = "grey60") +
-    geom_linerange(aes(xmin = ll, xmax = hh)) +
-    geom_linerange(aes(xmin = l, xmax = h), size = 2) +
-    geom_point(aes(x = m), size = 3) +
-    facet_wrap(~sp) +
-    ylab("") +
-    xlab("Posterior estimates") +
-    my_theme()
-
-```
-
-```{r,eval=FALSE, include=FALSE}
-tar_load(logistic_stan_data)
-logistic_stan_data
-
-tar_load(quad_logistic_diagnostics_hierarchical_logistic)
-tar_load(quad_logistic_mcmc_hierarchical_logistic)
-tar_load(quad_logistic_summary_hierarchical_logistic)
-tar_load(quad_logistic_draws_hierarchical_logistic)
-tar_load(simple_logistic_summary_hierarchical_logistic)
-tar_load(simple_logistic_draws_hierarchical_logistic)
-tar_load(simple_logistic_mcmc_hierarchical_logistic)
-
-simple_logistic_mcmc_hierarchical_logistic$loo()
-quad_logistic_mcmc_hierarchical_logistic$loo()
-quad_logistic_diagnostics_hierarchical_logistic
-
-quad_logistic_summary_hierarchical_logistic |>
-  filter(str_detect(variable, "gamma|beta"))
-
-library(bayesplot)
-
-mcmc_intervals(quad_logistic_draws_hierarchical_logistic, regex_pars = "gamma\\[")
-
-hist(rnorm(100))
-library(loo)
-
-
-d <- read_csv("data/cond_count.csv") |>
-   filter(!is.na(count))
-
-x_mean <- mean(d$pressure)
-x_sd <- sd(d$pressure)
-
-draws <- quad_logistic_draws_hierarchical_logistic
-
-gamma_ <- draws |>
-  janitor::clean_names() |>
-  dplyr::select(contains("gamma")) |>
-  as.matrix()
-
-beta_ <- draws |>
-  janitor::clean_names() |>
-  dplyr::select(contains("beta"))
-
-tmp <- list()
-for (i in 1:5) {
-  tmp[[i]] <- beta_ |>
-  dplyr::select(matches(str_c("_", i, "$"))) |>
-  as.matrix()
-}
-
-xx_raw <- seq(0.02, 0.08, length = 80)
-xx <- (xx_raw - x_mean) / x_sd
-xx_mat <- cbind(1, xx, xx^2)
-
-sp <- d$species |> unique() |> as.factor() |> sort()
-tmp2 <- tibble(data = map(tmp, \(x) x %*% t(xx_mat))) |>
-  mutate(pred_m = map(data, \(x)apply(x, 2, quantile, 0.5))) |>
-  mutate(pred_l = map(data, \(x)apply(x, 2, quantile, 0.25))) |>
-  mutate(pred_h = map(data, \(x)apply(x, 2, quantile, 0.75))) |>
-  mutate(pred_ll = map(data, \(x)apply(x, 2, quantile, 0.025))) |>
-  mutate(pred_hh = map(data, \(x)apply(x, 2, quantile, 0.975))) |>
-  dplyr::select(-data) |>
-  mutate(species = sp) |>
-  # mutate(xx = list(xx)) |>
-  unnest(cols = c(pred_m, pred_l, pred_h, pred_ll, pred_hh))
-
-logit <- function(z) {
-  1 / (1 + exp(-z)) * 100
-}
-
-fig_data <- tmp2 |>
-  mutate_if(is.numeric, logit) |>
-  mutate(xx = rep(xx_raw, 5))
-
-ggplot(fig_data) +
-  geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total), alpha = 0.05) +
-  geom_line(aes(x = xx, y = pred_m)) +
-  geom_ribbon(aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
-  geom_ribbon(aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4) +
-  # facet_wrap(~sp) +
-  facet_grid(rows = vars(species), scale = "free") +
-  my_theme()
-
-
-  ggplot(d, aes(x = pressure, y = count/total * 100)) +
-  geom_point(aes(size = total), alpha = 0.6) +
-#  scale_x_log10() +
-#  geom_smooth(method = "lm") +
-  facet_wrap(~species)
-
-
-tmp3 <- logit(tmp2)
-as_tibble(tmp3)
-
-
-tmp %*% t(xx_mat)
-
-
-
-xx_raw <- seq(0.02, 0.08, length = 80)
-xx <- (xx_raw - x_mean) / x_sd
-
-xx_mat <- cbind(1, xx, xx^2)
-pred <- gamma_ %*% t(xx_mat)
-
-pred <- beta_ %*% t(xx_mat_beta)
-
-
-
-
-pred_m <- apply(pred, 2, quantile, 0.5) |> logit()
-pred_l <- apply(pred, 2, quantile, 0.25) |> logit()
-pred_ll <- apply(pred, 2, quantile, 0.025) |> logit()
-pred_h <- apply(pred, 2, quantile, 0.75) |> logit()
-pred_hh <- apply(pred, 2, quantile, 0.975) |> logit()
-
-fig_data <- tibble(xx, pred_m, pred_ll, pred_l ,pred_h, pred_h)
-
-
-
-
-ggplot(fig_data) +
-  geom_line(aes(x = xx, y = pred_m)) +
-  geom_ribbon(aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
-  geom_ribbon(aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4)
-
-
-plot(xx_raw, logit(pred_h), type = "l")
-
-
-logistic_summary_quad_logistic |>
-  filter(str_detect(variable, "gamma"))
-logistic_summary_quad_logistic |>
-  filter(str_detect(variable, "beta"))
-
-quad_logistic_summary_quad_logistic |>
-  filter(str_detect(variable, "gamma"))
-
-quad_logistic_summary_quad_logistic |>
-  filter(str_detect(variable, "beta"))
-
-logistic_summary_piecewise_logistic |>
-  filter(str_detect(variable, "gamma"))
-
-logistic_summary_piecewise_logistic |>
-  filter(str_detect(variable, "beta"))
-
-logistic_summary_piecewise_logistic |>
-  filter(str_detect(variable, "beta\\[2"))
-
-library(bayesplot)
-
-mcmc_intervals(logistic_draws_piecewise_logistic, regex_pars = "beta\\[")
-hist(rnorm(100))
-
-c(1:4) %*% t(rep(1,5))
+  arrange(measure_id) |>
+  arrange(tree) |>
+  arrange(sp)
+
+#log_ks <- rnorm(n_tree * n_sp * n_measure, 1, 1)
+data3 |>
+  mutate(log_ks = rnorm())
+
+log_mu <- log(a) + b * log_ks
+hist(log_ks)
+plot(exp(log_ks), exp(log_mu))
 ```
 
 
