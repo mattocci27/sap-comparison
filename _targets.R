@@ -563,11 +563,29 @@ main_list <- list(
     format = "file"
   ),
 
-
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
+# dummy for sap ---------
+  tar_target(
+    dummy_sap_stan_data,
+    generate_dummy_data_ab()
   ),
+
+  tar_stan_mcmc(
+     fit_dummy_sap,
+     "stan/sap.stan",
+     data = dummy_sap_stan_data,
+     refresh = 200,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1,
+     iter_sampling = 1,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123
+  ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   tar_quarto(
     dummy_html,

@@ -339,6 +339,7 @@ d |>
   filter(!is.na(fd)) |>
   filter(!is.na(p_2)) |>
   nrow()
+
 ```
 
 ```{r}
@@ -351,6 +352,27 @@ d2 <- d |>
   filter(!is.na(k)) |>
   filter(!is.na(fd)) |>
   filter(!is.na(p_2))
+
+d2 |>
+  group_by(xylem_type) |>
+  nest() |>
+  mutate(n_sp = map_dbl(data, \(x)length(unique(x$species_name))))
+
+d2 |>
+  group_by(species_name) |>
+  nest() |>
+  ungroup() |>
+  mutate(n_samp = map_dbl(data, \(x)length(unique(x$sample_number)))) |>
+  dplyr::select(-data)
+
+d2 |>
+  group_by(species_name, sample_number) |>
+  nest() |>
+  ungroup() |>
+  mutate(n_samp = map_dbl(data, nrow)) |>
+  dplyr::select(-data) |>
+  pull(n_samp)
+
 
 d3 <- d |>
   filter(!is.na(vaf))
@@ -404,6 +426,11 @@ str(stan_data)
 ```
 
 ```{r}
+
+tar_load(dummy_sap_stan_data)
+
+dummy_sap_stan_data$jj
+
 set.seed(123)
 n_measure <- 6
 delta_p <- seq(0, 1, length = n_measure)
@@ -603,3 +630,12 @@ targets::tar_visnetwork()
 devtools::session_info()
 ```
 
+  vector[Mj] real<lower=0> tau_alpha_l;
+  for (j in 1:Mj) tau_alpha_l[j] = 2.5 * tan(tau_unif_alpha_l[j]);
+
+  for (j in 1:Mj) {
+    alpha_l[j] = mu_alpha_l_tilde[j] + tau_alpha_l[j] * theta_l[j];
+  }
+  for (k in 1:Nk) {
+    alpha_k[j] = alpha_l[ll[k]] + tau_alpha_k[j] * theta_k[j];
+  }

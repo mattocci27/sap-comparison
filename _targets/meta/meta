@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|33a7670ed16adf58|||||||||||||||
+.Random.seed|object|ac6fb3d34fae342c|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -28,6 +28,7 @@ cond_count.csv|stem|afa1d7fa864c4e3c|3e1e21b3c7839bc2|ef46db3751d8e999|-10828396
 create_stan_tab|function|d23d841ad0c22173|||||||||||||||
 dummy_data|stem|9b4e722e04e899f5|781517b1e65e9d13|0f3d0d62b7511381|-895299049||t19227.1233044381s|9e9836541861514c|1112|rds|local|vector|||0.055||
 dummy_html|stem|81e8a3cd5435f52b|eb2a582b6ceebf83|ae8b615cb000ff4d|1935054363|docs/dummy.html*docs/dummy.qmd|t19227.6723901716s|012512816ac44ba3|2354307|file|local|vector|||11.287||
+dummy_sap_stan_data|stem|7e71c73cf849d017|0944751d2f6791e6|04e52a53e952415f|2146147746||t19248.4013320065s|0f98a52089a20ad2|99315|rds|local|vector|||0.182||
 fit_anova_int_err_log_data|stem|596f6c9da3c08caa|bcdacda2559c67ab|1c103781c2fa4270|-626376429||t19227.3687997593s|f95a738176d1c89e|1933|qs|local|vector|||0.055||
 fit_anova_int_err_log_diagnostics_anova_int_err|stem|36aab310fc5ed14d|06771865bbe68a33|c8b265ea9727c576|-119458362||t19241.643656657s|a3ce4b8cd0277660|77620|fst_tbl|local|vector|||0.002||
 fit_anova_int_err_log_draws_anova_int_err|stem|10b53f9019786700|248dd6052b808b03|c8b265ea9727c576|615287963||t19241.6436568885s|41e45726b8f36521|4802812|fst_tbl|local|vector|||0.007||
@@ -75,6 +76,9 @@ fit_dummy_noint_draws_anova_noint|stem|6629c339b8a8e5e4|8adba329aba1ef08|1302347
 fit_dummy_noint_file_anova_noint|stem|354c7617430f4b3b|ce64346cd2955c44|ef46db3751d8e999|1144127862|stan/anova_noint.stan|t19226.675002297s|6a6391d44d4322f9|1676|file|local|vector|||0||
 fit_dummy_noint_mcmc_anova_noint|stem|11b04d238607b263|cdb550bffc2b5ba4|b5a7347ad31c649b|-247550594||t19241.634955681s|731725dfeee2a14e|3174654|qs|local|vector|||4.844||
 fit_dummy_noint_summary_anova_noint|stem|dd5c5d59c9ad3481|88717f4d71ed702a|dc667e385129fc58|1417805240||t19241.6353041589s|bfb3681357ce5119|10294|fst_tbl|local|vector|||0.957||
+fit_dummy_sap_data|stem|3c038d67fa4ffaa4|39ffc14f9dde4169|f40ad337843c224e|2065484369||t19248.4013336269s|73a219381135d830|62641|qs|local|vector|||0||
+fit_dummy_sap_file_sap|stem|9e53aee378aac744|49605bf8929b14b7|ef46db3751d8e999|-1955582465|stan/sap.stan|t19248.4034389388s|59d3d876f10eff5e|4254|file|local|vector|||0.001||
+fit_dummy_sap_mcmc_sap|stem||bbe24f55924ee50c|e6fc425954755391|-2123520904||t19248.3481145925s||0|qs|local|vector|||14.149|Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
 fit_dummy_summary_anova|stem|89511f91e8deb1d5|60285d1127df5968|efc98fd6e96f0dbb|1942612556||t19241.6352905476s|936eac6a14c0fdf7|11954|fst_tbl|local|vector|||0.9||
 fit_gmvn_data|stem|d964e419109cf224|67f4787cd7689bf0|d5b3b74b2ed4a36c|1670982819||t19226.6869237907s|46f9580f4a9b8ff8|2222|qs|local|vector|||0||
 fit_gmvn_diagnostics_anova_mvn|stem|cc2fc9b8d8bd2049|8dd7318646d34c0b|1af49abc90c7ba54|-1257220372||t19241.6434735059s|9009047802007212|78310|fst_tbl|local|vector|||0.003||
@@ -110,6 +114,7 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 generate_anova_data|function|6bc05b28ae02757c|||||||||||||||
 generate_anova_mvn_data|function|391bc75c8ab3a47c|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
+generate_dummy_data_ab|function|c652c5046a1b5898|||||||||||||||
 generate_logistic_stan_data|function|3fc36a50ea29a681|||||||||||||||
 generate_piecewise_logistic_stan_data|function|2978e927557631bf|||||||||||||||
 generate_quad_logistic_stan_data|function|a1cfd745b5700cdb|||||||||||||||
@@ -143,7 +148,7 @@ logit_data|stem|24c45d1656cdb625|15d37ece492552b7|928229b9e37b1058|-547518601||t
 logit_file_piecewise_logistic|stem|d614e42cbed54351|88a74045587c1ee8|ef46db3751d8e999|1511951583|stan/piecewise_logistic.stan|t19241.6376437807s|99ca1a3e994211b6|1158|file|local|vector|||0.001||
 logit_mcmc_piecewise_logistic|stem|2fa32652472178ca|2ac59fd87609f9f6|d429e29d3c26c877|-1307546118||t19241.6421395025s|34e03681dc298ef3|40743|qs|local|vector|||0.484|EBFMI not computed because it is undefined for posterior chains of length less than 3.|
 loo_|stem|5831975043a47421|314ad55798c2cf32|ac856df788b994fa|1440272382||t19241.634955218s|0cb5736d43de31db|8386|rds|local|vector|||1.872|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|29ba6a50b90ed9f2|||||||||||||||
+main_list|object|ebdd3c7ad9a4ba30|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|fd9b5ff6ce5a469f|100578318||t19242.1381884688s|257b15927dfb4d82|1372|qs|local|vector|||0.001||
@@ -159,7 +164,7 @@ quad_logistic_diagnostics_hierarchical_logistic|stem|b07bbc4c2e939654|cd7139a20a
 quad_logistic_diagnostics_quad_logistic|stem|b07bbc4c2e939654|da6da716c4b11b0b|b43fbfc2f956b096|45674135||t19242.1455465596s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.004||
 quad_logistic_draws_hierarchical_logistic|stem|7f49ebcd52a08da1|ba67c2309f179ee0|67ee91a7aab60c21|-727744604||t19243.2862892977s|37c4d45610afc716|32666880|fst_tbl|local|vector|||0.042||
 quad_logistic_draws_quad_logistic|stem|30f0c8419621d339|b0789323a124c475|b43fbfc2f956b096|706645465||t19242.1455455874s|30b817f98292db94|2888826|fst_tbl|local|vector|||0.006||
-quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|ef46db3751d8e999|-1709203410|stan/hierarchical_logistic.stan|t19243.2849362208s|7271da0e98637f86|1082|file|local|vector|||0||
+quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|ef46db3751d8e999|-1709203410|stan/hierarchical_logistic.stan|t19246.296992104s|7271da0e98637f86|1082|file|local|vector|||0||
 quad_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee8|ef46db3751d8e999|477957073|stan/piecewise_logistic.stan|t19242.1291881397s|517f53a615cf3573|1244|file|local|vector|||0.001||
 quad_logistic_file_quad_logistic|stem|6e706b338b6b934d|a3b553fbd153cc4d|ef46db3751d8e999|573638003|stan/quad_logistic.stan|t19242.1318822563s|45ffbd1e22a1fd76|904|file|local|vector|||0.001||
 quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|582217e2b51f7d0c|1505615404||t19243.2862712881s|4f4d987795184b56|26280270|qs|local|vector|||81.771||
@@ -168,12 +173,12 @@ quad_logistic_mcmc_quad_logistic|stem|2e73708c4784f751|9d4f6820c14bccc7|b5458d10
 quad_logistic_stan_data|stem|93dfe78ea80c976a|bca8022469e5e655|fa536c8bdd9a3535|86374461||t19242.1447643704s|f33139973f0a70dc|1852|rds|local|vector|||0.201||
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quad_logistic_summary_quad_logistic|stem|fbbda52f2a6a7d9e|1e4bdb44419e667b|f73023b390523473|-2114738469||t19242.145556745s|5c654808f39ca279|6821|fst_tbl|local|vector|||0.715||
-raw_data_list|object|1c8697b61952c445|||||||||||||||
-report_html|stem|f490dd7808e3b837|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19245.3820322393s|44d237fc920c7559|3459057|file|local|vector|||14.14||
+raw_data_list|object|7590f8d747ea3e4c|||||||||||||||
+report_html|stem|f490dd7808e3b837|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19245.3820322393s||3459057|file|local|vector|||14.085||System command quarto failed
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19243.2858748467s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|27ca53b1660a164b|-1956970355||t19243.2858775319s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.162||
-simple_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|ef46db3751d8e999|1379966212|stan/hierarchical_logistic.stan|t19243.2849362208s|7271da0e98637f86|1082|file|local|vector|||0||
+simple_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|ef46db3751d8e999|1379966212|stan/hierarchical_logistic.stan|t19246.296992104s|7271da0e98637f86|1082|file|local|vector|||0||
 simple_logistic_mcmc_hierarchical_logistic|stem|c51f66efa50bb456|a53546305c8cfd0d|0d0dcc1a71f3a909|655890227||t19243.2858588742s|d08fad22a8de6538|25251121|qs|local|vector|||46.289||
 simple_logistic_summary_hierarchical_logistic|stem|681c1cfb1c79c683|8cdaadf5cffca266|e357f12678938c5d|33623541||t19243.2859457737s|80a8b00c2e91c1dd|55534|fst_tbl|local|vector|||6.361||
 sma_ks|function|9c2566642d19c117|||||||||||||||
