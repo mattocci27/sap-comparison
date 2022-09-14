@@ -573,14 +573,15 @@ main_list <- list(
      fit_dummy_sap,
      "stan/sap.stan",
      data = dummy_sap_stan_data,
-     refresh = 200,
+     refresh = 0,
      chains = 4,
      parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1,
-     iter_sampling = 1,
+     iter_warmup = 2000,
+     iter_sampling = 2000,
      adapt_delta = 0.9,
      max_treedepth = 15,
-     seed = 123
+     seed = 123,
+     output_dir = "log"
   ),
   # tar_quarto(
   #   report_html,

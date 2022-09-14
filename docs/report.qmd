@@ -428,8 +428,7 @@ str(stan_data)
 ```{r}
 
 tar_load(dummy_sap_stan_data)
-
-dummy_sap_stan_data$jj
+dummy_sap_stan_data |> str()
 
 set.seed(123)
 n_measure <- 6
@@ -620,6 +619,29 @@ hist(log_ks)
 plot(exp(log_ks), exp(log_mu))
 ```
 
+```{r}
+tar_load(fit_dummy_sap_summary_sap)
+
+library(mvtnorm)
+
+set.seed(123)
+x <- rnorm(100)
+y <- rnorm(100)
+rho <- 0.9
+Sigma <- diag(2) * (1 - rho) + rho
+cor.test(x, y)
+
+hoge <- NULL
+for (i in 1:100) {
+  hoge <- rbind(hoge, rmvnorm(1, cbind(x[i], y[i]), Sigma))
+}
+cor.test(hoge[,1], hoge[,2])
+
+plot(hoge[,1], hoge[,2])
+
+
+```
+
 
 ```{r, eval=FALSE}
 targets::tar_visnetwork()
@@ -629,13 +651,3 @@ targets::tar_visnetwork()
 ```{r, eval=FALSE}
 devtools::session_info()
 ```
-
-  vector[Mj] real<lower=0> tau_alpha_l;
-  for (j in 1:Mj) tau_alpha_l[j] = 2.5 * tan(tau_unif_alpha_l[j]);
-
-  for (j in 1:Mj) {
-    alpha_l[j] = mu_alpha_l_tilde[j] + tau_alpha_l[j] * theta_l[j];
-  }
-  for (k in 1:Nk) {
-    alpha_k[j] = alpha_l[ll[k]] + tau_alpha_k[j] * theta_k[j];
-  }

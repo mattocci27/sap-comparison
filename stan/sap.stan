@@ -16,9 +16,9 @@ data {
   vector[Ni] delta_p;
   vector[Ni] rho;
   vector[Ni] x;
-  // matrix[Ni,Mi] xi; // data-level predictor
+  // matrix[Mi,Ni] u; // data-level predictor
   // matrix[Ni,Mi] xi1; // data-level predcitor (delta_p)
-  // matrix[Ni,Mi] xj1; // sample-level predictor (tarits)
+  // matrix[Mi,Mj] xj; // sample-level predictor (tarits)
   // matrix[1,Mj] xk; // sp-level intercept
   // matrix[1,Mj] xl; // xylem-level intercept
 }
@@ -42,16 +42,16 @@ parameters {
   array[Mj] vector[Nk] theta_beta_k;
   array[Mj-1] vector[Nj] theta_beta_j;
 
-  // cholesky_factor_corr[Mi] L_Omega_l;
-  // vector<lower=0,upper=pi()/2>[Mi] tau_unif;
-  // matrix[Mk, Nj] z;
-
+  cholesky_factor_corr[Mi] L_Omega;
+  vector<lower=0,upper=pi()/2>[Mi] tau_unif;
+  matrix[Mi, Ni] z;
 }
 
 transformed parameters{
-  // matrix[Ni, Mj] gamma;
-  // vector[Ni] gamma_int;
-  // vector<lower=0>[Mi] tau;
+  matrix[Ni,Mi] gamma;
+  vector[Ni] log_a;
+  vector[Ni] b;
+  vector<lower=0>[Mi] tau;
 
   array[Mj] vector[Nl] alpha_l;
   array[Mj] vector[Nk] alpha_k;
@@ -69,7 +69,7 @@ transformed parameters{
   vector<lower=0>[Mj-1] tau_beta_j;
   vector[Ni] mu_b;
 
-  // for (i in 1:Mi) tau[i] = 2.5 * tan(tau_unif[i]);
+  for (i in 1:Mi) tau[i] = 2.5 * tan(tau_unif[i]);
 
   for (j in 1:Mj) {
     tau_alpha_l[j] = 2.5 * tan(tau_unif_alpha_l[j]);
@@ -104,16 +104,17 @@ transformed parameters{
      }
   }
   for (n in 1:Ni) {
-    log_mu_a[n] = alpha_l[1][ll[n]] + alpha_k[1][kk[n]] + alpha_j[1][jj[n]] +
-    (alpha_l[2][ll[n]] + alpha_k[2][kk[n]] + alpha_j[2][jj[n]]) * delta_p[n] +
-    (alpha_l[3][ll[n]] + alpha_k[3][kk[n]]) * rho[n];
+    log_mu_a[n] = alpha_j[1][jj[n]] +
+    (alpha_j[2][jj[n]]) * delta_p[n] +
+    (alpha_k[3][kk[n]]) * rho[n];
 
-    mu_b[n] = beta_l[1][ll[n]] + beta_k[1][kk[n]] + beta_j[1][jj[n]] +
-    (beta_l[2][ll[n]] + beta_k[2][kk[n]] + beta_j[2][jj[n]]) * delta_p[n] +
-    (beta_l[3][ll[n]] + beta_k[3][kk[n]]) * rho[n];
+    mu_b[n] = beta_j[1][jj[n]] +
+    (beta_j[2][jj[n]]) * delta_p[n] +
+    (beta_k[3][kk[n]]) * rho[n];
   }
-  // for (i in 1:Ni) gamma_int[i] = 1.0;
-  // gamma = append_col(append_col(gamma_int, log_mu_a), mu_b);
+  gamma = append_col(log_mu_a, mu_b) + (diag_pre_multiply(tau, L_Omega) * z)';
+  log_a = gamma[,1];
+  b = gamma[,2];
 }
 model {
   mu_alpha_l_tilde ~ normal(0, 5);
@@ -130,7 +131,7 @@ model {
   }
 
   for (n in 1:Ni) {
-    y[n]  ~ normal(log_mu_a[n] + mu_b[n] * x, sigma);
+    y[n]  ~ normal(log_a[n] + b[n] * x, sigma);
   }
 }
 
