@@ -264,6 +264,90 @@ d <- read_csv("data-raw/calibration_raw_data.csv") |>
   janitor::clean_names()
 ```
 
+```{r}
+
+nd <- d |>
+  filter(!is.na(k)) |>
+  filter(!is.na(fd)) |>
+  filter(k != 0) |>
+  group_by(species_name, xylem_type) |>
+  nest() |>
+  ungroup()
+
+estimate_lr_aicc <- function(data) {
+  y <- data$fd
+  x <- data$k
+  k <- 3
+  # sample_id <- as.factor(data$sample_number)
+  n <- nrow(data)
+  fit <- lm(log(y) ~ log(x))
+  # fit2 <- lme4::lmer(log(y) ~ log(x) + (1| sample_id))
+  a <- exp(coef(summary(fit))[1, 1])
+  b <- coef(summary(fit))[2, 1]
+  sig <- sd(log(y) - (log(a) + b * log(x)))
+  log_lik <- sum(dlnorm(y, log(a * x ^ b), sig, log = TRUE))
+  #log_lik <- summary(fit2)$logLik |> as.numeric()
+  2 * k - 2 * log_lik + 2 * k * (k + 1) / (n - k - 1)
+}
+
+AIC(fit)
+AIC(fit2)
+AIC(fit3)
+
+# fit <- lm(log(y) ~ log(x))
+ fit2 <- lme4::lmer(log(y) ~ log(x) + (1| sample_id))
+ fit3 <- lme4::lmer(log(y) ~ log(x) + (1 + log(x)| sample_id))
+
+nform <- ~ a * input ^ b
+nfun <- deriv(nform,namevec=c("a", "b"),
+              function.arg=c("input","a","b"))
+
+data <- nd$data[[1]] |>
+  mutate(sample_id = as.factor(data$sample_number))
+
+fit <- lm(log(fd) ~ log(k), data = data)
+a0 <- coef(fit)[1] |> exp() |> as.numeric()
+b0 <- coef(fit)[2] |> as.numeric()
+startvec <- c(a = a0, b = b0)
+(nm1 <- lme4::nlmer(fd ~ nfun(k, a, b) ~ (a |sample_id),
+             data, start = startvec))
+AIC(nm1)
+
+estimate_nlr_aicc <- function(data) {
+  y <- data$fd
+  x <- data$k
+  k <- 3
+  n <- nrow(data)
+  fit0 <- lm(log(y) ~ log(x))
+  a0 <- exp(coef(summary(fit0))[1, 1])
+  b0 <- coef(summary(fit0))[2, 1]
+  fit <- nls(y ~ a1 * x ^ a2, start = list(a1 = a0, a2 = b0),
+                  control = nls.control(maxiter = 2000, warnOnly = TRUE))
+  a <- coef(summary(fit))[1, 1]
+  b <- coef(summary(fit))[2, 1]
+  sig <- sd(y - a * x ^ b)
+
+  # log_lik = sum(log(dlnorm(y, log(a * x ^ b), sig)))
+  log_lik <- sum(dnorm(y, a * x ^ b, sig, log = TRUE))
+  2 * k - 2 * log_lik + 2 * k * (k + 1) / (n - k - 1)
+}
+
+nd2 <- nd |>
+  mutate(lr_aicc = map_dbl(data, estimate_lr_aicc)) |>
+  mutate(nlr_aicc = map_dbl(data, estimate_nlr_aicc)) |>
+  mutate(better_model = case_when(
+    lr_aicc + 2 < nlr_aicc ~ "LR is better",
+    nlr_aicc + 2 < lr_aicc ~ "NLR is better",
+    TRUE ~ "Not sure"
+  ))
+
+nd2 |>
+  dplyr::select(-data) |>
+  as.data.frame()
+
+table(nd2$better_model)
+
+```
 
 ```{r, fig.width=10, fig.height=10}
 ggplot(d, aes(x = k, y = fd, col = xylem_type)) +
@@ -638,7 +722,115 @@ for (i in 1:100) {
 cor.test(hoge[,1], hoge[,2])
 
 plot(hoge[,1], hoge[,2])
+```
 
+```{r}
+library(lme4)
+
+d3 <- d2 |>
+  filter(k != 0) |>
+  mutate(log_fd = log(fd)) |>
+  mutate(k_scaled = log(k) |> scale() |> as.numeric()) |>
+  mutate(p_scaled = log(p_2) |> scale() |> as.numeric()) |>
+  mutate(sample_id = str_c(species_name, "_", sample_number))
+
+fit <- lmer(log(fd) ~ log(k) * log(p_2) + (1|species_name),
+  data = d3)
+
+fit <- lmer(log(fd) ~ log(k) * log(p_2)  + (1 + k_scaled |xylem_type/species_name/sample_id), data = d3)
+
+fit <- lmer(log(k) ~  log(p_2)  + (1 |xylem_type/species_name/sample_id), data = d3)
+
+
+options(mc.cores = 4)
+fit_stan <- stan_lmer(log(fd) ~ k_scaled * p_scaled + (1 + k_scaled * p_scaled |xylem_type/species_name/sample_id),
+  data = d3#,
+  # iter = ,
+  # warmup = 1
+)
+
+summary(fit_stan)
+rstan::get_stanmodel(fit_stan$stanfit)
+
+
+
+
+fit_ns <- lmer(log(fd) ~ log(k) * log(p_2) + (1|xylem_type/species_name/sample_id), data = d3)
+
+
+fit_ns <- lmer(log(fd) ~ log(k) + (1|xylem_type/species_name/sample_id), data = d3)
+
+d3$log_k |> summary()
+
+```
+
+
+```{r}
+
+set.seed(123)
+a <- 119
+b <- 1.231
+n <- 30
+n_rep <- 6
+n <- n_rep * 10
+sig <- 0.1
+k <- runif(n, 0.1, 1)
+k <- seq(0.1, 1, by = 0.1) |> rep(n_rep)
+log_mu <- log(a) + b * log(k)
+plot(log_mu ~ k)
+
+est_a <- NULL
+est_b <- NULL
+est_a2 <- NULL
+est_b2 <- NULL
+for (i in 1:100) {
+  fd <- rnorm(n, log_mu, sig) |> exp()
+  fd <- exp(log_mu) + rnorm(n, 0, 10)
+  data <- tibble(k, fd)
+  fit <- lm(log(fd) ~ log(k), data = data)
+
+  est_a_tmp <- coef(fit)[1] |> exp()
+  est_b_tmp <- coef(fit)[2]
+
+  est_a <- c(est_a, est_a_tmp)
+  est_b <- c(est_b, est_b_tmp)
+
+  data2  <- data |> filter(k <= 0.2)
+  fit2 <- lm(log(fd) ~ log(k), data = data2)
+
+  est_a2_tmp <- coef(fit2)[1] |> exp()
+  est_b2_tmp <- coef(fit2)[2]
+  est_a2 <- c(est_a2, est_a2_tmp)
+  est_b2 <- c(est_b2, est_b2_tmp)
+}
+
+plot(fd ~ k, data)
+
+#library(ggridges)
+est <- tibble(a = est_a, b = est_b, pressure = "All")
+est2 <- tibble(a = est_a2, b = est_b2, pressure = "Pressure <= 0.02")
+
+data <- bind_rows(est, est2)
+
+ggplot(data = data) +
+  geom_density_ridges2(aes(x = a, y = pressure, fill = pressure))
+
+ggplot(data = data) +
+  geom_density_ridges2(aes(x = b, y = pressure, fill = pressure))
+
+a_l <- quantile(est_a, 0.025)
+a_m <- quantile(est_a, 0.5)
+a_h <- quantile(est_a, 0.975)
+a2_l <- quantile(est_a2, 0.025)
+a2_m <- quantile(est_a2, 0.5)
+a2_h <- quantile(est_a2, 0.975)
+
+b_l <- quantile(est_b, 0.025)
+b_m <- quantile(est_b, 0.5)
+b_h <- quantile(est_b, 0.975)
+b2_l <- quantile(est_b2, 0.025)
+b2_m <- quantile(est_b2, 0.5)
+b2_h <- quantile(est_b2, 0.975)
 
 ```
 
@@ -650,4 +842,4 @@ targets::tar_visnetwork()
 
 ```{r, eval=FALSE}
 devtools::session_info()
-```
+```1
