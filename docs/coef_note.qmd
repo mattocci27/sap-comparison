@@ -1,0 +1,34 @@
+---
+title: "Note for fitting"
+format:
+  docx:
+    toc: false
+    number-sections: true
+    highlight-style: github
+---
+
+**Cumulative fitting is not statistically valid.**
+Fitting Fd = a * K^b * error to each subset of data based on the ranges of pressure gradients (e.g., 0.01-0.02, 0.01-0.05, 0.01-0.08) is problematic because 1) data with smaller ranges will always have smaller numbers of samples and 2) predictor value K will be biased towards smaller values.
+The number of samples can be controlled using bootstrap or something but I'm not sure how to solve the latter problem at the moment.
+Unless these issues are addressed, the current hypothesis H2 sounds like a trivial and statistical artifact and also not testable.
+
+As long as I did a quick simulation by generating random variables that follows a normal distribution on the log-scale (i.e., linear) or log-normal distribution with additive errors (i.e., non-linear) , data with restricted ranges of predictor values tend to show smaller intercept (i.e., log_a) especially when data do not purely follow multiplicative error structure (i.e., linear relationship).
+Data in the real world has some noises and that's why we tend to get smaller log_a values for the smaller ranges of a pressure gradient.
+
+I haven't tried Bayesian hierarchical models for this yet but it might solve the second problem above because we can model errors from different sources.
+We pool all the data but we still can estimate sample specific values.
+First, I need to do a more robust simulation to check if a Bayesian hierarchical model can address the second problem.
+If the model works, I can apply the same Bayesian model to the sap flow data to test if the curve obtained from the realistic ranges of pressure gradients and the full ranges of pressure gradients are similar.
+
+**Segmented fitting also is not statistically valid.**
+There is no theoretical support to use K 95% as the breakpoint.
+We usually treat a breakpoint as parameter to be estimated.
+We can estimate breakpoints for the relationship between Fd and K using a piecewise regression.
+We could address if data with low K (low delta P and low Fd) will show different fitted curves from those obtained from data with high K, although I guess there will be no break points.
+
+
+**Ec or ET can be treated as model restriction**
+If the most important objective is to estimate "a" and "b" that can predict a reasonable ET (i.e., 2/3EC +- XX %), we can somehow put that information (or restriction) in the model when we estimate "a" and "b".
+We can consider all the useful information within a single model.
+That is how the Bayesian model works.
+However, I don’t understand the data structure very well yet and not sure if this is possible.

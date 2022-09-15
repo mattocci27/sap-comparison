@@ -873,6 +873,13 @@ d |>
   # scale_x_log10() +
   facet_wrap(~ species_name)
 
+d |>
+#  filter(sample_number == 2) |>
+  ggplot(aes(x = p_2, y = k)) +
+  geom_point() +
+  # scale_y_log10() +
+  # scale_x_log10() +
+  facet_wrap(~ species_name)
 
 ```
 
