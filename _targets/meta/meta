@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|726b9f7e59ba1312|||||||||||||||
+.Random.seed|object|126eefad77ce9a5c|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -80,7 +80,7 @@ fit_dummy_sap_data|stem|2b36cacc29cc4922|39ffc14f9dde4169|cbfd9e6cace8bf50|20654
 fit_dummy_sap_diagnostics_sap|stem|26e0f9e71adc8130|35f630d769469627|e392bd54d451f975|-1077372686||t19249.1456295459s|a3d57c2e496c00b4|1018|fst_tbl|local|vector|||0.001||
 fit_dummy_sap_draws_sap|stem|246f9e85756ad908|bfbe3d9f9cfc16bb|e392bd54d451f975|1452506390||t19249.1456282496s|2bcc158399707eeb|967846|fst_tbl|local|vector|||0.078||
 fit_dummy_sap_file_sap|stem|941d0e8b244094be|49605bf8929b14b7|ef46db3751d8e999|-1955582465|stan/sap.stan|t19249.1453173193s|36f7ef7a44f39c7e|4187|file|local|vector|||0.001||
-fit_dummy_sap_mcmc_sap|stem|621b83ad24c98763|4200d1b1464d7578|b2fd465ec420ca7e|-2123520904||t19249.1456241291s||313927|qs|local|vector|||122.148|Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
+fit_dummy_sap_mcmc_sap|stem|621b83ad24c98763|005bcb638ad7fa8b|b2fd465ec420ca7e|-2123520904||t19249.1456241291s||313927|qs|local|vector|||44149.952|Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
 fit_dummy_sap_summary_sap|stem|614773e554bcfd9e|2e32963db59e5c52|a5343091d6593cc3|-168956985||t19249.1457595477s|626838a92e468553|593913|fst_tbl|local|vector|||11.124||
 fit_dummy_summary_anova|stem|89511f91e8deb1d5|60285d1127df5968|efc98fd6e96f0dbb|1942612556||t19241.6352905476s|936eac6a14c0fdf7|11954|fst_tbl|local|vector|||0.9||
 fit_gmvn_data|stem|d964e419109cf224|67f4787cd7689bf0|d5b3b74b2ed4a36c|1670982819||t19226.6869237907s|46f9580f4a9b8ff8|2222|qs|local|vector|||0||
@@ -151,7 +151,7 @@ logit_data|stem|24c45d1656cdb625|15d37ece492552b7|928229b9e37b1058|-547518601||t
 logit_file_piecewise_logistic|stem|d614e42cbed54351|88a74045587c1ee8|ef46db3751d8e999|1511951583|stan/piecewise_logistic.stan|t19241.6376437807s|99ca1a3e994211b6|1158|file|local|vector|||0.001||
 logit_mcmc_piecewise_logistic|stem|2fa32652472178ca|2ac59fd87609f9f6|d429e29d3c26c877|-1307546118||t19241.6421395025s|34e03681dc298ef3|40743|qs|local|vector|||0.484|EBFMI not computed because it is undefined for posterior chains of length less than 3.|
 loo_|stem|5831975043a47421|314ad55798c2cf32|ac856df788b994fa|1440272382||t19241.634955218s|0cb5736d43de31db|8386|rds|local|vector|||1.872|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|e08f7fdcac870f9b|||||||||||||||
+main_list|object|7101ddc14b2ce882|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|fd9b5ff6ce5a469f|100578318||t19242.1381884688s|257b15927dfb4d82|1372|qs|local|vector|||0.001||
@@ -176,7 +176,7 @@ quad_logistic_mcmc_quad_logistic|stem|2e73708c4784f751|9d4f6820c14bccc7|b5458d10
 quad_logistic_stan_data|stem|93dfe78ea80c976a|bca8022469e5e655|fa536c8bdd9a3535|86374461||t19242.1447643704s|f33139973f0a70dc|1852|rds|local|vector|||0.201||
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quad_logistic_summary_quad_logistic|stem|fbbda52f2a6a7d9e|1e4bdb44419e667b|f73023b390523473|-2114738469||t19242.145556745s|5c654808f39ca279|6821|fst_tbl|local|vector|||0.715||
-raw_data_list|object|7590f8d747ea3e4c|||||||||||||||
+raw_data_list|object|1c8697b61952c445|||||||||||||||
 report_html|stem|f490dd7808e3b837|bc1c5c56a891abc3|e924fa501d079a2b|1483737400|docs/report.html*docs/report.qmd|t19245.3820322393s||3459057|file|local|vector|||14.085||System command quarto failed
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19243.2858748467s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
@@ -194,32 +194,3 @@ sma_scatter_ks_plot|stem|e11c885e8fdf88a7|db9b3fd3537541a3|a26a67131ba89213|1061
 sma_scatter_log_plot|stem|fed51c20148db0ca|bb5ee286cdf8edc2|55553f999e410373|1411685232||t19227.6081891062s|a6a4c63ae71e3f79|122993|rds|local|vector|||0.221||
 sma_scatter_plot|stem|31cc0e1694383f87|e268ef9d2781699c|55553f999e410373|-651295624||t19227.6081908192s|bdbb6b1d38873930|87855|rds|local|vector|||0.209||
 write_anova_yml|function|b3368d15fad915cf|||||||||||||||
-logistic|function|85b2eccc2fdb02b5
-my_theme|function|63e26270112a0b32
-clean_ks_trees_err|function|ddfa099a2febad99
-clean_ks_trees|function|0a5292c7fab07c9a
-create_stan_tab|function|d23d841ad0c22173
-clean_cond_count|function|ad65270eb5a1e852
-generate_piecewise_logistic_stan_data|function|2978e927557631bf
-generate_anova_data|function|6bc05b28ae02757c
-raw_data_list|object|1c8697b61952c445
-sma_ks|function|9c2566642d19c117
-coef_density_sd|function|5c87a1bd8ba1bb09
-main_list|object|7101ddc14b2ce882
-my_ggsave|function|2ec22f415a516e53
-.Random.seed|object|126eefad77ce9a5c
-generate_anova_mvn_data|function|391bc75c8ab3a47c
-generate_dummy_data|function|9ada5e3ee86d9d8f
-sma_ks2|function|c3a72f68902bc689
-generate_logistic_stan_data|function|3fc36a50ea29a681
-generate_dummy_data_ab|function|40ad80ceb1b41f12
-write_anova_yml|function|b3368d15fad915cf
-plot_logistic_sp|function|440d27054e51566a
-ks_box2|function|1f17b33f5d25bcb0
-coef_intervals_mean|function|86a3105600308b79
-coef_intervals_diff|function|9bfca47eb89dc430
-ks_box|function|539b720c13f06579
-ks_bars|function|1ffc68245cc35275
-coef_intervals_logistic|function|14e6e0a3dc78571d
-coef_intervals_sd|function|eafb0ed70b9bcd48
-sma_scatter|function|62942711b2459e09

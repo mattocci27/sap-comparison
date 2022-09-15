@@ -834,6 +834,48 @@ b2_h <- quantile(est_b2, 0.975)
 
 ```
 
+## CV
+
+```{r}
+library(caret)
+data <- d |>
+  filter(species_name == "Hevea brasiliensis")
+
+random_sample <- createDataPartition(data$fd,
+                                p = 0.8, list = FALSE)
+
+train_control <- trainControl(method = "cv",
+                              number = 10)
+
+# training the model by assigning sales column
+# as target variable and rest other column
+# as independent variable
+model <- train(log(fd) ~ log(k), data = data,
+               method = "lm",
+               trControl = train_control)
+
+model$finalModel |> str()
+
+fit <- lm(log(fd) ~ log(k), data2)
+
+data2 <- data |> filter(p_2 < 0.02)
+
+data3 <- data |>
+  sample_n(17)
+
+lm(log(fd) ~ log(k), data3)
+
+d |>
+  filter(sample_number == 2) |>
+  ggplot(aes(x = p_2, y = k)) +
+  geom_point() +
+  # scale_y_log10() +
+  # scale_x_log10() +
+  facet_wrap(~ species_name)
+
+
+```
+
 
 ```{r, eval=FALSE}
 targets::tar_visnetwork()
@@ -842,4 +884,4 @@ targets::tar_visnetwork()
 
 ```{r, eval=FALSE}
 devtools::session_info()
-```1
+```
