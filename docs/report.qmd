@@ -269,8 +269,8 @@ d <- read_csv("data-raw/calibration_raw_data.csv") |>
 
 ```{r}
 library(ggridges)
-tar_load(fit_ab_summary_sap_without_traits)
-tar_load(fit_ab_draws_sap_without_traits)
+tar_load(fit_ab_summary_grainer_without_traits)
+tar_load(fit_ab_draws_grainer_without_traits)
 
 xy_lab <- d |>
   dplyr::select(xylem_type) |>
@@ -287,8 +287,12 @@ sp_lab <- d |>
   mutate(sp_num2 = str_c("2_", sp_num))  |>
   arrange(sp_num1)
 
-fit_ab_summary_sap_without_traits |>
-  filter(str_detect(variable, "beta"))
+# fit_ab_summary_sap_without_traits |>
+#   filter(str_detect(variable, "tau"))
+
+# fit_ab_summary_sap_without_traits |>
+#  filter(str_detect(variable, "alpha"))
+
 
 draws <- fit_ab_draws_sap_without_traits |>
   janitor::clean_names()
@@ -336,6 +340,25 @@ xy_data_b <- draws |>
 ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
  geom_density_ridges() +
  xlab("Coefficient b")
+
+```
+
+```{r, eval=FALSE}
+samp_data_a <- draws |>
+  dplyr::select(starts_with("A_1")) |>
+  pivot_longer(1:188)  |>
+  arrange(name)
+ggplot(samp_data_a, aes(x = exp(value), y = name))  +
+ geom_density_ridges() +
+ scale_x_log10() +
+ xlab("Coefficient a")
+
+sap_stan_data_each |>
+  mutate(fit = map(stan_data, fit_model, grainer_simple_file))
+
+tar_load(fit_ab_each)
+
+fit_ab_each$fit[[1]]$summary
 
 ```
 

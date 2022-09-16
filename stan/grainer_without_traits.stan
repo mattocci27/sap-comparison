@@ -1,4 +1,3 @@
-
 data {
   int<lower=0> N; // number of data
   int<lower=0> J; // number of tree samples
@@ -8,10 +7,10 @@ data {
   array[N] int<lower=1,upper=K> kk; // species
   array[N] int<lower=1,upper=L> ll; // xylem type
   vector[N] y;
-  matrix[N,2] x;
-  matrix[K,J] uj;
-  matrix[L,K] uk;
-  matrix[1,L] ul;
+  matrix[N, 2] x;
+  matrix[K, J] uj;
+  matrix[L, K] uk;
+  matrix[1, L] ul;
 }
 
 parameters {
@@ -23,15 +22,12 @@ parameters {
   cholesky_factor_corr[2] L_Omega_j;
   cholesky_factor_corr[2] L_Omega_k;
   cholesky_factor_corr[2] L_Omega_l;
-  vector<lower=0,upper=pi()/2>[2] tau_unif_j;
-  vector<lower=0,upper=pi()/2>[2] tau_unif_k;
-  vector<lower=0,upper=pi()/2>[2] tau_unif_l;
+  vector<lower=0,upper=pi()/2>[2] tau_j;
+  vector<lower=0,upper=pi()/2>[2] tau_k;
+  vector<lower=0,upper=pi()/2>[2] tau_l;
 }
 
 transformed parameters {
-  vector<lower=0>[2] tau_j = 5 * tan(tau_unif_j);
-  vector<lower=0>[2] tau_k = 5 * tan(tau_unif_k);
-  vector<lower=0>[2] tau_l = 5 * tan(tau_unif_l);
   matrix[2, L] beta = gamma * ul + diag_pre_multiply(tau_l, L_Omega_l) * zl;
   matrix[2, K] alpha = beta * uk + diag_pre_multiply(tau_k, L_Omega_k) * zk;
   matrix[2, J] A = alpha * uj + diag_pre_multiply(tau_j, L_Omega_j) * zj;
@@ -42,6 +38,9 @@ model {
   for(n in 1:N) {
     mu[n] = x[n, ] * A[, jj[n]];
   }
+  tau_j ~ normal(0, 2.5);
+  tau_k ~ normal(0, 2.5);
+  tau_l ~ normal(0, 2.5);
   to_vector(zl) ~ std_normal();
   to_vector(zk) ~ std_normal();
   to_vector(zj) ~ std_normal();

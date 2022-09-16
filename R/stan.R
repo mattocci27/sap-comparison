@@ -396,7 +396,6 @@ generate_sap_stan_data <- function(data) {
   # d <- read_csv("data-raw/calibration_raw_data.csv") |>
   #   janitor::clean_names() |>
   #   rename(species = species_name)
-
   d <- read_csv(data) |>
     janitor::clean_names() |>
     rename(species = species_name)
@@ -447,3 +446,104 @@ generate_sap_stan_data <- function(data) {
 
 # beta <- rbind(rep(1, 4), 1:4)
 # beta %*% sap_stan_data$uk
+
+generate_sap_stan_data_each <- function(data) {
+  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  #   janitor::clean_names() |>
+  #   rename(species = species_name)
+
+  d <- read_csv(data) |>
+    janitor::clean_names() |>
+    rename(species = species_name)
+
+  d <- d |>
+    filter(!is.na(k)) |>
+    filter(!is.na(fd)) |>
+    filter(k != 0)
+
+  nd <- d |>
+    group_by(species) |>
+    nest()
+
+  nd2 <- nd |>
+    mutate(stan_data = map(data, \(x) {
+      list(
+        N = nrow(x),
+        log_fd = log(x$fd),
+        log_k = log(x$k)
+      )
+    }))
+  nd2
+}
+
+fit_model <- function(data, model_file,
+                            iter_warmup = 2000,
+                            iter_sampling = 2000,
+                            adapt_delta = 0.9,
+                            max_treedepth = 15,
+                            chains = 4,
+                            parallel_chains = 4,
+                            refresh = 0,
+                            seed = 123) {
+  model <- cmdstan_model(model_file)
+  fit <- model$sample(
+    data = data,
+    seed = seed,
+    iter_warmup = iter_warmup,
+    iter_sampling = iter_sampling,
+    adapt_delta = adapt_delta,
+    max_treedepth = max_treedepth,
+    chains = chains,
+    parallel_chains = parallel_chains,
+    refresh = refresh)
+
+  summary_ <- posterior::summarise_draws(fit,
+  mean = ~mean(.x),
+  sd = ~sd(.x),
+  mad = ~mad(.x),
+  ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+  posterior::default_convergence_measures())
+
+  list(summary = summary_, draws = fit$draws())
+ }
+
+#' @title Compile a Stan model and return a path to the compiled model output.
+#' @description We return the paths to the Stan model specification
+#'   and the compiled model file so `targets` can treat them as
+#'   dynamic files and compile the model if either file changes.
+#' @return Path to the compiled Stan model, which is just an RDS file.
+#'   To run the model, you can read this file into a new R session with
+#'   `readRDS()` and feed it to the `object` argument of `sampling()`.
+#' @param model_file Path to a Stan model file.
+#'   This is a text file with the model spceification.
+#' @references https://github.com/wlandau/targets-stan
+#' @examples
+#' library(cmdstanr)
+#' compile_model("stan/model.stan")
+compile_model <- function(model_file) {
+  quiet(cmdstan_model(model_file))
+  model_file
+}
+
+# alpha <- rbind(rep(1, 31), 1:31)
+# alpha %*% sap_stan_data$uj
+
+# beta <- rbind(rep(1, 4), 1:4)
+# beta %*% sap_stan_data$uk
+
+#' @title Suppress output and messages for code.
+#' @description Used in the pipeline.
+#' @return The result of running the code.
+#' @param code Code to run quietly.
+#' @references https://github.com/wlandau/targets-stan
+#' @examples
+#' library(cmdstanr)
+#' library(tidyverse)
+#' compile_model("stan/model.stan")
+#' quiet(fit_model("stan/model.stan", simulate_data_discrete()))
+#' out
+quiet <- function(code) {
+  sink(nullfile())
+  on.exit(sink())
+  suppressMessages(code)
+}

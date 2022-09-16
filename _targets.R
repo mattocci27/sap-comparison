@@ -590,10 +590,10 @@ main_list <- list(
   # ),
 
 
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
-  ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   # simple -------------------
 
@@ -603,7 +603,7 @@ main_list <- list(
   ),
   tar_stan_mcmc(
     fit_ab,
-    "stan/sap_without_traits.stan",
+    "stan/grainer_without_traits.stan",
     data = sap_stan_data,
     refresh = 0,
     chains = 4,
@@ -624,6 +624,23 @@ main_list <- list(
       posterior::default_convergence_measures()
     )
   ),
+
+  tar_target(
+    sap_stan_data_each,
+    generate_sap_stan_data_each(calibration_raw_data_csv)
+  ),
+  tar_target(
+    grainer_simple_file,
+    compile_model("stan/grainer_simple.stan"),
+    format = "file"
+  ),
+  tar_target(
+    fit_ab_each, {
+      sap_stan_data_each |>
+        mutate(fit = map(stan_data, fit_model, grainer_simple_file))
+    }
+  ),
+
 
   tar_quarto(
     dummy_html,
