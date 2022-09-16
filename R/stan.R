@@ -391,3 +391,59 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
   ) #|>
   # str()
 }
+
+generate_sap_stan_data <- function(data) {
+  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  #   janitor::clean_names() |>
+  #   rename(species = species_name)
+
+  d <- read_csv(data) |>
+    janitor::clean_names() |>
+    rename(species = species_name)
+
+  d <- d |>
+    filter(!is.na(k)) |>
+    filter(!is.na(fd)) |>
+    filter(k != 0) |>
+    mutate(sample_id = str_c(species, "_", sample_number))
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest()
+
+  uk <- model.matrix(~ xylem_type, tmp)
+  uk[apply(uk, 1, sum) == 2, 1] <- 0
+
+  ul <- matrix(rep(1, 4), ncol = 4)
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    L = unique(d$xylem_type) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    kk = as.factor(d$species) |> as.numeric(),
+    ll = as.factor(d$xylem_type) |> as.numeric(),
+    uj = t(uj),
+    uk = t(uk),
+    ul = ul,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd)
+  )
+
+  stan_data
+}
+
+
+# alpha <- rbind(rep(1, 31), 1:31)
+# alpha %*% sap_stan_data$uj
+
+# beta <- rbind(rep(1, 4), 1:4)
+# beta %*% sap_stan_data$uk

@@ -79,6 +79,11 @@ raw_data_list <- list(
     "data/cond_count.csv"),
     format = "file"
   ),
+  tar_target(
+    calibration_raw_data_csv,
+    "data-raw/calibration_raw_data.csv",
+    format = "file"
+  ),
   # tar_target(
   #   ks_spp_err_csv,
   #   "data/ks_pres_tens_spp_err.csv",
@@ -569,24 +574,56 @@ main_list <- list(
     generate_dummy_data_ab()
   ),
 
-  tar_stan_mcmc(
-     fit_dummy_sap,
-     "stan/sap.stan",
-     data = dummy_sap_stan_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 2000,
-     iter_sampling = 2000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123,
-     output_dir = "log"
-  ),
-  # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
+  # tar_stan_mcmc(
+  #    fit_dummy_sap,
+  #    "stan/sap.stan",
+  #    data = dummy_sap_stan_data,
+  #    refresh = 0,
+  #    chains = 4,
+  #    parallel_chains = getOption("mc.cores", 4),
+  #    iter_warmup = 2000,
+  #    iter_sampling = 2000,
+  #    adapt_delta = 0.9,
+  #    max_treedepth = 15,
+  #    seed = 123,
+  #    output_dir = "log"
   # ),
+
+
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
+
+  # simple -------------------
+
+  tar_target(
+    sap_stan_data,
+    generate_sap_stan_data(calibration_raw_data_csv)
+  ),
+  tar_stan_mcmc(
+    fit_ab,
+    "stan/sap_without_traits.stan",
+    data = sap_stan_data,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
 
   tar_quarto(
     dummy_html,
