@@ -429,7 +429,7 @@ main_list <- list(
       "yml/anova.yml",
       fit_anova_noint_err_log_draws_anova_noint_err,
       ll = 0.25, hh = 0.75),
-    format = "file"
+format = "file"
   ),
   # tar_target(
   #   ks_pred_draws,
@@ -596,51 +596,128 @@ main_list <- list(
   # ),
 
   # simple -------------------
+  tar_target(
+    fd_k_traits_csv,
+    clean_sap_data(calibration_raw_data_csv, "data/fd_k_traits.csv"),
+    format = "file"
+  ),
 
   tar_target(
     sap_stan_data,
-    generate_sap_stan_data(calibration_raw_data_csv)
+    generate_sap_stan_data(fd_k_traits_csv, upper_pressure = 0.03)
   ),
-  tar_stan_mcmc(
-    fit_ab,
-    "stan/grainer_without_traits.stan",
-    data = sap_stan_data,
-    refresh = 0,
-    chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
-    iter_warmup = 2000,
-    iter_sampling = 2000,
-    adapt_delta = 0.9,
-    max_treedepth = 15,
-    seed = 123,
-    return_draws = TRUE,
-    return_diagnostics = TRUE,
-    return_summary = TRUE,
-    summaries = list(
-      mean = ~mean(.x),
-      sd = ~sd(.x),
-      mad = ~mad(.x),
-      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-      posterior::default_convergence_measures()
+
+  tar_map(
+    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
+    tar_target(sap_all_raw,
+      generate_sap_stan_data(fd_k_traits_csv,
+        upper_pressure = p)),
+    tar_target(sap_all_clean,
+      generate_sap_stan_data(fd_k_traits_csv,
+        remove_abnormal_values = TRUE,
+        upper_pressure = p))
+  ),
+
+  tar_map(
+    values = list(stan_data = rlang::syms(c(
+      "sap_all_raw_0.03",
+      "sap_all_raw_0.04",
+      "sap_all_raw_0.05",
+      "sap_all_raw_0.08",
+      "sap_all_raw_2",
+      "sap_all_clean_0.03",
+      "sap_all_clean_0.04",
+      "sap_all_clean_0.05",
+      "sap_all_clean_0.08",
+      "sap_all_clean_2"
+      ))),
+    tar_stan_mcmc(
+      fit_ab1,
+      "stan/grainer_without_traits.stan",
+      data = stan_data,
+      refresh = 0,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 1),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.9,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+        ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+      )
     )
   ),
 
-  tar_target(
-    sap_stan_data_each,
-    generate_sap_stan_data_each(calibration_raw_data_csv)
+  tar_map(
+    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
+    tar_target(sap_sp_raw,
+      generate_sap_stan_data_sp(fd_k_traits_csv,
+        upper_pressure = p)),
+    tar_target(sap_sp_clean,
+      generate_sap_stan_data_sp(fd_k_traits_csv,
+        remove_abnormal_values = TRUE,
+        upper_pressure = p))
   ),
+
+  # # tar_target(
+  # #   sap_stan_data_each,
+  # #   generate_sap_stan_data_each(calibration_raw_data_csv)
+  # # ),
+
+  tar_map(
+    values = list(stan_data_each = rlang::syms(c(
+      "sap_sp_raw_0.03",
+      "sap_sp_raw_0.04",
+      "sap_sp_raw_0.05",
+      "sap_sp_raw_0.08",
+      "sap_sp_raw_2",
+      "sap_sp_clean_0.03",
+      "sap_sp_clean_0.04",
+      "sap_sp_clean_0.05",
+      "sap_sp_clean_0.08",
+      "sap_sp_clean_2"
+      ))),
+    tar_target(
+      fit_ab2, {
+      stan_data_each |>
+          mutate(fit = map(stan_data, fit_model,
+            grainer_simple_file,
+            iter_warmup = 2000,
+            iter_sampling = 2000))
+      }
+  )),
+
   tar_target(
     grainer_simple_file,
     compile_model("stan/grainer_simple.stan"),
     format = "file"
   ),
-  tar_target(
-    fit_ab_each, {
-      sap_stan_data_each |>
-        mutate(fit = map(stan_data, fit_model, grainer_simple_file))
-    }
+
+  tar_map(
+    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
+    tar_target(sap_segment_raw,
+      generate_sap_stan_data_segment(fd_k_traits_csv,
+        upper_pressure = p)),
+    tar_target(sap_segment_clean,
+      generate_sap_stan_data_segment(fd_k_traits_csv,
+        remove_abnormal_values = TRUE,
+        upper_pressure = p))
   ),
 
+  # tar_target(
+  #   fit_ab_each, {
+  #     sap_stan_data_each |>
+  #       mutate(fit = map(stan_data, fit_model, grainer_simple_file))
+  #   }
+  # ),
 
   tar_quarto(
     dummy_html,

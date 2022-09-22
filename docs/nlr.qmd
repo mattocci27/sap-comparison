@@ -40,6 +40,8 @@ d <- read_csv(here("data-raw/calibration_raw_data.csv")) |>
   janitor::clean_names()
 
 data <- d |>
+  mutate(fd = ifelse(is.na(fd), removed_fd, fd)) |>
+  mutate(k = ifelse(is.na(k), removed_k, k)) |>
   filter(!is.na(fd)) |>
   filter(!is.na(k)) |>
   filter(k != 0) |>

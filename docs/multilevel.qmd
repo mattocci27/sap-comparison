@@ -30,6 +30,7 @@ knitr::opts_chunk$set(
 ```{r,include=FALSE}
 library(tidyverse)
 library(mvtnorm)
+library(ggridges)
 library(rstanarm)
 library(tarchetypes)
 library(kableExtra)
@@ -45,7 +46,7 @@ options(mc.cores = parallel::detectCores()) # Run on multiple cores
 ## Typical data
 
 - 10 groups
-- each group has only 6 data points
+- each group has only 3-6 data points
 - linear relationship on the log-scale
 
 ```{r}
@@ -53,12 +54,11 @@ set.seed(123)
 n <- 6
 j <- 10
 rho <- 0.7
-sig_a <- 0.5
+sig_a <- 0.7
 sig_b <- 0.5
 mu_a <- log(119)
-# mu_a <- -0.2
 mu_b <- 1.23
-sig <- 0.5
+sig <- 0.3
 
 s <- diag(c(sig_a, sig_b)^2, 2)
 s[1,2] <- s[2,1] <- rho * sig_a * sig_b
@@ -67,17 +67,21 @@ alpha <- rmvnorm(j, c(mu_a, mu_b), s)
 alpha
 
 xx <- NULL
+n_vec <- NULL
+for (jj in 1:j) n_vec <- c(n_vec, sample(4:6, 1))
 for (jj in 1:j) {
   #xx <- c(xx, rnorm(n, c(0.1, 0.2, 0.4, 0.6, 0.8, 1.0), 0.1))
-  xx <- c(xx, rlnorm(n, log(0.36), 0.5) |> sort())
+  #xx <- c(xx, rlnorm(n, log(0.36), 0.5) |> sort())
+  xx <- c(xx, rlnorm(n_vec[jj], log(0.36), 0.5) |> sort())
   # xx <- c(xx, runif(n, 0.01, 1.0) |> sort())
 }
 
-xx <- rlnorm(n * j, log(0.36), 0.5)
+#xx <- rlnorm(n * j, log(0.36), 0.5)
+
 # d <- read_csv(here("data-raw/calibration_raw_data.csv")) |>
 #   janitor::clean_names()
 
-# d <- d |>
+# data <- d |>
 #   filter(!is.na(fd)) |>
 #   filter(!is.na(k)) |>
 #   filter(k != 0) |>
@@ -101,7 +105,8 @@ xx <- rlnorm(n * j, log(0.36), 0.5)
 tmp <- tibble(
   intercept = 1,
   log_x = log(xx),
-  sample_id = rep(1:j, each = n)) |>
+  sample_id = rep(1:j, n_vec)) |>
+  #sample_id = rep(1:j, each = n_vec)) |>
   mutate(samp_fct = as.factor((sample_id)))
 
 
@@ -115,8 +120,9 @@ for (i in 1:nrow(tmp)) {
 data <- tmp |>
   mutate(log_mu = log_y) |>
   mutate(x = exp(log_x)) |>
-  mutate(log_y = rnorm(n * j, log_mu, sig)) |>
+  mutate(log_y = rnorm(nrow(tmp), log_mu, sig)) |>
   mutate(y = exp(log_y))
+
 ```
 
 
@@ -182,7 +188,7 @@ alpha2 <- as_tibble(fit2) |>
 
 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 nd <- data |>
   group_by(samp_fct) |>
   nest() |>
@@ -199,23 +205,62 @@ alpha3 <- nd3 |>
   dplyr::select(log_a, b) |>
   unnest(cols = c(log_a, b)) |>
   mutate(model = "separate fitting")
+
+tmp <- nd3 |>
+  mutate(log_a_h = map_dbl(log_a, quantile, 0.55)) |>
+  mutate(log_a_l = map_dbl(log_a, quantile, 0.45)) |>
+  mutate(log_a_median = map_dbl(log_a, median)) |>
+  mutate(b_median = map_dbl(b, median))
+
+sep_a <- median(tmp$log_a_median)
+sep_b <- median(tmp$b_median)
 ```
 
+```{r, eval=FALSE}
+nd <- data |>
+  group_by(samp_fct) |>
+  nest() |>
+  ungroup()
+
+nd2 <- nd |>
+  mutate(fit = map(data, \(x)lm(log(y) ~ log(x), data = x))) |>
+  mutate(hoge = map_dfr(fit, coef))
+
+tmp <- nd2$hoge |>
+  janitor::clean_names()
+
+sep_a <- mean(tmp$intercept)
+sep_b <- mean(tmp$log_x)
+
+```
 
 ```{r}
-library(ggridges)
 
-alpha_data <- bind_rows(alpha1, alpha2)
-#alpha_data <- bind_rows(alpha1, alpha2, alpha3)
+#alpha_data <- bind_rows(alpha1, alpha2)
+alpha_data <- bind_rows(alpha1, alpha2, alpha3)
 
 ggplot(alpha_data, aes(x = log_a, y = model)) +
-  geom_density_ridges()
+  geom_density_ridges() +
+  geom_vline(xintercept = sep_a, lty = 2) +
+  geom_vline(xintercept = mu_a)
+
+# ggplot(alpha_data, aes(x = exp(log_a), y = model)) +
+#   geom_density_ridges() +
+#   geom_vline(xintercept = exp(sep_a), lty = 2) +
+#   geom_vline(xintercept = exp(mu_a))
 
 ggplot(alpha_data, aes(x = b, y = model)) +
-  geom_density_ridges()
+  geom_density_ridges() +
+  geom_vline(xintercept = sep_b, lty = 2) +
+  geom_vline(xintercept = mu_b)
 
+mu_a
+mu_b
 apply(alpha1[, 1:2], 2, mean)
 apply(alpha2[, 1:2], 2, mean)
+sep_a
+sep_b
+#apply(alpha3[, 1:2], 2, mean)
 
 ```
 

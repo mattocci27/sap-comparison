@@ -392,19 +392,41 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
   # str()
 }
 
-generate_sap_stan_data <- function(data) {
-  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
-  #   janitor::clean_names() |>
-  #   rename(species = species_name)
+clean_sap_data <- function(data, file) {
   d <- read_csv(data) |>
     janitor::clean_names() |>
     rename(species = species_name)
 
   d <- d |>
+    mutate(fd = ifelse(is.na(fd), removed_fd, fd)) |>
+    mutate(k = ifelse(is.na(k), removed_k, k)) |>
     filter(!is.na(k)) |>
     filter(!is.na(fd)) |>
-    filter(k != 0) |>
+    filter(k > 0) |>
+    # remove two acacia species
+    filter(k < 2) |>
+    filter(fd > 0) |>
     mutate(sample_id = str_c(species, "_", sample_number))
+
+  my_write_csv(d, file)
+
+}
+
+generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  #   janitor::clean_names() |>
+  #   rename(species = species_name)
+  # d <- read_csv("data/fd_k_traits.csv")
+  d <- read_csv(data)
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+    filter(p_2 <= upper_pressure)
+  }
 
   tmp <- d |>
     group_by(sample_id, species) |>
@@ -447,19 +469,20 @@ generate_sap_stan_data <- function(data) {
 # beta <- rbind(rep(1, 4), 1:4)
 # beta %*% sap_stan_data$uk
 
-generate_sap_stan_data_each <- function(data) {
+generate_sap_stan_data_sp <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
   # d <- read_csv("data-raw/calibration_raw_data.csv") |>
   #   janitor::clean_names() |>
   #   rename(species = species_name)
+  d <- read_csv(data)
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
 
-  d <- read_csv(data) |>
-    janitor::clean_names() |>
-    rename(species = species_name)
-
-  d <- d |>
-    filter(!is.na(k)) |>
-    filter(!is.na(fd)) |>
-    filter(k != 0)
+  if (upper_pressure) {
+   d <- d |>
+    filter(p_2 <= upper_pressure)
+  }
 
   nd <- d |>
     group_by(species) |>
@@ -476,13 +499,45 @@ generate_sap_stan_data_each <- function(data) {
   nd2
 }
 
+generate_sap_stan_data_segment <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  #   janitor::clean_names() |>
+  #   rename(species = species_name)
+  d <- read_csv(data)
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+    filter(p_2 <= upper_pressure)
+  }
+
+  nd <- d |>
+    group_by(species, sample_id) |>
+    nest()
+
+  nd2 <- nd |>
+    mutate(stan_data = map(data, \(x) {
+      list(
+        N = nrow(x),
+        log_fd = log(x$fd),
+        log_k = log(x$k)
+      )
+    }))
+  nd2
+}
+
+
+
 fit_model <- function(data, model_file,
-                            iter_warmup = 2000,
-                            iter_sampling = 2000,
+                            iter_warmup = 1,
+                            iter_sampling = 1,
                             adapt_delta = 0.9,
                             max_treedepth = 15,
                             chains = 4,
-                            parallel_chains = 4,
+                            parallel_chains = 1,
                             refresh = 0,
                             seed = 123) {
   model <- cmdstan_model(model_file)

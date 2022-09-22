@@ -360,6 +360,40 @@ tar_load(fit_ab_each)
 
 fit_ab_each$fit[[1]]$summary
 
+tar_load(test_0.03)
+tar_load(test_0.04)
+
+str(test_0.03)
+str(test_0.04)
+
+tar_load(sap_stan_data_sp_all_0.04)
+tar_load(sap_sp_clean_0.03)
+
+tar_load(sap_sp_clean_0.03)
+sap_sp_clean_0.03
+
+tar_load(fit_ab2_sap_sp_clean_0.03)
+tar_load(fit_ab2_sap_sp_clean_0.08)
+fit_ab2_sap_sp_clean_0.03$fit[[1]]$summary
+fit_ab2_sap_sp_clean_0.08$fit[[1]]$summary
+
+nd <- d |>
+  group_by(species, sample_id) |>
+  nest()
+
+hoge <- tar_manifest()
+hoge |>
+  filter(str_detect(name, "sap_")) |>
+  filter(str_detect(name, "sp"))
+
+
+hoge |>
+  filter(str_detect(name, "fit_ab")) |>
+  filter(str_detect(name, "summary"))
+
+
+tar_read(fit_ab_summary_grainer_without_traits_sap_all_0.08)
+
 ```
 
 

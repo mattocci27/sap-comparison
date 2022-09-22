@@ -1,3 +1,10 @@
+#' @title write_csv for targets
+#' @inheritParams readr::write_csv
+my_write_csv <- function(x, path, append = FALSE, col_names = !append) {
+    write_csv(x, path, append = FALSE, col_names = !append)
+    paste(path)
+}
+
 clean_ks_trees <- function(data) {
   #d2 <- read_csv("data-raw/ks_pres_tens_trees_raw.csv") |>
   d2 <- read_csv(data) |>
