@@ -274,7 +274,8 @@ d <- read_csv(here("data/fd_k_traits.csv"))
 ```
 
 ```{r}
-
+# hist(d$k)
+# hist(d$p_2)
 # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
 #   targets::tar_read(fit_ab1_draws_grainer_without_traits_sap_all_clean_2)) |>
 #   janitor::clean_names()
@@ -372,6 +373,10 @@ Figures are based on the multilevel model.
 
 ```{r}
 
+s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.02)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.02")
 s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.03)) |>
   janitor::clean_names() |>
@@ -384,6 +389,14 @@ s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.05)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.05")
+s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.06)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.06")
+s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.07)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.07")
 s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.08)) |>
   janitor::clean_names() |>
@@ -393,7 +406,7 @@ s_all <- withr::with_dir(rprojroot::find_root('_targets.R'),
   janitor::clean_names() |>
   mutate(pressure = "all")
 
-a_data <- bind_rows(s_003, s_004, s_005, s_008, s_all) |>
+a_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[1"))
 
 ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
@@ -401,13 +414,14 @@ ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
   geom_line() +
   ylab("log(a)")
 
-b_data <- bind_rows(s_003, s_004, s_005, s_008, s_all) |>
+b_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[2"))
 
 ggplot(b_data, aes(x = pressure, y = q50, group = variable)) +
   geom_point() +
   geom_line() +
   ylab("b")
+
 ```
 
 ## Rubber (*Hevea brasiliensis*) only
@@ -433,7 +447,6 @@ ggplot(a_rubber, aes(x = pressure, y = exp(q50), group = variable)) +
 ```
 
 ```{r}
-
 ggplot(a_rubber, aes(x = pressure, y = q50, group = variable)) +
   geom_point() +
   geom_line() +
@@ -441,6 +454,7 @@ ggplot(a_rubber, aes(x = pressure, y = q50, group = variable)) +
   geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
   ylab("log(a)")
 ```
+
 
 
 ```{r}
@@ -454,6 +468,9 @@ ggplot(b_rubber, aes(x = pressure, y = q50, group = variable)) +
   geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
   ylab("log(a)")
 ```
+
+
+
 
 ```{r, eval=FALSE}
 samp_data_a <- draws |>

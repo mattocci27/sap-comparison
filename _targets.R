@@ -590,7 +590,6 @@ format = "file"
   # ),
 
 
-
   # simple -------------------
   tar_target(
     fd_k_traits_csv,
@@ -604,7 +603,7 @@ format = "file"
   ),
 
   tar_map(
-    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
+    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 2)),
     tar_target(sap_all_raw,
       generate_sap_stan_data(fd_k_traits_csv,
         upper_pressure = p)),
@@ -616,14 +615,20 @@ format = "file"
 
   tar_map(
     values = list(stan_data = rlang::syms(c(
+      "sap_all_raw_0.02",
       "sap_all_raw_0.03",
       "sap_all_raw_0.04",
       "sap_all_raw_0.05",
+      "sap_all_raw_0.06",
+      "sap_all_raw_0.07",
       "sap_all_raw_0.08",
       "sap_all_raw_2",
+      "sap_all_clean_0.02",
       "sap_all_clean_0.03",
       "sap_all_clean_0.04",
       "sap_all_clean_0.05",
+      "sap_all_clean_0.06",
+      "sap_all_clean_0.07",
       "sap_all_clean_0.08",
       "sap_all_clean_2"
       ))),
@@ -653,7 +658,7 @@ format = "file"
   ),
 
   tar_map(
-    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
+    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 2)),
     tar_target(sap_sp_raw,
       generate_sap_stan_data_sp(fd_k_traits_csv,
         upper_pressure = p)),
@@ -670,14 +675,20 @@ format = "file"
 
   tar_map(
     values = list(stan_data_each = rlang::syms(c(
+      "sap_sp_raw_0.02",
       "sap_sp_raw_0.03",
       "sap_sp_raw_0.04",
       "sap_sp_raw_0.05",
+      "sap_sp_raw_0.06",
+      "sap_sp_raw_0.07",
       "sap_sp_raw_0.08",
       "sap_sp_raw_2",
+      "sap_sp_clean_0.02",
       "sap_sp_clean_0.03",
       "sap_sp_clean_0.04",
       "sap_sp_clean_0.05",
+      "sap_sp_clean_0.06",
+      "sap_sp_clean_0.07",
       "sap_sp_clean_0.08",
       "sap_sp_clean_2"
       ))),
