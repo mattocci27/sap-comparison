@@ -1,0 +1,225 @@
+---
+title: "Multi-level model"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    self-contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+
+```{r,include=FALSE}
+library(tidyverse)
+library(mvtnorm)
+library(rstanarm)
+library(tarchetypes)
+library(kableExtra)
+library(here)
+library(loo)
+library(bayesplot)
+options(mc.cores = parallel::detectCores()) # Run on multiple cores
+
+```
+
+# Dummy data
+
+## Typical data
+
+- 10 groups
+- each group has only 6 data points
+- linear relationship on the log-scale
+
+```{r}
+set.seed(123)
+n <- 6
+j <- 10
+rho <- 0.7
+sig_a <- 0.5
+sig_b <- 0.5
+mu_a <- log(119)
+# mu_a <- -0.2
+mu_b <- 1.23
+sig <- 0.5
+
+s <- diag(c(sig_a, sig_b)^2, 2)
+s[1,2] <- s[2,1] <- rho * sig_a * sig_b
+
+alpha <- rmvnorm(j, c(mu_a, mu_b), s)
+alpha
+
+xx <- NULL
+for (jj in 1:j) {
+  #xx <- c(xx, rnorm(n, c(0.1, 0.2, 0.4, 0.6, 0.8, 1.0), 0.1))
+  xx <- c(xx, rlnorm(n, log(0.36), 0.5) |> sort())
+  # xx <- c(xx, runif(n, 0.01, 1.0) |> sort())
+}
+
+xx <- rlnorm(n * j, log(0.36), 0.5)
+# d <- read_csv(here("data-raw/calibration_raw_data.csv")) |>
+#   janitor::clean_names()
+
+# d <- d |>
+#   filter(!is.na(fd)) |>
+#   filter(!is.na(k)) |>
+#   filter(k != 0) |>
+#   mutate(sp_id = species_name) |>
+#   mutate(sample_id = as.factor(sample_number))
+
+# hist(d$k)
+
+
+# d$k |> log() |> mean()
+# d$k |> log() |> median()
+# d$k |> log() |> sd()
+# d$k  |> mean()
+# d$k  |> median()
+# d$k  |> sd()
+
+#log(0.36)
+
+#xx <- rlnorm(n * j, 0, 1)
+
+tmp <- tibble(
+  intercept = 1,
+  log_x = log(xx),
+  sample_id = rep(1:j, each = n)) |>
+  mutate(samp_fct = as.factor((sample_id)))
+
+
+# fix here
+log_y <- NULL
+for (i in 1:nrow(tmp)) {
+  jj <- as.numeric(tmp[i, "sample_id"])
+  log_y[i] <- as.matrix(tmp[i, 1:2]) %*% alpha[jj,]
+}
+
+data <- tmp |>
+  mutate(log_mu = log_y) |>
+  mutate(x = exp(log_x)) |>
+  mutate(log_y = rnorm(n * j, log_mu, sig)) |>
+  mutate(y = exp(log_y))
+```
+
+
+```{r}
+ggplot(data, aes(x = x, y = y, col = samp_fct)) +
+  geom_point()
+```
+
+```{r}
+ggplot(data, aes(x = x, y = y, col = samp_fct)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(~ samp_fct)
+```
+
+
+```{r}
+ggplot(data, aes(x = x, y = y, col = samp_fct)) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_point()
+```
+
+
+```{r}
+ggplot(data, aes(x = x, y = y, col = samp_fct)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_smooth(se = FALSE, method = "lm")
+
+```
+```{r}
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_smooth(se = FALSE, method = "lm")
+```
+
+# Multilevel model
+
+
+```{r}
+fit1 <- stan_lm(log(y) ~ log(x), prior = NULL, data)
+
+alpha1 <- as_tibble(fit1) |>
+  janitor::clean_names() |>
+  dplyr::select(log_a = intercept, b = log_x) |>
+  mutate(model = "pooled fitting")
+```
+
+
+```{r}
+fit2 <- stan_lmer(log(y) ~ log(x) + (log(x) | samp_fct), data)
+
+alpha2 <- as_tibble(fit2) |>
+  janitor::clean_names() |>
+  dplyr::select(log_a = intercept, b = log_x) |>
+  mutate(model = "multilevel model")
+```
+
+
+
+```{r, eval=FALSE}
+nd <- data |>
+  group_by(samp_fct) |>
+  nest() |>
+  ungroup()
+
+nd2 <- nd |>
+  mutate(fit = map(data, \(x)stan_lm(log(y) ~ log(x), prior = NULL, data = x)))
+
+nd3 <- nd2 |>
+  mutate(log_a = map(fit, \(x)as_tibble(x)$`(Intercept)`)) |>
+  mutate(b = map(fit, \(x)as_tibble(x)$`log(x)`))
+
+alpha3 <- nd3 |>
+  dplyr::select(log_a, b) |>
+  unnest(cols = c(log_a, b)) |>
+  mutate(model = "separate fitting")
+```
+
+
+```{r}
+library(ggridges)
+
+alpha_data <- bind_rows(alpha1, alpha2)
+#alpha_data <- bind_rows(alpha1, alpha2, alpha3)
+
+ggplot(alpha_data, aes(x = log_a, y = model)) +
+  geom_density_ridges()
+
+ggplot(alpha_data, aes(x = b, y = model)) +
+  geom_density_ridges()
+
+apply(alpha1[, 1:2], 2, mean)
+apply(alpha2[, 1:2], 2, mean)
+
+```
+
+```{r}
+fit<- lm(log(y) ~ log(x), data)
+fit
+```
