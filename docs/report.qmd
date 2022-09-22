@@ -22,7 +22,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = FALSE,
   fig.align = "center",
-  fig.show = "hold"
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
 )
 ```
 
@@ -35,6 +36,7 @@ library(targets)
 library(loo)
 library(smatr)
 library(GGally)
+library(ggridges)
 source(here("R", "stan.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
@@ -77,8 +79,9 @@ We can check the patterns in more detail using hierarchical models below.
 
 
 ```{r, include=FALSE}
-tar_load(ks_spp_err_csv)
-d <- read_csv(ks_spp_err_csv)
+# tar_load(ks_spp_err_csv)
+ks_spp_err_csv <- withr::with_dir(rprojroot::find_root('_targets.R'), targets::tar_read(ks_spp_err_csv))
+d <- read_csv(here(ks_spp_err_csv))
 sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
 ```
 
@@ -200,8 +203,10 @@ This is also consistent with Fig. 1b.
 ## Check the raw data
 
 ```{r,eval=TRUE}
-tar_load(cond_count_csv)
-d <- read_csv(cond_count_csv)
+# tar_load(cond_count_csv)
+cond_count_csv <- withr::with_dir(rprojroot::find_root('_targets.R'), targets::tar_read(cond_count_csv))
+
+d <- read_csv(here(cond_count_csv))
 
 ggplot(d, aes(x = as.factor(pressure), y = count/total * 100)) +
   geom_boxplot() +
@@ -257,21 +262,29 @@ AP, *Acacia pennata*.
 
 # coefficients a and  b
 
+Multilevel model with cleaned data with full range of $\Delta$ P.
+
 ### Stan code
 
-```{stan, file=here::here('stan/sap_without_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```{stan, file=here::here('stan/grainer_without_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
 ```
 
 ```{r}
-d <- read_csv("data-raw/calibration_raw_data.csv") |>
+d <- read_csv(here("data/fd_k_traits.csv"))
+```
+
+```{r}
+
+# draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab1_draws_grainer_without_traits_sap_all_clean_2)) |>
+#   janitor::clean_names()
+
+draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_draws_grainer_without_traits_sap_all_raw_2)) |>
   janitor::clean_names()
-```
 
-```{r}
-library(ggridges)
-tar_load(fit_ab_summary_grainer_without_traits)
-tar_load(fit_ab_draws_grainer_without_traits)
-
+#tar_load(fit_ab1_summary_grainer_without_traits_sap_all_clean_2)
+#tar_load(fit_ab1_draws_grainer_without_traits_sap_all_clean_2)
 xy_lab <- d |>
   dplyr::select(xylem_type) |>
   unique() |>
@@ -279,7 +292,7 @@ xy_lab <- d |>
   arrange(xylem_fct)
 
 sp_lab <- d |>
-  dplyr::select(sp = species_name, xylem_type) |>
+  dplyr::select(sp = species, xylem_type) |>
   unique() |>
   mutate(sp_fct = as.factor(sp)) |>
   mutate(sp_num = as.numeric(sp_fct)) |>
@@ -287,39 +300,11 @@ sp_lab <- d |>
   mutate(sp_num2 = str_c("2_", sp_num))  |>
   arrange(sp_num1)
 
-# fit_ab_summary_sap_without_traits |>
-#   filter(str_detect(variable, "tau"))
+# draws <- fit_ab1_draws_grainer_without_traits_sap_all_clean_2 |>
+#   janitor::clean_names()
+```
 
-# fit_ab_summary_sap_without_traits |>
-#  filter(str_detect(variable, "alpha"))
-
-
-draws <- fit_ab_draws_sap_without_traits |>
-  janitor::clean_names()
-
-sp_data_a <- draws |>
-  dplyr::select(starts_with("alpha_1")) |>
-  pivot_longer(1:31)  |>
-  arrange(name) |>
-  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
-  left_join(sp_lab)
-
-ggplot(sp_data_a, aes(x = exp(value), y = sp, fill = xylem_type))  +
- geom_density_ridges() +
- scale_x_log10() +
- xlab("Coefficient a")
-
-sp_data_b <- draws |>
-  dplyr::select(starts_with("alpha_2")) |>
-  pivot_longer(1:31)  |>
-  arrange(name) |>
-  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
-  left_join(sp_lab)
-
-ggplot(sp_data_b, aes(x = exp(value), y = sp, fill = xylem_type))  +
- geom_density_ridges() +
- xlab("Coefficient b")
-
+```{r}
 xy_data_a <- draws |>
   dplyr::select(starts_with("beta_1")) |>
   pivot_longer(1:4)  |>
@@ -330,7 +315,9 @@ ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
  geom_density_ridges() +
  scale_x_log10() +
  xlab("Coefficient a")
+```
 
+```{r}
 xy_data_b <- draws |>
   dplyr::select(starts_with("beta_2")) |>
   pivot_longer(1:4)  |>
@@ -340,7 +327,132 @@ xy_data_b <- draws |>
 ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
  geom_density_ridges() +
  xlab("Coefficient b")
+```
 
+
+```{r}
+sp_data_a <- draws |>
+  dplyr::select(starts_with("alpha_1")) |>
+  pivot_longer(1:31)  |>
+  arrange(name) |>
+  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
+  left_join(sp_lab)
+
+ggplot(sp_data_a, aes(x = exp(value), y = sp, fill = xylem_type))  +
+ geom_density_ridges() +
+ xlab("Coefficient a") +
+ coord_cartesian(xlim = c(0, 2000))
+```
+
+```{r}
+ggplot(sp_data_a, aes(x = exp(value), y = sp, fill = xylem_type))  +
+ geom_density_ridges() +
+ scale_x_log10() +
+ xlab("Coefficient a")
+```
+
+```{r}
+sp_data_b <- draws |>
+  dplyr::select(starts_with("alpha_2")) |>
+  pivot_longer(1:31)  |>
+  arrange(name) |>
+  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
+  left_join(sp_lab)
+
+ggplot(sp_data_b, aes(x = exp(value), y = sp, fill = xylem_type))  +
+ geom_density_ridges() +
+ xlab("Coefficient b")
+```
+
+# Fig. 4 (rough)
+
+Figures are based on the multilevel model.
+
+## all species
+
+```{r}
+
+s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.03)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.03")
+s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.04)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.04")
+s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.05)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.05")
+s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.08)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.08")
+s_all <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_2)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "all")
+
+a_data <- bind_rows(s_003, s_004, s_005, s_008, s_all) |>
+  filter(str_detect(variable, "alpha\\[1"))
+
+ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
+  geom_point() +
+  geom_line() +
+  ylab("log(a)")
+
+b_data <- bind_rows(s_003, s_004, s_005, s_008, s_all) |>
+  filter(str_detect(variable, "alpha\\[2"))
+
+ggplot(b_data, aes(x = pressure, y = q50, group = variable)) +
+  geom_point() +
+  geom_line() +
+  ylab("b")
+```
+
+## Rubber (*Hevea brasiliensis*) only
+
+**This is not a regressoin.**
+I just conntected each pressure gradient.
+The line and dots are posterior medians.
+The dark shaded region is 50% Bayesian CI.
+The light shaded region is 95% Bayesian CI.
+There seems to be different between <0.03 and <0.04 but I cannot say if it is statistically significant.
+
+
+```{r}
+a_rubber <- a_data |>
+  filter(variable == "alpha[1,7]")
+
+ggplot(a_rubber, aes(x = pressure, y = exp(q50), group = variable)) +
+  geom_point() +
+  geom_line() +
+  geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
+  geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.4) +
+  ylab("a")
+```
+
+```{r}
+
+ggplot(a_rubber, aes(x = pressure, y = q50, group = variable)) +
+  geom_point() +
+  geom_line() +
+  geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
+  geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
+  ylab("log(a)")
+```
+
+
+```{r}
+b_rubber <- b_data |>
+  filter(variable == "alpha[2,7]")
+
+ggplot(b_rubber, aes(x = pressure, y = q50, group = variable)) +
+  geom_point() +
+  geom_line() +
+  geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
+  geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
+  ylab("log(a)")
 ```
 
 ```{r, eval=FALSE}

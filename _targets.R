@@ -590,10 +590,6 @@ format = "file"
   # ),
 
 
-  # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
-  # ),
 
   # simple -------------------
   tar_target(
@@ -728,6 +724,10 @@ format = "file"
     "docs/ks_ratio.qmd"
   ),
 
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
   NULL
 )
 

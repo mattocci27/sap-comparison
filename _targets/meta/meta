@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|2db47a43b51be578|||||||||||||||
+.Random.seed|object|48bb89d36f80b6ca|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -208,7 +208,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|5831975043a47421|314ad55798c2cf32|ac856df788b994fa|1440272382||t19241.634955218s|0cb5736d43de31db|8386|rds|local|vector|||1.872|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|cb1f7c6272493ae5|||||||||||||||
+main_list|object|a0c0ab81d1fd54c1|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 my_write_csv|function|46eaaee704021b09|||||||||||||||
@@ -228,6 +228,7 @@ quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
 raw_data_list|object|1bfb918f514cd544|||||||||||||||
+report_html|stem|074480f76c69c00a|c860a9fed0b15f45|ffce626f9466c200|1483737400|docs/report.html*docs/report.qmd|t19257.4744484864s|4c6f46e7088542ca|3870425|file|local|vector|||14.373||
 sap_all_clean_0.03|stem|8aed08e677261581|3a1ea51f97383624|414a197f1dfa569f|526937966||t19257.4045668162s|e4d681a123bc5c56|8812|rds|local|vector|||0.263||
 sap_all_clean_0.04|stem|5bae6a22ecf29adc|4aff1fe75d28e346|414a197f1dfa569f|699237368||t19257.4045682514s|7c4b2e6786fefd38|11368|rds|local|vector|||0.264||
 sap_all_clean_0.05|stem|4e1ed8c8b455ae79|676337a4db858cac|414a197f1dfa569f|-2105821801||t19257.4045697792s|c356a03624e22c95|12561|rds|local|vector|||0.249||
