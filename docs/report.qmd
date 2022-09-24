@@ -37,6 +37,7 @@ library(loo)
 library(smatr)
 library(GGally)
 library(ggridges)
+library(ggrepel)
 source(here("R", "stan.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
@@ -270,7 +271,8 @@ Multilevel model with cleaned data with full range of $\Delta$ P.
 ```
 
 ```{r}
-d <- read_csv(here("data/fd_k_traits.csv"))
+d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
 ```
 
 ```{r}
@@ -406,7 +408,10 @@ s_all <- withr::with_dir(rprojroot::find_root('_targets.R'),
   janitor::clean_names() |>
   mutate(pressure = "all")
 
-a_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
+
+
+a_data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+#a_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[1"))
 
 ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
@@ -414,7 +419,8 @@ ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
   geom_line() +
   ylab("log(a)")
 
-b_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
+b_data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+#b_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[2"))
 
 ggplot(b_data, aes(x = pressure, y = q50, group = variable)) +
@@ -426,8 +432,8 @@ ggplot(b_data, aes(x = pressure, y = q50, group = variable)) +
 
 ## Rubber (*Hevea brasiliensis*) only
 
-**This is not a regressoin.**
-I just conntected each pressure gradient.
+**This is not a regression.**
+I just connected each pressure gradient.
 The line and dots are posterior medians.
 The dark shaded region is 50% Bayesian CI.
 The light shaded region is 95% Bayesian CI.
@@ -469,10 +475,125 @@ ggplot(b_rubber, aes(x = pressure, y = q50, group = variable)) +
   ylab("log(a)")
 ```
 
+## all species
+
+```{r, fig.width=10, fig.height=10}
+sp_lab |>
+  mutate(variable = str_c("alpha[1,",sp_num,"]")) |>
+  dplyr::select(sp_fct, variable, xylem_type) |>
+  full_join(a_data) |>
+  ggplot(aes(x = pressure, y = exp(q50), group = sp_fct, fill = xylem_type)) +
+  facet_wrap(~sp_fct, ncol = 5, scale = "free") +
+  geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
+  geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.6) +
+  geom_point() +
+  geom_line() +
+  ylab("a")
+```
+
+```{r, fig.width=10, fig.height=10}
+sp_lab |>
+  mutate(variable = str_c("alpha[2,",sp_num,"]")) |>
+  dplyr::select(sp_fct, variable, xylem_type) |>
+  full_join(b_data) |>
+  ggplot(aes(x = pressure, y = exp(q50), group = sp_fct, fill = xylem_type)) +
+  facet_wrap(~sp_fct, ncol = 5, scale = "free") +
+  geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
+  geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.6) +
+  geom_point() +
+  geom_line() +
+  ylab("b")
+```
+
+```{r}
+d |>
+  filter(species == "Areca catechu") |>
+  ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+d |>
+  filter(species == "Areca catechu") |>
+  filter(p_2 <= 0.03) |>
+  ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
 
 
+```{r}
+d |>
+  filter(species == "Parashorea chinensis") |>
+  ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+d |>
+  filter(species == "Parashorea chinensis") |>
+  filter(p_2 <= 0.03) |>
+  ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+s2_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab1_summary_grainer_without_traits2_sap_all_raw_0.08)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.08")
+
+s_008 |>
+  filter(str_detect(variable, "Omega"))
+
+tmp2 <- s2_008 |>
+  filter(str_detect(variable, "alpha\\[1")) |>
+  mutate(model = "pool")
+tmp <- s_008 |>
+  filter(str_detect(variable, "alpha\\[1")) |>
+  mutate(model = "multilevel")
+
+tmp3 <- bind_rows(tmp, tmp2)
+tmp4 <- sp_lab |>
+  mutate(variable = str_c("alpha[1,",sp_num,"]")) |>
+  dplyr::select(sp_fct, variable, xylem_type) |>
+  full_join(tmp3)
+
+tmp4 |>
+  dplyr::select(sp_fct, xylem_type, q50, model) |>
+  pivot_wider(names_from = model, values_from = q50) |>
+  ggplot(aes(x = exp(pool), y = exp(multilevel))) +
+  geom_point() +
+  geom_text_repel(aes(label = sp_fct)) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_abline(intercept = 0, slope = 1)
+```
+
+```{r,eval=FALSE}
+s_008 |>
+  filter(str_detect(variable, "sigma"))
+m <- matrix(c(1, 0.7, 0, 0.7), ncol = 2)
+tau <- diag(2) * 0.5
+s <- (tau %*% m) %*% t(tau %*% m)
+cov2cor(s)
+
+m_chol <- chol(m)
+t(m_chol) %*% m_chol
+
+```
 
 ```{r, eval=FALSE}
+tar_load(fit_ab_each2_sap_sp_raw_0.08)
+tar_load(fit_ab_each_sap_sp_raw_0.08)
+
+fit_ab_each_sap_sp_raw_0.08$fit[[1]]$summary
+fit_ab_each2_sap_sp_raw_0.08$fit[[1]]$summary
+
+
 samp_data_a <- draws |>
   dplyr::select(starts_with("A_1")) |>
   pivot_longer(1:188)  |>

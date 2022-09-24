@@ -1,0 +1,90 @@
+---
+title: "your title"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    self-contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+
+```{r,include=FALSE}
+library(tidyverse)
+library(targets)
+library(tarchetypes)
+library(kableExtra)
+library(here)
+```
+
+```{r}
+set.seed(123)
+n <- 500
+log10_x <- rnorm(n, 1.1, 0.4)
+hist(10^log10_x)
+log_x <- log(10^log10_x)
+
+log_y <- rnorm(n, 1 + 0.3 * log_x, 0.1)
+
+data <- tibble(x = exp(log_x), y = exp(log_y))
+
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10()
+
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +
+  scale_x_log10()
+
+fit <- lm(log(y) ~ log(x), data)
+summary(fit)
+res <- residuals(fit) |> sd()
+
+log_a <- coef(fit)[1]
+b <- coef(fit)[2]
+xx <- seq(min(data$x), max(data$x), length = 100)
+pre1 <- exp(log_a + b * log(xx))
+pre2 <- exp(log_a + b * log(xx) + res^2 / 2)
+data2 <- tibble(xx, pre1, pre2)
+
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +
+  scale_x_log10() +
+  geom_line(data = data2, aes(x = xx, y = pre2)) +
+  geom_line(data = data2, aes(x = xx, y = pre1), lty = 2)
+
+```
+
+```{r}
+set.seed(123)
+log_x <- rnorm(100000, 3, 1.5)
+x <- exp(log_x)
+mean(x)
+sd(x)
+
+exp(3 + 1.5^2 /2)
+exp(3)
+
+
+
+
+```

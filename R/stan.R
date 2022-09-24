@@ -489,11 +489,17 @@ generate_sap_stan_data_sp <- function(data, remove_abnormal_values = FALSE, uppe
     nest()
 
   nd2 <- nd |>
-    mutate(stan_data = map(data, \(x) {
+    mutate(segment_number = map_dbl(data, \(x)length(unique(x$sample_id)))) |>
+    mutate(stan_data = map2(data, segment_number, \(x, y) {
       list(
         N = nrow(x),
         log_fd = log(x$fd),
-        log_k = log(x$k)
+        log_k = log(x$k),
+        u = matrix(rep(1, y), ncol = y),
+        jj = as.factor(x$sample_id) |> as.numeric(),
+        J = y,
+        y = log(x$fd),
+        x = cbind(1, log(x$k))
       )
     }))
   nd2
@@ -503,6 +509,7 @@ generate_sap_stan_data_segment <- function(data, remove_abnormal_values = FALSE,
   # d <- read_csv("data-raw/calibration_raw_data.csv") |>
   #   janitor::clean_names() |>
   #   rename(species = species_name)
+  # d <- read_csv("data/fd_k_traits.csv")
   d <- read_csv(data)
   if (remove_abnormal_values) {
     d <- d |>
@@ -513,6 +520,7 @@ generate_sap_stan_data_segment <- function(data, remove_abnormal_values = FALSE,
    d <- d |>
     filter(p_2 <= upper_pressure)
   }
+
 
   nd <- d |>
     group_by(species, sample_id) |>
@@ -526,6 +534,7 @@ generate_sap_stan_data_segment <- function(data, remove_abnormal_values = FALSE,
         log_k = log(x$k)
       )
     }))
+
   nd2
 }
 

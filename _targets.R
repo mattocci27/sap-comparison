@@ -622,19 +622,18 @@ format = "file"
       "sap_all_raw_0.06",
       "sap_all_raw_0.07",
       "sap_all_raw_0.08",
-      "sap_all_raw_2",
       "sap_all_clean_0.02",
       "sap_all_clean_0.03",
       "sap_all_clean_0.04",
       "sap_all_clean_0.05",
       "sap_all_clean_0.06",
       "sap_all_clean_0.07",
-      "sap_all_clean_0.08",
-      "sap_all_clean_2"
+      "sap_all_clean_0.08"
       ))),
     tar_stan_mcmc(
       fit_ab1,
-      "stan/grainer_without_traits.stan",
+      c("stan/grainer_without_traits.stan",
+       "stan/grainer_without_traits2.stan"),
       data = stan_data,
       refresh = 0,
       chains = 4,
@@ -658,7 +657,7 @@ format = "file"
   ),
 
   tar_map(
-    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 2)),
+    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)),
     tar_target(sap_sp_raw,
       generate_sap_stan_data_sp(fd_k_traits_csv,
         upper_pressure = p)),
@@ -682,25 +681,31 @@ format = "file"
       "sap_sp_raw_0.06",
       "sap_sp_raw_0.07",
       "sap_sp_raw_0.08",
-      "sap_sp_raw_2",
       "sap_sp_clean_0.02",
       "sap_sp_clean_0.03",
       "sap_sp_clean_0.04",
       "sap_sp_clean_0.05",
       "sap_sp_clean_0.06",
       "sap_sp_clean_0.07",
-      "sap_sp_clean_0.08",
-      "sap_sp_clean_2"
+      "sap_sp_clean_0.08"
       ))),
     tar_target(
-      fit_ab2, {
+      fit_ab_each, {
       stan_data_each |>
           mutate(fit = map(stan_data, fit_model,
             grainer_simple_file,
             iter_warmup = 2000,
             iter_sampling = 2000))
-      }
-  )),
+      }),
+    tar_target(
+      fit_ab_each2, {
+      stan_data_each |>
+          mutate(fit = map(stan_data, fit_model,
+            grainer_simple2_file,
+            iter_warmup = 2000,
+            iter_sampling = 2000))
+      })
+  ),
 
   tar_target(
     grainer_simple_file,
@@ -708,16 +713,22 @@ format = "file"
     format = "file"
   ),
 
-  tar_map(
-    list(p = c(0.03, 0.04, 0.05, 0.08, 2)),
-    tar_target(sap_segment_raw,
-      generate_sap_stan_data_segment(fd_k_traits_csv,
-        upper_pressure = p)),
-    tar_target(sap_segment_clean,
-      generate_sap_stan_data_segment(fd_k_traits_csv,
-        remove_abnormal_values = TRUE,
-        upper_pressure = p))
+  tar_target(
+    grainer_simple2_file,
+    compile_model("stan/grainer_simple2.stan"),
+    format = "file"
   ),
+
+  # tar_map(
+  #   list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)),
+  #   tar_target(sap_segment_raw,
+  #     generate_sap_stan_data_segment(fd_k_traits_csv,
+  #       upper_pressure = p)),
+  #   tar_target(sap_segment_clean,
+  #     generate_sap_stan_data_segment(fd_k_traits_csv,
+  #       remove_abnormal_values = TRUE,
+  #       upper_pressure = p))
+  # ),
 
   # tar_target(
   #   fit_ab_each, {
@@ -735,10 +746,11 @@ format = "file"
     "docs/ks_ratio.qmd"
   ),
 
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
-  ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
+
   NULL
 )
 
