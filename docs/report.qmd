@@ -581,6 +581,25 @@ t(m_chol) %*% m_chol
 
 ```{r, eval=FALSE}
 tar_load(fit_ab_each_sap_sp_raw_0.08)
+tar_load(sap_all_clean_0.08)
+
+sap_all_clean_0.08 |> str()
+
+sap_all_clean_0.08$ul
+sap_all_clean_0.08$uk[1:4, 1:31]
+sap_all_clean_0.08$uj[1:5,1:5]
+
+m1 <- matrix(1:6, nrow = 2)
+m2 <- matrix(c(1,1,1,0,1, 0,0,0,1), nrow = 3)
+m1
+m2
+m1 %*% m2
+
+
+hoge <- s_008 |>
+  filter(str_detect(variable, "alpha\\[1")) |> pull(mean)
+hoge2 <- s2_008 |>
+  filter(str_detect(variable, "alpha\\[1")) |> pull(mean)
 
 s_008 |>
    filter(variable == "alpha[1,1]")
@@ -591,13 +610,15 @@ s2_008 |>
 
 s3_008 <- fit_ab_each_sap_sp_raw_0.08 |>
   arrange(species)
-s4_008 <- fit_ab_each2_sap_sp_raw_0.08 |>
-  arrange(species)
 
-s3_008$fit[[1]]$summary |>
-  filter(variable == "b")
-s4_008$fit[[1]]$summary |>
-  filter(variable == "b")
+s3_008$fit[[4]]$summary |>
+  filter(variable == "log_a")
+
+  s3_008 |>
+    mutate(log_a = map_dbl)
+
+s3_008$fit2[[4]]$summary |>
+  filter(variable == "log_a")
 
 
 fit_ab_each2_sap_sp_raw_0.08$fit[[4]]$summary

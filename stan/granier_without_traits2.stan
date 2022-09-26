@@ -26,8 +26,8 @@ transformed parameters {
   real log_a = 4.78 + 2.5 * log_a_tilde;
   real b = 1.23 + 2.5 * b_tilde;
   matrix[2, 1] gamma;
-  gamma[1,1] = log_a;
-  gamma[2,1] = b;
+  gamma[1, 1] = log_a;
+  gamma[2, 1] = b;
   matrix[2, L] beta = gamma * ul + diag_pre_multiply(tau_l, L_Omega_l) * zl;
   matrix[2, K] alpha = beta * uk + diag_pre_multiply(tau_k, L_Omega_k) * zk;
 }

@@ -430,14 +430,19 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
 
   tmp <- d |>
     group_by(sample_id, species) |>
-    nest()
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
 
   uj <- model.matrix(~ species, tmp)
   uj[apply(uj, 1, sum) == 2, 1] <- 0
 
   tmp <- d |>
     group_by(species, xylem_type) |>
-    nest()
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
 
   uk <- model.matrix(~ xylem_type, tmp)
   uk[apply(uk, 1, sum) == 2, 1] <- 0
