@@ -491,7 +491,9 @@ generate_sap_stan_data_sp <- function(data, remove_abnormal_values = FALSE, uppe
 
   nd <- d |>
     group_by(species) |>
-    nest()
+    nest() |>
+    ungroup() |>
+    arrange(species)
 
   nd2 <- nd |>
     mutate(segment_number = map_dbl(data, \(x)length(unique(x$sample_id)))) |>

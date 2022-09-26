@@ -643,6 +643,21 @@ format = "file"
     format = "file"
   ),
 
+  tar_target(
+    pool_multi_plot, {
+      p <- line_pool_multi(fd_k_traits_csv,
+       fit_ab_summary_granier_without_traits_sap_all_raw_0.08,
+       fit_ab_summary_granier_without_traits2_sap_all_raw_0.08)
+      my_ggsave(
+        "figs/pool_multi",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 10
+      )
+    },
+    format = "file"
+  ),
   # tnar_map(
   #   list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)),
   #   tar_target(sap_segment_raw,
@@ -670,10 +685,10 @@ format = "file"
   #   "docs/ks_ratio.qmd"
   # ),
 
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
-  ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   NULL
 )

@@ -446,3 +446,64 @@ coef_intervals_logistic <- function(draws) {
       xlab("Posterior estimates") +
       my_theme()
 }
+
+line_pool_multi <- function(d, s_008, s2_008) {
+  d <- read_csv(d) |>
+    filter(is.na(removed_k))
+
+  log_a <- s_008 |>
+  filter(str_detect(variable, "alpha\\[1")) |>
+  pull(q50)
+  b <- s_008 |>
+    filter(str_detect(variable, "alpha\\[2")) |>
+    pull(q50)
+  sig <- s_008 |>
+    filter(variable == "sigma") |>
+    pull(q50)
+
+  log_a_pool <- s2_008 |>
+    filter(str_detect(variable, "alpha\\[1")) |>
+    pull(q50)
+  b_pool <- s2_008 |>
+    filter(str_detect(variable, "alpha\\[2")) |>
+    pull(q50)
+  sig_pool <- s2_008 |>
+    filter(variable == "sigma") |>
+    pull(q50)
+
+  nd <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(species) |>
+    mutate(log_xx = map(data, \(x)seq(min(log(x$k)), max(log(x$k)), length = 80))) |>
+    mutate(log_a = log_a) |>
+    mutate(b = b) |>
+    mutate(sig = sig) |>
+    mutate(log_a_pool = log_a_pool) |>
+    mutate(b_pool = b_pool) |>
+    mutate(sig_pool = sig_pool) |>
+    mutate(log_pred = pmap(list(log_xx, log_a, b, sig), \(log_xx, log_a, b, sig) log_a + b * log_xx + sig^2 / 2)) |>
+    mutate(log_pred_pool = pmap(list(log_xx, log_a_pool, b_pool, sig_pool), \(log_xx, log_a, b, sig) log_a + b * log_xx + sig^2 / 2))
+
+  pred_data <- nd |>
+    dplyr::select(xylem_type, species, log_xx, log_pred, log_pred_pool) |>
+    unnest(c(log_xx, log_pred, log_pred_pool))
+
+  d_dp <- d |>
+    filter(xylem_type == "Pa")
+  pred_dp <- pred_data |>
+    filter(xylem_type == "Pa")
+
+  d |>
+    ggplot() +
+    geom_point(aes(x = k, y = fd, col = xylem_type)) +
+    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred))) +
+    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred_pool)), lty = 2) +
+    facet_wrap(~ species, ncol = 4, scale = "free") +
+    ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
+    xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    my_theme()
+
+}
+
