@@ -267,7 +267,7 @@ Multilevel model with cleaned data with full range of $\Delta$ P.
 
 ### Stan code
 
-```{stan, file=here::here('stan/grainer_without_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```{stan, file=here::here('stan/granier_without_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
 ```
 
 ```{r}
@@ -279,15 +279,15 @@ d <- read_csv(here("data/fd_k_traits.csv")) |>
 # hist(d$k)
 # hist(d$p_2)
 # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab1_draws_grainer_without_traits_sap_all_clean_2)) |>
+#   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_2)) |>
 #   janitor::clean_names()
 
 draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_draws_grainer_without_traits_sap_all_raw_2)) |>
+  targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_raw_0.08)) |>
   janitor::clean_names()
 
-#tar_load(fit_ab1_summary_grainer_without_traits_sap_all_clean_2)
-#tar_load(fit_ab1_draws_grainer_without_traits_sap_all_clean_2)
+#tar_load(fit_ab_summary_granier_without_traits_sap_all_clean_2)
+#tar_load(fit_ab_draws_granier_without_traits_sap_all_clean_2)
 xy_lab <- d |>
   dplyr::select(xylem_type) |>
   unique() |>
@@ -303,7 +303,7 @@ sp_lab <- d |>
   mutate(sp_num2 = str_c("2_", sp_num))  |>
   arrange(sp_num1)
 
-# draws <- fit_ab1_draws_grainer_without_traits_sap_all_clean_2 |>
+# draws <- fit_ab_draws_granier_without_traits_sap_all_clean_2 |>
 #   janitor::clean_names()
 ```
 
@@ -376,42 +376,36 @@ Figures are based on the multilevel model.
 ```{r}
 
 s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.02)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.02)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.02")
 s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.03)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.03)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.03")
 s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.04)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.04)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.04")
 s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.05)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.05)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.05")
 s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.06)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.06)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.06")
 s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.07)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.07)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.07")
 s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_0.08)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.08)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.08")
-s_all <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits_sap_all_raw_2)) |>
-  janitor::clean_names() |>
-  mutate(pressure = "all")
-
 
 
 a_data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
-#a_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[1"))
 
 ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
@@ -420,7 +414,6 @@ ggplot(a_data, aes(x = pressure, y = q50, group = variable)) +
   ylab("log(a)")
 
 b_data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
-#b_data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008, s_all) |>
   filter(str_detect(variable, "alpha\\[2"))
 
 ggplot(b_data, aes(x = pressure, y = q50, group = variable)) +
@@ -542,7 +535,7 @@ d |>
 
 ```{r}
 s2_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab1_summary_grainer_without_traits2_sap_all_raw_0.08)) |>
+  targets::tar_read(fit_ab_summary_granier_without_traits2_sap_all_raw_0.08)) |>
   janitor::clean_names() |>
   mutate(pressure = "0.08")
 
@@ -587,11 +580,27 @@ t(m_chol) %*% m_chol
 ```
 
 ```{r, eval=FALSE}
-tar_load(fit_ab_each2_sap_sp_raw_0.08)
 tar_load(fit_ab_each_sap_sp_raw_0.08)
 
-fit_ab_each_sap_sp_raw_0.08$fit[[1]]$summary
-fit_ab_each2_sap_sp_raw_0.08$fit[[1]]$summary
+s_008 |>
+   filter(variable == "alpha[1,1]")
+  #filter(str_detect(variable, "alpha\\[2"))
+
+s2_008 |>
+  filter(variable == "alpha[1,1]")
+
+s3_008 <- fit_ab_each_sap_sp_raw_0.08 |>
+  arrange(species)
+s4_008 <- fit_ab_each2_sap_sp_raw_0.08 |>
+  arrange(species)
+
+s3_008$fit[[1]]$summary |>
+  filter(variable == "b")
+s4_008$fit[[1]]$summary |>
+  filter(variable == "b")
+
+
+fit_ab_each2_sap_sp_raw_0.08$fit[[4]]$summary
 
 
 samp_data_a <- draws |>
@@ -604,7 +613,7 @@ ggplot(samp_data_a, aes(x = exp(value), y = name))  +
  xlab("Coefficient a")
 
 sap_stan_data_each |>
-  mutate(fit = map(stan_data, fit_model, grainer_simple_file))
+  mutate(fit = map(stan_data, fit_model, granier_simple_file))
 
 tar_load(fit_ab_each)
 
@@ -642,7 +651,7 @@ hoge |>
   filter(str_detect(name, "summary"))
 
 
-tar_read(fit_ab_summary_grainer_without_traits_sap_all_0.08)
+tar_read(fit_ab_summary_granier_without_traits_sap_all_0.08)
 
 ```
 

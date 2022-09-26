@@ -150,7 +150,7 @@ main_list <- list(
   ),
   tar_stan_mcmc(
      fit_dummy,
-     "stan/anova.stan",
+     c("stan/anova.stan", "stan/anova_noint.stan"),
      data = dummy_data,
      refresh = 0,
      chains = 4,
@@ -162,67 +162,32 @@ main_list <- list(
      seed = 123
   ),
   tar_stan_mcmc(
-     fit_dummy_noint,
-     "stan/anova_noint.stan",
-     data = dummy_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123
-  ),
-
-  tar_stan_mcmc(
-     fit1,
-     "stan/anova.stan",
+     fit_anova_raw,
+     c(
+      "stan/anova.stan",
+      "stan/anova_noint.stan",
+      "stan/anova_gamma.stan"
+      ),
      data = anova_data,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
+     parallel_chains = getOption("mc.cores", 1),
      iter_warmup = 1000,
      iter_sampling = 1000,
      adapt_delta = 0.95,
      max_treedepth = 15,
      seed = 123
   ),
-
   tar_stan_mcmc(
-     fit_anova_noint_err_log,
-     "stan/anova_noint_err.stan",
+     fit_anova,
+     c(
+      "stan/anova_int_err.stan",
+      "stan/anova_noint_err.stan"
+      ),
      data = anova_data_err,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.99,
-     max_treedepth = 15,
-     seed = 123
-   ),
-  tar_stan_mcmc(
-     fit_anova_int_err_log,
-     "stan/anova_int_err.stan",
-     data = anova_data_err,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.99,
-     max_treedepth = 15,
-     seed = 123
-   ),
-
-  tar_stan_mcmc(
-     fit_anova_inter,
-     "stan/anova.stan",
-     data = anova_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
+     parallel_chains = getOption("mc.cores", 1),
      iter_warmup = 1000,
      iter_sampling = 1000,
      adapt_delta = 0.95,
@@ -230,38 +195,14 @@ main_list <- list(
      seed = 123
   ),
   tar_stan_mcmc(
-     fit_anova_nointer,
-     "stan/anova_noint.stan",
-     data = anova_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.95,
-     max_treedepth = 15,
-     seed = 123
-  ),
-  tar_stan_mcmc(
-     fit_anova_log_inter,
-     "stan/anova.stan",
+     fit_anova_log,
+     c("stan/anova.stan",
+      "stan/anova_noint.stan"
+      ),
      data = anova_data_log,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.95,
-     max_treedepth = 15,
-     seed = 123
-  ),
-  tar_stan_mcmc(
-     fit_anova_log_nointer,
-     "stan/anova_noint.stan",
-     data = anova_data_log,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
+     parallel_chains = getOption("mc.cores", 1),
      iter_warmup = 1000,
      iter_sampling = 1000,
      adapt_delta = 0.95,
@@ -270,67 +211,54 @@ main_list <- list(
   ),
 
 
-  tar_stan_mcmc(
-     fit3,
-     "stan/anova_gamma.stan",
-     data = anova_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.95,
-     max_treedepth = 15,
-     seed = 123
-  ),
-  tar_stan_mcmc(
-     fit_mvn,
-     "stan/anova_mvn.stan",
-     data = anova_mvn_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123
-  ),
-  tar_stan_mcmc(
-     fit_lmvn,
-     "stan/anova_mvn.stan",
-     data = anova_lmvn_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123
-  ),
-  tar_stan_mcmc(
-     fit_gmvn,
-     "stan/anova_mvn.stan",
-     data = anova_gmvn_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123
-  ),
+  # tar_stan_mcmc(
+  #    fit_mvn,
+  #    "stan/anova_mvn.stan",
+  #    data = anova_mvn_data,
+  #    refresh = 0,
+  #    chains = 4,
+  #    parallel_chains = getOption("mc.cores", 4),
+  #    iter_warmup = 1000,
+  #    iter_sampling = 1000,
+  #    adapt_delta = 0.9,
+  #    max_treedepth = 15,
+  #    seed = 123
+  # ),
+  # tar_stan_mcmc(
+  #    fit_lmvn,
+  #    "stan/anova_mvn.stan",
+  #    data = anova_lmvn_data,
+  #    refresh = 0,
+  #    chains = 4,
+  #    parallel_chains = getOption("mc.cores", 4),
+  #    iter_warmup = 1000,
+  #    iter_sampling = 1000,
+  #    adapt_delta = 0.9,
+  #    max_treedepth = 15,
+  #    seed = 123
+  # ),
+  # tar_stan_mcmc(
+  #    fit_gmvn,
+  #    "stan/anova_mvn.stan",
+  #    data = anova_gmvn_data,
+  #    refresh = 0,
+  #    chains = 4,
+  #    parallel_chains = getOption("mc.cores", 4),
+  #    iter_warmup = 1000,
+  #    iter_sampling = 1000,
+  #    adapt_delta = 0.9,
+  #    max_treedepth = 15,
+  #    seed = 123
+  # ),
 
   tar_target(
     loo_,
     lapply(
       list(
-           fit_anova_inter_mcmc_anova,
-           fit_anova_nointer_mcmc_anova_noint,
-           fit_anova_log_inter_mcmc_anova,
-           fit_anova_log_nointer_mcmc_anova_noint
+           fit_anova_raw_mcmc_anova,
+           fit_anova_raw_mcmc_anova_noint,
+           fit_anova_log_mcmc_anova,
+           fit_anova_log_mcmc_anova_noint
         ),
     \(x)x$loo(cores = parallel::detectCores())
     )
@@ -365,7 +293,7 @@ main_list <- list(
 
   tar_target(
     coef_intervals_sd_plot, {
-      p <- coef_intervals_sd(fit_anova_noint_err_log_draws_anova_noint_err)
+      p <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
       my_ggsave(
         "figs/coef_intervals_sd",
         p,
@@ -380,7 +308,7 @@ main_list <- list(
 
   tar_target(
     coef_intervals_mean_plot, {
-      p <- coef_intervals_mean(fit_anova_noint_err_log_draws_anova_noint_err)
+      p <- coef_intervals_mean(fit_anova_draws_anova_noint_err)
       my_ggsave(
         "figs/coef_intervals_mean",
         p,
@@ -395,7 +323,7 @@ main_list <- list(
 
   tar_target(
     coef_intervals_diff_plot, {
-      p <- coef_intervals_diff(fit_anova_noint_err_log_draws_anova_noint_err)
+      p <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
       my_ggsave(
         "figs/coef_intervals_diff",
         p,
@@ -410,7 +338,7 @@ main_list <- list(
 
   tar_target(
     coef_density_sd_plot, {
-      p <- coef_density_sd(fit_anova_noint_err_log_draws_anova_noint_err)
+      p <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
       my_ggsave(
         "figs/coef_density_sd",
         p,
@@ -427,7 +355,7 @@ main_list <- list(
     anova_yml,
     write_anova_yml(
       "yml/anova.yml",
-      fit_anova_noint_err_log_draws_anova_noint_err,
+      fit_anova_draws_anova_noint_err,
       ll = 0.25, hh = 0.75),
 format = "file"
   ),
@@ -631,9 +559,9 @@ format = "file"
       "sap_all_clean_0.08"
       ))),
     tar_stan_mcmc(
-      fit_ab1,
-      c("stan/grainer_without_traits.stan",
-       "stan/grainer_without_traits2.stan"),
+      fit_ab,
+      c("stan/granier_without_traits.stan",
+       "stan/granier_without_traits2.stan"),
       data = stan_data,
       refresh = 0,
       chains = 4,
@@ -693,33 +621,29 @@ format = "file"
       fit_ab_each, {
       stan_data_each |>
           mutate(fit = map(stan_data, fit_model,
-            grainer_simple_file,
+            granier_simple_file,
             iter_warmup = 2000,
-            iter_sampling = 2000))
-      }),
-    tar_target(
-      fit_ab_each2, {
-      stan_data_each |>
-          mutate(fit = map(stan_data, fit_model,
-            grainer_simple2_file,
+            iter_sampling = 2000)) |>
+          mutate(fit2 = map(stan_data, fit_model,
+            granier_simple2_file,
             iter_warmup = 2000,
             iter_sampling = 2000))
       })
   ),
 
   tar_target(
-    grainer_simple_file,
-    compile_model("stan/grainer_simple.stan"),
+    granier_simple_file,
+    compile_model("stan/granier_simple.stan"),
     format = "file"
   ),
 
   tar_target(
-    grainer_simple2_file,
-    compile_model("stan/grainer_simple2.stan"),
+    granier_simple2_file,
+    compile_model("stan/granier_simple2.stan"),
     format = "file"
   ),
 
-  # tar_map(
+  # tnar_map(
   #   list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)),
   #   tar_target(sap_segment_raw,
   #     generate_sap_stan_data_segment(fd_k_traits_csv,
@@ -733,23 +657,23 @@ format = "file"
   # tar_target(
   #   fit_ab_each, {
   #     sap_stan_data_each |>
-  #       mutate(fit = map(stan_data, fit_model, grainer_simple_file))
+  #       mutate(fit = map(stan_data, fit_model, granier_simple_file))
   #   }
   # ),
 
-  tar_quarto(
-    dummy_html,
-    "docs/dummy.qmd"
-  ),
-  tar_quarto(
-    ks_ratio_html,
-    "docs/ks_ratio.qmd"
-  ),
-
   # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
+  #   dummy_html,
+  #   "docs/dummy.qmd"
   # ),
+  # tar_quarto(
+  #   ks_ratio_html,
+  #   "docs/ks_ratio.qmd"
+  # ),
+
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
 
   NULL
 )

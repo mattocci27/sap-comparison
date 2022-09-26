@@ -9,13 +9,20 @@ data {
 
 parameters {
   real<lower=0> sigma;
-  matrix[2, 1] alpha;
+  #matrix[2, 1] alpha;
+  real log_a_tilde;
+  real b_tilde;
   matrix[2, J] z;
   cholesky_factor_corr[2] L_Omega;
-  vector<lower=0,upper=pi()/2>[2] tau;
+  vector<lower=0>[2] tau;
 }
 
 transformed parameters {
+  matrix[2, 1] alpha;
+  real log_a = 4.78 + 2.5 * log_a_tilde;
+  real b = 1.23 + 2.5 * b_tilde;
+  alpha[1, 1] = log_a;
+  alpha[2, 1] = b;
   matrix[2, J] A = alpha * u + diag_pre_multiply(tau, L_Omega) * z;
 }
 
@@ -26,8 +33,8 @@ model {
   }
   tau ~ normal(0, 2.5);
   to_vector(z) ~ std_normal();
+  log_a_tilde ~ std_normal();
+  b_tilde ~ std_normal();
   L_Omega ~ lkj_corr_cholesky(2);
-  to_vector(alpha) ~ normal(0, 5);
   y ~ normal(mu, sigma);
 }
-

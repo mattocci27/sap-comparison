@@ -26,7 +26,7 @@ parameters{
   real mu_y2;
   vector[J] alpha_raw;
   vector[K] beta_raw;
-  vector<lower=0,upper=pi()/2>[2] tau_unif;
+  vector<lower=0>[2] tau;
 }
 
 transformed parameters{
@@ -34,14 +34,13 @@ transformed parameters{
   vector[K] beta;
   vector[N] log_y1_true = log(y1_true);
   vector[N] log_y2_true = log(y2_true);
-  vector<lower=0>[2] tau;
-  for (i in 1:2) tau[i] = 2.5 * tan(tau_unif[i]);
   alpha = alpha_raw * tau[1];
   beta = beta_raw * tau[2];
 }
 
 model {
   vector[N] mu;
+  tau ~ normal(0, 2.5);
   to_vector(alpha_raw) ~ std_normal();
   to_vector(beta_raw) ~ std_normal();
   y1_true ~ normal(mu_y1, sig1_hat);
