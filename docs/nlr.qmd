@@ -133,7 +133,7 @@ Different samples show different relationship.
 
 ```{r, fig.width=10, fig.height=10}
 data |>
-  ggplot(aes(x = p_2, y = fd, col = sample_id)) +
+  ggplot(aes(x = p_g, y = fd, col = sample_id)) +
   geom_point() +
   scale_y_log10() +
   # scale_x_log10() +
@@ -146,7 +146,7 @@ data |>
 
 ```{r, fig.width=10, fig.height=10}
 data |>
-  ggplot(aes(x = p_2, y = fd)) +
+  ggplot(aes(x = p_g, y = fd)) +
   geom_point() +
   scale_y_log10() +
   # scale_x_log10() +
@@ -163,7 +163,7 @@ Different samples show different relationship.
 
 ```{r, fig.width=10, fig.height=10}
 data |>
-  ggplot(aes(x = p_2, y = k, col = sample_id)) +
+  ggplot(aes(x = p_g, y = k, col = sample_id)) +
   geom_point() +
   scale_y_log10() +
   # scale_x_log10() +
@@ -176,7 +176,7 @@ data |>
 
 ```{r, fig.width=10, fig.height=10}
 data |>
-  ggplot(aes(x = p_2, y = k)) +
+  ggplot(aes(x = p_g, y = k)) +
   geom_point() +
   scale_y_log10() +
   # scale_x_log10() +

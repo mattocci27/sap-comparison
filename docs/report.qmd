@@ -277,7 +277,7 @@ d <- read_csv(here("data/fd_k_traits.csv")) |>
 
 ```{r}
 # hist(d$k)
-# hist(d$p_2)
+# hist(d$p_g)
 # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
 #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_2)) |>
 #   janitor::clean_names()
@@ -509,7 +509,7 @@ d |>
 ```{r,eval=FALSE}
 d |>
   filter(species == "Areca catechu") |>
-  filter(p_2 <= 0.03) |>
+  filter(p_g <= 0.03) |>
   ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
   geom_point() +
   geom_smooth(se = FALSE)
@@ -527,7 +527,7 @@ d |>
 ```{r,eval=FALSE}
 d |>
   filter(species == "Parashorea chinensis") |>
-  filter(p_2 <= 0.03) |>
+  filter(p_g <= 0.03) |>
   ggplot(aes(x = k, y = fd, col = sample_id, fill = sample_id)) +
   geom_point() +
   geom_smooth(se = FALSE)

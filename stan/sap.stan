@@ -13,11 +13,11 @@ data {
   array[Nk] int<lower=1,upper=Nl> kk2; // xylem lab from sp
   array[Ni] int<lower=1,upper=Nl> ll; // xylem type
   vector[Ni] y;
-  vector[Ni] delta_p;
+  vector[Ni] p_g;
   vector[Ni] rho;
   vector[Ni] x;
   // matrix[Mi,Ni] u; // data-level predictor
-  // matrix[Ni,Mi] xi1; // data-level predcitor (delta_p)
+  // matrix[Ni,Mi] xi1; // data-level predcitor (p_g)
   // matrix[Mi,Mj] xj; // sample-level predictor (tarits)
   // matrix[1,Mj] xk; // sp-level intercept
   // matrix[1,Mj] xl; // xylem-level intercept
@@ -105,11 +105,11 @@ transformed parameters{
   }
   for (n in 1:Ni) {
     log_mu_a[n] = alpha_j[1][jj[n]] +
-    (alpha_j[2][jj[n]]) * delta_p[n] +
+    (alpha_j[2][jj[n]]) * p_g[n] +
     (alpha_k[3][kk[n]]) * rho[n];
 
     mu_b[n] = beta_j[1][jj[n]] +
-    (beta_j[2][jj[n]]) * delta_p[n] +
+    (beta_j[2][jj[n]]) * p_g[n] +
     (beta_k[3][kk[n]]) * rho[n];
   }
   gamma = append_col(log_mu_a, mu_b) + (diag_pre_multiply(tau, L_Omega) * z)';

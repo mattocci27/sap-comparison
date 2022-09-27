@@ -234,7 +234,7 @@ generate_logistic_stan_data <- function(data, quad = FALSE) {
 
 generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 4, seed = 123) {
   set.seed(seed)
-  delta_p <- seq(0, 1, length = n_measure)
+  p_g <- seq(0, 1, length = n_measure)
   # n_measure <- 6
   # n_tree <- 9
   # n_sp <- 20
@@ -334,16 +334,16 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
   for (i in 1:n_measure) {
     data_tmp <- group_data |>
       mutate(measure_id = i) |>
-      mutate(p = delta_p[i])
+      mutate(p = p_g[i])
     data <- bind_rows(data, data_tmp)
   }
 
   k <- rnorm(nrow(data), 0, 1)
   data <- data |>
-    mutate(delta_p = p / l_samp) |>
+    mutate(p_g = p / l_samp) |>
     mutate(k = k) |>
-    mutate(mu_a = alpha0_samp + alpha1_samp * delta_p + alpha2_sp * rho_samp) |>
-    mutate(mu_b = beta0_samp + beta1_samp * delta_p + beta2_sp * rho_samp) |>
+    mutate(mu_a = alpha0_samp + alpha1_samp * p_g + alpha2_sp * rho_samp) |>
+    mutate(mu_b = beta0_samp + beta1_samp * p_g + beta2_sp * rho_samp) |>
     mutate(a = rnorm(nrow(data), mu_a, 0.1)) |>
     mutate(b = rnorm(nrow(data), mu_b, 0.1)) |>
     mutate(fd = rnorm(nrow(data), a + b * k, 0.1)) |>
@@ -380,13 +380,13 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
     kk2 = sp_lab$xy |> as.factor() |> as.numeric(),
     ll = data$xy,
     # Xi = rbind(1, data$k),
-    xj = rbind(1, data2$delta_p, data2$rho_samp),
+    xj = rbind(1, data2$p_g, data2$rho_samp),
     # Xj1 = cbind(data2$rho_samp),
     # xk = cbind(rep(1, 3)),
     # xl = cbind(rep(1, 3)),
     y = data$fd,
     x = data$k,
-    delta_p = data$delta_p,
+    p_g = data$p_g,
     rho = data$rho_samp
   ) #|>
   # str()
@@ -425,7 +425,7 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
 
   if (upper_pressure) {
    d <- d |>
-    filter(p_2 <= upper_pressure)
+    filter(p_g <= upper_pressure)
   }
 
   tmp <- d |>
@@ -486,7 +486,7 @@ generate_sap_stan_data_sp <- function(data, remove_abnormal_values = FALSE, uppe
 
   if (upper_pressure) {
    d <- d |>
-    filter(p_2 <= upper_pressure)
+    filter(p_g <= upper_pressure)
   }
 
   nd <- d |>
@@ -525,7 +525,7 @@ generate_sap_stan_data_segment <- function(data, remove_abnormal_values = FALSE,
 
   if (upper_pressure) {
    d <- d |>
-    filter(p_2 <= upper_pressure)
+    filter(p_g <= upper_pressure)
   }
 
 
