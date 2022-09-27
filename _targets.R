@@ -25,7 +25,8 @@ tar_option_set(packages = c(
   "ggsma",
   "ggpubr",
   "ggridges",
-  "RColorBrewer"
+  "RColorBrewer",
+  "scales"
 ))
 
 tar_option_set(
@@ -673,6 +674,21 @@ format = "file"
     },
     format = "file"
   ),
+  tar_target(
+    coef_density_plot2, {
+      p <- coef_density(fd_k_traits_csv,
+        fit_ab_draws_granier_without_traits_sap_all_clean_0.08,
+        four_panels = FALSE)
+      my_ggsave(
+        "figs/coef_density2",
+        p,
+        dpi = 300,
+        width = 6.8,
+        height = 8
+      )
+    },
+    format = "file"
+  ),
 
 
   # tnar_map(
@@ -702,10 +718,10 @@ format = "file"
   #   "docs/ks_ratio.qmd"
   # ),
 
-  # tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
-  # ),
+  tar_quarto(
+    report_html,
+    "docs/report.qmd"
+  ),
 
   NULL
 )

@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|9b46450a0bf24114|||||||||||||||
+.Random.seed|object|3a5369be96dda74e|||||||||||||||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -12,8 +12,9 @@ clean_cond_count|function|ad65270eb5a1e852|||||||||||||||
 clean_ks_trees|function|0a5292c7fab07c9a|||||||||||||||
 clean_ks_trees_err|function|ddfa099a2febad99|||||||||||||||
 clean_sap_data|function|4e88524863f02513|||||||||||||||
-coef_density|function|2fb506ec8d0e9678|||||||||||||||
-coef_density_plot|stem|7a9837f9bdd0521b|e1aca5b3b97c81d0|b7e90dd1b21d1b0d|474267242|figs/coef_density.png*figs/coef_density.pdf|t19262.3872269034s|ebbeb7872d9a2681|668386|file|local|vector|||5.056||
+coef_density|function|c958938aaacc22ff|||||||||||||||
+coef_density_plot|stem|bbbbe2b5e55a0b61|e1aca5b3b97c81d0|3446846755d9b6c6|474267242|figs/coef_density.png*figs/coef_density.pdf|t19262.6301625293s|93ae2eb765604f3e|661551|file|local|vector|||3.793||
+coef_density_plot2|stem|981a30a0dd6a2d73|6b5cb180efa3df90|3446846755d9b6c6|463867481|figs/coef_density2.png*figs/coef_density2.pdf|t19262.6302290584s|7440d4eab5a2196f|553821|file|local|vector|||3.317||
 coef_density_sd|function|5c87a1bd8ba1bb09|||||||||||||||
 coef_density_sd_plot|stem|bda7196943af3fca|d27aab7428424f60|d792cf415012224b|-1845336212|figs/coef_density_sd.png*figs/coef_density_sd.pdf|t19261.2255966009s|d59e4097d1eeeaf4|29969|file|local|vector|||0.292||
 coef_intervals_diff|function|9bfca47eb89dc430|||||||||||||||
@@ -279,7 +280,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|5831975043a47421|8db72ee24f73c493|e7712d49a03bf299|1440272382||t19261.2253992831s|0cb5736d43de31db|8386|rds|local|vector|||0.95|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|7042bd6ee785dc86|||||||||||||||
+main_list|object|bbee7d98102852ed|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 my_write_csv|function|46eaaee704021b09|||||||||||||||
@@ -299,8 +300,8 @@ quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|
 quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|582217e2b51f7d0c|1505615404||t19243.2862712881s|4f4d987795184b56|26280270|qs|local|vector|||81.771||
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
-raw_data_list|object|1bfb918f514cd544|||||||||||||||
-report_html|stem|3a27be064c0f3896|31bb63e5b16863fa|bd1155e03daf1a76|1483737400|docs/report.html*docs/report.qmd|t19261.3398081256s||5105768|file|local|vector|||21.02||System command quarto failed
+raw_data_list|object|666620f5ec48cf69|||||||||||||||
+report_html|stem|5aa296f258f2d502|bc0a5aafa560ff93|b690a3ff241f1ed0|1483737400|docs/report.html*docs/report.qmd|t19262.6462036863s|1958b5adc1a3b262|2335013|file|local|vector|||246.267||
 sap_all_clean_0.02|stem|a8ef07c114bf3f37|25b1a969628acb02|4be69d69aeedc642|1441946753||t19262.281155726s|1c93d2eed1295446|5471|rds|local|vector|||0.165||
 sap_all_clean_0.03|stem|b91c11dd29e3b7a5|3a1ea51f97383624|4be69d69aeedc642|526937966||t19262.2812779041s|ca2382b4b72cbecb|8800|rds|local|vector|||0.145||
 sap_all_clean_0.04|stem|1d4fc73749ca7964|4aff1fe75d28e346|4be69d69aeedc642|699237368||t19262.2817543015s|64fc72365bb77593|11358|rds|local|vector|||0.131||

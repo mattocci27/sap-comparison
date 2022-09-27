@@ -275,104 +275,19 @@ d <- read_csv(here("data/fd_k_traits.csv")) |>
   filter(is.na(removed_k))
 ```
 
-```{r}
-# hist(d$k)
-# hist(d$p_g)
-# draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_2)) |>
-#   janitor::clean_names()
-
-draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
-  janitor::clean_names()
-
-#tar_load(fit_ab_summary_granier_without_traits_sap_all_clean_2)
-#tar_load(fit_ab_draws_granier_without_traits_sap_all_clean_2)
-xy_lab <- d |>
-  dplyr::select(xylem_type) |>
-  unique() |>
-  mutate(xylem_fct = as.factor(xylem_type)) |>
-  arrange(xylem_fct)
-
-sp_lab <- d |>
-  dplyr::select(sp = species, sp_short, xylem_type) |>
-  unique() |>
-  mutate(sp_fct = as.factor(sp)) |>
-  mutate(sp_num = as.numeric(sp_fct)) |>
-  mutate(sp_num1 = str_c("1_", sp_num))  |>
-  mutate(sp_num2 = str_c("2_", sp_num))  |>
-  arrange(sp_num1)
-
-```
-
-```{r}
-xy_data_a <- draws |>
-  dplyr::select(starts_with("beta_1")) |>
-  pivot_longer(1:4)  |>
-  arrange(name) |>
-  mutate(xylem = rep(xy_lab$xylem_fct, each = 8000))
-
-ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
- geom_density_ridges() +
- scale_x_log10() +
- xlab("Coefficient a")
-```
-
-```{r}
-xy_data_b <- draws |>
-  dplyr::select(starts_with("beta_2")) |>
-  pivot_longer(1:4)  |>
-  arrange(name) |>
-  mutate(xylem = rep(xy_lab$xylem_fct, each = 8000))
-
-ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
- geom_density_ridges() +
- xlab("Coefficient b")
-```
-
-
-```{r}
-sp_data_a <- draws |>
-  dplyr::select(starts_with("alpha_1")) |>
-  pivot_longer(1:31)  |>
-  arrange(name) |>
-  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
-  left_join(sp_lab)
-
-ggplot(sp_data_a, aes(x = exp(value), y = sp, fill = xylem_type))  +
- geom_density_ridges() +
- xlab("Coefficient a") +
- coord_cartesian(xlim = c(0, 2000))
-```
-
-```{r}
-ggplot(sp_data_a, aes(x = exp(value), y = sp, fill = xylem_type))  +
- geom_density_ridges() +
- scale_x_log10() +
- xlab("Coefficient a")
-```
-
-```{r}
-sp_data_b <- draws |>
-  dplyr::select(starts_with("alpha_2")) |>
-  pivot_longer(1:31)  |>
-  arrange(name) |>
-  mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
-  left_join(sp_lab)
-
-ggplot(sp_data_b, aes(x = exp(value), y = sp, fill = xylem_type))  +
- geom_density_ridges() +
- xlab("Coefficient b")
-```
-
 # Fig. 4 (rough)
 
+![](`r here::here("figs/coef_density2.png")`)
+
 Figures are based on the multilevel model.
+
+```{r}
+knitr::knit_exit()
+```
 
 ## all species
 
 ```{r}
-
 s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.02)) |>
   janitor::clean_names() |>
