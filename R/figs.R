@@ -514,3 +514,113 @@ line_pool_multi <- function(d, s_008, s2_008) {
 
 }
 
+coef_density <- function(d, draws) {
+  # library(tidyverse)
+  # d <- read_csv(here("data/fd_k_traits.csv")) |>
+  #   filter(is.na(removed_k))
+  # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
+  #   janitor::clean_names()
+
+  d <- read_csv(d) |>
+    filter(is.na(removed_k))
+
+  draws <- draws |>
+    janitor::clean_names()
+
+  n_iter <- nrow(draws)
+    #tar_load(fit_ab_summary_granier_without_traits_sap_all_clean_2)
+#tar_load(fit_ab_draws_granier_without_traits_sap_all_clean_2)
+  xy_lab <- d |>
+    dplyr::select(xylem_type) |>
+    unique() |>
+    mutate(xylem_fct = as.factor(xylem_type)) |>
+    arrange(xylem_fct) |>
+    mutate(xylem_long = case_when(
+      xylem_type == "DP"  ~ "Diffuse-porous tree",
+      xylem_type == "RP"  ~ "Ring-porous tree",
+      xylem_type == "Pa"  ~ "Palm",
+      xylem_type == "L"  ~ "Liana"
+    )) |>
+    mutate(xylem_long_fct = factor(xylem_long,
+    levels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana")))
+
+  sp_lab <- d |>
+    dplyr::select(sp = species, sp_short, xylem_type) |>
+    unique() |>
+    mutate(sp_fct = as.factor(sp)) |>
+    mutate(sp_num = as.numeric(sp_fct)) |>
+    mutate(sp_num1 = str_c("1_", sp_num))  |>
+    mutate(sp_num2 = str_c("2_", sp_num))  |>
+    arrange(sp_num1)
+
+  xy_data_a <- draws |>
+    dplyr::select(starts_with("beta_1")) |>
+    pivot_longer(1:4)  |>
+    arrange(name) |>
+    mutate(xylem = rep(xy_lab$xylem_long_fct, each = n_iter))
+
+  p1 <- ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
+    geom_density_ridges(col = "grey92") +
+    scale_y_discrete(limits = rev) +
+    scale_x_log10() +
+    xlab("Coefficient a") +
+    ylab("") +
+    theme_bw() +
+    theme(legend.position = c(0.1, 0.1))
+
+  xy_data_b <- draws |>
+    dplyr::select(starts_with("beta_2")) |>
+    pivot_longer(1:4)  |>
+    arrange(name) |>
+    mutate(xylem = rep(xy_lab$xylem_long_fct, each = n_iter))
+
+  p2 <- ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
+    geom_density_ridges(col = "grey92") +
+    scale_y_discrete(limits = rev) +
+    xlab("Coefficient b") +
+    ylab("") +
+    theme_bw() +
+    theme(legend.position = "none")
+
+  sp_data_a <- draws |>
+    dplyr::select(starts_with("alpha_1")) |>
+    pivot_longer(1:31)  |>
+    arrange(name) |>
+    mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
+    left_join(sp_lab)
+
+  p3 <- ggplot(sp_data_a, aes(x = exp(value), y = sp_short, fill = xylem_type))  +
+    geom_density_ridges(col = "grey92") +
+    scale_y_discrete(limits = rev) +
+    xlab("Coefficient a") +
+    ylab("") +
+    scale_x_log10() +
+    theme_bw() +
+    theme(
+      legend.position = "none",
+      axis.text.y = element_text(face = "italic", size = 6)
+      )
+
+  sp_data_b <- draws |>
+    dplyr::select(starts_with("alpha_2")) |>
+    pivot_longer(1:31)  |>
+    arrange(name) |>
+    mutate(sp = rep(sp_lab$sp_fct, each = 8000)) |>
+    left_join(sp_lab)
+
+  p4 <- ggplot(sp_data_b, aes(x = exp(value), y = sp_short, fill = xylem_type))  +
+    geom_density_ridges(col = "grey92") +
+    scale_y_discrete(limits = rev) +
+    xlab("Coefficient b") +
+    ylab("") +
+    theme_bw() +
+    theme(
+      legend.position = "none",
+      axis.text.y = element_text(face = "italic", size = 6)
+      )
+
+  p1 + p2 + p3 + p4 +
+    plot_annotation(tag_levels = "a")
+}
+
