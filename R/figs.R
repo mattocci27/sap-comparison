@@ -472,7 +472,7 @@ line_pool_multi <- function(d, s_008, s2_008) {
     pull(q50)
 
   nd <- d |>
-    group_by(species, xylem_type) |>
+    group_by(species, sp_short, xylem_type) |>
     nest() |>
     ungroup() |>
     arrange(species) |>
@@ -487,23 +487,30 @@ line_pool_multi <- function(d, s_008, s2_008) {
     mutate(log_pred_pool = pmap(list(log_xx, log_a_pool, b_pool, sig_pool), \(log_xx, log_a, b, sig) log_a + b * log_xx + sig^2 / 2))
 
   pred_data <- nd |>
-    dplyr::select(xylem_type, species, log_xx, log_pred, log_pred_pool) |>
+    dplyr::select(xylem_type, species, sp_short, log_xx, log_pred, log_pred_pool) |>
     unnest(c(log_xx, log_pred, log_pred_pool))
 
-  d_dp <- d |>
-    filter(xylem_type == "Pa")
-  pred_dp <- pred_data |>
-    filter(xylem_type == "Pa")
+  # d_dp <- d |>
+  #   filter(xylem_type == "Pa")
+  # pred_dp <- pred_data |>
+  #   filter(xylem_type == "Pa")
 
   d |>
     ggplot() +
     geom_point(aes(x = k, y = fd, col = xylem_type)) +
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred))) +
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred_pool)), lty = 2) +
-    facet_wrap(~ species, ncol = 4, scale = "free") +
+    facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
+    scale_color_discrete(name = "",
+      breaks = c("DP", "RP", "Pa", "L"),
+      labels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana")) +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
     xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
-    my_theme()
+    my_theme() +
+    theme(
+      strip.text = element_text(face = "italic", size = 8),
+      legend.position = c(0.85, 0.05)
+      )
 
 }
 

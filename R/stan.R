@@ -395,7 +395,11 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
 clean_sap_data <- function(data, file) {
   d <- read_csv(data) |>
     janitor::clean_names() |>
-    rename(species = species_name)
+    rename(species = species_name) |>
+    mutate(species = ifelse(species == "Bauhinia  tenuiflor", "Bauhinia tenuiflor", species)) |>
+    mutate(genus_short = str_sub(species, 1, 1)) |>
+    mutate(sp_only = str_split_fixed(species, " ", 2)[, 2]) |>
+    mutate(sp_short = str_c(genus_short, ". ", sp_only))
 
   d <- d |>
     mutate(fd = ifelse(is.na(fd), removed_fd, fd)) |>

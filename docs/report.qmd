@@ -295,7 +295,7 @@ xy_lab <- d |>
   arrange(xylem_fct)
 
 sp_lab <- d |>
-  dplyr::select(sp = species, xylem_type) |>
+  dplyr::select(sp = species, sp_short, xylem_type) |>
   unique() |>
   mutate(sp_fct = as.factor(sp)) |>
   mutate(sp_num = as.numeric(sp_fct)) |>
@@ -303,8 +303,7 @@ sp_lab <- d |>
   mutate(sp_num2 = str_c("2_", sp_num))  |>
   arrange(sp_num1)
 
-# draws <- fit_ab_draws_granier_without_traits_sap_all_clean_2 |>
-#   janitor::clean_names()
+
 ```
 
 ```{r}

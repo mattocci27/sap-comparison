@@ -514,7 +514,7 @@ format = "file"
   #    adapt_delta = 0.9,
   #    max_treedepth = 15,
   #    seed = 123,
-  #    output_dir = "log"
+  #    output_dir = "loa"
   # ),
 
 
@@ -653,7 +653,7 @@ format = "file"
         p,
         dpi = 300,
         width = 8,
-        height = 10
+        height = 12
       )
     },
     format = "file"
