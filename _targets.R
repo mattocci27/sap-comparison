@@ -684,7 +684,7 @@ format = "file"
         p,
         dpi = 300,
         width = 6.8,
-        height = 8
+        height = 5
       )
     },
     format = "file"
