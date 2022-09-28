@@ -121,38 +121,38 @@ $$
 
 - *k*: Pressure level
 
-- $y^{meas}_{1ijk}$: Measured mean pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
+- $y^{meas}_{1ijk}$: Measured mean pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (data).
 $y^{meas}_{2ijk}$ is for tension calibration.
 
-- $y_{1ijk}$: True pressure indicuded flow rates for *i*th obervation from *j*th species, under *k*th pressure level (parameter).
+- $y_{1ijk}$: True pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (parameter).
 $y_{2ijk}$ is for tension calibration.
 
 - $\sigma_{y1jk}$: Standard deviation of pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
 This data can be estimated from the raw data with multiple measurements.
 $\sigma_{y2jk}$ is for tension calibration.
 
-- $\mu$: Overall (species and pressure-level independet) effects.
+- $\mu$: Overall (species and pressure-level independent) effects.
 
 - $\alpha_j$: Species effect
 
-- $\beta_k$: Pressure-leve effect
+- $\beta_k$: Pressure-level effect
 
-- $\sigma_{\alpha}$: Standard deviaiton of the species effect
+- $\sigma_{\alpha}$: Standard deviation of the species effect
 
-- $\sigma_{\beta}$: Standard deviaiton of the pressure-level effect
+- $\sigma_{\beta}$: Standard deviation of the pressure-level effect
 
-- $\sigma$: Standard deviaiton of the model (i.e., residuals)
+- $\sigma$: Standard deviation of the model (i.e., residuals)
 
 
 I will show several figures from this single analysis.
 
 ### Variance
 
-Posterior medians, 50%, and 95% credible intervals (CIs) for standard deviations estiamted from the difference between pressure and tension induced flows.
+Posterior medians, 50%, and 95% credible intervals (CIs) for standard deviations estimated from the difference between pressure and tension induced flows.
 
 ![](`r here::here("figs/coef_intervals_sd.png")`){ width=350 }
 
-Posterior medians, and 50% CIs for standard deviations estiamted from the difference between pressure and tension induced flows.
+Posterior medians, and 50% CIs for standard deviations estimated from the difference between pressure and tension induced flows.
 The data to draw the figure is the same with the above, but you can clearly see the distribution of the true estimates.
 Upper bounds of these estimates (especially pressure) tend to become very large due to the small group number (3-levels: 0.02, 0.05, and 0.08 MPa).
 Using 50% CI instead of 95% CI might be OK but I'm not very sure.
@@ -186,7 +186,7 @@ Posterior medians, 50%, and 95% credible intervals (CIs) for species and pressur
 Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
 
 Pressure induced flow rates tend to be greater than tension induced flow rates (positive ks_ratio parameter).
-This suggests a probablity of getting larger values for pressure induced flow rates than for tension induced flow rates is about 90% (but less than 95%).
+This suggests a probability of getting larger values for pressure induced flow rates than for tension induced flow rates is about 90% (but less than 95%).
 This is consistent with Fig. 1ab.
 
 ![](`r here::here("figs/coef_intervals_mean.png")`){ width=350 }
@@ -274,12 +274,64 @@ Multilevel model with cleaned data with full range of $\Delta$ P.
 d <- read_csv(here("data/fd_k_traits.csv")) |>
   filter(is.na(removed_k))
 ```
+```{r}
+para <- read_csv(here("data/ab_var_clean_008.csv"))
+```
 
-# Fig. 4 (rough)
+
+# Variance partitioning
+
+Figures are based on the multilevel model for the cleaned data without abnormal values with P~g~ <= 0.08 (i.e, all the range).
 
 ![](`r here::here("figs/coef_density2.png")`)
 
-Figures are based on the multilevel model.
+
+- Coefficient a (median [25% CI, 75% CI])
+
+    - segments:
+`r get_post_para(para, "var_a_segment", "q50")`%
+[`r get_post_para(para, "var_a_segment", "q25")`,
+`r get_post_para(para, "var_a_segment", "q50", digits = 1, nsmall = 1)`
+].
+
+    - species:
+`r get_post_para(para, "var_a_sp", "q50")`%
+[`r get_post_para(para, "var_a_sp", "q25")`,
+`r get_post_para(para, "var_a_sp", "q50", digits = 1, nsmall = 1)`
+].
+
+    - xylem types:
+`r get_post_para(para, "var_a_xylem", "q50")`%
+[`r get_post_para(para, "var_a_xylem", "q25")`,
+`r get_post_para(para, "var_a_xylem", "q50", digits = 1, nsmall = 1)`
+].
+
+- Coefficient b (median [25% CI, 75% CI])
+
+    - segments:
+`r get_post_para(para, "var_b_segment", "q50")`%
+[`r get_post_para(para, "var_b_segment", "q25")`,
+`r get_post_para(para, "var_b_segment", "q50", digits = 1, nsmall = 1)`
+].
+
+    - species:
+`r get_post_para(para, "var_b_sp", "q50")`%
+[`r get_post_para(para, "var_b_sp", "q25")`,
+`r get_post_para(para, "var_b_sp", "q50", digits = 1, nsmall = 1)`
+].
+
+    - xylem types:
+`r get_post_para(para, "var_b_xylem", "q50")`%
+[`r get_post_para(para, "var_b_xylem", "q25")`,
+`r get_post_para(para, "var_b_xylem", "q50", digits = 1, nsmall = 1)`
+].
+
+
+For coefficient a, xylem types are the largest source for the variance, while segments are the the largest source for the variance for coefficient b.
+
+
+
+![](`r here::here("figs/pool_multi.png")`)
 
 ```{r}
 knitr::knit_exit()
@@ -355,19 +407,10 @@ ggplot(a_rubber, aes(x = pressure, y = exp(q50), group = variable)) +
   geom_line() +
   geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
   geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.4) +
-  ylab("a")
+  ylab("Coefficient a") +
+  xlab(expression(italic(P[g])~(MPa~m^{-1})))
+
 ```
-
-```{r}
-ggplot(a_rubber, aes(x = pressure, y = q50, group = variable)) +
-  geom_point() +
-  geom_line() +
-  geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
-  geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
-  ylab("log(a)")
-```
-
-
 
 ```{r}
 b_rubber <- b_data |>
@@ -378,38 +421,86 @@ ggplot(b_rubber, aes(x = pressure, y = q50, group = variable)) +
   geom_line() +
   geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
   geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.4) +
-  ylab("log(a)")
+  ylab("Coefficient b") +
+  xlab(expression(italic(P[g])~(MPa~m^{-1})))
+
 ```
+
 
 ## all species
 
 ```{r, fig.width=10, fig.height=10}
-sp_lab |>
-  mutate(variable = str_c("alpha[1,",sp_num,"]")) |>
-  dplyr::select(sp_fct, variable, xylem_type) |>
+
+sp_lab <- d |>
+  dplyr::select(sp = species, xylem_type) |>
+  unique() |>
+  mutate(sp_fct = as.factor(sp)) |>
+  mutate(sp_num = as.numeric(sp_fct)) |>
+  mutate(sp_num1 = str_c("1_", sp_num))  |>
+  mutate(sp_num2 = str_c("2_", sp_num))  |>
+  arrange(sp_num1)
+
+xy_lab <- d |>
+  dplyr::select(xylem_type, species, sp_short) |>
+  unique() |>
+  mutate(xylem_fct = as.factor(xylem_type)) |>
+  arrange(xylem_fct) |>
+  mutate(xylem_long = case_when(
+    xylem_type == "DP"  ~ "Diffuse-porous tree",
+    xylem_type == "RP"  ~ "Ring-porous tree",
+    xylem_type == "Pa"  ~ "Palm",
+    xylem_type == "L"  ~ "Liana"
+  )) |>
+  mutate(xylem_long_fct = factor(xylem_long,
+  levels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana"))) |>
+  mutate(sp_fct = as.factor(species)) |>
+  mutate(sp_num = as.numeric(sp_fct)) |>
+  mutate(sp_num1 = str_c("1_", sp_num))  |>
+  mutate(sp_num2 = str_c("2_", sp_num))  |>
+  arrange(species)
+
+
+xy_lab |>
+  mutate(variable = str_c("alpha[1,", sp_num,"]")) |>
+  dplyr::select(sp_short, variable, xylem_long_fct) |>
   full_join(a_data) |>
-  ggplot(aes(x = pressure, y = exp(q50), group = sp_fct, fill = xylem_type)) +
-  facet_wrap(~sp_fct, ncol = 5, scale = "free") +
+  ggplot(aes(x = pressure, y = exp(q50), group = sp_short, fill = xylem_long_fct)) +
+  facet_wrap(~sp_short, ncol = 4, scale = "free") +
   geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
   geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.6) +
   geom_point() +
   geom_line() +
-  ylab("a")
+  scale_fill_discrete(name = "") +
+  scale_y_log10() +
+  ylab(expression(Coefficient~italic(a))) +
+  xlab(expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
+  my_theme() +
+  theme(
+    strip.text = element_text(face = "italic", size = 8),
+    legend.position = c(0.85, 0.05)
+    )
+
+xy_lab |>
+  mutate(variable = str_c("alpha[2,", sp_num,"]")) |>
+  dplyr::select(sp_short, variable, xylem_long_fct) |>
+  full_join(b_data) |>
+  ggplot(aes(x = pressure, y = q50, group = sp_short, fill = xylem_long_fct)) +
+  facet_wrap(~sp_short, ncol = 4, scale = "free") +
+  geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
+  geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.6) +
+  geom_point() +
+  geom_line() +
+  scale_fill_discrete(name = "") +
+  ylab(expression(Coefficient~italic(b))) +
+  xlab(expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
+  my_theme() +
+  theme(
+    strip.text = element_text(face = "italic", size = 8),
+    legend.position = c(0.85, 0.05)
+    )
+
 ```
 
-```{r, fig.width=10, fig.height=10}
-sp_lab |>
-  mutate(variable = str_c("alpha[2,",sp_num,"]")) |>
-  dplyr::select(sp_fct, variable, xylem_type) |>
-  full_join(b_data) |>
-  ggplot(aes(x = pressure, y = exp(q50), group = sp_fct, fill = xylem_type)) +
-  facet_wrap(~sp_fct, ncol = 5, scale = "free") +
-  geom_ribbon(aes(ymin = exp(q2_5), ymax = exp(q97_5)), alpha = 0.4) +
-  geom_ribbon(aes(ymin = exp(q25), ymax = exp(q75)), alpha = 0.6) +
-  geom_point() +
-  geom_line() +
-  ylab("b")
-```
 
 ```{r,eval=FALSE}
 d |>

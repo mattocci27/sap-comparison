@@ -514,7 +514,7 @@ line_pool_multi <- function(d, s_008, s2_008) {
 
 }
 
-coef_density <- function(d, draws, four_panels = TRUE) {
+coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
   # library(tidyverse)
   # library(here)
   # d <- read_csv(here("data/fd_k_traits.csv")) |>
@@ -522,40 +522,19 @@ coef_density <- function(d, draws, four_panels = TRUE) {
   # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
   #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
   #   janitor::clean_names()
-
-  d <- read_csv(d) |>
-    filter(is.na(removed_k))
-
   draws <- draws |>
     janitor::clean_names()
 
   n_iter <- nrow(draws)
-    #tar_load(fit_ab_summary_granier_without_traits_sap_all_clean_2)
-#tar_load(fit_ab_draws_granier_without_traits_sap_all_clean_2)
 
-  xy_lab <- d |>
-    dplyr::select(xylem_type, species, sp_short) |>
-    unique() |>
-    mutate(xylem_fct = as.factor(xylem_type)) |>
-    arrange(xylem_fct) |>
-    mutate(xylem_long = case_when(
-      xylem_type == "DP"  ~ "Diffuse-porous tree",
-      xylem_type == "RP"  ~ "Ring-porous tree",
-      xylem_type == "Pa"  ~ "Palm",
-      xylem_type == "L"  ~ "Liana"
-    )) |>
-    mutate(xylem_long_fct = factor(xylem_long,
-    levels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana"))) |>
-    arrange(species)
-
-  tmp <- xy_lab |>
+  tmp <- xylem_lab |>
     dplyr::select(xylem_fct, xylem_long_fct) |> unique()
 
   xy_data_a <- draws |>
     dplyr::select(starts_with("beta_1")) |>
     pivot_longer(1:4)  |>
     arrange(name) |>
-    mutate(xylem_fct = rep(unique(xy_lab$xylem_fct) |> sort(), each = n_iter)) |>
+    mutate(xylem_fct = rep(unique(xylem_lab$xylem_fct) |> sort(), each = n_iter)) |>
     left_join(tmp, by = "xylem_fct") |>
     mutate(sp = xylem_long_fct) |>
     mutate(sp_short = xylem_long_fct) |>
@@ -565,8 +544,8 @@ coef_density <- function(d, draws, four_panels = TRUE) {
     dplyr::select(starts_with("alpha_1")) |>
     pivot_longer(1:31) |>
     slice(str_order(name, numeric = TRUE)) |>
-    mutate(sp = rep(str_sort(xy_lab$species), each = n_iter)) |>
-    left_join(xy_lab, by = c("sp" = "species")) |>
+    mutate(sp = rep(str_sort(xylem_lab$species), each = n_iter)) |>
+    left_join(xylem_lab, by = c("sp" = "species")) |>
     dplyr::select(sp, sp_short, xylem = xylem_long_fct, value)
 
   data_a <- bind_rows(xy_data_a, sp_data_a) |>
@@ -579,9 +558,9 @@ coef_density <- function(d, draws, four_panels = TRUE) {
     dplyr::select(starts_with("beta_2")) |>
     pivot_longer(1:4)  |>
     arrange(name) |>
-    mutate(xylem_fct = rep(unique(xy_lab$xylem_fct) |> sort(), each = n_iter)) |>
+    mutate(xylem_fct = rep(unique(xylem_lab$xylem_fct) |> sort(), each = n_iter)) |>
     left_join(tmp, by = "xylem_fct") |>
-    mutate(xylem_fct = rep(unique(xy_lab$xylem_fct) |> sort(), each = n_iter)) |>
+    mutate(xylem_fct = rep(unique(xylem_lab$xylem_fct) |> sort(), each = n_iter)) |>
     mutate(sp = xylem_long_fct) |>
     mutate(sp_short = xylem_long_fct) |>
     dplyr::select(sp, sp_short, xylem = xylem_long_fct, value)
@@ -590,8 +569,8 @@ coef_density <- function(d, draws, four_panels = TRUE) {
     dplyr::select(starts_with("alpha_2")) |>
     pivot_longer(1:31)  |>
     slice(str_order(name, numeric = TRUE)) |>
-    mutate(sp = rep(sort(xy_lab$species), each = n_iter)) |>
-    left_join(xy_lab, by = c("sp" = "species")) |>
+    mutate(sp = rep(sort(xylem_lab$species), each = n_iter)) |>
+    left_join(xylem_lab, by = c("sp" = "species")) |>
     dplyr::select(sp, sp_short, xylem = xylem_long_fct, value)
 
   data_b <- bind_rows(xy_data_b, sp_data_b) |>
@@ -643,7 +622,7 @@ coef_density <- function(d, draws, four_panels = TRUE) {
   p5 <- ggplot(data_a, aes(x = exp(value), y = sp_short, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
     scale_y_discrete(limits = rev) +
-    xlab("Coefficient a") +
+    xlab(expression(Coefficient~italic(a))) +
     ylab("") +
     scale_x_log10(
         breaks = c(10^2, 10^3, 10^4),
@@ -657,7 +636,7 @@ coef_density <- function(d, draws, four_panels = TRUE) {
   p6 <- ggplot(data_b, aes(x = value, y = sp_short, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
     scale_y_discrete(limits = rev) +
-    xlab("Coefficient b") +
+    xlab(expression(Coefficient~italic(b))) +
     ylab("") +
     theme_bw() +
     theme(
@@ -675,3 +654,88 @@ coef_density <- function(d, draws, four_panels = TRUE) {
   }
 }
 
+
+generate_xylem_lab <- function(data, removed_k = TRUE) {
+  d <- read_csv(data)
+  if (removed_k) {
+    d <- d |>  filter(is.na(removed_k))
+  }
+  xylem_lab <- d |>
+    dplyr::select(xylem_type, species, sp_short) |>
+    unique() |>
+    mutate(xylem_fct = as.factor(xylem_type)) |>
+    arrange(xylem_fct) |>
+    mutate(xylem_long = case_when(
+      xylem_type == "DP"  ~ "Diffuse-porous tree",
+      xylem_type == "RP"  ~ "Ring-porous tree",
+      xylem_type == "Pa"  ~ "Palm",
+      xylem_type == "L"  ~ "Liana"
+    )) |>
+    mutate(xylem_long_fct = factor(xylem_long,
+    levels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana"))) |>
+    mutate(sp_fct = as.factor(species)) |>
+    mutate(sp_num = as.numeric(sp_fct)) |>
+    mutate(sp_num1 = str_c("1_", sp_num))  |>
+    mutate(sp_num2 = str_c("2_", sp_num))  |>
+    arrange(species)
+  xylem_lab
+}
+
+ab_pg_ribbon <- function(xylem_lab, s_003, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
+  s_003 <- s_003 |> mutate(p_g = "0.03")
+  s_004 <- s_004 |> mutate(p_g = "0.04")
+  s_005 <- s_005 |> mutate(p_g = "0.05")
+  s_006 <- s_006 |> mutate(p_g = "0.06")
+  s_007 <- s_007 |> mutate(p_g = "0.07")
+  s_008 <- s_008 |> mutate(p_g = "0.08")
+  data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+    janitor::clean_names()
+
+  if (coef_a) {
+    data <- data |>
+      filter(str_detect(variable, "alpha\\[1"))
+    fig_data <- xylem_lab |>
+      mutate(variable = str_c("alpha[1,", sp_num,"]")) |>
+      dplyr::select(sp_short, variable, xylem_long_fct) |>
+      full_join(data, by = "variable") |>
+      mutate(q2_5 = exp(q2_5)) |>
+      mutate(q25 = exp(q25)) |>
+      mutate(q50 = exp(q50)) |>
+      mutate(q75 = exp(q75)) |>
+      mutate(q97_5 = exp(q97_5))
+
+  } else {
+    data <- data |>
+      filter(str_detect(variable, "alpha\\[2"))
+    fig_data <- xylem_lab |>
+      mutate(variable = str_c("alpha[2,", sp_num,"]")) |>
+      dplyr::select(sp_short, variable, xylem_long_fct) |>
+      full_join(data, by = "variable")
+  }
+
+  p <- ggplot(fig_data, aes(x = p_g, y = q50, group = sp_short, fill = xylem_long_fct)) +
+      facet_wrap(~sp_short, ncol = 4, scale = "free") +
+      geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
+      geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.6) +
+      geom_point() +
+      geom_line() +
+      scale_fill_discrete(name = "") +
+      xlab(expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
+      my_theme() +
+      theme(
+        strip.text = element_text(face = "italic", size = 8),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.position = c(0.85, 0.05))
+
+  if (coef_a) {
+    p +
+      scale_y_log10() +
+      ylab(expression(Coefficient~italic(a)))
+
+  } else {
+    p +
+      ylab(expression(Coefficient~italic(b)))
+  }
+
+}

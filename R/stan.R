@@ -1,3 +1,24 @@
+#' @title Get posterior estimates mcmc summary
+#' @param data data frame, summary of mcmc
+#' @param row variable name (e.g., "theta")
+#' @param col summary name (e.g., "mean", "q50")
+#' @param digits integer indicating the number of decimal places
+#' @param nsmall the minimum number of digits to the right of the decimal point
+get_post_para <- function(data, row, col, digits = 2, nsmall = 2) {
+  data |>
+    mutate_if(is.numeric, \(x) round(x, digits = digits)) |>
+    mutate_if(is.numeric, \(x) format(x, nsmall = nsmall)) |>
+    filter(variable == {{row}}) |>
+    pull({{col}})
+}
+
+#' @title write_csv for targets
+#' @inheritParams readr::write_csv
+my_write_csv <- function(x, path, append = FALSE, col_names = !append) {
+    write_csv(x, path, append = FALSE, col_names = !append)
+    paste(path)
+}
+
 generate_anova_data <- function(data, log = FALSE, err = FALSE) {
   data <- read_csv(data)
   list_data <- list(
@@ -621,4 +642,48 @@ quiet <- function(code) {
   sink(nullfile())
   on.exit(sink())
   suppressMessages(code)
+}
+
+generate_ab_var_data <- function(path, draws) {
+  # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
+  #   janitor::clean_names()
+  tmp <- draws |>
+      janitor::clean_names()  |>
+      dplyr::select(matches("tau|sigma")) |>
+      mutate(var_a = tau_j_1^2 + tau_k_1^2 + tau_l_1^2) |>
+      mutate(var_b = tau_j_2^2 + tau_k_2^2 + tau_l_2^2) |>
+      mutate(var_a_segment = tau_j_1^2 / var_a) |>
+      mutate(var_a_sp = tau_k_1^2 / var_a) |>
+      mutate(var_a_xylem = tau_l_1^2 / var_a) |>
+      mutate(var_b_segment = tau_j_2^2 / var_b) |>
+      mutate(var_b_sp = tau_k_2^2 / var_b) |>
+      mutate(var_b_xylem = tau_l_2^2 / var_b)
+
+  tibble(
+    variable = colnames(tmp),
+    mean = apply(tmp * 100, 2, mean),
+    q2.5 = apply(tmp * 100, 2, quantile, 0.025),
+    q25 = apply(tmp * 100, 2, quantile, 0.25),
+    q50 = apply(tmp * 100, 2, quantile, 0.5),
+    q75 = apply(tmp * 100, 2, quantile, 0.75),
+    q97.5 = apply(tmp * 100, 2, quantile, 0.975)
+  ) |>
+  my_write_csv(path)
+}
+
+
+coef_ab_vpart <- function(draws) {
+   tmp <- draws |>
+      janitor::clean_names()  |>
+      dplyr::select(matches("tau|sigma")) |>
+      mutate(var_a = tau_j_1^2 + tau_k_1^2 + tau_l_1^2) |>
+      mutate(var_b = tau_j_2^2 + tau_k_2^2 + tau_l_2^2) |>
+      mutate(var_a_segment = tau_j_1^2 / var_a) |>
+      mutate(var_a_sp = tau_k_1^2 / var_a) |>
+      mutate(var_a_xylem = tau_l_1^2 / var_a) |>
+      mutate(var_b_segment = tau_j_2^2 / var_b) |>
+      mutate(var_b_sp = tau_k_2^2 / var_b) |>
+      mutate(var_b_xylem = tau_l_2^2 / var_b)
+
 }

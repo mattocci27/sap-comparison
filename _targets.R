@@ -339,7 +339,7 @@ main_list <- list(
 
   tar_target(
     coef_density_sd_plot, {
-      p <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
+      p <- coef_density_sd(fit_anova_draws_anova_noint_err)
       my_ggsave(
         "figs/coef_density_sd",
         p,
@@ -662,7 +662,7 @@ format = "file"
 
   tar_target(
     coef_density_plot, {
-      p <- coef_density(fd_k_traits_csv,
+      p <- coef_density(xylem_lab,
         fit_ab_draws_granier_without_traits_sap_all_clean_0.08)
       my_ggsave(
         "figs/coef_density",
@@ -676,7 +676,7 @@ format = "file"
   ),
   tar_target(
     coef_density_plot2, {
-      p <- coef_density(fd_k_traits_csv,
+      p <- coef_density(xylem_lab,
         fit_ab_draws_granier_without_traits_sap_all_clean_0.08,
         four_panels = FALSE)
       my_ggsave(
@@ -687,6 +687,60 @@ format = "file"
         height = 5
       )
     },
+    format = "file"
+  ),
+
+  tar_target(
+    xylem_lab,
+    generate_xylem_lab(fd_k_traits_csv)
+  ),
+
+  tar_target(
+    pg_ribbon_a, {
+      p <- ab_pg_ribbon(xylem_lab,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+      my_ggsave(
+        "figs/pg_ribbon_a",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    pg_ribbon_b, {
+      p <- ab_pg_ribbon(xylem_lab,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
+        coef_a = FALSE)
+      my_ggsave(
+        "figs/pg_ribbon_b",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+
+
+  tar_target(
+    ab_var_clean_008,
+    generate_ab_var_data(
+      "data/ab_var_clean_008.csv",
+      fit_ab_draws_granier_without_traits_sap_all_clean_0.08),
     format = "file"
   ),
 
