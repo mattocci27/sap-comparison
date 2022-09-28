@@ -540,16 +540,18 @@ s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
 generate_k_range <- function(data) {
   d <- read_csv(data) |>
     filter(is.na(removed_k))
-
+  # d_0015 <- d |> filter(p_g <= 0.015) |> mutate(p_g_lim = "0.015")
   d_002 <- d |> filter(p_g <= 0.02) |> mutate(p_g_lim = "0.02")
+  d_0025 <- d |> filter(p_g <= 0.025) |> mutate(p_g_lim = "0.025")
   d_003 <- d |> filter(p_g <= 0.03) |> mutate(p_g_lim = "0.03")
+  d_0035 <- d |> filter(p_g <= 0.035) |> mutate(p_g_lim = "0.035")
   d_004 <- d |> filter(p_g <= 0.04) |> mutate(p_g_lim = "0.04")
   d_005 <- d |> filter(p_g <= 0.05) |> mutate(p_g_lim = "0.05")
   d_006 <- d |> filter(p_g <= 0.06) |> mutate(p_g_lim = "0.06")
   d_007 <- d |> filter(p_g <= 0.07) |> mutate(p_g_lim = "0.07")
   d_008 <- d |> filter(p_g <= 0.08) |> mutate(p_g_lim = "0.08")
 
-  k_data <- bind_rows(d_002, d_003, d_004, d_005, d_006, d_007, d_008)
+  k_data <- bind_rows(d_002, d_0025, d_003, d_0035, d_004, d_005, d_006, d_007, d_008)
   k_data2 <- k_data |>
     group_by(species, p_g_lim) |>
     nest() |>
@@ -559,6 +561,16 @@ generate_k_range <- function(data) {
     mutate(n = map_dbl(data, nrow)) |>
     arrange(species) |>
     dplyr::select(-data)
+
+  k_data2 |>
+    filter(str_detect(species, "assa"))
+
+  # k_range |>
+  #   filter(str_detect(species, "assa"))
+  # k_range |>
+  #   filter(p_g_lim == "0.02")
+  # k_range |>
+  #   filter(p_g_lim == "0.025")
 
   tmp <- k_data2$n
   tmp2 <- as.numeric(tmp)
@@ -573,6 +585,7 @@ generate_k_range <- function(data) {
     mutate(check = tmp2) |>
     filter(check == 0) |>
     filter(n >= 5)
+
 
 }
 
@@ -811,15 +824,18 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
   xylem_lab
 }
 
-ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_003, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
+ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
+  # s_0015 <- s_0015 |> mutate(p_g_lim = "0.015")
   s_002 <- s_002 |> mutate(p_g_lim = "0.02")
+  s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
   s_003 <- s_003 |> mutate(p_g_lim = "0.03")
+  s_0035 <- s_0035 |> mutate(p_g_lim = "0.035")
   s_004 <- s_004 |> mutate(p_g_lim = "0.04")
   s_005 <- s_005 |> mutate(p_g_lim = "0.05")
   s_006 <- s_006 |> mutate(p_g_lim = "0.06")
   s_007 <- s_007 |> mutate(p_g_lim = "0.07")
   s_008 <- s_008 |> mutate(p_g_lim = "0.08")
-  data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008) |>
+  data <- bind_rows(s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) |>
     janitor::clean_names()
 
   # xylem_lab$species |> unique()
@@ -835,19 +851,18 @@ ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_003, s_004, s_005, s_006, 
       mutate(q50 = exp(q50)) |>
       mutate(q75 = exp(q75)) |>
       mutate(q97_5 = exp(q97_5))
-    fig_data <- right_join(fig_data, k_range, by = c("species", "p_g_lim"))
-
-    # fig_data |>
-    #   filter(str_detect(sp_short, "assa")) |> as.data.frame()
 
   } else {
     data <- data |>
       filter(str_detect(variable, "alpha\\[2"))
     fig_data <- xylem_lab |>
       mutate(variable = str_c("alpha[2,", sp_num,"]")) |>
-      dplyr::select(sp_short, variable, xylem_long_fct) |>
+      dplyr::select(sp_short, species, variable, xylem_long_fct) |>
       full_join(data, by = "variable")
   }
+
+  fig_data <- right_join(fig_data, k_range, by = c("species", "p_g_lim")) |>
+    mutate(p_g_lim = as.numeric(p_g_lim))
 
   p <- ggplot(fig_data, aes(x = p_g_lim, y = q50, group = sp_short, fill = xylem_long_fct)) +
       facet_wrap(~sp_short, ncol = 4, scale = "free_y") +

@@ -279,7 +279,7 @@ para <- read_csv(here("data/ab_var_clean_008.csv"))
 ```
 
 
-# Variance partitioning
+## Variance partitioning
 
 Figures are based on the multilevel model for the cleaned data without abnormal values with P~g~ <= 0.08 (i.e, all the range).
 
@@ -335,7 +335,7 @@ For coefficient a, xylem types are the largest source for the variance, while se
 
 ## Coefficients (a and b) vs pressure gradients
 
-n < 5 for species $\times$ *P~g~* is removed.
+Species $\times$ *P~g~* combinations with n < 5 are removed.
 
 ![](`r here::here("figs/pg_ribbon_a.png")`)
 
@@ -349,6 +349,16 @@ knitr::knit_exit()
 ## all species
 
 ```{r}
+s_0015 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.015)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.015")
+
+data <- s_0015    |>
+  filter(str_detect(variable, "alpha\\[1"))
+
+data$variable
+
 s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_raw_0.02)) |>
   janitor::clean_names() |>
