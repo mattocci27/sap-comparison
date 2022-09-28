@@ -698,6 +698,8 @@ format = "file"
   tar_target(
     pg_ribbon_a, {
       p <- ab_pg_ribbon(xylem_lab,
+                        k_range,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
@@ -717,6 +719,8 @@ format = "file"
   tar_target(
     pg_ribbon_b, {
       p <- ab_pg_ribbon(xylem_lab,
+                        k_range,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
         fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
@@ -735,6 +739,10 @@ format = "file"
     format = "file"
   ),
 
+  tar_target(
+    k_range,
+    generate_k_range(fd_k_traits_csv)
+  ),
 
   tar_target(
     ab_var_clean_008,

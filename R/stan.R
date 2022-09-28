@@ -374,8 +374,6 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
     mutate(sp_tree = str_c(sp, "_", tree))  |>
     filter(!duplicated(sp_tree))
 
-
-
   sp_lab <- data |>
     dplyr::select(sp, xy) |>
     unique()
@@ -383,7 +381,6 @@ generate_dummy_data_ab <- function(n_measure = 6, n_tree = 9, n_sp = 20, n_xy = 
   tree_lab <- data |>
     dplyr::select(sp, tree) |>
     unique()
-
 
   list(
     data = data,
@@ -418,6 +415,7 @@ clean_sap_data <- function(data, file) {
     janitor::clean_names() |>
     rename(species = species_name) |>
     mutate(species = ifelse(species == "Bauhinia  tenuiflor", "Bauhinia tenuiflor", species)) |>
+    mutate(species = ifelse(species == "Dypsis  lutescen", "Dypsis lutescen", species)) |>
     mutate(genus_short = str_sub(species, 1, 1)) |>
     mutate(sp_only = str_split_fixed(species, " ", 2)[, 2]) |>
     mutate(sp_short = str_c(genus_short, ". ", sp_only))

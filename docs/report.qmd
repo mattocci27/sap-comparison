@@ -329,9 +329,18 @@ Figures are based on the multilevel model for the cleaned data without abnormal 
 
 For coefficient a, xylem types are the largest source for the variance, while segments are the the largest source for the variance for coefficient b.
 
-
+## Pool vs multilevel
 
 ![](`r here::here("figs/pool_multi.png")`)
+
+## Coefficients (a and b) vs pressure gradients
+
+n < 5 for species $\times$ *P~g~* is removed.
+
+![](`r here::here("figs/pg_ribbon_a.png")`)
+
+![](`r here::here("figs/pg_ribbon_b.png")`)
+
 
 ```{r}
 knitr::knit_exit()

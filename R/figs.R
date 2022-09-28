@@ -447,6 +447,136 @@ coef_intervals_logistic <- function(draws) {
       my_theme()
 }
 
+line_pg_multi <- function(xylem_lab, s_003, s_004, s_005, s_006, s_007, s_008) {
+
+s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.02))
+s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.03))
+s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.04))
+s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.05))
+s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.06))
+s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.07))
+s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08))
+
+  s_002 <- s_002 |> mutate(p_g_lim = "0.02")
+  s_003 <- s_003 |> mutate(p_g_lim = "0.03")
+  s_004 <- s_004 |> mutate(p_g_lim = "0.04")
+  s_005 <- s_005 |> mutate(p_g_lim = "0.05")
+  s_006 <- s_006 |> mutate(p_g_lim = "0.06")
+  s_007 <- s_007 |> mutate(p_g_lim = "0.07")
+  s_008 <- s_008 |> mutate(p_g_lim = "0.08")
+
+
+  d <- read_csv(here("data/fd_k_traits.csv")) |>
+    filter(is.na(removed_k))
+
+  d_002 <- d |> filter(p_g <= 0.02) |> mutate(p_g_lim = "0.02")
+  d_003 <- d |> filter(p_g <= 0.03) |> mutate(p_g_lim = "0.03")
+  d_004 <- d |> filter(p_g <= 0.04) |> mutate(p_g_lim = "0.04")
+  d_005 <- d |> filter(p_g <= 0.05) |> mutate(p_g_lim = "0.05")
+  d_006 <- d |> filter(p_g <= 0.06) |> mutate(p_g_lim = "0.06")
+  d_007 <- d |> filter(p_g <= 0.07) |> mutate(p_g_lim = "0.07")
+  d_008 <- d |> filter(p_g <= 0.08) |> mutate(p_g_lim = "0.08")
+
+  ggplot(d, aes(x = p_g)) +
+    geom_histogram() +
+    facet_wrap(vars(xylem_type))
+
+
+  k_data <- bind_rows(d_003, d_004, d_005, d_006, d_007, d_008)
+  k_data2 <- k_data |>
+    group_by(species, p_g_lim) |>
+    nest() |>
+    ungroup() |>
+    mutate(k_lwr = map_dbl(data, \(x) min(x$k))) |>
+    mutate(k_upr = map_dbl(data, \(x) max(x$k))) |>
+    mutate(n = map_dbl(data, nrow)) |>
+    arrange(species) |>
+    dplyr::select(-data)
+
+  tmp <- k_data2$n
+  tmp2 <- as.numeric(tmp)
+  for (i in 2:nrow(k_data2)) {
+   if (tmp[i-1] == tmp[i]) {
+    tmp2[i] <- 1
+   } else tmp2[i] <- 0
+  }
+  tmp2[1] <- 0
+
+  k_data2 |>
+    mutate(check = tmp2) |>
+    filter(check == 0)
+
+
+  data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+    janitor::clean_names()
+
+  nd <- data |>
+    group_by(p_g) |>
+    nest() |>
+    ungroup()
+
+  get_log_a <- function(data) data |> filter(str_detect(variable, "alpha\\[1")) |> pull(q50)
+  get_b <- function(data) data |> filter(str_detect(variable, "alpha\\[2")) |> pull(q50)
+
+  nd2 <- nd |>
+    mutate(log_a = map(data, get_log_a)) |>
+    mutate(b = map(data, get_b)) |>
+    mutate(species = list(xylem_lab$species)) |>
+    mutate(sp_short = list(xylem_lab$sp_short)) |>
+    mutate(xylem_long_fct = list(xylem_lab$xylem_long_fct)) |>
+    dplyr::select(-data) |>
+    unnest(cols = c(log_a, b, species, sp_short, xylem_long_fct))
+
+
+}
+
+generate_k_range <- function(data) {
+  d <- read_csv(data) |>
+    filter(is.na(removed_k))
+
+  d_002 <- d |> filter(p_g <= 0.02) |> mutate(p_g_lim = "0.02")
+  d_003 <- d |> filter(p_g <= 0.03) |> mutate(p_g_lim = "0.03")
+  d_004 <- d |> filter(p_g <= 0.04) |> mutate(p_g_lim = "0.04")
+  d_005 <- d |> filter(p_g <= 0.05) |> mutate(p_g_lim = "0.05")
+  d_006 <- d |> filter(p_g <= 0.06) |> mutate(p_g_lim = "0.06")
+  d_007 <- d |> filter(p_g <= 0.07) |> mutate(p_g_lim = "0.07")
+  d_008 <- d |> filter(p_g <= 0.08) |> mutate(p_g_lim = "0.08")
+
+  k_data <- bind_rows(d_002, d_003, d_004, d_005, d_006, d_007, d_008)
+  k_data2 <- k_data |>
+    group_by(species, p_g_lim) |>
+    nest() |>
+    ungroup() |>
+    mutate(k_lwr = map_dbl(data, \(x) min(x$k))) |>
+    mutate(k_upr = map_dbl(data, \(x) max(x$k))) |>
+    mutate(n = map_dbl(data, nrow)) |>
+    arrange(species) |>
+    dplyr::select(-data)
+
+  tmp <- k_data2$n
+  tmp2 <- as.numeric(tmp)
+  for (i in 2:nrow(k_data2)) {
+   if (tmp[i-1] == tmp[i]) {
+    tmp2[i] <- 1
+   } else tmp2[i] <- 0
+  }
+  tmp2[1] <- 0
+
+  k_data2 |>
+    mutate(check = tmp2) |>
+    filter(check == 0) |>
+    filter(n >= 5)
+
+}
+
+
 line_pool_multi <- function(d, s_008, s2_008) {
   d <- read_csv(d) |>
     filter(is.na(removed_k))
@@ -681,28 +811,34 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
   xylem_lab
 }
 
-ab_pg_ribbon <- function(xylem_lab, s_003, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
-  s_003 <- s_003 |> mutate(p_g = "0.03")
-  s_004 <- s_004 |> mutate(p_g = "0.04")
-  s_005 <- s_005 |> mutate(p_g = "0.05")
-  s_006 <- s_006 |> mutate(p_g = "0.06")
-  s_007 <- s_007 |> mutate(p_g = "0.07")
-  s_008 <- s_008 |> mutate(p_g = "0.08")
-  data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_003, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
+  s_002 <- s_002 |> mutate(p_g_lim = "0.02")
+  s_003 <- s_003 |> mutate(p_g_lim = "0.03")
+  s_004 <- s_004 |> mutate(p_g_lim = "0.04")
+  s_005 <- s_005 |> mutate(p_g_lim = "0.05")
+  s_006 <- s_006 |> mutate(p_g_lim = "0.06")
+  s_007 <- s_007 |> mutate(p_g_lim = "0.07")
+  s_008 <- s_008 |> mutate(p_g_lim = "0.08")
+  data <- bind_rows(s_002, s_003, s_004, s_005, s_006, s_007, s_008) |>
     janitor::clean_names()
 
+  # xylem_lab$species |> unique()
   if (coef_a) {
     data <- data |>
       filter(str_detect(variable, "alpha\\[1"))
     fig_data <- xylem_lab |>
       mutate(variable = str_c("alpha[1,", sp_num,"]")) |>
-      dplyr::select(sp_short, variable, xylem_long_fct) |>
+      dplyr::select(sp_short, species, variable, xylem_long_fct) |>
       full_join(data, by = "variable") |>
       mutate(q2_5 = exp(q2_5)) |>
       mutate(q25 = exp(q25)) |>
       mutate(q50 = exp(q50)) |>
       mutate(q75 = exp(q75)) |>
       mutate(q97_5 = exp(q97_5))
+    fig_data <- right_join(fig_data, k_range, by = c("species", "p_g_lim"))
+
+    # fig_data |>
+    #   filter(str_detect(sp_short, "assa")) |> as.data.frame()
 
   } else {
     data <- data |>
@@ -713,8 +849,8 @@ ab_pg_ribbon <- function(xylem_lab, s_003, s_004, s_005, s_006, s_007, s_008, co
       full_join(data, by = "variable")
   }
 
-  p <- ggplot(fig_data, aes(x = p_g, y = q50, group = sp_short, fill = xylem_long_fct)) +
-      facet_wrap(~sp_short, ncol = 4, scale = "free") +
+  p <- ggplot(fig_data, aes(x = p_g_lim, y = q50, group = sp_short, fill = xylem_long_fct)) +
+      facet_wrap(~sp_short, ncol = 4, scale = "free_y") +
       geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
       geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.6) +
       geom_point() +
