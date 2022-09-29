@@ -447,92 +447,92 @@ coef_intervals_logistic <- function(draws) {
       my_theme()
 }
 
-line_pg_multi <- function(xylem_lab, s_003, s_004, s_005, s_006, s_007, s_008) {
+line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) {
 
-s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.02))
-s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.03))
-s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.04))
-s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.05))
-s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.06))
-s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.07))
-s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08))
+# s_0025 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.025))
+# s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.02))
+# s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.03))
+# s_0035 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.035))
+# s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.04))
+# s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.05))
+# s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.06))
+# s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.07))
+# s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08))
+
+  d <- read_csv(data) |>
+    filter(is.na(removed_k))
 
   s_002 <- s_002 |> mutate(p_g_lim = "0.02")
+  s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
   s_003 <- s_003 |> mutate(p_g_lim = "0.03")
+  s_0035 <- s_0035 |> mutate(p_g_lim = "0.035")
   s_004 <- s_004 |> mutate(p_g_lim = "0.04")
   s_005 <- s_005 |> mutate(p_g_lim = "0.05")
   s_006 <- s_006 |> mutate(p_g_lim = "0.06")
   s_007 <- s_007 |> mutate(p_g_lim = "0.07")
   s_008 <- s_008 |> mutate(p_g_lim = "0.08")
 
-
-  d <- read_csv(here("data/fd_k_traits.csv")) |>
-    filter(is.na(removed_k))
-
-  d_002 <- d |> filter(p_g <= 0.02) |> mutate(p_g_lim = "0.02")
-  d_003 <- d |> filter(p_g <= 0.03) |> mutate(p_g_lim = "0.03")
-  d_004 <- d |> filter(p_g <= 0.04) |> mutate(p_g_lim = "0.04")
-  d_005 <- d |> filter(p_g <= 0.05) |> mutate(p_g_lim = "0.05")
-  d_006 <- d |> filter(p_g <= 0.06) |> mutate(p_g_lim = "0.06")
-  d_007 <- d |> filter(p_g <= 0.07) |> mutate(p_g_lim = "0.07")
-  d_008 <- d |> filter(p_g <= 0.08) |> mutate(p_g_lim = "0.08")
-
-  ggplot(d, aes(x = p_g)) +
-    geom_histogram() +
-    facet_wrap(vars(xylem_type))
-
-
-  k_data <- bind_rows(d_003, d_004, d_005, d_006, d_007, d_008)
-  k_data2 <- k_data |>
-    group_by(species, p_g_lim) |>
-    nest() |>
-    ungroup() |>
-    mutate(k_lwr = map_dbl(data, \(x) min(x$k))) |>
-    mutate(k_upr = map_dbl(data, \(x) max(x$k))) |>
-    mutate(n = map_dbl(data, nrow)) |>
-    arrange(species) |>
-    dplyr::select(-data)
-
-  tmp <- k_data2$n
-  tmp2 <- as.numeric(tmp)
-  for (i in 2:nrow(k_data2)) {
-   if (tmp[i-1] == tmp[i]) {
-    tmp2[i] <- 1
-   } else tmp2[i] <- 0
-  }
-  tmp2[1] <- 0
-
-  k_data2 |>
-    mutate(check = tmp2) |>
-    filter(check == 0)
-
-
-  data <- bind_rows(s_003, s_004, s_005, s_006, s_007, s_008) |>
+  data <- bind_rows(s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) |>
     janitor::clean_names()
 
-  nd <- data |>
-    group_by(p_g) |>
+  # tar_load(k_range)
+  # tar_load(xylem_lab)
+
+  xylem_lab <- xylem_lab |>
+    mutate(a_chr = str_c("alpha[1,", sp_num,"]")) |>
+    mutate(b_chr = str_c("alpha[2,", sp_num,"]"))
+
+  k_range2 <- left_join(k_range, xylem_lab, by = "species")
+
+  log_a <- data |>
+    filter(str_detect(variable, "alpha\\[1")) |>
+    dplyr::select(variable, log_a = q50, p_g_lim)
+
+  b <- data |>
+    filter(str_detect(variable, "alpha\\[2")) |>
+    dplyr::select(variable, b = q50, p_g_lim)
+  sig <- data |>
+    filter(variable == "sigma") |>
+    dplyr::select(sigma = q50, p_g_lim)
+
+  log_a2 <- log_a |>
+    mutate(b = b$b)
+
+  log_a3 <- full_join(log_a2, sig)
+
+  nd <- left_join(k_range2, log_a3, by = c("a_chr" = "variable", "p_g_lim" = "p_g_lim")) |>
+    group_by(p_g_lim, species) |>
     nest() |>
     ungroup()
 
-  get_log_a <- function(data) data |> filter(str_detect(variable, "alpha\\[1")) |> pull(q50)
-  get_b <- function(data) data |> filter(str_detect(variable, "alpha\\[2")) |> pull(q50)
+  # nd$data[[1]]
 
-  nd2 <- nd |>
-    mutate(log_a = map(data, get_log_a)) |>
-    mutate(b = map(data, get_b)) |>
-    mutate(species = list(xylem_lab$species)) |>
-    mutate(sp_short = list(xylem_lab$sp_short)) |>
-    mutate(xylem_long_fct = list(xylem_lab$xylem_long_fct)) |>
-    dplyr::select(-data) |>
-    unnest(cols = c(log_a, b, species, sp_short, xylem_long_fct))
+  pred_data <- nd |>
+    mutate(log_xx = map(data, \(x)seq(log(x$k_lwr), log(x$k_upr), length = 80))) |>
+    mutate(log_pred = pmap(list(log_xx, data), \(log_xx, data) {data$log_a + data$b * log_xx + data$sigma^2 / 2})) |>
+    unnest(cols = c(data, log_xx, log_pred))
+
+  ggplot() +
+    #geom_point(data = d, aes(x = k, y = fd, col = xylem_type)) +
+    geom_point(data = d, aes(x = k, y = fd)) +
+    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = p_g_lim)) +
+    facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
+    ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
+    xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    my_theme() +
+    theme(
+      strip.text = element_text(face = "italic", size = 8),
+      legend.position = c(0.85, 0.05)
+      )
 
 
 }
@@ -590,8 +590,10 @@ generate_k_range <- function(data) {
 }
 
 coef_cor <- function() {
-  install.packages("ellipse")
+#  install.packages("ellipse")
   library(ellipse)
+  library(targets)
+  library(tidyverse)
   s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)) |>
   janitor::clean_names() |>
@@ -603,7 +605,7 @@ coef_cor <- function() {
   mutate(pressure = "0.08")
 
  s_008 |>
-    filter(str_detect(variable, "gamma"))
+    filter(str_detect(variable, "alpha"))
 
 #    dplyr::select(starts_with("rho_l"))
 
@@ -694,10 +696,9 @@ ggplot(tmp, aes(x = b, y = log_a, group = .id)) +
 
 }
 
-
 line_pool_multi <- function(d, s_008, s2_008) {
-  s_008 <- tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
-  s2_008 <- tar_read(fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
+  # s_008 <- tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+  # s2_008 <- tar_read(fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
 
   d <- read_csv(d) |>
     filter(is.na(removed_k))

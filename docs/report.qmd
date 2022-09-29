@@ -342,6 +342,9 @@ The upper limit for x-axis is based on the dataset.
 
 ![](`r here::here("figs/pg_ribbon_b.png")`)
 
+## Fd vs K for different ranges of pressure gradients
+
+![](`r here::here("figs/pg_multi.png")`)
 
 ```{r}
 knitr::knit_exit()

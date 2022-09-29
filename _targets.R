@@ -666,6 +666,32 @@ format = "file"
     format = "file"
   ),
 
+  tar_target(
+    pg_multi_plot, {
+      p <- line_pg_multi(
+                         fd_k_traits_csv,
+        xylem_lab,
+                        k_range,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+        fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+      my_ggsave(
+        "figs/pg_multi",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+
   # tar_target(
   #   coef_density_plot, {
   #     p <- coef_density(xylem_lab,
