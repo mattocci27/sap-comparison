@@ -336,6 +336,7 @@ For coefficient a, xylem types are the largest source for the variance, while se
 ## Coefficients (a and b) vs pressure gradients
 
 Species $\times$ *P~g~* combinations with n < 5 are removed.
+The upper limit for x-axis is based on the dataset.
 
 ![](`r here::here("figs/pg_ribbon_a.png")`)
 
@@ -446,7 +447,7 @@ ggplot(b_rubber, aes(x = pressure, y = q50, group = variable)) +
 ```
 
 
-## all species
+## All species
 
 ```{r, fig.width=10, fig.height=10}
 

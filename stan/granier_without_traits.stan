@@ -58,3 +58,14 @@ model {
   y ~ normal(mu, sigma);
 }
 
+generated quantities {
+  cov_matrix[2] Sigma_j = diag_pre_multiply(tau_j, L_Omega_j) *
+    diag_post_multiply(L_Omega_j', tau_j);
+  cov_matrix[2] Sigma_k = diag_pre_multiply(tau_k, L_Omega_k) *
+    diag_post_multiply(L_Omega_k', tau_k);
+  cov_matrix[2] Sigma_l = diag_pre_multiply(tau_l, L_Omega_l) *
+    diag_post_multiply(L_Omega_l', tau_l);
+  real<lower=-1, upper=1> rho_j = Sigma_j[1, 2] * inv(tau_j[1] * tau_j[2]);
+  real<lower=-1, upper=1> rho_k = Sigma_k[1, 2] * inv(tau_k[1] * tau_k[2]);
+  real<lower=-1, upper=1> rho_l = Sigma_l[1, 2] * inv(tau_l[1] * tau_l[2]);
+}

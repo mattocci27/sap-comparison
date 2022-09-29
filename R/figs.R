@@ -589,13 +589,121 @@ generate_k_range <- function(data) {
 
 }
 
+coef_cor <- function() {
+  install.packages("ellipse")
+  library(ellipse)
+  s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.08")
+
+  d_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
+  janitor::clean_names() |>
+  mutate(pressure = "0.08")
+
+ s_008 |>
+    filter(str_detect(variable, "gamma"))
+
+#    dplyr::select(starts_with("rho_l"))
+
+ sigma_l <- d_008 |>
+    dplyr::select(starts_with("sigma_l"))
+ gamma <- d_008 |>
+    dplyr::select(starts_with("gamma"))
+ sigma_l <- sigma_l  |>
+    mutate(s = pmap(list(sigma_l_1_1, sigma_l_2_1, sigma_l_2_2), \(s1, rho, s2) matrix(c(s1, rho, rho, s2), nrow = 2))) |>
+    mutate(s_cor = map(s, cov2cor))
+
+ gamma <- gamma |>
+  mutate(mu = map2(gamma_1_1, gamma_2_1, \(x, y) c(x, y)))
+
+  bind_cols(sigma_l, gamma) |>
+  mutate(data = pmap(list(mu, s), \(mu, s) ellipse(s, scale = c(s[1, 1], s[2, 2]), centre = mu, level = 0.9)))  |>
+  mutate(log_a = map(data, \(x) x[, 1])) |>
+  mutate(b = map(data, \(x) x[, 2]))
+
+ tmp <- bind_cols(sigma_l, gamma) |>
+  mutate(data = pmap(list(mu, s), \(mu, s) ellipse(s, scale = c(s[1, 1], s[2, 2]), centre = c(0, 0), level = 0.9))) |>
+  mutate(log_a = map(data, \(x) x[, 1])) |>
+  mutate(b = map(data, \(x) x[, 2])) |>
+  mutate(.id = 1:nrow(sigma_l)) |>
+  dplyr::select(log_a, b, .id) |>
+  unnest(cols = c(log_a, b))
+
+ggplot(tmp, aes(x = b, y = log_a, group = .id)) +
+  geom_path(alpha = 0.2) +
+  xlab("x") +
+  ylab("y") +
+  theme_bw()
+
+library(ggthemes)
+
+ggplot(tmp, aes(x = b, y = log_a, group = .id)) +
+  geom_path(alpha = 0.1, col = "orange")+
+  xlab("x") +
+  ylab("y") +
+  theme_solarized(light = FALSE)
+
+  tmp |>
+    rename("hoge" = "[,2]")
+  dim(tmp)
+
+  m <- c(.5, -.5)
+  sigma <- matrix(c(1,.5,.5,1), nrow=2)
+
+  gamma <- s_008 |>
+    filter(str_detect(variable, "gamma"))
+  beta <- s_008 |>
+    filter(str_detect(variable, "beta"))
+  Sigma <- s_008 |>
+    filter(str_detect(variable, "Sigma_l")) |>
+    pull(q50)
+  tau <- s_008 |>
+    filter(str_detect(variable, "tau_l"))
+
+  m <- gamma$q50
+  sigma <- matrix(Sigma, nrow = 2)
+
+
+  alpha_levels <- seq(0.5, 0.95, by = 0.05) ## or whatever you want
+  alpha_levels <- 0.9
+  names(alpha_levels) <- alpha_levels ## to get id column in result
+  contour_data <- plyr::ldply(alpha_levels,
+        ellipse,
+        x = sigma,
+        scale = c(sigma[1, 1], sigma[2, 2]),  ## needed for positional matching
+        centre = m)
+  ggplot(contour_data,aes(x,y,group=.id))+geom_path()
+
+  ellipse(sigma)
+
+
+  s_008 <- tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+
+  s_008 |>
+    filter(str_detect(variable, "rho"))
+
+  s_008 |>
+    filter(str_detect(variable, "Sigma"))
+  s_008 |>
+    filter(str_detect(variable, "Sigma"))
+
+  s_008 |>
+    filter(str_detect(variable, "tau"))
+
+}
+
 
 line_pool_multi <- function(d, s_008, s2_008) {
+  s_008 <- tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+  s2_008 <- tar_read(fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
+
   d <- read_csv(d) |>
     filter(is.na(removed_k))
 
   log_a <- s_008 |>
-  filter(str_detect(variable, "alpha\\[1")) |>
+    filter(str_detect(variable, "alpha\\[1")) |>
   pull(q50)
   b <- s_008 |>
     filter(str_detect(variable, "alpha\\[2")) |>
@@ -657,7 +765,7 @@ line_pool_multi <- function(d, s_008, s2_008) {
 
 }
 
-coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
+coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
   # library(tidyverse)
   # library(here)
   # d <- read_csv(here("data/fd_k_traits.csv")) |>
@@ -665,6 +773,7 @@ coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
   # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
   #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
   #   janitor::clean_names()
+#  tar_load(xylem_lab)
   draws <- draws |>
     janitor::clean_names()
 
@@ -695,7 +804,9 @@ coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
     mutate(sp_short = factor(sp_short,
      c(
       xy_data_a$xylem |> unique() |> sort() |> as.character(),
-      sp_data_a$sp_short |> unique() |> str_sort())))
+      sp_data_a$sp_short |> unique() |> str_sort()))) |>
+    mutate(para = "Coefficient a")
+
 
   xy_data_b <- draws |>
     dplyr::select(starts_with("beta_2")) |>
@@ -720,7 +831,10 @@ coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
     mutate(sp_short = factor(sp_short,
      c(
       xy_data_a$xylem |> unique() |> sort() |> as.character(),
-      sp_data_b$sp_short |> unique() |> str_sort())))
+      sp_data_b$sp_short |> unique() |> str_sort()))) |>
+    mutate(para = "Coefficient b")
+
+  data <- bind_rows(data_a, data_b)
 
   p1 <- ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
@@ -767,9 +881,10 @@ coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
     scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(a))) +
     ylab("") +
-    scale_x_log10(
-        breaks = c(10^2, 10^3, 10^4),
-        labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10() +
+    # scale_x_log10(
+    #     breaks = c(10^2, 10^3, 10^4),
+    #     labels = trans_format("log10", math_format(10^.x))) +
     theme_bw() +
     theme(
       legend.position = "none",
@@ -784,13 +899,17 @@ coef_density <- function(xylem_lab, draws, four_panels = TRUE) {
     theme_bw() +
     theme(
      legend.position = "none",
-      axis.text.y = element_text(face = "italic", size = 8)
+      axis.text.y = element_blank()
+      #axis.text.y = element_text(face = "italic", size = 8)
       )
 
-  if (four_panels) {
-    p1 + p2 + p3 + p4 +
-      plot_annotation(tag_levels = "A")
-  } else {
+
+  if (looks == "patchwork") {
+    # p1 + p2 + p3 + p4 +
+    #   plot_annotation(tag_levels = "A")
+    p5 + p6 +
+      plot_annotation(tag_levels = "A") #3
+  } else if (looks == "facet") {
     p5 + p6 +
       plot_annotation(tag_levels = "A") #3
       # theme(plot.margin = margin(0, 0.1, 0, 0, "cm"))
