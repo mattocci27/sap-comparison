@@ -435,12 +435,21 @@ clean_sap_data <- function(data, file) {
 
 }
 
-generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
-  # d <- read_csv("data-raw/calibration_raw_data.csv") |>
-  #   janitor::clean_names() |>
-  #   rename(species = species_name)
+generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, traits = FALSE) {
+  # library(tidyverse)
   # d <- read_csv("data/fd_k_traits.csv")
   d <- read_csv(data)
+
+  if (traits) {
+    d <- d |>
+      filter(!is.na(wood_density)) |>
+      filter(!is.na(swc)) |>
+      filter(!is.na(dh)) |>
+      filter(!is.na(vaf)) |>
+      filter(!is.na(vf)) |>
+      filter(!is.na(ks))
+  }
+
   if (remove_abnormal_values) {
     d <- d |>
       filter(is.na(removed_k))
@@ -459,6 +468,14 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
 
   uj <- model.matrix(~ species, tmp)
   uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp <- d |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    dplyr::select(wood_density, swc, dh, vaf, vf, ks)
+
+  tmp2 <- na.omit(tmp) |> as.matrix()
+  xj <- cbind(1, tmp2)
 
   tmp <- d |>
     group_by(species, xylem_type) |>
@@ -486,6 +503,11 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
     x = cbind(1, log(d$k)),
     y = log(d$fd)
   )
+
+  if (traits) {
+    stan_data$xj <- xj
+    stan_data$T <- ncol(xj)
+  }
 
   stan_data
 }

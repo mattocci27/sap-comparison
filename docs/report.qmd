@@ -829,6 +829,19 @@ hoge |>
 
 tar_read(fit_ab_summary_granier_without_traits_sap_all_0.08)
 
+c(4, 2) %*% t(c(1, 1, 1, 1))
+
+library(targets)
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "with_traits"))
+
+tar_read(fit_abt_summary_granier_with_traits)
+
+tar_read(sap_traits_clean_0.08) |> str()
+
+
 ```
 
 

@@ -531,6 +531,38 @@ format = "file"
     generate_sap_stan_data(fd_k_traits_csv, upper_pressure = 0.03)
   ),
 
+  tar_target(
+    sap_traits_clean_0.08,
+    generate_sap_stan_data(fd_k_traits_csv,
+      remove_abnormal_values = TRUE,
+      traits = TRUE),
+  ),
+
+  tar_stan_mcmc(
+    fit_abt,
+    "stan/granier_with_traits.stan",
+    data = sap_traits_clean_0.08,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+
+
   tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.015, 0.025, 0.035)),
     tar_target(sap_all_raw,
