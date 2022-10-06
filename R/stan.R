@@ -435,6 +435,100 @@ clean_sap_data <- function(data, file) {
 
 }
 
+generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, trait_set = "all") {
+  # library(tidyverse)
+  # d <- read_csv("data/fd_k_traits.csv")
+  d <- read_csv(data)
+
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+    filter(p_g <= upper_pressure)
+  }
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  if (trait_set == "all") {
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_swc, log_dh, log_vaf, log_vf, log_ks)
+  } else if (trait_set == "vaf") {
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vaf, log_ks)
+  } else if (trait_set == "vf") {
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vf, log_ks)
+  } else if (trait_set == "ks") {
+  tmp <- tmp0 |>
+    dplyr::select(log_ks)
+  } else if (trait_set == "noks") {
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vf)
+  }
+
+  tmp2 <- apply(tmp, 2, scale)
+  #tmp2 <- na.omit(tmp) |> as.matrix()
+  xj <- cbind(1, tmp2)
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  uk <- model.matrix(~ xylem_type, tmp)
+  uk[apply(uk, 1, sum) == 2, 1] <- 0
+
+  ul <- matrix(rep(1, 4), ncol = 4)
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    L = unique(d$xylem_type) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    kk = as.factor(d$species) |> as.numeric(),
+    ll = as.factor(d$xylem_type) |> as.numeric(),
+    uj = t(uj),
+    uk = t(uk),
+    ul = ul,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj)
+  )
+
+  stan_data
+}
+
 generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, traits = FALSE) {
   # library(tidyverse)
   # d <- read_csv("data/fd_k_traits.csv")
@@ -707,3 +801,5 @@ coef_ab_vpart <- function(draws) {
       mutate(var_b_xylem = tau_l_2^2 / var_b)
 
 }
+
+my_loo <- function(x) x$loo(cores = parallel::detectCores())

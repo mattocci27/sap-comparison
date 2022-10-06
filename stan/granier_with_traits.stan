@@ -5,9 +5,6 @@ data {
   int<lower=0> L; // number of xylem types
   int<lower=0> T; // number of trait predcitors
   array[N] int<lower=1, upper=J> jj; // tree sample
-  array[N] int<lower=1, upper=K> kk; // species
-  array[N] int<lower=1, upper=L> ll; // xylem type
-  // array[N] int<lower=1, upper=T> tt; // traits
   vector[N] y;
   matrix[N, 2] x;
   matrix[J, T] xj; // trait - segment
@@ -18,8 +15,6 @@ data {
 
 parameters {
   real<lower=0> sigma;
-  // real log_a_tilde;
-  // real b_tilde;
   matrix[T, 1] gamma_a;
   matrix[T, 1] gamma_b;
   matrix[2, J] zj_A;
@@ -46,28 +41,19 @@ parameters {
 }
 
 transformed parameters {
-  // real log_a = 4.78 + 2.5 * log_a_tilde;
-  // real b  = 1.23 + 2.5 * b_tilde;
-  // matrix[2, 1] gamma;
-  // gamma[1, 1] = log_a;
-  // gamma[2, 1] = b;
   matrix[T, L] beta_a = gamma_a * ul + diag_pre_multiply(tau_l_a, L_Omega_l_a) * zl_a;
   matrix[T, K] alpha_a = beta_a * uk + diag_pre_multiply(tau_k_a, L_Omega_k_a) * zk_a;
-  // matrix[J, J] a_tmp = xj * (alpha_a * uj + diag_pre_multiply(tau_j_a, L_Omega_j_a) * zj_a);
-  // vector[J] a_hat = diagonal(a_tmp);
-  // vector[J] a_hat = diagonal(xj * alpha_a * uj + diag_pre_multiply(tau_j_a, L_Omega_j_a) * zj_a);
   vector[J] a_hat = diagonal(xj * (alpha_a * uj + diag_pre_multiply(tau_j_a, L_Omega_j_a) * zj_a));
   matrix[T, L] beta_b = gamma_b * ul + diag_pre_multiply(tau_l_b, L_Omega_l_b) * zl_b;
   matrix[T, K] alpha_b = beta_b * uk + diag_pre_multiply(tau_k_b, L_Omega_k_b) * zk_b;
-
   vector[J] b_hat = diagonal(xj * (alpha_b * uj + diag_pre_multiply(tau_j_b, L_Omega_j_b) * zj_b));
   matrix[2, J] A_hat = append_row(to_row_vector(a_hat), to_row_vector(b_hat));
   matrix[2, J] A = A_hat + diag_pre_multiply(tau_A, L_Omega_A) * zj_A;
 }
 
 model {
- vector[N] mu;
-  for(n in 1:N) {
+  vector[N] mu;
+  for (n in 1:N) {
     mu[n] = x[n, ] * A[, jj[n]];
   }
 
@@ -91,9 +77,17 @@ model {
   L_Omega_k_b ~ lkj_corr_cholesky(2);
   L_Omega_j_b ~ lkj_corr_cholesky(2);
 
+  to_vector(zj_A) ~ std_normal();
   to_vector(gamma_a) ~ normal(0, 5);
   to_vector(gamma_b) ~ normal(0, 5);
-  // log_a_tilde ~ std_normal();
-  // b_tilde ~ std_normal();
   y ~ normal(mu, sigma);
+}
+
+generated quantities {
+  vector[N] log_lik;
+  vector[N] mu;
+  for (n in 1:N) {
+    mu[n] = x[n, ] * A[, jj[n]];
+    log_lik[n] = normal_lpdf(y[n] | mu[n], sigma);
+  }
 }

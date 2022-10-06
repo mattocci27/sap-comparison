@@ -26,7 +26,8 @@ tar_option_set(packages = c(
   "ggpubr",
   "ggridges",
   "RColorBrewer",
-  "scales"
+  "scales",
+  "loo"
 ))
 
 tar_option_set(
@@ -531,37 +532,71 @@ format = "file"
     generate_sap_stan_data(fd_k_traits_csv, upper_pressure = 0.03)
   ),
 
-  tar_target(
-    sap_traits_clean_0.08,
-    generate_sap_stan_data(fd_k_traits_csv,
-      remove_abnormal_values = TRUE,
-      traits = TRUE),
+  tar_map(
+    list(trait_set = c("all", "vaf", "vf", "ks", "noks")),
+    tar_target(sap_trait_clean,
+      generate_sap_traits_stan_data(fd_k_traits_csv,
+                             remove_abnormal_values = TRUE,
+                             trait_set = trait_set))
   ),
 
-  tar_stan_mcmc(
-    fit_abt,
-    "stan/granier_with_traits.stan",
-    data = sap_traits_clean_0.08,
-    refresh = 0,
-    chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
-    iter_warmup = 2000,
-    iter_sampling = 2000,
-    adapt_delta = 0.9,
-    max_treedepth = 15,
-    seed = 123,
-    return_draws = TRUE,
-    return_diagnostics = TRUE,
-    return_summary = TRUE,
-    summaries = list(
-      mean = ~mean(.x),
-      sd = ~sd(.x),
-      mad = ~mad(.x),
-      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-      posterior::default_convergence_measures()
+  tar_map(
+    values = list(stan_data = rlang::syms(c(
+      "sap_trait_clean_all",
+      "sap_trait_clean_vaf",
+      "sap_trait_clean_vf",
+      "sap_trait_clean_ks",
+      "sap_trait_clean_noks"
+      ))),
+    tar_stan_mcmc(
+      fit_abt,
+      "stan/granier_with_traits.stan",
+      data = stan_data,
+      refresh = 0,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 4),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.9,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+        ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+      )
     )
   ),
 
+  tar_map(
+    values = list(
+      mcmc = rlang::syms(c(
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_all",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks"))),
+    tar_target(
+      traits_loo,
+      my_loo(mcmc)
+    )
+  ),
+
+  # tar_target(
+  #   traits_loo,
+  #   lapply(
+  #     list(
+  #           all = fit_abt_mcmc_granier_with_traits_sap_trait_clean_all,
+  #           vaf = fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf,
+  #           vf = fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf),
+  #   \(x)x$loo(cores = parallel::detectCores())
+  #   )
+  # ),
 
   tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.015, 0.025, 0.035)),

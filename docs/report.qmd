@@ -346,6 +346,78 @@ The upper limit for x-axis is based on the dataset.
 
 ![](`r here::here("figs/pg_multi.png")`)
 
+
+# Traits
+
+```{r}
+d <- read_csv(here("data/fd_k_traits.csv"))
+d <- d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+d <- d |>
+  filter(is.na(removed_k))
+
+d |>
+  filter(ks < 0.1)
+
+```
+
+```{r}
+d2 <- d |>
+  pivot_longer(c(wood_density, swc, dh, vaf, vf, ks, k))
+```
+
+```{r}
+ggplot(d2, aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~name, scale = "free")
+```
+
+```{r}
+ggplot(d2, aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~name, scale = "free") +
+  scale_x_log10()
+```
+
+```{r}
+tmp <- d |>
+  group_by(sample_id) |>
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>
+  mutate(
+   log_swc = log(swc),
+   log_dh = log(dh),
+   log_vaf = log(vaf),
+   log_vf = log(vf),
+   log_ks = log(ks),
+   log_k = log(k)) |>
+  dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks, log_k)
+
+GGally::ggpairs(tmp)
+```
+
+
+
+```{r}
+l1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all))
+l2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf))
+l3 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf))
+l4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks))
+l5 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks))
+
+loo_compare(l1, l2, l3, l4, l5)
+```
+
+
 ```{r}
 knitr::knit_exit()
 ```
@@ -714,6 +786,10 @@ d |>
 
 ```
 
+```{r}
+plot(k ~ ks ,d)
+```
+
 ```{r, eval=FALSE}
 tar_load(fit_ab_each_sap_sp_raw_0.08)
 tar_load(sap_all_clean_0.08)
@@ -760,6 +836,26 @@ s3_008 |>
 s3_008$fit2[[4]]$summary |>
   filter(variable == "log_a")
 
+tmp <- d |>
+  group_by(sample_id) |>
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>
+  mutate(
+   log_swc = log(swc),
+   log_dh = log(dh),
+   log_vaf = log(vaf),
+   log_vf = log(vf),
+   log_ks = log(ks)) |>
+  dplyr::select(wood_density, log_dh, log_vaf, log_ks)
+
+GGally::ggpairs(tmp)
+
+m <- apply(tmp, 2, scale)
+str(m)
+
+m <- as.matrix(tmp)
+pca <- prcomp(m, scale=TRUE)
+
+hist(tmp$wood)
 
 fit_ab_each2_sap_sp_raw_0.08$fit[[4]]$summary
 
@@ -817,14 +913,76 @@ nd <- d |>
   nest()
 
 hoge <- tar_manifest()
+
 hoge |>
   filter(str_detect(name, "sap_")) |>
   filter(str_detect(name, "sp"))
 
+s1 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
+s2 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+s3 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vf)
+s4 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
+
+
+s4 |>
+  filter(str_detect(variable, "alpha_a"))
+
+my_a <- s4 |>
+  filter(str_detect(variable, "A_hat\\[1"))
+my_b <- s4 |>
+  filter(str_detect(variable, "A_hat\\[2"))
+
+s4 |>
+  filter(str_detect(variable, "A_hat\\[1"))
+
+my_a <- s4 |>
+  filter(str_detect(variable, "A\\[1")) |>
+  filter(!str_detect(variable, "_"))
+my_b <- s4 |>
+  filter(str_detect(variable, "A\\[2")) |>
+  filter(!str_detect(variable, "_"))
+
+
+plot(ks_s, my_a$q50)
+plot(ks_s, my_b$q50)
+
+tmp <- tar_read(sap_trait_clean_ks)
+ks_s <- tmp$xj[,2]
+
+s4 |>
+  filter(str_detect(variable, "alpha_b"))
+
+plot(k ~ ks, log = "xy", d)
+
+m1 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_all)
+m2 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf)
+m3 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf)
+
+l1 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all)
+l2 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf)
+l3 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf)
+loo_compare(l1, l2, l3)
+
+m1$loo
 
 hoge |>
-  filter(str_detect(name, "fit_ab")) |>
-  filter(str_detect(name, "summary"))
+  filter(str_detect(name, "traits_loo"))
+
+
+library(tictoc)
+   tic()
+    lapply(
+      list(m1, m2, m3
+        ),
+    \(x)x$loo(cores = parallel::detectCores()))
+    toc()
+
+   tic()
+    lapply(
+      list(m1, m2, m3
+        ),
+    \(x)x$loo(cores = 1))
+    toc()
 
 
 tar_read(fit_ab_summary_granier_without_traits_sap_all_0.08)
@@ -835,9 +993,22 @@ library(targets)
 hoge <- tar_manifest()
 
 hoge |>
-  filter(str_detect(name, "with_traits"))
+  filter(str_detect(name, "trait_clean"))
 
-tar_read(fit_abt_summary_granier_with_traits)
+hoge <- tar_read(fit_abt_summary_granier_with_traits)
+
+hoge |>
+  filter(str_detect(variable, "A_hat"))
+
+hoge |>
+  filter(str_detect(variable, "L_Omega_j_a"))
+
+hoge |>
+  filter(str_detect(variable, "^A\\["))
+
+hoge |>
+#  filter(!str_detect(variable, "zj_A")) |>
+  arrange(-rhat)
 
 tar_read(sap_traits_clean_0.08) |> str()
 
