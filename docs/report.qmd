@@ -417,6 +417,55 @@ l5 <- withr::with_dir(rprojroot::find_root('_targets.R'),
 loo_compare(l1, l2, l3, l4, l5)
 ```
 
+```{r}
+d4 <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks) |>
+  janitor::clean_names()
+stan_data <- tar_read(sap_trait_clean_ks)
+
+xx <- seq(min(stan_data$xj[, 2]), max(stan_data$xj[, 2]), length = 80)
+
+pred_nd <- d4 |>
+  dplyr::select(
+    a_int = gamma_a_1_1,
+    a_slope = gamma_a_2_1,
+    b_int = gamma_b_1_1,
+    b_slope = gamma_b_2_1) |>
+  mutate(.id = 1:nrow(d4)) |>
+  mutate(pred_a = map2(a_slope, a_int, \(slope, int) int + slope * xx)) |>
+  mutate(pred_b = map2(b_slope, b_int, \(slope, int) int + slope * xx)) |>
+  mutate(.iter = map(.id, \(x)1:80))
+
+pred_a <- pred_nd |>
+  dplyr::select(.id, .iter, pred_a) |>
+  unnest(cols = c(pred_a, .iter)) |>
+  pivot_longer(pred_a) |>
+  group_by(.iter) |>
+  summarize(
+    ll = quantile(value, 0.025) |> exp(),
+    l = quantile(value, 0.25) |> exp(),
+    m = quantile(value, 0.5) |> exp(),
+    h = quantile(value, 0.75) |> exp(),
+    hh = quantile(value, 0.975) |> exp()
+  ) |>
+  mutate(xx)
+
+ggplot(pred_a) +
+  geom_line(aes(x = xx, y = m)) +
+  geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
+  geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+  scale_y_log10()
+
+  #+
+  coord_cartesian(ylim = c(1, 10000))
+
+summary(pred_a)
+
+
+summary(sap_trait_clean_ks$xj)
+
+
+```
+
 
 ```{r}
 knitr::knit_exit()
@@ -957,6 +1006,9 @@ plot(k ~ ks, log = "xy", d)
 m1 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_all)
 m2 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf)
 m3 <- tar_read(fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf)
+
+d4 <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks) |>
+  janitor::clean_names()
 
 l1 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all)
 l2 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf)
