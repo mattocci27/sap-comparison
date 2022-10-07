@@ -533,7 +533,7 @@ format = "file"
   ),
 
   tar_map(
-    list(trait_set = c("all", "vaf", "vf", "ks", "noks")),
+    list(trait_set = c("all", "vaf", "vf", "ks", "noks", "noks2")),
     tar_target(sap_trait_clean,
       generate_sap_traits_stan_data(fd_k_traits_csv,
                              remove_abnormal_values = TRUE,
@@ -546,7 +546,8 @@ format = "file"
       "sap_trait_clean_vaf",
       "sap_trait_clean_vf",
       "sap_trait_clean_ks",
-      "sap_trait_clean_noks"
+      "sap_trait_clean_noks",
+      "sap_trait_clean_noks2"
       ))),
     tar_stan_mcmc(
       fit_abt,
@@ -580,7 +581,8 @@ format = "file"
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
-        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks"))),
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2"))),
     tar_target(
       traits_loo,
       my_loo(mcmc)

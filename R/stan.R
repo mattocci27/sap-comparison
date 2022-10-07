@@ -491,6 +491,9 @@ generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, 
   } else if (trait_set == "noks") {
   tmp <- tmp0 |>
     dplyr::select(wood_density, log_dh, log_vf)
+  } else if (trait_set == "noks2") {
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vaf)
   }
 
   tmp2 <- apply(tmp, 2, scale)

@@ -363,7 +363,6 @@ d <- d |>
 
 d |>
   filter(ks < 0.1)
-
 ```
 
 ```{r}
@@ -401,6 +400,10 @@ GGally::ggpairs(tmp)
 ```
 
 
+### Stan code
+
+```{stan, file=here::here('stan/granier_with_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```
 
 ```{r}
 l1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
@@ -413,14 +416,21 @@ l4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks))
 l5 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks))
+l6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2))
 
-loo_compare(l1, l2, l3, l4, l5)
+loo_compare(l1, l2, l3, l4, l5, l6)
 ```
 
+
 ```{r}
-d4 <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks) |>
+
+d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks)) |>
   janitor::clean_names()
-stan_data <- tar_read(sap_trait_clean_ks)
+
+stan_data <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(sap_trait_clean_ks))
 
 xx <- seq(min(stan_data$xj[, 2]), max(stan_data$xj[, 2]), length = 80)
 
@@ -454,14 +464,6 @@ ggplot(pred_a) +
   geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
   geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
   scale_y_log10()
-
-  #+
-  coord_cartesian(ylim = c(1, 10000))
-
-summary(pred_a)
-
-
-summary(sap_trait_clean_ks$xj)
 
 
 ```
@@ -1064,6 +1066,8 @@ hoge |>
 
 tar_read(sap_traits_clean_0.08) |> str()
 
+
+s6 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2)
 
 ```
 
