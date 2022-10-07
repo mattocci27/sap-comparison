@@ -39,6 +39,7 @@ library(GGally)
 library(ggridges)
 library(ggrepel)
 source(here("R", "stan.R"))
+source(here("R", "figs.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
 
@@ -346,6 +347,35 @@ The upper limit for x-axis is based on the dataset.
 
 ![](`r here::here("figs/pg_multi.png")`)
 
+## *A. catechu*
+
+```{r}
+library(viridis)
+d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
+
+cate <- d |>
+  filter(sp_short == "A. catechu")
+
+ggplot(cate, aes(x = k, y = fd, col = p_g)) +
+  geom_point(size = 5) +
+  facet_wrap(~sample_number) +
+  scale_color_viridis()
+
+```
+
+## *C. lutescens*
+
+```{r}
+lute <- d |>
+  filter(sp_short == "C. lutescens")
+
+ggplot(lute, aes(x = k, y = fd, col = p_g)) +
+  geom_point(size = 5) +
+  facet_wrap(~sample_number) +
+  scale_color_viridis()
+```
+
 
 # Traits
 
@@ -425,14 +455,47 @@ loo_compare(l1, l2, l3, l4, l5, l6)
 
 ```{r}
 
+d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k)) |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+
+
+ks_mean <- mean(log(d$ks))
+ks_sd <- sd(log(d$ks))
+
+rescale <- function(x) {
+  ks_mean + x * ks_sd
+}
+
 d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks)) |>
+  janitor::clean_names()
+
+s4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)) |>
   janitor::clean_names()
 
 stan_data <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(sap_trait_clean_ks))
 
 xx <- seq(min(stan_data$xj[, 2]), max(stan_data$xj[, 2]), length = 80)
+
+a_est <- s4 |>
+  filter(str_detect(variable, "A\\[1")) |>
+  filter(!str_detect(variable, "_")) |>
+  pull(q50) |>
+  exp()
+b_est <- s4 |>
+  filter(str_detect(variable, "A\\[2")) |>
+  filter(!str_detect(variable, "_")) |>
+  pull(q50)
+
+pred_points <- tibble(a_est, b_est, x = rescale(stan_data$xj[, 2]))
 
 pred_nd <- d4 |>
   dplyr::select(
@@ -457,14 +520,40 @@ pred_a <- pred_nd |>
     h = quantile(value, 0.75) |> exp(),
     hh = quantile(value, 0.975) |> exp()
   ) |>
-  mutate(xx)
+  mutate(xx = rescale(xx))
+
+pred_b <- pred_nd |>
+  dplyr::select(.id, .iter, pred_b) |>
+  unnest(cols = c(pred_b, .iter)) |>
+  pivot_longer(pred_b) |>
+  group_by(.iter) |>
+  summarize(
+    ll = quantile(value, 0.025) |> exp(),
+    l = quantile(value, 0.25) |> exp(),
+    m = quantile(value, 0.5) |> exp(),
+    h = quantile(value, 0.75) |> exp(),
+    hh = quantile(value, 0.975) |> exp()
+  ) |>
+  mutate(xx = rescale(xx))
 
 ggplot(pred_a) +
+  geom_point(data = pred_points, aes(x = x, y = a_est)) +
   geom_line(aes(x = xx, y = m)) +
   geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
   geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
-  scale_y_log10()
+  scale_y_log10() +
+  my_theme() +
+  ylab(expression(Coefficient~italic(a))) +
+  xlab(expression(italic(K)[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
 
+ggplot(pred_b) +
+  geom_point(data = pred_points, aes(x = x, y = b_est)) +
+  geom_line(aes(x = xx, y = m)) +
+  geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
+  geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+  my_theme() +
+  ylab(expression(Coefficient~italic(b))) +
+  xlab(expression(italic(K)[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
 
 ```
 
