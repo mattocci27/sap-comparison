@@ -146,7 +146,7 @@ ks_box2 <- function(data) {
 sma_ks <- function(p1, p2) {
   p1 + p2 +
     plot_layout(nrow = 1, width = c(1.8, 1)) +
-    plot_annotation(tag_levels = "a") &
+    plot_annotation(tag_levels = "A") &
     theme(
       axis.text = element_text(size = 10),
       axis.title = element_text(size = 12)
@@ -156,7 +156,7 @@ sma_ks <- function(p1, p2) {
 sma_ks2 <- function(p1, p2) {
   p1 + p2 +
     plot_layout(nrow = 1, width = c(1, 2)) +
-    plot_annotation(tag_levels = "a") &
+    plot_annotation(tag_levels = "A") &
     theme(
       # plot.margin = unit(c(0, 0, 0, 0), "cm"),
       axis.title = element_text(size = 9)

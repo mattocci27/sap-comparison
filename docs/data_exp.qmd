@@ -376,8 +376,8 @@ These make high *Pg* with low K and Fd as in the figure below, and resulted in g
 
 ```{r}
 library(viridis)
-d <- read_csv(here("data/fd_k_traits.csv"))
-#  filter(is.na(removed_k))
+d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
 
 cate <- d |>
   filter(sp_short == "A. catechu")
@@ -457,7 +457,7 @@ ggplot(tmp, aes(x = k, y = fd, col = p_g)) +
 ```
 
 
-# Coefficients a and b with traits
+# Coefficients a and b without traits
 
 ## Check traits
 

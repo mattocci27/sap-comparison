@@ -555,7 +555,7 @@ format = "file"
       data = stan_data,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 4),
+      parallel_chains = getOption("mc.cores", 2),
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.9,
@@ -886,6 +886,10 @@ format = "file"
   #   "docs/ks_ratio.qmd"
   # ),
 
+  tar_quarto(
+    data_exp_html,
+    "docs/data_exp.qmd"
+  ),
   tar_quarto(
     report_html,
     "docs/report.qmd"
