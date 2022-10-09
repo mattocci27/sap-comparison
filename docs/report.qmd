@@ -545,10 +545,11 @@ Traits used in the model were:
 
 - log(ks)
 
-I put all the traits in the model at the same time, and the model with only log(ks) was the best model.
-The other traits did not have effect on the coefficient *a* and *b*.
+I put all the traits in the model at the same time, and the model with wood density, log(dh), log(vaf) and log(ks) was the best model.
+Only log(ks) had a significant effects on the coefficient *a* though.
 
 ```{r}
+
 l1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all))
 l2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
@@ -563,6 +564,11 @@ l6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2))
 
 loo_compare(l1, l2, l3, l4, l5, l6)
+```
+
+```{r}
+s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf))
 ```
 
 ## a and b vs Ks
@@ -584,38 +590,42 @@ rescale <- function(x) {
   ks_mean + x * ks_sd
 }
 
-d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks)) |>
+d2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)) |>
   janitor::clean_names()
 
-s4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)) |>
+s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)) |>
   janitor::clean_names()
 
 stan_data <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(sap_trait_clean_ks))
+  targets::tar_read(sap_trait_clean_vaf))
 
-xx <- seq(min(stan_data$xj[, 2]), max(stan_data$xj[, 2]), length = 80)
+xx <- seq(min(stan_data$xj[, 5]), max(stan_data$xj[, 5]), length = 80)
 
-a_est <- s4 |>
+a_est <- s2 |>
   filter(str_detect(variable, "A\\[1")) |>
   filter(!str_detect(variable, "_")) |>
   pull(q50) |>
   exp()
-b_est <- s4 |>
+b_est <- s2 |>
   filter(str_detect(variable, "A\\[2")) |>
   filter(!str_detect(variable, "_")) |>
   pull(q50)
 
-pred_points <- tibble(a_est, b_est, x = rescale(stan_data$xj[, 2]))
+pred_points <- tibble(a_est, b_est, x = rescale(stan_data$xj[, 5]))
 
-pred_nd <- d4 |>
+s2 |>
+  filter(str_detect(variable, "alpha_a\\[4")) |>
+  head(20)
+
+pred_nd <- d2 |>
   dplyr::select(
     a_int = gamma_a_1_1,
-    a_slope = gamma_a_2_1,
+    a_slope = gamma_a_5_1,
     b_int = gamma_b_1_1,
-    b_slope = gamma_b_2_1) |>
-  mutate(.id = 1:nrow(d4)) |>
+    b_slope = gamma_b_5_1) |>
+  mutate(.id = 1:nrow(d2)) |>
   mutate(pred_a = map2(a_slope, a_int, \(slope, int) int + slope * xx)) |>
   mutate(pred_b = map2(b_slope, b_int, \(slope, int) int + slope * xx)) |>
   mutate(.iter = map(.id, \(x)1:80))
@@ -670,6 +680,9 @@ ggplot(pred_b) +
 
 
 The predicted lines are based on gamma values in the model.
+
+log(vaf) has a week effect on *b*.
+I will check this.
 
 ```{r}
 knitr::knit_exit()

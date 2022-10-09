@@ -431,8 +431,6 @@ clean_sap_data <- function(data, file) {
     filter(fd > 0) |>
     mutate(sample_id = str_c(species, "_", sample_number))
 
-  d <- read_csv(here("data/fd_k_traits.csv"))
-
   d <- d |>
     filter(!sample_id %in% str_c("Areca catechu_", c(5, 6))) |>
     filter(!sample_id %in% str_c("Chrysalidocarpus lutescens_", c(2, 3)))

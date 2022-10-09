@@ -580,7 +580,7 @@ format = "file"
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_all",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
-        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2"))),
     tar_target(
