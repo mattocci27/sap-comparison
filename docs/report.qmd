@@ -519,15 +519,14 @@ I added K in this figure just to see the relationship with other traits.
 
 The model has 4 levels
 
-- data level: log(Fd) = log(a) + b * log(Ks) + error
+- data level: log(Fd) = log(a) + b * log(K) + error
 
-- segment level: a (or b) = alpha0 + alpha1 * trait1 + alpha2 * trait2 + ... + error, where alpha is species-level means
+- segment level: a (or b) = alpha0 + alpha1 * log(dh) + alpha2 * log(vaf) + ... + error, where alpha are species-level means
 
-- species level: alpha has xylem level means beta
+- species level: alpha have xylem level means beta
 
-- xylem level: beta has across xylem level means gamma
+- xylem level: beta have across xylem level means gamma
 
-gamma is
 
 
 ```{stan, file=here::here('stan/granier_with_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
@@ -569,6 +568,33 @@ loo_compare(l1, l2, l3, l4, l5, l6)
 ```{r}
 s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf))
+s6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
+d2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vaf))
+```
+
+
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vaf)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vf)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_ks)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_noks)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_noks2)) |>
+  div_check()
 ```
 
 ## a and b vs Ks
@@ -601,7 +627,6 @@ s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
 stan_data <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(sap_trait_clean_vaf))
 
-xx <- seq(min(stan_data$xj[, 5]), max(stan_data$xj[, 5]), length = 80)
 
 a_est <- s2 |>
   filter(str_detect(variable, "A\\[1")) |>
@@ -613,18 +638,15 @@ b_est <- s2 |>
   filter(!str_detect(variable, "_")) |>
   pull(q50)
 
-pred_points <- tibble(a_est, b_est, x = rescale(stan_data$xj[, 5]))
-
-s2 |>
-  filter(str_detect(variable, "alpha_a\\[4")) |>
-  head(20)
+xx <- seq(min(stan_data$xj[, 4]), max(stan_data$xj[, 4]), length = 80)
+pred_points <- tibble(a_est, b_est, x = rescale(stan_data$xj[, 4]) |> exp())
 
 pred_nd <- d2 |>
   dplyr::select(
     a_int = gamma_a_1_1,
-    a_slope = gamma_a_5_1,
+    a_slope = gamma_a_4_1,
     b_int = gamma_b_1_1,
-    b_slope = gamma_b_5_1) |>
+    b_slope = gamma_b_4_1) |>
   mutate(.id = 1:nrow(d2)) |>
   mutate(pred_a = map2(a_slope, a_int, \(slope, int) int + slope * xx)) |>
   mutate(pred_b = map2(b_slope, b_int, \(slope, int) int + slope * xx)) |>
@@ -642,7 +664,7 @@ pred_a <- pred_nd |>
     h = quantile(value, 0.75) |> exp(),
     hh = quantile(value, 0.975) |> exp()
   ) |>
-  mutate(xx = rescale(xx))
+  mutate(xx = rescale(xx) |> exp())
 
 pred_b <- pred_nd |>
   dplyr::select(.id, .iter, pred_b) |>
@@ -656,7 +678,7 @@ pred_b <- pred_nd |>
     h = quantile(value, 0.75) |> exp(),
     hh = quantile(value, 0.975) |> exp()
   ) |>
-  mutate(xx = rescale(xx))
+  mutate(xx = rescale(xx) |> exp())
 
 ggplot(pred_a) +
   geom_point(data = pred_points, aes(x = x, y = a_est)) +
@@ -664,6 +686,7 @@ ggplot(pred_a) +
   geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
   geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
   scale_y_log10() +
+  scale_x_log10() +
   my_theme() +
   ylab(expression(Coefficient~italic(a))) +
   xlab(expression(italic(K)[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
@@ -673,9 +696,11 @@ ggplot(pred_b) +
   geom_line(aes(x = xx, y = m)) +
   geom_ribbon(aes(x = xx, ymin = l, ymax = h), alpha = 0.4) +
   geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+  scale_x_log10() +
   my_theme() +
   ylab(expression(Coefficient~italic(b))) +
   xlab(expression(italic(K)[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+
 ```
 
 
