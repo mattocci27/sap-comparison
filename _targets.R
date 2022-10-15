@@ -4,9 +4,7 @@ library(tidyverse)
 library(stantargets)
 library(cmdstanr)
 library(furrr)
-library(languageserver)
 library(clustermq)
-library(quarto)
 library(bayesplot)
 
 source("R/data_clean.R")
@@ -555,7 +553,7 @@ format = "file"
       data = stan_data,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 2),
+      parallel_chains = getOption("mc.cores", 4),
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.99,

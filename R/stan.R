@@ -482,7 +482,7 @@ generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, 
 
   if (trait_set == "all") {
   tmp <- tmp0 |>
-    dplyr::select(wood_density, log_swc, log_dh, log_vaf, log_vf, log_ks)
+    dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
   } else if (trait_set == "vaf") {
   tmp <- tmp0 |>
     dplyr::select(wood_density, log_dh, log_vaf, log_ks)

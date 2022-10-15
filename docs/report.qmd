@@ -38,6 +38,7 @@ library(smatr)
 library(GGally)
 library(ggridges)
 library(ggrepel)
+library(bayesplot)
 source(here("R", "stan.R"))
 source(here("R", "figs.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
@@ -566,12 +567,33 @@ loo_compare(l1, l2, l3, l4, l5, l6)
 ```
 
 ```{r}
+
+s1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all))
+
+
+
 s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf))
 s6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
+
+draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_noks2))
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_a"
+)
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_b"
+)
+
 d2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vaf))
+
 ```
 
 
