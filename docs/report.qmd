@@ -369,11 +369,7 @@ The upper limit for x-axis is based on the dataset.
 
 ## *A. catechu*
 
-- The sample number 3 doesn't have high *Pg*
-- The sample number 4 has small K
-
-These make high *Pg* with low K and Fd as in the figure below, and resulted in greater coefficient *a* and *b* at the lower *Pg*.
-
+- (those points are based on the update data)
 
 ```{r}
 library(viridis)
@@ -417,9 +413,7 @@ ggplot(tmp, aes(x = k, y = fd, col = p_g)) +
 
 ## *C. lutescens*
 
-- The sample number 2 and 3 look weird.
-
-- The sample number 5 has much greater K and Fd compared to the other samples, and the data point from sample number 5 with *Pg* <= 0.02 makes large coefficient *a* and *b* for *Pg* <= 0.02.
+- (those points are based on the update data)
 
 ```{r}
 lute <- d |>
@@ -535,6 +529,8 @@ The model has 4 levels
 
 Traits used in the model were:
 
+- (intercept)
+
 - wood density
 
 - log(dh)
@@ -545,8 +541,7 @@ Traits used in the model were:
 
 - log(ks)
 
-I put all the traits in the model at the same time, and the model with wood density, log(dh), log(vaf) and log(ks) was the best model.
-Only log(ks) had a significant effects on the coefficient *a* though.
+I put all the traits in the model at the same time, and the model with wood density, log(dh), and log(vaf) was the best model.
 
 ```{r}
 
@@ -567,19 +562,9 @@ loo_compare(l1, l2, l3, l4, l5, l6)
 ```
 
 ```{r}
-
-s1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all))
-
-
-
-s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf))
-s6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
-
 draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_noks2))
+
 
 mcmc_areas(
   draws,
@@ -590,10 +575,144 @@ mcmc_areas(
   draws,
   regex_pars = "gamma_b"
 )
+```
 
-d2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vaf))
+The third predictor log(dh) might have postive effect on `a` (50% of chance).
 
+```{r}
+library(targets)
+library(tidyverse)
+s6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
+
+d <- tar_read(fd_k_traits_csv) |>
+  read_csv() |>
+  filter(is.na(removed_k)) |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+
+sample_id <- tibble(sample_id = unique(d$sample_id) |> as.factor()) |>
+  arrange(sample_id) |>
+  mutate(sample_id_num = as.numeric(sample_id)) |>
+  mutate(sample_id = as.character(sample_id))
+
+species <- tibble(species = unique(d$species) |> as.factor()) |>
+  arrange(species) |>
+  mutate(species_num = as.numeric(species)) |>
+  mutate(species = as.character(species))
+
+xylem <- tibble(xylem = unique(d$xylem_type) |> as.factor()) |>
+  arrange(xylem) |>
+  mutate(xylem_num = as.numeric(xylem)) |>
+  mutate(xylem = as.character(xylem))
+
+traits <- tibble(trait = c("intercept", "wood_density", "log_dh", "log_vf"))
+
+gamma <- s6 |>
+  filter(str_detect(variable, "gamma")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "gamma", "trait"))
+for (i in 1:4) {
+  gamma <- gamma |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = str_remove(para, ",1\\]"))
+}
+
+beta <- s6 |>
+  filter(str_detect(variable, "beta")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "beta", "trait"))
+for (i in 1:nrow(beta)) {
+  beta <- beta |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(xylem[i, 1]))),
+    TRUE ~ para))
+}
+
+alpha <- s6 |>
+  filter(str_detect(variable, "alpha")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "alpha", "trait"))
+for (i in 1:nrow(alpha)) {
+  alpha <- alpha |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(species[i, 1]))),
+    TRUE ~ para))
+}
+
+
+a_hat <- s6 |>
+  filter(str_detect(variable, "a_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(a_hat)) {
+  a_hat <- a_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i, "\\]")) ~ str_replace(para, str_c("\\[",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para))
+}
+b_hat <- s6 |>
+  filter(str_detect(variable, "b_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(b_hat)) {
+  b_hat <- b_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i, "\\]")) ~ str_replace(para, str_c("\\[",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para))
+}
+
+A_hat <- s6 |>
+  filter(str_detect(variable, "A_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(A_hat)) {
+  A_hat <- A_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c(",",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para =case_when(
+      str_detect(para, "A_hat\\[1") ~ str_replace(para, "A_hat\\[1", "a"),
+      str_detect(para, "A_hat\\[2") ~ str_replace(para, "A_hat\\[2", "b"),
+      TRUE ~ para
+    ))
+}
+A_hat
+
+bind_rows(gamma, beta, alpha, a_hat, b_hat, A_hat) |>
+  write_csv("summary.csv")
+
+stan_data <- tar_read(sap_trait_clean_noks2)
+stan_data |> str()
+
+
+stan_data$uk
+
+
+s6 |>
+  filter(str_detect(variable, "gamma")) |>
+  filter(q2.5 * q97.5 > 0)
+
+s6 |>
+  filter(str_detect(variable, "gamma")) |>
+  filter(q25 * q75 > 0)
 ```
 
 
@@ -617,6 +736,10 @@ withr::with_dir(rprojroot::find_root('_targets.R'),
 withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_noks2)) |>
   div_check()
+```
+
+```{r}
+knitr::knit_exit()
 ```
 
 ## a and b vs Ks
