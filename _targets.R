@@ -631,8 +631,8 @@ format = "file"
       ))),
     tar_stan_mcmc(
       fit_ab,
-      c("stan/granier_without_traits.stan",
-       "stan/granier_without_traits2.stan"),
+      c("stan/granier_without_traits_full_pool.stan",
+        "stan/granier_without_traits_full_segments.stan"),
       data = stan_data,
       refresh = 0,
       chains = 4,
@@ -694,70 +694,70 @@ format = "file"
     tar_target(
       fit_ab_each, {
       stan_data_each |>
-          mutate(fit = map(stan_data, fit_model,
-            granier_simple_file,
+          mutate(fit_pool = map(stan_data, fit_model,
+            granier_without_traits_sp_pool_file,
             iter_warmup = 2000,
             iter_sampling = 2000)) |>
-          mutate(fit2 = map(stan_data, fit_model,
-            granier_simple2_file,
+          mutate(fit_segments = map(stan_data, fit_model,
+            granier_without_traits_sp_segments_file,
             iter_warmup = 2000,
             iter_sampling = 2000))
       })
   ),
 
   tar_target(
-    granier_simple_file,
-    compile_model("stan/granier_simple.stan"),
+    granier_without_traits_sp_pool_file,
+    compile_model("stan/granier_without_traits_sp_pool.stan"),
     format = "file"
   ),
 
   tar_target(
-    granier_simple2_file,
-    compile_model("stan/granier_simple2.stan"),
+    granier_without_traits_sp_segments_file,
+    compile_model("stan/granier_without_traits_sp_segments.stan"),
     format = "file"
   ),
 
-  tar_target(
-    pool_multi_plot, {
-      p <- line_pool_multi(fd_k_traits_csv,
-       fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
-       fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
-      my_ggsave(
-        "figs/pool_multi",
-        p,
-        dpi = 300,
-        width = 8,
-        height = 12
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   pool_multi_plot, {
+  #     p <- line_pool_multi(fd_k_traits_csv,
+  #      fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
+  #      fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
+  #     my_ggsave(
+  #       "figs/pool_multi",
+  #       p,
+  #       dpi = 300,
+  #       width = 8,
+  #       height = 12
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 
-  tar_target(
-    pg_multi_plot, {
-      p <- line_pg_multi(
-                         fd_k_traits_csv,
-        xylem_lab,
-                        k_range,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
-      my_ggsave(
-        "figs/pg_multi",
-        p,
-        dpi = 300,
-        width = 8,
-        height = 12
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   pg_multi_plot, {
+  #     p <- line_pg_multi(
+  #                        fd_k_traits_csv,
+  #       xylem_lab,
+  #                       k_range,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+  #     my_ggsave(
+  #       "figs/pg_multi",
+  #       p,
+  #       dpi = 300,
+  #       width = 8,
+  #       height = 12
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 
   # tar_target(
   #   coef_density_plot, {
@@ -774,90 +774,90 @@ format = "file"
   #   format = "file"
   # ),
 
-  tar_target(
-    coef_density_plot2, {
-      p <- coef_density(xylem_lab,
-        fit_ab_draws_granier_without_traits_sap_all_clean_0.08,
-        looks = "patchwork")
-      my_ggsave(
-        "figs/coef_density2",
-        p,
-        dpi = 300,
-        width = 6.8,
-        height = 5
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   coef_density_plot2, {
+  #     p <- coef_density(xylem_lab,
+  #       fit_ab_draws_granier_without_traits_sap_all_clean_0.08,
+  #       looks = "patchwork")
+  #     my_ggsave(
+  #       "figs/coef_density2",
+  #       p,
+  #       dpi = 300,
+  #       width = 6.8,
+  #       height = 5
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 
   tar_target(
     xylem_lab,
     generate_xylem_lab(fd_k_traits_csv)
   ),
 
-  tar_target(
-    pg_ribbon_a, {
-      p <- ab_pg_ribbon(xylem_lab,
-                        k_range,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
-      my_ggsave(
-        "figs/pg_ribbon_a",
-        p,
-        dpi = 300,
-        width = 8,
-        height = 12
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-    pg_ribbon_b, {
-      p <- ab_pg_ribbon(xylem_lab,
-                        k_range,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
-        fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
-        coef_a = FALSE)
-      my_ggsave(
-        "figs/pg_ribbon_b",
-        p,
-        dpi = 300,
-        width = 8,
-        height = 12
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   pg_ribbon_a, {
+  #     p <- ab_pg_ribbon(xylem_lab,
+  #                       k_range,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
+  #     my_ggsave(
+  #       "figs/pg_ribbon_a",
+  #       p,
+  #       dpi = 300,
+  #       width = 8,
+  #       height = 12
+  #     )
+  #   },
+  #   format = "file"
+  # ),
+  # tar_target(
+  #   pg_ribbon_b, {
+  #     p <- ab_pg_ribbon(xylem_lab,
+  #                       k_range,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.02,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.025,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.03,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.035,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.04,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.05,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.06,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.07,
+  #       fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
+  #       coef_a = FALSE)
+  #     my_ggsave(
+  #       "figs/pg_ribbon_b",
+  #       p,
+  #       dpi = 300,
+  #       width = 8,
+  #       height = 12
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 
   tar_target(
     k_range,
     generate_k_range(fd_k_traits_csv)
   ),
 
-  tar_target(
-    ab_var_clean_008,
-    generate_ab_var_data(
-      "data/ab_var_clean_008.csv",
-      fit_ab_draws_granier_without_traits_sap_all_clean_0.08),
-    format = "file"
-  ),
+  # tar_target(
+  #   ab_var_clean_008,
+  #   generate_ab_var_data(
+  #     "data/ab_var_clean_008.csv",
+  #     fit_ab_draws_granier_without_traits_sap_all_clean_0.08),
+  #   format = "file"
+  # ),
 
 
-  # tnar_map(
+  # tar_map(
   #   list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)),
   #   tar_target(sap_segment_raw,
   #     generate_sap_stan_data_segment(fd_k_traits_csv,
@@ -884,14 +884,14 @@ format = "file"
   #   "docs/ks_ratio.qmd"
   # ),
 
-  tar_quarto(
-    data_exp_html,
-    "docs/data_exp.qmd"
-  ),
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
-  ),
+  # tar_quarto(
+  #   data_exp_html,
+  #   "docs/data_exp.qmd"
+  # ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   NULL
 )
