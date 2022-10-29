@@ -288,7 +288,7 @@ Multilevel model with cleaned data with full range of $\Delta$ P.
 
 ### Stan code
 
-```{stan, file=here::here('stan/granier_without_traits.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```{stan, file=here::here('stan/granier_without_traits_full_segments.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
 ```
 
 ```{r}
@@ -579,13 +579,20 @@ mcmc_areas(
 
 The third predictor log(dh) might have postive effect on `a` (50% of chance).
 
+
+## For Chen Yajun
+
+### With traits
+
 ```{r}
 library(targets)
 library(tidyverse)
 s6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
 
-d <- tar_read(fd_k_traits_csv) |>
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fd_k_traits_csv)) |>
+  here() |>
   read_csv() |>
   filter(is.na(removed_k)) |>
   filter(!is.na(wood_density)) |>
@@ -699,12 +706,6 @@ A_hat
 bind_rows(gamma, beta, alpha, a_hat, b_hat, A_hat) |>
   write_csv("summary.csv")
 
-stan_data <- tar_read(sap_trait_clean_noks2)
-stan_data |> str()
-
-
-stan_data$uk
-
 
 s6 |>
   filter(str_detect(variable, "gamma")) |>
@@ -736,6 +737,73 @@ withr::with_dir(rprojroot::find_root('_targets.R'),
 withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_noks2)) |>
   div_check()
+```
+
+### Without traits
+
+```{r}
+d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
+
+s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08))
+
+sample_id <- tibble(sample_id = unique(d$sample_id) |> as.factor()) |>
+  arrange(sample_id) |>
+  mutate(sample_id_num = as.numeric(sample_id)) |>
+  mutate(sample_id = as.character(sample_id))
+
+species <- tibble(species = unique(d$species) |> as.factor()) |>
+  arrange(species) |>
+  mutate(species_num = as.numeric(species)) |>
+  mutate(species = as.character(species))
+
+xylem <- tibble(xylem = unique(d$xylem_type) |> as.factor()) |>
+  arrange(xylem) |>
+  mutate(xylem_num = as.numeric(xylem)) |>
+  mutate(xylem = as.character(xylem))
+
+para_name <- c("a", "b")
+gamma <- s |>
+  filter(str_detect(variable, "gamma")) |>
+  mutate(para = variable)
+
+beta <- s |>
+  filter(str_detect(variable, "beta")) |>
+  mutate(para = variable) #|>
+
+for (i in 1:nrow(beta)) {
+  beta <- beta |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(para_name[i]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(xylem[i, 1]))),
+    TRUE ~ para))
+}
+
+
+alpha <- s |>
+  filter(str_detect(variable, "alpha")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "alpha", "trait"))
+for (i in 1:nrow(alpha)) {
+  alpha <- alpha |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(para_name[i]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(species[i, 1]))),
+    TRUE ~ para))
+}
+
+bind_rows(gamma, beta, alpha) |>
+  write_csv("summary_without_traits.csv")
+
 ```
 
 ```{r}
