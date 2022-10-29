@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|32524e67f819e68a|||||||||||||||
+.Random.seed|object|ad98f86606d532cb|||||||||||||||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|77f35c9e925c1335|1787234250|data/ab_var_clean_008.csv|t19294.3862991164s|667c8b8f99843c63|2792|file|local|vector|||0.618||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
@@ -538,7 +538,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|5831975043a47421|8db72ee24f73c493|e7712d49a03bf299|1440272382||t19261.2253992831s|0cb5736d43de31db|8386|rds|local|vector|||0.95|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|ae70ad2204957585|||||||||||||||
+main_list|object|c69265f4ac7d4084|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
@@ -563,7 +563,7 @@ quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
 raw_data_list|object|6c4a6948efdb186c|||||||||||||||
-report_html|stem|f47890e3f12f89ec|b0452706e6b67a2f|7f8a8657456c6455|1483737400|docs/report.html*docs/report.qmd|t19292.3211750537s||7809719|file|local|vector|||6.333||System command quarto failed
+report_html|stem|a299df7e83510c96|0d429d7d5b270839|0bb783581ec3d579|1483737400|docs/report.html*docs/report.qmd|t19294.593430452s|c703838de616a71a|7822736|file|local|vector|||22.374||
 sap_all_clean_0.015|stem|d86599bbf950318d|ee6f07e13d29ca8a|c4cdf6a0a64dfd2e|77450341||t19273.2461827837s|d7bfe730b9d5e86a|3753|rds|local|vector|||0.083||
 sap_all_clean_0.02|stem|4354c8c0458138bb|25b1a969628acb02|c4cdf6a0a64dfd2e|1441946753||t19273.2530927621s|cd54ca760fc0a4bc|5408|rds|local|vector|||0.624||
 sap_all_clean_0.025|stem|6dcdcf9d49bd778b|c5cdd8cef32dcad4|c4cdf6a0a64dfd2e|-1078606878||t19273.2462186639s|641ba4c16021784b|7088|rds|local|vector|||0.325||
