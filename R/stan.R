@@ -823,3 +823,217 @@ div_check <- function(diags) {
     "iterations ended with a divergence", n1 / n2 * 100, "%"
   ))
 }
+
+
+
+#' @title with trait csv
+write_without_traits_csv <- function(stan_summary, output) {
+
+  d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
+
+  # s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #   targets::tar_read(stan_summary))
+  s <- stan_summary
+
+  sample_id <- tibble(sample_id = unique(d$sample_id) |> as.factor()) |>
+    arrange(sample_id) |>
+    mutate(sample_id_num = as.numeric(sample_id)) |>
+    mutate(sample_id = as.character(sample_id))
+
+  species <- tibble(species = unique(d$species) |> as.factor()) |>
+    arrange(species) |>
+    mutate(species_num = as.numeric(species)) |>
+    mutate(species = as.character(species))
+
+  xylem <- tibble(xylem = unique(d$xylem_type) |> as.factor()) |>
+    arrange(xylem) |>
+    mutate(xylem_num = as.numeric(xylem)) |>
+    mutate(xylem = as.character(xylem))
+
+  para_name <- c("a", "b")
+  gamma <- s |>
+    filter(str_detect(variable, "gamma")) |>
+    mutate(para = variable)
+
+  beta <- s |>
+    filter(str_detect(variable, "beta")) |>
+    mutate(para = variable) #|>
+
+  for (i in 1:nrow(beta)) {
+    beta <- beta |>
+      mutate(para = case_when(
+        str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+          str_c("_", as.character(para_name[i]))),
+      TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(xylem[i, 1]))),
+      TRUE ~ para))
+  }
+
+
+  alpha <- s |>
+    filter(str_detect(variable, "alpha")) |>
+    mutate(para = variable) #|>
+    # mutate(para = str_replace_all(para, "alpha", "trait"))
+  for (i in 1:nrow(alpha)) {
+    alpha <- alpha |>
+      mutate(para = case_when(
+        str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+          str_c("_", as.character(para_name[i]))),
+      TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(species[i, 1]))),
+      TRUE ~ para))
+  }
+
+  A <- s |>
+    filter(str_detect(variable, "A")) |>
+    mutate(para = variable) #|>
+
+  for (i in 1:nrow(A)) {
+    A <- A |>
+      # mutate(para = case_when(
+      #   str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+      #     str_c("_", as.character(para_name[i]))),
+      # TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(sample_id[i, 1]))),
+      TRUE ~ para)) |>
+      mutate(para =case_when(
+        str_detect(para, "A\\[1") ~ str_replace(para, "A\\[1", "a"),
+        str_detect(para, "A\\[2") ~ str_replace(para, "A\\[2", "b"),
+        TRUE ~ para
+      ))
+  }
+
+  bind_rows(gamma, beta, alpha, A) |>
+    my_write_csv(output)
+
+}
+
+#' @title with trait csv
+write_with_traits_csv <- function(stan_summary, output) {
+  s <- stan_summary
+  # d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #   targets::tar_read(fd_k_traits_csv)) |>
+  # d <- fd_k_traits_csv |>
+  #   here() |>
+  #   read_csv() |>
+  d <- read_csv(here("data/fd_k_traits.csv")) |>
+    filter(is.na(removed_k)) |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+sample_id <- tibble(sample_id = unique(d$sample_id) |> as.factor()) |>
+  arrange(sample_id) |>
+  mutate(sample_id_num = as.numeric(sample_id)) |>
+  mutate(sample_id = as.character(sample_id))
+
+species <- tibble(species = unique(d$species) |> as.factor()) |>
+  arrange(species) |>
+  mutate(species_num = as.numeric(species)) |>
+  mutate(species = as.character(species))
+
+xylem <- tibble(xylem = unique(d$xylem_type) |> as.factor()) |>
+  arrange(xylem) |>
+  mutate(xylem_num = as.numeric(xylem)) |>
+  mutate(xylem = as.character(xylem))
+
+traits <- tibble(trait = c("intercept", "wood_density", "log_dh", "log_vf"))
+
+gamma <- s6 |>
+  filter(str_detect(variable, "gamma")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "gamma", "trait"))
+for (i in 1:4) {
+  gamma <- gamma |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = str_remove(para, ",1\\]"))
+}
+
+beta <- s6 |>
+  filter(str_detect(variable, "beta")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "beta", "trait"))
+for (i in 1:nrow(beta)) {
+  beta <- beta |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(xylem[i, 1]))),
+    TRUE ~ para))
+}
+
+alpha <- s6 |>
+  filter(str_detect(variable, "alpha")) |>
+  mutate(para = variable) #|>
+  # mutate(para = str_replace_all(para, "alpha", "trait"))
+for (i in 1:nrow(alpha)) {
+  alpha <- alpha |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+        str_c("_", as.character(traits[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+        str_c("_", as.character(species[i, 1]))),
+    TRUE ~ para))
+}
+
+
+a_hat <- s6 |>
+  filter(str_detect(variable, "a_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(a_hat)) {
+  a_hat <- a_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i, "\\]")) ~ str_replace(para, str_c("\\[",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para))
+}
+b_hat <- s6 |>
+  filter(str_detect(variable, "b_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(b_hat)) {
+  b_hat <- b_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c("\\[", i, "\\]")) ~ str_replace(para, str_c("\\[",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para))
+}
+
+A_hat <- s6 |>
+  filter(str_detect(variable, "A_hat")) |>
+  mutate(para = variable) #|>
+for (i in 1:nrow(A_hat)) {
+  A_hat <- A_hat |>
+    mutate(para = case_when(
+      str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c(",",i, "\\]"),
+        str_c("_", as.character(sample_id[i, 1]))),
+    TRUE ~ para)) |>
+    mutate(para =case_when(
+      str_detect(para, "A_hat\\[1") ~ str_replace(para, "A_hat\\[1", "a"),
+      str_detect(para, "A_hat\\[2") ~ str_replace(para, "A_hat\\[2", "b"),
+      TRUE ~ para
+    ))
+}
+A_hat
+
+bind_rows(gamma, beta, alpha, a_hat, b_hat, A_hat) |>
+  my_write_csv(ouput)
+
+}

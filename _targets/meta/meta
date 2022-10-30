@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|ad98f86606d532cb|||||||||||||||
+.Random.seed|object|85f22bd125e726b3|||||||||||||||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|77f35c9e925c1335|1787234250|data/ab_var_clean_008.csv|t19294.3862991164s|667c8b8f99843c63|2792|file|local|vector|||0.618||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
@@ -538,7 +538,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|5831975043a47421|8db72ee24f73c493|e7712d49a03bf299|1440272382||t19261.2253992831s|0cb5736d43de31db|8386|rds|local|vector|||0.95|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|c69265f4ac7d4084|||||||||||||||
+main_list|object|f7ddbc5e84e63072|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
@@ -562,8 +562,8 @@ quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|
 quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|582217e2b51f7d0c|1505615404||t19243.2862712881s|4f4d987795184b56|26280270|qs|local|vector|||81.771||
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
-raw_data_list|object|6c4a6948efdb186c|||||||||||||||
-report_html|stem|a299df7e83510c96|0d429d7d5b270839|0bb783581ec3d579|1483737400|docs/report.html*docs/report.qmd|t19294.593430452s|c703838de616a71a|7822736|file|local|vector|||22.374||
+raw_data_list|object|a188304e6bd3694d|||||||||||||||
+report_html|stem|a299df7e83510c96|0d429d7d5b270839|0bb783581ec3d579|1483737400|docs/report.html*docs/report.qmd|t19295.4331936537s|c703838de616a71a|7822736|file|local|vector|||22.374||
 sap_all_clean_0.015|stem|d86599bbf950318d|ee6f07e13d29ca8a|c4cdf6a0a64dfd2e|77450341||t19273.2461827837s|d7bfe730b9d5e86a|3753|rds|local|vector|||0.083||
 sap_all_clean_0.02|stem|4354c8c0458138bb|25b1a969628acb02|c4cdf6a0a64dfd2e|1441946753||t19273.2530927621s|cd54ca760fc0a4bc|5408|rds|local|vector|||0.624||
 sap_all_clean_0.025|stem|6dcdcf9d49bd778b|c5cdd8cef32dcad4|c4cdf6a0a64dfd2e|-1078606878||t19273.2462186639s|641ba4c16021784b|7088|rds|local|vector|||0.325||
@@ -647,5 +647,17 @@ traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2|stem|122b66bb4
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf|stem|d82caa79fed6b2a2|0f1a54c08803b41b|af30e38c3e12117b|-1139521207||t19275.2027245277s|b4043bc4fa100942|30974|rds|local|vector|||1.757|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf|stem|22945d069d414c4a|346b04bb9f4d6e9c|540e09a0456390df|635445995||t19275.2042102459s|d08ea8a6fc9eec13|30982|rds|local|vector|||1.71|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf_1|stem|ce5814ce5e73e871|346b04bb9f4d6e9c|24ca3dff85936fd6|-2145807249||t19273.3056622975s|bd850231305dce2b|30959|rds|local|vector|||2.176|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
+with_traits_0.02|stem||a26786a388d7628f|6828c22a72a45013|1577265267||t19295.4499899718s||0|file|local|vector|||0.262||object s6 not found
+without_traits_0.02|stem|38cdbb45267adebe|38396c85924e2613|41b057e1fc9f370d|1772442172|data/without_traits_002.csv|t19295.443256199s|ebfca279227d9f70|90611|file|local|vector|||1.999||
+without_traits_0.025|stem|0be16082d981245c|70b966e985c3e602|0c0c95b9d8340393|406005471|data/without_traits_0025.csv|t19295.4433023571s|6e7968f9ab658660|98458|file|local|vector|||2.218||
+without_traits_0.03|stem|8c5d8b80afd0fb02|9fe35853ed705a29|9fcb89baec75811b|-1603026984|data/without_traits_003.csv|t19295.4449584925s|edc7cc47ecf8ebc2|104444|file|local|vector|||2.576||
+without_traits_0.035|stem|ea211fa9c556be50|435280a6e2da894e|00257ee5fcefe4f6|-1586571592|data/without_traits_0035.csv|t19295.4448314073s|06049a2d83f457b0|104056|file|local|vector|||2.555||
+without_traits_0.04|stem|5900a0ac07ac3d90|8aa17452683f5a24|15566958bce12730|-1911219429|data/without_traits_004.csv|t19295.4549913114s|1dec19efa7e0778e|104438|file|local|vector|||2.444||
+without_traits_0.05|stem|327179b687206338|213820164ac3174a|3bd6bb3fd23d4451|-1297718211|data/without_traits_005.csv|t19295.4449625203s|0e09f95395463682|104905|file|local|vector|||2.667||
+without_traits_0.06|stem|a346f6007ec72f4e|f5ca0f5d3f9175e0|97bcb00f4bfded1f|-1536636990|data/without_traits_006.csv|t19295.444963863s|1ea74d2976de55fe|104686|file|local|vector|||2.664||
+without_traits_0.07|stem|b2a346c7c6c1bcda|355d648082770fb1|075ae6bd86aa3a08|-704435562|data/without_traits_007.csv|t19295.4449772891s|e59582b706cc0922|104333|file|local|vector|||2.851||
+without_traits_0.08|stem|1475cb026787e451|cdbb859ec043b381|f057528f1a06661a|-933327027|data/without_traits_008.csv|t19295.4549491347s|2a3d52bedf67e0a4|104757|file|local|vector|||2.537||
 write_anova_yml|function|b3368d15fad915cf|||||||||||||||
+write_with_traits_csv|function|1662f30d235e44f5|||||||||||||||
+write_without_traits_csv|function|28d8be684df0b6f9|||||||||||||||
 xylem_lab|stem|d670ab85063d085d|32cdbee333b06533|55bbde6f62e4b215|-610102270||t19273.2462703315s|025dcb950fc2a51b|1319|rds|local|vector|||0.055||
