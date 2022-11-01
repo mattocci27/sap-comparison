@@ -5,10 +5,10 @@ data {
   int<lower=0> M; // number of trees
   int<lower=0> JK; // number of species x pressure-level
   int<lower=0> MK; // number of trees x pressure-level
-  array[N] int<lower=1,upper=J> jj; // species
-  array[N] int<lower=1,upper=K> kk; // pressure-level
-  array[N] int<lower=1,upper=M> mm; // tree ID
-  array[N] int<lower=1,upper=JK> jk; // species x pressure-level
+  array[N] int<lower=1, upper=J> jj; // species
+  array[N] int<lower=1, upper=K> kk; // pressure-level
+  array[N] int<lower=1, upper=M> mm; // tree ID
+  array[N] int<lower=1, upper=JK> jk; // species x pressure-level
   vector[N] y1; // pres_calib
   vector[N] y2; // tens_calib
   vector<lower=0>[N] sig1; // pres_calib for trees x pressure-level
@@ -34,6 +34,8 @@ transformed parameters{
   vector[J] alpha;
   vector[K] beta;
   vector[JK] gamma;
+  vector[N] log_y1_true = log(y1_true);
+  vector[N] log_y2_true = log(y2_true);
   vector<lower=0>[3] tau;
   for (i in 1:3) tau[i] = 2.5 * tan(tau_unif[i]);
   alpha = alpha_raw * tau[1];
@@ -43,8 +45,6 @@ transformed parameters{
 
 model {
   vector[N] mu;
-  vector[N] log_y1_true = log(y1_true);
-  vector[N] log_y2_true = log(y2_true);
   to_vector(alpha_raw) ~ std_normal();
   to_vector(beta_raw) ~ std_normal();
   to_vector(gamma_raw) ~ std_normal();
@@ -58,27 +58,27 @@ model {
   log_y1_true ~ normal(mu + log_y2_true, sigma);
 }
 
-// generated quantities {
-//   vector[N] log_lik;
-//   vector[JK] pred;
-//   vector[JK] effect;
-//   real beta_12 = beta[1] - beta[2];
-//   real beta_13 = beta[1] - beta[3];
-//   real beta_23 = beta[2] - beta[3];
-//   real alpha_12 = alpha[1] - alpha[2];
-//   real alpha_13 = alpha[1] - alpha[3];
-//   real alpha_14 = alpha[1] - alpha[4];
-//   real alpha_15 = alpha[1] - alpha[5];
-//   real alpha_23 = alpha[2] - alpha[3];
-//   real alpha_24 = alpha[2] - alpha[4];
-//   real alpha_25 = alpha[2] - alpha[5];
-//   real alpha_34 = alpha[3] - alpha[4];
-//   real alpha_35 = alpha[3] - alpha[5];
-//   real alpha_45 = alpha[4] - alpha[5];
-//   for (n in 1:N) {
-//     pred[jk[n]] = mu_hat + alpha[jj[n]] + beta[kk[n]];
-//     effect[jk[n]] = alpha[jj[n]] + beta[kk[n]];
-//     log_lik[n] = normal_lpdf(y[n] | pred[jk[n]], sigma);
-//   }
-// }
+generated quantities {
+  vector[N] log_lik;
+  vector[JK] pred;
+  vector[JK] effect;
+  real beta_12 = beta[1] - beta[2];
+  real beta_13 = beta[1] - beta[3];
+  real beta_23 = beta[2] - beta[3];
+  real alpha_12 = alpha[1] - alpha[2];
+  real alpha_13 = alpha[1] - alpha[3];
+  real alpha_14 = alpha[1] - alpha[4];
+  real alpha_15 = alpha[1] - alpha[5];
+  real alpha_23 = alpha[2] - alpha[3];
+  real alpha_24 = alpha[2] - alpha[4];
+  real alpha_25 = alpha[2] - alpha[5];
+  real alpha_34 = alpha[3] - alpha[4];
+  real alpha_35 = alpha[3] - alpha[5];
+  real alpha_45 = alpha[4] - alpha[5];
+  for (n in 1:N) {
+    pred[jk[n]] = mu_hat + alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
+    effect[jk[n]] = alpha[jj[n]] + beta[kk[n]] + gamma[jk[n]];
+    log_lik[n] = normal_lpdf(log_y1_true[n] | pred[jk[n]] + log_y2_true[n], sigma);
+  }
+}
 

@@ -1738,6 +1738,36 @@ hoge <- tar_manifest()
 hoge |>
   filter(str_detect(name, "ab_each"))
 
+tar_load(loo_)
+loo_compare(loo_[[1]], loo_[[2]], loo_[[3]], loo_[[4]])
+
+loo_compare(loo_[[3]], loo_[[4]])
+
+read_csv(tar_read(ks_spp_err_csv))
+
+s4 <- tar_read(fit_anova_log_summary_anova_noint)
+s1 <- tar_read(fit_anova_summary_anova_int_err)
+s4
+
+d1 <- tar_read(fit_anova_diagnostics_anova_int_err)
+d4 <- tar_read(fit_anova_log_diagnostics_anova_noint)
+apply(d1, 2, sum)
+apply(d4, 2, sum)
+
+d1 |>
+  filter(divergent__ == 1)
+
+d4 |>
+  filter(divergent__ == 1)
+
+
+s1 |>
+  filter(variable %in% c("tau[1]", "tau[2]", "tau[3]", "sigma"))
+
+s4 |>
+  filter(variable %in% c("tau[1]", "tau[2]", "sigma"))
+
+
 ```
 
 

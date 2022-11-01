@@ -188,10 +188,10 @@ main_list <- list(
      data = anova_data_err,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 1),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.95,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 2000,
+     iter_sampling = 2000,
+     adapt_delta = 0.9999,
      max_treedepth = 15,
      seed = 123
   ),
@@ -203,10 +203,10 @@ main_list <- list(
      data = anova_data_log,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 1),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
-     adapt_delta = 0.95,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 2000,
+     iter_sampling = 2000,
+     adapt_delta = 0.9999,
      max_treedepth = 15,
      seed = 123
   ),
@@ -256,8 +256,8 @@ main_list <- list(
     loo_,
     lapply(
       list(
-           fit_anova_raw_mcmc_anova,
-           fit_anova_raw_mcmc_anova_noint,
+           fit_anova_mcmc_anova_int_err,
+           fit_anova_mcmc_anova_noint_err,
            fit_anova_log_mcmc_anova,
            fit_anova_log_mcmc_anova_noint
         ),

@@ -5,10 +5,10 @@ data {
   int<lower=0> M; // number of trees
   int<lower=0> JK; // number of species x pressure-level
   int<lower=0> MK; // number of trees x pressure-level
-  array[N] int<lower=1,upper=J> jj; // species
-  array[N] int<lower=1,upper=K> kk; // pressure-level
-  array[N] int<lower=1,upper=M> mm; // tree ID
-  array[N] int<lower=1,upper=JK> jk; // species x pressure-level
+  array[N] int<lower=1, upper=J> jj; // species
+  array[N] int<lower=1, upper=K> kk; // pressure-level
+  array[N] int<lower=1, upper=M> mm; // tree ID
+  array[N] int<lower=1, upper=JK> jk; // species x pressure-level
   vector[N] y1; // pres_calib
   vector[N] y2; // tens_calib
   vector<lower=0>[N] sig1; // pres_calib for trees x pressure-level

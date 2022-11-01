@@ -3,9 +3,9 @@ data {
   int<lower=0> J; // number of species
   int<lower=0> K; // number of pressure types
   int<lower=0> JK; // number of pressure types
-  array[N] int<lower=1,upper=J> jj; // species
-  array[N] int<lower=1,upper=K> kk; // pressure
-  array[N] int<lower=1,upper=JK> jk; // pressure
+  array[N] int<lower=1, upper=J> jj; // species
+  array[N] int<lower=1, upper=K> kk; // pressure
+  array[N] int<lower=1, upper=JK> jk; // species x pressure
   vector[N] y; // pres_calib - tens_calib
 }
 
