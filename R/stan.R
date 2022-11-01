@@ -1037,3 +1037,73 @@ bind_rows(gamma, beta, alpha, a_hat, b_hat, A_hat) |>
   my_write_csv(ouput)
 
 }
+
+get_tmp <- function(data, row, col, chr = FALSE) {
+  out <- data |>
+    filter(variable == {{row}}) |>
+    pull({{col}})
+  if (chr) {
+    round(out, 2) |> format(nsmall = 2)
+  } else {
+    out
+  }
+}
+
+get_tmp2 <- function(data, row, col, chr = FALSE) {
+  out <- data |>
+    filter(str_detect(variable, {{row}})) |>
+    pull({{col}})
+  if (chr) {
+    round(out, 2) |> format(nsmall = 2)
+  } else {
+    out
+  }
+}
+
+get_tmp2_chr <- function(data, col) {
+  lwr <- get_tmp2(data, col, q2.5, chr = TRUE)
+  mid <- get_tmp2(data, col, q50, chr = TRUE)
+  upr <- get_tmp2(data, col, q97.5, chr = TRUE)
+  str_c(mid, " [", lwr, ", ", upr, "]")
+}
+
+get_tmp_chr <- function(data, col) {
+  lwr <- get_tmp(data$summary, col, q2.5, chr = TRUE)
+  mid <- get_tmp(data$summary, col, q50, chr = TRUE)
+  upr <- get_tmp(data$summary, col, q97.5, chr = TRUE)
+  str_c(mid, " [", lwr, ", ", upr, "]")
+}
+
+write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp,
+                         out,
+  with_traits = FALSE) {
+
+  d <- read_csv(d) |>
+    filter(is.na(removed_k))
+
+  summary_sp2 <- summary_sp |>
+    mutate(log_a_sp_pool = map_chr(fit_pool, get_tmp_chr, "log_a")) |>
+    mutate(b_sp_pool = map_chr(fit_pool, get_tmp_chr, "b")) |>
+    mutate(sigma_sp_pool = map_chr(fit_pool, get_tmp_chr, "sigma")) |>
+    mutate(log_a_sp_segments = map_chr(fit_segments, get_tmp_chr, "log_a")) |>
+    mutate(b_sp_segments = map_chr(fit_segments, get_tmp_chr, "b")) |>
+    mutate(sigma_sp_segments = map_chr(fit_segments, get_tmp_chr, "sigma")) |>
+    dplyr::select(species, log_a_sp_pool:sigma_sp_segments)
+
+  d2 <- d |>
+    group_by(species, sp_short, xylem_type) |> nest() |>
+    ungroup() |>
+    arrange(species) |>
+    mutate(log_xx = map(data, \(x)seq(min(log(x$k)), max(log(x$k)), length = 80))) |>
+    mutate(log_a_full_pool = get_tmp2_chr(summary_full_pool, "alpha\\[1")) |>
+    mutate(b_full_pool = get_tmp2_chr(summary_full_pool, "alpha\\[2")) |>
+    mutate(sigma_full_pool = get_tmp2_chr(summary_full_pool, "sigma")) |>
+    mutate(log_a_full_segments = get_tmp2_chr(summary_full_segments, "alpha\\[1")) |>
+    mutate(b_full_segments = get_tmp2_chr(summary_full_segments, "alpha\\[2")) |>
+    mutate(sigma_full_segments = get_tmp2_chr(summary_full_segments, "sigma")) |>
+    dplyr::select(xylem_type, species, log_a_full_pool:sigma_full_segments)
+
+  full_join(summary_sp2, d2, by = "species") |>
+    my_write_csv(out)
+
+}

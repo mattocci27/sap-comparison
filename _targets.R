@@ -718,21 +718,21 @@ format = "file"
     format = "file"
   ),
 
-  # tar_target(
-  #   pool_multi_plot, {
-  #     p <- line_pool_multi(fd_k_traits_csv,
-  #      fit_ab_summary_granier_without_traits_sap_all_clean_0.08,
-  #      fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
-  #     my_ggsave(
-  #       "figs/pool_multi",
-  #       p,
-  #       dpi = 300,
-  #       width = 8,
-  #       height = 12
-  #     )
-  #   },
-  #   format = "file"
-  # ),
+  tar_target(
+    pool_multi_plot, {
+      p <- line_pool_multi(fd_k_traits_csv,
+       fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+       fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
+      my_ggsave(
+        "figs/pool_multi",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
 
   tar_target(
     pg_multi_plot, {
@@ -944,15 +944,16 @@ format = "file"
   ),
 
 
-  #withtrait
-  tar_target(
-    with_traits_0.02,
-    write_with_traits_csv(
-      fit_abt_summary_granier_with_traits_sap_trait_clean_noks2,
-      "data/with_traits_noks2.csv"
-      ),
-    format = "file"
-  ),
+  # with traits
+
+  # tar_target(
+  #   with_traits_0.02,
+  #   write_with_traits_csv(
+  #     fit_abt_summary_granier_with_traits_sap_trait_clean_noks2,
+  #     "data/with_traits_noks2.csv"
+  #     ),
+  #   format = "file"
+  # ),
 
   # tar_target(
   #   fit_ab_each, {
@@ -974,6 +975,17 @@ format = "file"
   #   data_exp_html,
   #   "docs/data_exp.qmd"
   # ),
+  tar_target(
+    test,
+    write_ab_csv(
+      fd_k_traits_csv,
+      fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+      fit_ab_each_sap_sp_clean_0.08,
+      "data/ab_without_traits.csv"
+      ),
+    format = "file"
+  ),
 
   tar_quarto(
     report_html,
