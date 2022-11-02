@@ -1,0 +1,49 @@
+---
+title: "Figures S"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
+```

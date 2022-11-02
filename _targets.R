@@ -358,7 +358,7 @@ main_list <- list(
       "yml/anova.yml",
       fit_anova_draws_anova_noint_err,
       ll = 0.25, hh = 0.75),
-format = "file"
+    format = "file"
   ),
   # tar_target(
   #   ks_pred_draws,
@@ -489,7 +489,7 @@ format = "file"
         "figs/coef_intervals_logistic",
         p,
         dpi = 300,
-        width = 8.5,
+        width = 16,
         height = 8.5,
         units = "cm"
       )
