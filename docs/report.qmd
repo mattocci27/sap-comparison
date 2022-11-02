@@ -48,10 +48,12 @@ source(here("R", "figs.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 ```
 
-**Note:
-R codes are followed by tentative results.**
+**
+Note:
+Method parts are tentative.
+**
 
-```{r}
+```{r, include=FALSE}
 s_fig_num("coef_int_sd")
 s_fig_num("coef_int_mean")
 s_fig_num("coef_int_diff")
@@ -101,7 +103,6 @@ These results suggest that pressure induced flow rates tend to be greater than t
 Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates (`r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance, Figs. `r fig_num("sma")`b, `r s_fig_num("coef_int_sd")`-`r s_fig_num("coef_int_diff")`), whereas species difference explained much more variation (`r str_split(anova_yml$species, " ")[[1]][1]` of the total variance, Figs. `r fig_num("sma")`b, `r s_fig_num("coef_int_sd")`-`r s_fig_num("coef_int_diff")`).
 An interaction between species and pressure-level effects was not selected after model selections.
 After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced flow rates still likely to be greater than tension induced flow rates (`r s_fig("coef_int_mean")`).
-
 
 
 
@@ -237,6 +238,9 @@ note:
 
 ## Results
 
+Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (`r s_fig("coef_int_quad_mean")`).
+Each species showed quadratic responses (Figs. `r fig_num("count_pressure")`-`r s_fig_num("coef_int_quad_mean")`).
+The proportion of vessels participating in flow for *Hopea hongayensis* decreased at 0.08 MPa because XXXX.
 
 ## `r fig("count_pressure")`
 
