@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|3a3ea52423fe4ba5|||||||||||||||
+.Random.seed|object|15b198695a0f0b31|||||||||||||||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|77f35c9e925c1335|1787234250|data/ab_var_clean_008.csv|t19294.3862991164s|667c8b8f99843c63|2792|file|local|vector|||0.618||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
@@ -503,6 +503,7 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 generate_ab_var_data|function|54656b8f54bc6c7c|||||||||||||||
 generate_anova_data|function|6bc05b28ae02757c|||||||||||||||
 generate_anova_mvn_data|function|391bc75c8ab3a47c|||||||||||||||
+generate_beta_list|function|81d8a6288e4ae300|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
 generate_dummy_data_ab|function|edf8aac2a546b7ae|||||||||||||||
 generate_k_range|function|fa0d3fdcb012ae08|||||||||||||||
@@ -567,7 +568,7 @@ quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
 raw_data_list|object|a188304e6bd3694d|||||||||||||||
-report_html|stem|e8648edbcb150224|47091910cf42601c|48dd6b658fa8b54d|1483737400|docs/report.html*docs/report.qmd|t19298.3744929566s|1fea0117865e444c|80934|file|local|vector|||4.671||
+report_html|stem|ab1e72450a91428b|47091910cf42601c|48dd6b658fa8b54d|1483737400|docs/report.html*docs/report.qmd|t19299.6501452864s|cf8169503675f470|107210|file|local|vector|||9.439||
 sap_all_clean_0.015|stem|d86599bbf950318d|ee6f07e13d29ca8a|c4cdf6a0a64dfd2e|77450341||t19273.2461827837s|d7bfe730b9d5e86a|3753|rds|local|vector|||0.083||
 sap_all_clean_0.02|stem|4354c8c0458138bb|25b1a969628acb02|c4cdf6a0a64dfd2e|1441946753||t19273.2530927621s|cd54ca760fc0a4bc|5408|rds|local|vector|||0.624||
 sap_all_clean_0.025|stem|6dcdcf9d49bd778b|c5cdd8cef32dcad4|c4cdf6a0a64dfd2e|-1078606878||t19273.2462186639s|641ba4c16021784b|7088|rds|local|vector|||0.325||
@@ -645,6 +646,7 @@ sma_scatter_ks_plot|stem|e11c885e8fdf88a7|db9b3fd3537541a3|a26a67131ba89213|1061
 sma_scatter_log_plot|stem|fed51c20148db0ca|bb5ee286cdf8edc2|55553f999e410373|1411685232||t19227.6081891062s|a6a4c63ae71e3f79|122993|rds|local|vector|||0.221||
 sma_scatter_plot|stem|31cc0e1694383f87|e268ef9d2781699c|55553f999e410373|-651295624||t19227.6081908192s|bdbb6b1d38873930|87855|rds|local|vector|||0.209||
 test|stem|0181bbeeb0b3572a|729552a304506858|54e7065db7899e56|1064684737|data/ab_without_traits.csv|t19297.329673281s|3cf32e70b8fb6243|8349|file|local|vector|||1.913||
+tidy_predictions|function|4de722f36d67b4f5|||||||||||||||
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all|stem|303900e49829f67f|20b4275a966102d0|b07258f23c270eb1|-26809971||t19280.3914135229s|5b8074f638d9152a|30984|rds|local|vector|||1.243|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks|stem|20921714f41ee25c|ae431d0f244c05a7|feabb73594628840|-361814542||t19275.1701385399s|d08ea8a6fc9eec13|30982|rds|local|vector|||4.081|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks|stem|8c60733cede89bcc|23db798dea13f576|a608cc1fc5590a96|-1422751152||t19275.2184585544s|20256d8287e8fc45|30970|rds|local|vector|||1.898|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|

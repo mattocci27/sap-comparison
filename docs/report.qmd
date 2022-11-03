@@ -276,6 +276,163 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 ```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge"}
 ```
 
+# Coefficients a and b with traits
+
+- int
+
+- wood
+
+- dh
+
+- vaf
+
+
+```{r}
+s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
+
+
+# a
+aa <- s |>
+  filter(str_detect(variable, "^A\\[1"))
+bb <- s |>
+  filter(str_detect(variable, "^A\\[2"))
+
+d <- read_csv(here("data/fd_k_traits.csv"))
+d <- d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+d <- d |>
+  filter(is.na(removed_k)) #|>
+
+tmp0 <- d |>
+  mutate(log_swc = log(swc)) |>
+  mutate(log_dh = log(dh)) |>
+  mutate(log_vaf = log(vaf)) |>
+  mutate(log_vf = log(vf)) |>
+  mutate(log_ks = log(ks)) |>
+  group_by(sample_id, xylem_type, species) |>
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>
+  ungroup() |>
+  dplyr::select(sample_id, xylem_type, species,
+   wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+d2 <- tmp0 |>
+  mutate(a_mid = aa$q50) |>
+  mutate(a_lwr = aa$q2.5) |>
+  mutate(a_upr = aa$q97.5) |>
+  mutate(b_mid = bb$q50) |>
+  mutate(b_lwr = bb$q2.5) |>
+  mutate(b_upr = bb$q97.5)
+
+
+ggplot(d2, aes(x = wood_density, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+
+ggplot(d2, aes(x = log_dh, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+
+ggplot(d2, aes(x = log_vaf, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+
+ggplot(d2, aes(x = log_vf, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+
+ggplot(d2, aes(x = log_ks, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+
+
+ggplot(d2, aes(x = wood_density, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+ggplot(d2, aes(x = log_dh, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+ggplot(d2, aes(x = log_vaf, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+ggplot(d2, aes(x = log_vf, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+ggplot(d2, aes(x = log_ks, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+
+```
+
+- gamma_1 : intercept
+
+- gamma_2 : wood density
+
+- gamma_3 : Dh
+
+- gamma_4 : VAF
+
+```{r}
+draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_noks2))
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_a"
+)
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_b"
+)
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(targets)
+library(loo)
+
+l1 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all)
+l2 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf)
+l3 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf)
+l4 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks)
+l5 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2)
+l6 <- tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks)
+
+loo_compare(l1, l2, l3, l4, l5, l6)
+
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "abt")) |>
+  filter(str_detect(name, "summary"))
+
+# traits_loo
+
+```
+
+
+
+
 ```{r}
 knitr::knit_exit()
 ```
@@ -574,7 +731,6 @@ loo_compare(l1, l2, l3, l4, l5, l6)
 draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_noks2))
 
-
 mcmc_areas(
   draws,
   regex_pars = "gamma_a"
@@ -584,6 +740,8 @@ mcmc_areas(
   draws,
   regex_pars = "gamma_b"
 )
+
+
 ```
 
 The third predictor log(dh) might have postive effect on `a` (50% of chance).
