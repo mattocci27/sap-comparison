@@ -799,21 +799,6 @@ main_list <- list(
     },
     format = "file"
   ),
-  # tar_target(
-  #   coef_density_plot, {
-  #     p <- coef_density(xylem_lab,
-  #       fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08,
-  #       looks = "facet")
-  #     my_ggsave(
-  #       "figs/coef_density",
-  #       p,
-  #       dpi = 300,
-  #       width = 12,
-  #       height = 7
-  #     )
-  #   },
-  #   format = "file"
-  # ),
 
   tar_target(
     coef_density_plot2, {

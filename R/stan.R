@@ -823,9 +823,9 @@ my_loo <- function(x) x$loo(cores = parallel::detectCores())
 #' @title Check divergence from draws
 div_check <- function(diags) {
   n1 <- diags |>
-    filter(divergent__ == 1) |>
+    dplyr::filter(divergent__ == 1) |>
     nrow()
-  # n2 <- diags |>
+  n2 <- diags |>
     nrow()
   print(paste(
     n1, "of", n2,
@@ -1173,7 +1173,6 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_
   # ts <- seq(ts[1], ts[2], length = 100)
   # xx <- sd(tmp0$log_vaf) * ts + mean(tmp0$log_vaf)
 
-
   pred_a <- coef_a %*% t(cbind(1, ts))
   pred_a_m <- apply(pred_a, 2, median)
   pred_a_ll <- apply(pred_a, 2, quantile, 0.025)
@@ -1207,38 +1206,50 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_
 traits_points <- function(vaf_pred_data, ks_pred_data) {
 # tar_load(vaf_pred_data)
 # tar_load(ks_pred_data)
- fig_fun <- function(data, trait_name, coef_a = TRUE) {
-   if (coef_a) {
-     ggplot() +
-        geom_line(data = data$pred_line, aes(x = x, y = pred_a_m)) +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_a_ll, ymax = pred_a_hh), alpha = 0.3, fill = "grey") +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_a_l, ymax = pred_a_h), alpha = 0.8, fill = "grey") +
-        geom_point(data = data$pred_points, aes(y = a_mid, x = exp({{trait_name}}), col = xylem_type), alpha = 0.6) +
-        geom_errorbar(data = data$pred_points, aes(ymin = a_lwr, ymax = a_upr, x = exp({{trait_name}}), col = xylem_type)) +
-        ylab(expression(Coefficient~italic(a))) +
-        scale_x_log10() +
-        my_theme() +
-        theme(legend.position = "none")
-   } else {
-     ggplot() +
+ fig_fun <- function(data, trait_name, coef_a = TRUE, with_ribbon = TRUE) {
+  if (coef_a & with_ribbon) {
+     p <- ggplot() +
+        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m))) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.3, fill = "grey") +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_l), ymax = exp(pred_a_h)), alpha = 0.8, fill = "grey")
+  } else if (with_ribbon) {
+     p <- ggplot() +
         geom_line(data = data$pred_line, aes(x = x, y = pred_b_m)) +
         geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.2, fill = "grey") +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.8, fill = "grey") +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_type)) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.8, fill = "grey")
+   } else {
+    p <- ggplot()
+  }
+
+  if (coef_a) {
+     p <- p +
+        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}}), col = xylem_type)) +
+        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_type), alpha = 0.6) +
+        ylab(expression(Coefficient~italic(a))) +
+        coord_cartesian(ylim = c(5, 20000)) +
+        scale_x_log10() +
+        scale_y_log10() +
+        my_theme() +
+        theme(legend.position = "none")
+  } else {
+     p <- p +
         geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_type)) +
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_type)) +
         ylab(expression(Coefficient~italic(b))) +
+        ylim(c(-1.5, 5)) +
         scale_x_log10() +
         my_theme() +
         theme(legend.position = "none")
-   }
+    }
+   p
   }
 
-  p1 <- fig_fun(vaf_pred_data, log_vaf) +
+  p1 <- fig_fun(vaf_pred_data, log_vaf, with_ribbon = FALSE) +
     xlab("VAF (%)")
   p2 <- fig_fun(ks_pred_data, log_ks) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
     theme(legend.position = c(0.2, 0.75))
-  p3 <- fig_fun(vaf_pred_data, log_vaf, coef_a = FALSE) +
+  p3 <- fig_fun(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
     xlab("VAF (%)")
   p4 <- fig_fun(ks_pred_data, log_ks, coef_a = FALSE) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))

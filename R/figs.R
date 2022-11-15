@@ -769,12 +769,13 @@ line_pool_multi <- function(d, s_008, s2_008) {
 coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
   # library(tidyverse)
   # library(here)
-  # d <- read_csv(here("data/fd_k_traits.csv")) |>
-  #   filter(is.na(removed_k))
-  # draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  #   targets::tar_read(fit_ab_draws_granier_without_traits_sap_all_clean_0.08)) |>
-  #   janitor::clean_names()
-#  tar_load(xylem_lab)
+#   d <- read_csv(here("data/fd_k_traits.csv")) |>
+#     filter(is.na(removed_k))
+  #  draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #    targets::tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)) |>
+  #    janitor::clean_names()
+
+  #  tar_load(xylem_lab)
   draws <- draws |>
     janitor::clean_names()
 
@@ -837,6 +838,24 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
 
   data <- bind_rows(data_a, data_b)
 
+  tmp <- data_a  |>
+    dplyr::select(sp_short, xylem) |>
+    unique() |>
+    group_by(xylem) |>
+    nest() |>
+    unnest(data) |>
+    ungroup() |>
+    mutate(sp_short_chr = as.character(sp_short)) |>
+    pull(sp_short_chr)
+  tmp2 <- tmp[str_detect(tmp, "Palm|tree|Liana")]
+  tmp3 <- tmp[!str_detect(tmp, "Palm|tree|Liana")]
+
+  data_a <- data_a |>
+    mutate(sp_short2 = factor(sp_short, levels = c(tmp2, tmp3)))
+  data_b <- data_b |>
+    mutate(sp_short2 = factor(sp_short, levels = c(tmp2, tmp3)))
+
+
   p1 <- ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
     scale_y_discrete(limits = rev) +
@@ -877,23 +896,25 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
       axis.text.y = element_text(face = "italic", size = 6)
       )
 
-  p5 <- ggplot(data_a, aes(x = exp(value), y = sp_short, fill = xylem))  +
+  p5 <- ggplot(data_a, aes(x = exp(value), y = sp_short2, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
+    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
     scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(a))) +
     ylab("") +
-    scale_x_log10() +
-    # scale_x_log10(
-    #     breaks = c(10^2, 10^3, 10^4),
-    #     labels = trans_format("log10", math_format(10^.x))) +
+#    scale_x_log10() +
+    scale_x_log10(
+        breaks = c(10^2, 10^3, 10^4),
+        labels = trans_format("log10", math_format(10^.x))) +
     theme_bw() +
     theme(
       legend.position = "none",
       axis.text.y = element_text(face = "italic", size = 8)
       )
 
-  p6 <- ggplot(data_b, aes(x = value, y = sp_short, fill = xylem))  +
+  p6 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
+    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
     scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(b))) +
     ylab("") +
