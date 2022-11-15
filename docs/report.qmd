@@ -310,9 +310,9 @@ The upper limit for x-axis is based on the dataset.
 
 ### `r fig("coef_density")`
 
-![](`r here::here("figs/coef_density2.png")`)
+![coef_density2](`r here::here("figs/coef_density2.png")`)
 
-- Coefficient a (median [25% CI, 75% CI])
+- Coefficient a (median [25% CI, 75% CI]) were explained by:
     - segments:
 `r get_post_para(para, "var_a_segment", "q50")`%
 [`r get_post_para(para, "var_a_segment", "q25")`,
@@ -331,7 +331,7 @@ The upper limit for x-axis is based on the dataset.
 `r get_post_para(para, "var_a_xylem", "q50", digits = 1, nsmall = 1)`
 ].
 
-- Coefficient b (median [25% CI, 75% CI])
+- Coefficient b (median [25% CI, 75% CI]) were explained by:
 
     - segments:
 `r get_post_para(para, "var_b_segment", "q50")`%
@@ -359,13 +359,39 @@ The upper limit for x-axis is based on the dataset.
 - Each point indicates each segment
 - Vertical bars indicate 95% CIs
 - Light and dark shaded regions indicate 95% and 50% CIs, respectively
--
+- The 95% CI of the slope value for `r fig("traits_points")`B did not overlap with zero
+- The 50% CI of the slope value for `r fig("traits_points")`D did not overlap with zero
 
 ![traits_points](`r here::here("figs/traits_points.png")`)
 
 
 ```{r}
 knitr::knit_exit()
+```
+
+```{r}
+d <- read_csv(here("data/fd_k_traits.csv"))
+d <- d |>
+  filter(is.na(removed_k)) #|>
+# d <- d |>
+#   filter(!is.na(wood_density)) |>
+#   filter(!is.na(swc)) |>
+#   filter(!is.na(dh)) |>
+#   filter(!is.na(vaf)) |>
+#   filter(!is.na(vf)) |>
+#   filter(!is.na(ks))
+
+d |>
+  filter(species == "Areca catechu") |>
+  filter(p_g <= 0.02)
+
+tmp_species <- d |>
+  filter(p_g <= 0.04) |>
+  group_by(species) |>
+  summarize(n = n()) |>
+  filter(n > 5) |>
+  pull(species)
+
 ```
 
 - int

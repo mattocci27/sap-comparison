@@ -459,7 +459,16 @@ generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, 
 
   if (upper_pressure) {
    d <- d |>
-    filter(p_g <= upper_pressure)
+     filter(p_g <= upper_pressure)
+
+   tmp_sp <- d |>
+     group_by(species) |>
+     summarize(n = n()) |>
+     filter(n >= 5) |>
+     pull(species)
+
+   d <- d |>
+    filter(species %in% tmp_sp)
   }
 
   tmp <- d |>
@@ -547,8 +556,7 @@ generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, 
 
 generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, traits = FALSE) {
   # library(tidyverse)
-  # d <- read_csv("data/fd_k_traits.csv")
-  d <- read_csv(data)
+  # d <- read_csv("data/fd_k_traits.csv") d <- read_csv(data)
 
   if (traits) {
     d <- d |>
@@ -568,6 +576,15 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
   if (upper_pressure) {
    d <- d |>
     filter(p_g <= upper_pressure)
+
+   tmp_sp <- d |>
+     group_by(species) |>
+     summarize(n = n()) |>
+     filter(n >= 5) |>
+     pull(species)
+
+   d <- d |>
+    filter(species %in% tmp_sp)
   }
 
   tmp <- d |>
