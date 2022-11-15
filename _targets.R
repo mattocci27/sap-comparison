@@ -607,7 +607,7 @@ main_list <- list(
   # ),
 
   tar_map(
-    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.015, 0.025, 0.035)),
+    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
     tar_target(sap_all_raw,
       generate_sap_stan_data(fd_k_traits_csv,
         upper_pressure = p)),
@@ -626,7 +626,6 @@ main_list <- list(
       "sap_all_raw_0.06",
       "sap_all_raw_0.07",
       "sap_all_raw_0.08",
-      "sap_all_clean_0.015",
       "sap_all_clean_0.02",
       "sap_all_clean_0.025",
       "sap_all_clean_0.03",
@@ -664,7 +663,7 @@ main_list <- list(
   ),
 
   tar_map(
-    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.015, 0.025, 0.035)),
+    list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
     tar_target(sap_sp_raw,
       generate_sap_stan_data_sp(fd_k_traits_csv,
         upper_pressure = p)),
@@ -688,7 +687,6 @@ main_list <- list(
       "sap_sp_raw_0.06",
       "sap_sp_raw_0.07",
       "sap_sp_raw_0.08",
-      "sap_sp_clean_0.015",
       "sap_sp_clean_0.02",
       "sap_sp_clean_0.025",
       "sap_sp_clean_0.03",

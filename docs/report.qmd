@@ -284,6 +284,8 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 
 ### `r fig("pool_multi")`
 
+- solid: multilevel model
+
 ![pool_multi](`r here::here("figs/pool_multi.png")`)
 
 
@@ -380,17 +382,71 @@ d <- d |>
 #   filter(!is.na(vaf)) |>
 #   filter(!is.na(vf)) |>
 #   filter(!is.na(ks))
-
 d |>
   filter(species == "Areca catechu") |>
   filter(p_g <= 0.02)
 
 tmp_species <- d |>
-  filter(p_g <= 0.04) |>
+  filter(p_g <= 0.02) |>
   group_by(species) |>
   summarize(n = n()) |>
   filter(n > 5) |>
   pull(species)
+
+d |>
+  filter(p_g <= 0.02) |>
+  group_by(species) |>
+  summarize(n = n()) |>
+  filter(n <= 5)
+
+d |>
+  filter(p_g <= 0.02) |>
+  group_by(species) |>
+  summarize(n = n()) |>
+  arrange(n)
+
+s2 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02) |>
+  mutate(p_g_lim = "0.02")
+s3 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  mutate(p_g_lim = "0.03")
+data <- bind_rows(s2, s3) |>
+    janitor::clean_names()
+    data <- data |>
+      filter(str_detect(variable, "alpha\\[1"))
+
+    fig_data <- xylem_lab |>
+      mutate(variable = str_c("alpha[1,", sp_num,"]")) |>
+      dplyr::select(sp_short, species, variable, xylem_long_fct) |>
+      full_join(data, by = "variable") |>
+      mutate(q2_5 = exp(q2_5)) |>
+      mutate(q25 = exp(q25)) |>
+      mutate(q50 = exp(q50)) |>
+      mutate(q75 = exp(q75)) |>
+      mutate(q97_5 = exp(q97_5))
+
+tar_read(k_range) |> arrange(n)
+
+tar_read(k_range) |>
+  filter(n >= 10)
+
+
+fig_data |>
+  filter(xylem_long_fct == "Palm")
+
+s2 |>
+   filter(str_detect(variable, "alpha\\[1"))
+s8 |>
+   filter(str_detect(variable, "alpha\\[1"))
+
+tar_read(xylem_lab)
+
+tar_read(sap_all_clean_0.02) |> str()
+tar_read(sap_all_clean_0.08) |> str()
+
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "sap_all_clean_0.02"))
 
 ```
 
@@ -846,7 +902,7 @@ For coefficient a, xylem types are the largest source for the variance, while se
 
 ## Coefficients (a and b) vs pressure gradients
 
-Species $\times$ *P~g~* combinations with n < 5 are removed.
+Species $\times$ *P~g~* combinations with n < 10 are removed.
 The upper limit for x-axis is based on the dataset.
 
 ![](`r here::here("figs/pg_ribbon_a.png")`)

@@ -584,7 +584,7 @@ generate_k_range <- function(data) {
   k_data2 |>
     mutate(check = tmp2) |>
     filter(check == 0) |>
-    filter(n >= 5)
+    filter(n >= 10)
 
 
 }
