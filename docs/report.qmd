@@ -289,8 +289,8 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 
 ```{r}
 s <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
-
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all))
+  # targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_noks2))
 
 # a
 aa <- s |>
@@ -384,7 +384,149 @@ ggplot(d2, aes(x = log_ks, col = xylem_type)) +
 
 ```{r}
 draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_noks2))
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_all))
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_a"
+)
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_b"
+)
+```
+
+```{r}
+s_vaf <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf))
+s_ks <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks))
+
+
+
+vaf_data <- generate_trait_fig_data(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf,
+fit_abt_draws_granier_with_traits_sap_trait_clean_vaf, fd_k_traits_csv)
+
+ggplot() +
+  geom_line(data = vaf_data$pred_line, aes(x = x, y = pred_a_m)) +
+  geom_ribbon(data = vaf_data$pred_line, aes(x = x, ymin = pred_a_ll, ymax = pred_a_hh), alpha = 0.4, fill = "grey") +
+  geom_ribbon(data = vaf_data$pred_line, aes(x = x, ymin = pred_a_l, ymax = pred_a_h), alpha = 0.6, fill = "grey") +
+  geom_point(data = vaf_data$pred_points, aes(y = a_mid, x = exp(log_vaf), col = xylem_type)) +
+  geom_errorbar(data = pred, aes(ymin = a_lwr, ymax = a_upr, x = exp(log_vaf), col = xylem_type)) +
+  ylab(expression(Coefficient~italic(a))) +
+  xlab("VAF (%)") +
+  scale_x_log10() +
+  my_theme()
+
+
+library(tidyverse)
+library(here)
+library(targets)
+
+tar_load(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+tar_load(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
+tar_load(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)
+tar_load(fd_k_traits_csv)
+
+
+vaf_data$pred_line
+
+ks_data<- generate_trait_fig_data(fit_abt_summary_granier_with_traits_sap_trait_clean_ks, fd_k_traits_csv)
+
+vaf_a <- ggplot(vaf_data, aes(x = exp(log_vaf), col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr)) +
+  ylab(expression(Coefficient~italic(a))) +
+  xlab("VAF (%)") +
+  scale_x_log10()
+vaf_a
+
+
+# a
+aa_ks <- s_ks |>
+  filter(str_detect(variable, "^A\\[1"))
+bb_ks <- s_ks |>
+  filter(str_detect(variable, "^A\\[2"))
+
+aa_vaf <- s_vaf |>
+  filter(str_detect(variable, "^A\\[1"))
+bb_vaf <- s_vaf |>
+  filter(str_detect(variable, "^A\\[2"))
+
+d <- read_csv(here("data/fd_k_traits.csv"))
+d <- d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+d <- d |>
+  filter(is.na(removed_k)) #|>
+
+tmp0 <- d |>
+  mutate(log_swc = log(swc)) |>
+  mutate(log_dh = log(dh)) |>
+  mutate(log_vaf = log(vaf)) |>
+  mutate(log_vf = log(vf)) |>
+  mutate(log_ks = log(ks)) |>
+  group_by(sample_id, xylem_type, species) |>
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>
+  ungroup() |>
+  dplyr::select(sample_id, xylem_type, species,
+   wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+d2_ks <- tmp0 |>
+  mutate(a_mid = aa_ks$q50) |>
+  mutate(a_lwr = aa_ks$q2.5) |>
+  mutate(a_upr = aa_ks$q97.5) |>
+  mutate(b_mid = bb_ks$q50) |>
+  mutate(b_lwr = bb_ks$q2.5) |>
+  mutate(b_upr = bb_ks$q97.5)
+
+d2_vaf <- tmp0 |>
+  mutate(a_mid = aa_vaf$q50) |>
+  mutate(a_lwr = aa_vaf$q2.5) |>
+  mutate(a_upr = aa_vaf$q97.5) |>
+  mutate(b_mid = bb_vaf$q50) |>
+  mutate(b_lwr = bb_vaf$q2.5) |>
+  mutate(b_upr = bb_vaf$q97.5)
+
+ggplot(d2_vaf, aes(x = log_vaf, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+ggplot(d2_vaf, aes(x = log_vaf, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+ggplot(d2_ks, aes(x = log_ks, col = xylem_type)) +
+  geom_point(aes(y = a_mid)) +
+  geom_errorbar(aes(ymin = a_lwr, ymax = a_upr))
+ggplot(d2_ks, aes(x = log_ks, col = xylem_type)) +
+  geom_point(aes(y = b_mid)) +
+  geom_errorbar(aes(ymin = b_lwr, ymax = b_upr))
+
+```
+
+```{r}
+draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_ks))
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_a"
+)
+
+mcmc_areas(
+  draws,
+  regex_pars = "gamma_b"
+)
+```
+
+```{r}
+draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_all))
 
 mcmc_areas(
   draws,
@@ -399,7 +541,73 @@ mcmc_areas(
 
 
 ```{r}
+d1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all))
+d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_ks))
+d6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all))
 
+
+apply(d1, 2, sum)
+apply(d4, 2, sum)
+apply(d6, 2, sum)
+
+d4 |>
+  filter(divergent__ == 1)
+d6 |>
+  filter(divergent__ == 1)
+
+l1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all))
+l2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_dh))
+l3 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd))
+l4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf))
+l5 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf))
+l6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks))
+l7 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_nowd))
+l8 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_novf))
+l9 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_novaf))
+
+loo_compare(l1, l2, l3, l4, l5, l6, l7, l8, l9)
+```
+
+```{r, eval=TRUE}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_dh)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_wd)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vf)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_vaf)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_ks)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_nowd)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_novf)) |>
+  div_check()
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_novaf)) |>
+  div_check()
 ```
 
 
@@ -1901,9 +2109,8 @@ s2$fit_pool[[1]][[1]] |> str()
 
 
 hoge <- tar_manifest()
-
 hoge |>
-  filter(str_detect(name, "ab_each"))
+  filter(str_detect(name, "trait_clean_all"))
 
 library(tidyverse)
 library(targets)
@@ -1931,13 +2138,14 @@ d1 |>
 d4 |>
   filter(divergent__ == 1)
 
+tar_read(sap_trait_clean_all) |> str()
+tar_read(sap_trait_clean_all)$uj
 
 s1 |>
   filter(variable %in% c("tau[1]", "tau[2]", "tau[3]", "sigma"))
 
 s4 |>
   filter(variable %in% c("tau[1]", "tau[2]", "sigma"))
-
 
 ```
 

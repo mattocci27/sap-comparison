@@ -532,7 +532,7 @@ main_list <- list(
   ),
 
   tar_map(
-    list(trait_set = c("all", "vaf", "vf", "ks", "noks", "noks2")),
+    list(trait_set = c("all", "nowd", "novaf", "novf", "vaf", "vf", "ks", "wd", "dh")),
     tar_target(sap_trait_clean,
       generate_sap_traits_stan_data(fd_k_traits_csv,
                              remove_abnormal_values = TRUE,
@@ -542,11 +542,14 @@ main_list <- list(
   tar_map(
     values = list(stan_data = rlang::syms(c(
       "sap_trait_clean_all",
+      "sap_trait_clean_nowd",
+      "sap_trait_clean_novaf",
+      "sap_trait_clean_novf",
+      "sap_trait_clean_wd",
+      "sap_trait_clean_dh",
       "sap_trait_clean_vaf",
       "sap_trait_clean_vf",
-      "sap_trait_clean_ks",
-      "sap_trait_clean_noks",
-      "sap_trait_clean_noks2"
+      "sap_trait_clean_ks"
       ))),
     tar_stan_mcmc(
       fit_abt,
@@ -554,10 +557,10 @@ main_list <- list(
       data = stan_data,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 4),
+      parallel_chains = getOption("mc.cores", 2),
       iter_warmup = 2000,
       iter_sampling = 2000,
-      adapt_delta = 0.99,
+      adapt_delta = 0.9999,
       max_treedepth = 15,
       seed = 123,
       return_draws = TRUE,
@@ -577,11 +580,15 @@ main_list <- list(
     values = list(
       mcmc = rlang::syms(c(
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_all",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_dh",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf",
         "fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks",
-        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks",
-        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_noks2"))),
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_nowd",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_novaf",
+        "fit_abt_mcmc_granier_with_traits_sap_trait_clean_novf"
+        ))),
     tar_target(
       traits_loo,
       my_loo(mcmc)
@@ -760,6 +767,38 @@ main_list <- list(
     format = "file"
   ),
 
+  tar_target(
+    vaf_pred_data,
+    generate_trait_fig_data(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_vaf,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_vaf,
+      fd_k_traits_csv,
+      "log_vaf"
+    )
+  ),
+  tar_target(
+    ks_pred_data,
+    generate_trait_fig_data(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_ks,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_ks,
+      fd_k_traits_csv,
+      "log_ks"
+    )
+  ),
+
+  tar_target(
+    traits_points_plot, {
+      p <- traits_points(vaf_pred_data, ks_pred_data)
+      my_ggsave(
+        "figs/traits_points",
+        p,
+        dpi = 300,
+        width = 7,
+        height = 7
+      )
+    },
+    format = "file"
+  ),
   # tar_target(
   #   coef_density_plot, {
   #     p <- coef_density(xylem_lab,
@@ -987,10 +1026,10 @@ main_list <- list(
     format = "file"
   ),
 
-  tar_quarto(
-    report_html,
-    "docs/report.qmd"
-  ),
+  # tar_quarto(
+  #   report_html,
+  #   "docs/report.qmd"
+  # ),
 
   NULL
 )

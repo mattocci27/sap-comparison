@@ -481,23 +481,32 @@ generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, 
     summarise_if(is.numeric, mean, na.rm = TRUE)
 
   if (trait_set == "all") {
-  tmp <- tmp0 |>
-    dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
-  } else if (trait_set == "vaf") {
-  tmp <- tmp0 |>
-    dplyr::select(wood_density, log_dh, log_vaf, log_ks)
-  } else if (trait_set == "vf") {
-  tmp <- tmp0 |>
-    dplyr::select(wood_density, log_dh, log_vf, log_ks)
+    tmp <- tmp0 |>
+      dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
+  } else if (trait_set == "nowd") {
+    tmp <- tmp0 |>
+      dplyr::select(log_dh, log_vaf, log_vf, log_ks)
+  } else if (trait_set == "novf") {
+    tmp <- tmp0 |>
+      dplyr::select(log_dh, log_vaf, log_ks)
+  } else if (trait_set == "novaf") {
+    tmp <- tmp0 |>
+      dplyr::select(log_dh, log_vf, log_ks)
   } else if (trait_set == "ks") {
-  tmp <- tmp0 |>
-    dplyr::select(log_ks)
-  } else if (trait_set == "noks") {
-  tmp <- tmp0 |>
-    dplyr::select(wood_density, log_dh, log_vf)
-  } else if (trait_set == "noks2") {
-  tmp <- tmp0 |>
-    dplyr::select(wood_density, log_dh, log_vaf)
+    tmp <- tmp0 |>
+      dplyr::select(log_ks)
+  } else if (trait_set == "wd") {
+    tmp <- tmp0 |>
+      dplyr::select(wood_density)
+  } else if (trait_set == "dh") {
+    tmp <- tmp0 |>
+      dplyr::select(log_dh)
+  } else if (trait_set == "vaf") {
+    tmp <- tmp0 |>
+      dplyr::select(log_vaf)
+  } else if (trait_set == "vf") {
+    tmp <- tmp0 |>
+      dplyr::select(log_vf)
   }
 
   tmp2 <- apply(tmp, 2, scale)
@@ -816,7 +825,7 @@ div_check <- function(diags) {
   n1 <- diags |>
     filter(divergent__ == 1) |>
     nrow()
-  n2 <- diags |>
+  # n2 <- diags |>
     nrow()
   print(paste(
     n1, "of", n2,
@@ -1106,4 +1115,134 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
   full_join(summary_sp2, d2, by = "species") |>
     my_write_csv(out)
 
+}
+
+
+generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_name) {
+# summary_data <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+# draws <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)
+  a_mat <- summary_data |>
+    filter(str_detect(variable, "^A\\[1"))
+  b_mat <- summary_data |>
+    filter(str_detect(variable, "^A\\[2"))
+
+# summary_data <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+# summary_data |>
+#     filter(str_detect(variable, "gamma"))
+
+  d <- read_csv(fd_k_traits_csv)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  d <- d |>
+    filter(is.na(removed_k)) #|>
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id, xylem_type, species) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    ungroup() |>
+    dplyr::select(sample_id, xylem_type, species,
+     wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+  draws <- janitor::clean_names(draws)
+
+  coef_a <- draws |>
+    dplyr::select(gamma_a_1_1, gamma_a_2_1) |>
+    as.matrix()
+  coef_b <- draws |>
+    dplyr::select(gamma_b_1_1, gamma_b_2_1) |>
+    as.matrix()
+
+
+  trait <- tmp0 |> pull({{trait_name}})
+  ts <- scale(trait) |> range()
+  ts <- seq(ts[1], ts[2], length = 100)
+  xx <- sd(trait) * ts + mean(trait)
+  # # ts <- scale(tmp0$log_vaf) |> range()
+  # ts <- scale(tmp0 |> pull(trait)) |> range()
+  # ts <- seq(ts[1], ts[2], length = 100)
+  # xx <- sd(tmp0$log_vaf) * ts + mean(tmp0$log_vaf)
+
+
+  pred_a <- coef_a %*% t(cbind(1, ts))
+  pred_a_m <- apply(pred_a, 2, median)
+  pred_a_ll <- apply(pred_a, 2, quantile, 0.025)
+  pred_a_l <- apply(pred_a, 2, quantile, 0.25)
+  pred_a_h <- apply(pred_a, 2, quantile, 0.75)
+  pred_a_hh <- apply(pred_a, 2, quantile, 0.975)
+
+  pred_b <- coef_b %*% t(cbind(1, ts))
+  pred_b_m <- apply(pred_b, 2, median)
+  pred_b_ll <- apply(pred_b, 2, quantile, 0.025)
+  pred_b_l <- apply(pred_b, 2, quantile, 0.25)
+  pred_b_h <- apply(pred_b, 2, quantile, 0.75)
+  pred_b_hh <- apply(pred_b, 2, quantile, 0.975)
+
+  pred_line <- tibble(
+    pred_a_m, pred_a_ll, pred_a_l, pred_a_h, pred_a_hh,
+    pred_b_m, pred_b_ll, pred_b_l, pred_b_h, pred_b_hh, x = exp(xx))
+
+  pred_points <- tmp0 |>
+    mutate(a_mid = a_mat$q50) |>
+    mutate(a_lwr = a_mat$q2.5) |>
+    mutate(a_upr = a_mat$q97.5) |>
+    mutate(b_mid = b_mat$q50) |>
+    mutate(b_lwr = b_mat$q2.5) |>
+    mutate(b_upr = b_mat$q97.5)
+
+  list(pred_points = pred_points, pred_line = pred_line)
+}
+
+
+traits_points <- function(vaf_pred_data, ks_pred_data) {
+# tar_load(vaf_pred_data)
+# tar_load(ks_pred_data)
+ fig_fun <- function(data, trait_name, coef_a = TRUE) {
+   if (coef_a) {
+     ggplot() +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_a_m)) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_a_ll, ymax = pred_a_hh), alpha = 0.3, fill = "grey") +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_a_l, ymax = pred_a_h), alpha = 0.8, fill = "grey") +
+        geom_point(data = data$pred_points, aes(y = a_mid, x = exp({{trait_name}}), col = xylem_type), alpha = 0.6) +
+        geom_errorbar(data = data$pred_points, aes(ymin = a_lwr, ymax = a_upr, x = exp({{trait_name}}), col = xylem_type)) +
+        ylab(expression(Coefficient~italic(a))) +
+        scale_x_log10() +
+        my_theme() +
+        theme(legend.position = "none")
+   } else {
+     ggplot() +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m)) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.2, fill = "grey") +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.8, fill = "grey") +
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_type)) +
+        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_type)) +
+        ylab(expression(Coefficient~italic(b))) +
+        scale_x_log10() +
+        my_theme() +
+        theme(legend.position = "none")
+   }
+  }
+
+  p1 <- fig_fun(vaf_pred_data, log_vaf) +
+    xlab("VAF (%)")
+  p2 <- fig_fun(ks_pred_data, log_ks) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    theme(legend.position = c(0.2, 0.75))
+  p3 <- fig_fun(vaf_pred_data, log_vaf, coef_a = FALSE) +
+    xlab("VAF (%)")
+  p4 <- fig_fun(ks_pred_data, log_ks, coef_a = FALSE) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+
+  p1 + p2 + p3 + p4 +
+    plot_annotation(tag_levels = "A") #3
 }
