@@ -111,7 +111,7 @@ After controlling species and pressure-level effects (i.e., hierarchical model),
 
 ## `r fig("sma")`
 
-Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample lengths and diameter demonstrating the effect of increasing force on Ks (??).
+Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (??).
 (A) Relationship between sample mean pressure- and tension-induced flow rates.
 Blue solid line indicates a standardized major axis (SMA) regression.
 The 95% confidence interval is represented as the shaded area.
@@ -280,30 +280,47 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 
 # Coefficients *a* and *b* without traits
 
+## Results
+
+Using traditional method (Granier, 1985) and our new multilevel methods generate comparable a (intercept) but slightly different b (exponent) values (Figs. S5-6; Table S4). Based on variance portioning analysis, xylem types (80.77% of total variance) are the largest source for the variance for coefficient a, while segments (40.26% of total variance) are the largest source for the variance for coefficient b (Table S5). Generally, there was an increasing tendency for coefficient a and b values along with the increasing applied pressure gradient (Figs. S7-9)
+
+
 ## Pool vs multi
 
 ### `r fig("pool_multi")`
 
-- solid: multilevel model
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+The K values are the averages of two sets of sensors from each segment to account for sapwood variation along the segment.
+The dashed and solid lines represent posterior medians of the power-law relationships without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation, respectively.
 
 ![pool_multi](`r here::here("figs/pool_multi.png")`)
 
 
 ## Pressure gradients
 
+
 ### `r fig("pg_multi")`
+
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients.
+`p_g_lim` indicates the maximum pressure gradient for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
 
 ![pg_multi](`r here::here("figs/pg_multi.png")`)
 
-Species $\times$ *P~g~* combinations with n < 5 are removed.
-
-The upper limit for x-axis is based on the dataset.
-
 ### `r s_fig("pg_ribbon_a")`
+
+Relationships between the coefficient *a* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+Light and dark shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
+The maximum applied Pg are different among species because segment length are different.
+Species × maximum applied Pg combinations with less than 5 data points were removed from this visualization.
+Therefore, the lower ranges for maximum applied Pg are also different among species.
 
 ![pg_ribbon_a](`r here::here("figs/pg_ribbon_a.png")`)
 
 ### `r s_fig("pg_ribbon_b")`
+
+Relationships between the coefficient *b* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
 
@@ -313,6 +330,10 @@ The upper limit for x-axis is based on the dataset.
 ### `r fig("coef_density")`
 
 ![coef_density2](`r here::here("figs/coef_density2.png")`)
+
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by Bayesian multilevel models.
+Estimates for xylem type level, and species level are shown.
+Different colors indicate different xylem types.
 
 - Coefficient a (median [25% CI, 75% CI]) were explained by:
     - segments:
@@ -2318,6 +2339,79 @@ s1 |>
 
 s4 |>
   filter(variable %in% c("tau[1]", "tau[2]", "sigma"))
+
+s1 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
+s2 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+s3 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_dh)
+s4 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
+
+tar_load(xylem_lab)
+
+s1 |>
+   filter(str_detect(variable, "beta")) |>
+   write_csv("ks_xylem.csv")
+
+s1 |>
+   filter(str_detect(variable, "^A\\[1"))
+
+s1 |>
+   filter(str_detect(variable, "^A\\[1"))
+
+s1 |>
+   filter(str_detect(variable, "^A\\[2"))
+
+
+   d <- read_csv("data/fd_k_traits.csv")
+    d <- d |>
+      filter(!is.na(wood_density)) |>
+      filter(!is.na(swc)) |>
+      filter(!is.na(dh)) |>
+      filter(!is.na(vaf)) |>
+      filter(!is.na(vf)) |>
+      filter(!is.na(ks))
+
+    d <- d |>
+      filter(is.na(removed_k))
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id) |>
+    mutate(.id = 1:132) |>
+    dplyr::select(-data)
+
+a1 <- s1 |>
+   filter(str_detect(variable, "^A\\[1")) |>
+   mutate(species = tmp$species) |>
+   group_by(species) |>
+   summarize(a_mid = median(q50))
+b1 <- s1 |>
+   filter(str_detect(variable, "^A\\[2")) |>
+   mutate(species = tmp$species) |>
+   group_by(species) |>
+   summarize(b_mid = median(q50))
+
+full_join(a1, b1) |>
+   write_csv("ks_sp_val.csv")
+
+a2 <- s2 |>
+   filter(str_detect(variable, "^A\\[1")) |>
+   mutate(species = tmp$species) |>
+   group_by(species) |>
+   summarize(a_mid = median(q50))
+b2 <- s2 |>
+   filter(str_detect(variable, "^A\\[2")) |>
+   mutate(species = tmp$species) |>
+   group_by(species) |>
+   summarize(b_mid = median(q50))
+
+full_join(a2, b2) |>
+   write_csv("vaf_sp_val.csv")
+
+s2 |>
+   filter(str_detect(variable, "beta")) |>
+   write_csv("vaf_xylem.csv")
 
 ```
 

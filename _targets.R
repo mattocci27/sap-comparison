@@ -783,6 +783,15 @@ main_list <- list(
       "log_ks"
     )
   ),
+  tar_target(
+    dh_pred_data,
+    generate_trait_fig_data(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_dh,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_dh,
+      fd_k_traits_csv,
+      "log_dh"
+    )
+  ),
 
   tar_target(
     traits_points_plot, {
