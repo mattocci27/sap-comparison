@@ -55,9 +55,10 @@ Method parts are tentative.
 **
 
 ```{r, include=FALSE}
-s_fig_num("coef_int_sd")
-s_fig_num("coef_int_mean")
-s_fig_num("coef_int_diff")
+# s_fig_num("coef_int_sd")
+# s_fig_num("coef_int_mean")
+# s_fig_num("coef_int_diff")
+s_fig_num("coef_int_comb")
 s_fig_num("coef_int_quad_mean")
 s_fig_num("pg_ribbon_a")
 s_fig_num("pg_ribbon_b")
@@ -128,14 +129,14 @@ AP, *Acacia pennata*.
 
 ![sma_ks](`r here::here("figs/sma_ks.png")`)
 
-## `r s_fig("coef_int_sd")`
+## `r #s_fig("coef_int_sd")`
 
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for standard deviations estimated from the difference between pressure and tension induced flows.
 Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
 
 ![](`r here::here("figs/coef_intervals_sd.png")`){ width=350 }
 
-## `r s_fig("coef_int_mean")`
+## `r #s_fig("coef_int_mean")`
 
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
 Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
@@ -145,15 +146,35 @@ This is consistent with `r fig("sma")`ab.
 
 ![coef_intervals_mean](`r here::here("figs/coef_intervals_mean.png")`){ width=350 }
 
-## `r s_fig("coef_int_diff")`
+## `r #s_fig("coef_int_diff")`
 
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
 The estimates for AP is smaller than HH, TG, and VM, suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM given that the overall effects is positive,
 HB shows the similar pattern with AP.
 This is consistent with `r fig("sma")`b.
 
-
 ![coef_intervals_diff](`r here::here("figs/coef_intervals_diff.png")`){ width=350 }
+
+## `r s_fig("coef_int_comb")`
+
+Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
+(A) Estimates for standard deviations.
+(B) Estimates for the effect of each predictor.
+(C) Estimates for differences in effects between predictors.
+There is large variation but pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates of the total variance in (A).
+Positive values indicate pressure induced flow rates are greater than tension induced flow rates in (B) and (C).
+The positive ks_ratio parameter in (B) suggests that pressure induced flow rates tend to be greater than tension induced flow rates.
+The estimate for AP is smaller than HH, TG, and VM in (C), suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM.
+HB shows the similar pattern with AP.
+ks_ratio, ratio of pressure induced flow rates to tension induced flow rates;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*;
+p_2, 0.02 MPa;
+p_5, 0.05 MPa;
+p_8, 0.08 MPa.
 
 ## Methods
 
@@ -282,7 +303,11 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 
 ## Results
 
-Using traditional method (Granier, 1985) and our new multilevel methods generate comparable a (intercept) but slightly different b (exponent) values (Figs. S5-6; Table S4). Based on variance portioning analysis, xylem types (80.77% of total variance) are the largest source for the variance for coefficient a, while segments (40.26% of total variance) are the largest source for the variance for coefficient b (Table S5). Generally, there was an increasing tendency for coefficient a and b values along with the increasing applied pressure gradient (Figs. S7-9)
+The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. S5-6; Table S4).
+Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S7-9).
+Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
+Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (Fig. 3 and Table S5).
+Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*, while segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
 
 
 ## Pool vs multi
@@ -324,14 +349,13 @@ Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
 
-
 ## Variance partitioning
 
 ### `r fig("coef_density")`
 
 ![coef_density2](`r here::here("figs/coef_density2.png")`)
 
-Posterior distributions of coefficients *a* (A) and *b* (B) estimated by Bayesian multilevel models.
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that include inter-segment variation.
 Estimates for xylem type level, and species level are shown.
 Different colors indicate different xylem types.
 
@@ -377,13 +401,17 @@ Different colors indicate different xylem types.
 
 # Coefficients *a* and *b* with traits
 
+## Results
+
+The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. 4B, D).
+VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. 4A, C).
+
 ### `r fig("traits_points")`
 
-- Each point indicates each segment
-- Vertical bars indicate 95% CIs
-- Light and dark shaded regions indicate 95% and 50% CIs, respectively
-- The 95% CI of the slope value for `r fig("traits_points")`B did not overlap with zero
-- The 50% CI of the slope value for `r fig("traits_points")`D did not overlap with zero
+Relationships between coefficients *a* and *b* and vessel area fraction (VAF, A, C), sapwood specific hydraulic conductivity (Ks, B, D)
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
+Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
+Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 
 ![traits_points](`r here::here("figs/traits_points.png")`)
 
