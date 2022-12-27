@@ -68,4 +68,5 @@ generated quantities {
   real<lower=-1, upper=1> rho_j = Sigma_j[1, 2] * inv(tau_j[1] * tau_j[2]);
   real<lower=-1, upper=1> rho_k = Sigma_k[1, 2] * inv(tau_k[1] * tau_k[2]);
   real<lower=-1, upper=1> rho_l = Sigma_l[1, 2] * inv(tau_l[1] * tau_l[2]);
+  vector[K] a = exp(to_vector(alpha[1, ]) + pow(sigma, 2) / 2);
 }

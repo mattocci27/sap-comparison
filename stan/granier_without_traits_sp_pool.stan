@@ -25,6 +25,7 @@ model {
 
 generated quantities {
   matrix[2, 1] alpha;
+  real a = exp(log_a + pow(sigma, 2) / 2);
   alpha[1, 1] = log_a;
   alpha[2, 1] = b;
 }

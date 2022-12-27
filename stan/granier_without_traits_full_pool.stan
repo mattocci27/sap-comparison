@@ -48,3 +48,6 @@ model {
   y ~ normal(mu, sigma);
 }
 
+generated quantities {
+  vector[K] a = exp(to_vector(alpha[1, ]) + pow(sigma, 2) / 2);
+}

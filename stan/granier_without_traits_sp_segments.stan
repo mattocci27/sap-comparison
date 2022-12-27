@@ -38,3 +38,7 @@ model {
   L_Omega ~ lkj_corr_cholesky(2);
   y ~ normal(mu, sigma);
 }
+
+generated quantities {
+  real a = exp(log_a + pow(sigma, 2) / 2);
+}
