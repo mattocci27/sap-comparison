@@ -10,6 +10,7 @@ library(bayesplot)
 source("R/data_clean.R")
 source("R/stan.R")
 source("R/figs.R")
+source("R/tables.R")
 
 plan(multicore)
 options(clustermq.scheduler = "multicore")
@@ -974,7 +975,16 @@ main_list <- list(
     format = "file"
   ),
 
-
+  tar_target(
+    ab_csv,
+    write_ab_csv2(
+      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+      fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+      fit_ab_each_sap_sp_clean_0.08,
+      xylem_lab,
+      "data/all_ab.csv"),
+    format = "file"
+  ),
   # with traits
 
   # tar_target(
