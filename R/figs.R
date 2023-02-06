@@ -775,7 +775,7 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
   #    targets::tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)) |>
   #    janitor::clean_names()
 
-  #  tar_load(xylem_lab)
+  # tar_load(xylem_lab)
   draws <- draws |>
     janitor::clean_names()
 
@@ -807,8 +807,9 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
      c(
       xy_data_a$xylem |> unique() |> sort() |> as.character(),
       sp_data_a$sp_short |> unique() |> str_sort()))) |>
-    mutate(para = "Coefficient a")
-
+    mutate(para = "Coefficient a") |>
+    mutate(group = ifelse(str_detect(sp_short, "^*\\."), "Species", "Xylem")) |>
+    mutate(group = factor(group, levels = c("Xylem", "Species")))
 
   xy_data_b <- draws |>
     dplyr::select(starts_with("beta_2")) |>
@@ -834,7 +835,8 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
      c(
       xy_data_a$xylem |> unique() |> sort() |> as.character(),
       sp_data_b$sp_short |> unique() |> str_sort()))) |>
-    mutate(para = "Coefficient b")
+    mutate(para = "Coefficient b") |>
+    mutate(group = ifelse(str_detect(sp_short, "^*\\."), "xylem", "sp"))
 
   data <- bind_rows(data_a, data_b)
 
@@ -863,7 +865,7 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
     xlab("Coefficient a") +
     ylab("") +
     theme_bw() +
-    theme(legend.position = c(0.1, 0.1))
+    theme(legend.position = "none")
 
   p2 <- ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
     geom_density_ridges(col = "grey92") +
@@ -881,7 +883,7 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
     scale_x_log10() +
     theme_bw() +
     theme(
-#      legend.position = "none",
+      legend.position = "none",
       axis.text.y = element_text(face = "italic", size = 6)
       )
 
@@ -897,43 +899,79 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
       )
 
   p5 <- ggplot(data_a, aes(x = exp(value), y = sp_short2, fill = xylem))  +
-    geom_density_ridges(col = "grey92") +
-    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
-    scale_y_discrete(limits = rev) +
-    xlab(expression(Coefficient~italic(a))) +
-    ylab("") +
+    geom_vline(xintercept = 119, lty = 1, col = "grey40") +
 #    scale_x_log10() +
+    facet_grid(group ~ ., scales = "free", space = "free") +
     scale_x_log10(
         breaks = c(10^2, 10^3, 10^4),
         labels = trans_format("log10", math_format(10^.x))) +
     theme_bw() +
     theme(
       legend.position = "none",
-      axis.text.y = element_text(face = "italic", size = 8)
-      )
+      axis.text.y = element_text(face = "italic", size = 8),
+      strip.background = element_blank(),
+      strip.text = element_blank()
+      ) +
+    geom_density_ridges(col = "grey92") +
+    # geom_hline(yintercept = 32, lty = 2, col = "grey40") +
+    scale_y_discrete(limits = rev) +
+    xlab(expression(Coefficient~italic(a))) +
+    ylab("")
+  # p5
 
   p6 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
+    geom_vline(xintercept = 1.23, lty = 1, col = "grey40") +
+    facet_grid(group ~ ., scales = "free", space = "free") +
+    theme_bw() +
+    theme(
+     legend.position = "none",
+      axis.text.y = element_blank(),
+      #axis.text.y = element_text(face = "italic", size = 8)
+      strip.background = element_blank(),
+      strip.text = element_blank()
+      )  +
     geom_density_ridges(col = "grey92") +
-    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
     scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(b))) +
-    ylab("") +
+    ylab("")
+
+  # the left panel is on the log-scale but the right panel is not
+  # This is difficult to use facet
+  data_a2 <- data_a |>
+    mutate(para = "Coefficient a")
+  data_b2 <- data_b |>
+    mutate(para = "Coefficient b")
+  p7 <- bind_rows(data_a2, data_b2) |>
+    ggplot(aes(x = value, y = sp_short2, fill = xylem))  +
+    geom_vline(xintercept = 1.23, lty = 1, col = "grey40") +
+    geom_vline(xintercept = 119, lty = 1, col = "grey40") +
+    facet_wrap(~ para, scale = "free") +
     theme_bw() +
     theme(
      legend.position = "none",
       axis.text.y = element_blank()
       #axis.text.y = element_text(face = "italic", size = 8)
-      )
-
+      )  +
+    geom_density_ridges(col = "grey92") +
+    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
+    scale_y_discrete(limits = rev) +
+    xlab(expression(Coefficient~italic(b))) +
+    ylab("")
 
   if (looks == "patchwork") {
     # p1 + p2 + p3 + p4 +
-    #   plot_annotation(tag_levels = "A")
+    #   plot_annotation(tag_levels = "A") +
+    #   plot_layout(heights = c(2, 8))
+
+    # p5 +  plot_spacer() + p6 +
+    #   plot_layout(widths = c(5, -1.1, 4), guides = "collect") #&
+      # theme(plot.margin = unit(c(0,0,0,0), "cm"))
+      # plot_annotation(tag_levels = "A") #3
     p5 + p6 +
-      plot_annotation(tag_levels = "A") #3
+       plot_annotation(tag_levels = "A")
+
   } else if (looks == "facet") {
-    p5 + p6 +
-      plot_annotation(tag_levels = "A") #3
+    p7
       # theme(plot.margin = margin(0, 0.1, 0, 0, "cm"))
   }
 }
