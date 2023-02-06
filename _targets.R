@@ -809,12 +809,11 @@ main_list <- list(
   ),
 
   tar_target(
-    coef_density_plot2, {
+    coef_density_plot, {
       p <- coef_density(xylem_lab,
-        fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08,
-        looks = "patchwork")
+        fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
       my_ggsave(
-        "figs/coef_density2",
+        "figs/coef_density",
         p,
         dpi = 300,
         width = 6.8,
@@ -823,7 +822,6 @@ main_list <- list(
     },
     format = "file"
   ),
-
   tar_target(
     xylem_lab,
     generate_xylem_lab(fd_k_traits_csv)

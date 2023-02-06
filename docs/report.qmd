@@ -2445,6 +2445,44 @@ s2 |>
 
 ```
 
+```{r, eval=FALSE}
+library(tidyverse)
+library(targets)
+tar_load(xylem_type)
+d <- tar_read(fd_k_traits_csv) |> read_csv()
+d <- d |>
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks))
+d <- d |>
+  filter(is.na(removed_k))
+
+d |>
+  group_by(species, xylem_type) |>
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>
+  DT::datatable()
+
+tmp <- d |>
+  group_by(sample_id, species) |>
+  nest() |>
+  ungroup() |>
+  arrange(sample_id)
+
+tmp <- d |>
+  group_by(species, xylem_type) |>
+  nest() |>
+  ungroup() |>
+  arrange(xylem_type) |>
+  arrange(species)
+
+uk <- model.matrix(~ xylem_type, tmp)
+uk[apply(uk, 1, sum) == 2, 1] <- 0
+
+```
+
 
 
 ```{r, eval=FALSE}

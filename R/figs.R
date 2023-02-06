@@ -766,16 +766,19 @@ line_pool_multi <- function(d, s_008, s2_008) {
 
 }
 
-coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
+
   # library(tidyverse)
   # library(here)
-#   d <- read_csv(here("data/fd_k_traits.csv")) |>
-#     filter(is.na(removed_k))
+  # library(ggridges)
+  # library(scales)
+  # library(targets)
+  # d <- read_csv(here("data/fd_k_traits.csv")) |>
+  #   filter(is.na(removed_k))
   #  draws <- withr::with_dir(rprojroot::find_root('_targets.R'),
   #    targets::tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)) |>
   #    janitor::clean_names()
-
   # tar_load(xylem_lab)
+coef_density <- function(xylem_lab, draws) {
   draws <- draws |>
     janitor::clean_names()
 
@@ -857,50 +860,48 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
   data_b <- data_b |>
     mutate(sp_short2 = factor(sp_short, levels = c(tmp2, tmp3)))
 
+  y_lab_raw <- data_a$sp_short2  |> levels()
+  y_lab <- as.expression(y_lab_raw)
 
-  p1 <- ggplot(xy_data_a, aes(x = exp(value), y = xylem, fill = xylem))  +
-    geom_density_ridges(col = "grey92") +
-    scale_y_discrete(limits = rev) +
-    scale_x_log10() +
-    xlab("Coefficient a") +
-    ylab("") +
-    theme_bw() +
-    theme(legend.position = "none")
+  names(y_lab) <- y_lab_raw
+  # R 4.2.2 can handle comparisons of expressions
+  y_lab <- case_when(
+    y_lab == "A. fraxinifolius" ~ expression(italic("A. fraxinifolius")),
+    y_lab == "D. alatus" ~ expression(italic("D. alatus")),
+    y_lab == "D. tonkinensis" ~ expression(italic("D. tonkinensis")),
+    y_lab == "D. turbinatus" ~ expression(italic("D. turbinatus")),
+    y_lab == "H. cordifolia" ~ expression(italic("H. cordifolia")),
+    y_lab == "H. brasiliensis" ~ expression(italic("H. brasiliensis")),
+    y_lab == "H. hongaychsis" ~ expression(italic("H. hongaychsis")),
+    y_lab == "J. mimosifolia" ~ expression(italic("J. mimosifolia")),
+    y_lab == "L. coromandelica" ~ expression(italic("L. coromandelica")),
+    y_lab == "L. leucocephala" ~ expression(italic("L. leucocephala")),
+    y_lab == "M. ferrea" ~ expression(italic("M. ferrea")),
+    y_lab == "P. chinensis" ~ expression(italic("P. chinensis")),
+    y_lab == "P. cerasoides" ~ expression(italic("P. cerasoides")),
+    y_lab == "P. tomentosa" ~ expression(italic("P. tomentosa")),
+    y_lab == "S. assamica" ~ expression(italic("S. assamica")),
+    y_lab == "T. franchetii" ~ expression(italic("T. franchetii")),
+    y_lab == "V. mangachapoi" ~ expression(italic("V. mangachapoi")),
+    y_lab == "V. xishuangbannaensis" ~ expression(italic("V. xishuangbannaensis")),
+    y_lab == "A. pennata" ~ expression(italic("A. pennata")),
+    y_lab == "B. tenuiflor" ~ expression(italic("B. tenuiflor")),
+    y_lab == "G. montanum" ~ expression(italic("G. montanum")),
+    y_lab == "M. pachycarpa" ~ expression(italic("M. pachycarpa")),
+    y_lab == "V. calyculata" ~ expression(italic("V. calyculata")),
+    y_lab == "A. alexandrae" ~ expression(italic("A. alexandrae")),
+    y_lab == "A. catechu" ~ expression(italic("A. catechu")),
+    y_lab == "A. triandra" ~ expression(italic("A. triandra")),
+    y_lab == "C. mitis" ~ expression(italic("C. mitis")),
+    y_lab == "C. lutescens" ~ expression(italic("C. lutescens")),
+    y_lab == "D. lutescen" ~ expression(italic("D. lutescen")),
+    y_lab == "M. toosendan" ~ expression(italic("M. toosendan")),
+    y_lab == "T. grandis" ~ expression(italic("T. grandis")),
+    TRUE ~ y_lab
+  )
+  names(y_lab) <- y_lab_raw
 
-  p2 <- ggplot(xy_data_b, aes(x = value, y = xylem, fill = xylem))  +
-    geom_density_ridges(col = "grey92") +
-    scale_y_discrete(limits = rev) +
-    xlab("Coefficient b") +
-    ylab("") +
-    theme_bw() +
-    theme(legend.position = "none")
-
-  p3 <- ggplot(sp_data_a, aes(x = exp(value), y = sp_short, fill = xylem))  +
-    geom_density_ridges(col = "grey92") +
-    scale_y_discrete(limits = rev) +
-    xlab("Coefficient a") +
-    ylab("") +
-    scale_x_log10() +
-    theme_bw() +
-    theme(
-      legend.position = "none",
-      axis.text.y = element_text(face = "italic", size = 6)
-      )
-
-  p4 <- ggplot(sp_data_b, aes(x = exp(value), y = sp_short, fill = xylem))  +
-    geom_density_ridges(col = "grey92") +
-    scale_y_discrete(limits = rev) +
-    xlab("Coefficient b") +
-    ylab("") +
-    theme_bw() +
-    theme(
-      legend.position = "none",
-      axis.text.y = element_text(face = "italic", size = 6)
-      )
-
-  p5 <- ggplot(data_a, aes(x = exp(value), y = sp_short2, fill = xylem))  +
-    geom_vline(xintercept = 119, lty = 1, col = "grey40") +
-#    scale_x_log10() +
+  p1 <- ggplot(data_a, aes(x = exp(value), y = sp_short2, fill = xylem))  +
     facet_grid(group ~ ., scales = "free", space = "free") +
     scale_x_log10(
         breaks = c(10^2, 10^3, 10^4),
@@ -908,19 +909,17 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
     theme_bw() +
     theme(
       legend.position = "none",
-      axis.text.y = element_text(face = "italic", size = 8),
+      # axis.text.y = element_text(face = "italic", size = 8),
       strip.background = element_blank(),
       strip.text = element_blank()
       ) +
+    geom_vline(xintercept = 119, lty = 1, col = "grey40") +
+    scale_y_discrete(labels = y_lab, limits = rev) +
     geom_density_ridges(col = "grey92") +
-    # geom_hline(yintercept = 32, lty = 2, col = "grey40") +
-    scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(a))) +
     ylab("")
-  # p5
 
-  p6 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
-    geom_vline(xintercept = 1.23, lty = 1, col = "grey40") +
+  p2 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
     facet_grid(group ~ ., scales = "free", space = "free") +
     theme_bw() +
     theme(
@@ -930,50 +929,15 @@ coef_density <- function(xylem_lab, draws, looks = c("patchwork", "facet")) {
       strip.background = element_blank(),
       strip.text = element_blank()
       )  +
-    geom_density_ridges(col = "grey92") +
-    scale_y_discrete(limits = rev) +
-    xlab(expression(Coefficient~italic(b))) +
-    ylab("")
-
-  # the left panel is on the log-scale but the right panel is not
-  # This is difficult to use facet
-  data_a2 <- data_a |>
-    mutate(para = "Coefficient a")
-  data_b2 <- data_b |>
-    mutate(para = "Coefficient b")
-  p7 <- bind_rows(data_a2, data_b2) |>
-    ggplot(aes(x = value, y = sp_short2, fill = xylem))  +
     geom_vline(xintercept = 1.23, lty = 1, col = "grey40") +
-    geom_vline(xintercept = 119, lty = 1, col = "grey40") +
-    facet_wrap(~ para, scale = "free") +
-    theme_bw() +
-    theme(
-     legend.position = "none",
-      axis.text.y = element_blank()
-      #axis.text.y = element_text(face = "italic", size = 8)
-      )  +
     geom_density_ridges(col = "grey92") +
-    geom_hline(yintercept = 32, lty = 2, col = "grey40") +
     scale_y_discrete(limits = rev) +
     xlab(expression(Coefficient~italic(b))) +
     ylab("")
 
-  if (looks == "patchwork") {
-    # p1 + p2 + p3 + p4 +
-    #   plot_annotation(tag_levels = "A") +
-    #   plot_layout(heights = c(2, 8))
+  p1 + p2 +
+    plot_annotation(tag_levels = "A")
 
-    # p5 +  plot_spacer() + p6 +
-    #   plot_layout(widths = c(5, -1.1, 4), guides = "collect") #&
-      # theme(plot.margin = unit(c(0,0,0,0), "cm"))
-      # plot_annotation(tag_levels = "A") #3
-    p5 + p6 +
-       plot_annotation(tag_levels = "A")
-
-  } else if (looks == "facet") {
-    p7
-      # theme(plot.margin = margin(0, 0.1, 0, 0, "cm"))
-  }
 }
 
 

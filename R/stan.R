@@ -638,6 +638,78 @@ generate_sap_stan_data <- function(data, remove_abnormal_values = FALSE, upper_p
   stan_data
 }
 
+generate_sap_sp_traits_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, traits = FALSE) {
+  # library(tidyverse)
+  # d <- read_csv("data/fd_k_traits.csv")
+  d <- read_csv(data)
+
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+  d <- d |>
+    filter(is.na(removed_k))
+
+  if (upper_pressure) {
+   d <- d |>
+    filter(p_g <= upper_pressure)
+  }
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp <- d |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    dplyr::select(wood_density, swc, dh, vaf, vf, ks)
+
+  tmp2 <- na.omit(tmp) |> as.matrix()
+  xj <- cbind(1, tmp2)
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  uk <- model.matrix(~ xylem_type, tmp)
+  uk[apply(uk, 1, sum) == 2, 1] <- 0
+
+  ul <- matrix(rep(1, 4), ncol = 4)
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    L = unique(d$xylem_type) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    kk = as.factor(d$species) |> as.numeric(),
+    ll = as.factor(d$xylem_type) |> as.numeric(),
+    uj = t(uj),
+    uk = t(uk),
+    ul = ul,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd)
+  )
+
+  if (traits) {
+    stan_data$xj <- xj
+    stan_data$T <- ncol(xj)
+  }
+
+  stan_data
+}
+
 
 # alpha <- rbind(rep(1, 31), 1:31)
 # alpha %*% sap_stan_data$uj
