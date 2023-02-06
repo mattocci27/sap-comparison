@@ -1291,10 +1291,14 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_
 }
 
 
-traits_points <- function(vaf_pred_data, ks_pred_data) {
+traits_points <- function(vaf_pred_data, ks_pred_data, xylem_lab) {
 # tar_load(vaf_pred_data)
 # tar_load(ks_pred_data)
+ xylem_lab2 <- xylem_lab |>
+    dplyr::select(species, xylem_long_fct)
+#  data$pred_points <- left_join(data$pred_points, xylem_lab2)
  fig_fun <- function(data, trait_name, coef_a = TRUE, with_ribbon = TRUE) {
+    data$pred_points <- left_join(data$pred_points, xylem_lab2)
   if (coef_a & with_ribbon) {
      p <- ggplot() +
         geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m))) +
@@ -1311,8 +1315,8 @@ traits_points <- function(vaf_pred_data, ks_pred_data) {
 
   if (coef_a) {
      p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}}), col = xylem_type)) +
-        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_type), alpha = 0.6) +
+        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}}), col = xylem_long_fct)) +
+        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.6) +
         ylab(expression(Coefficient~italic(a))) +
         coord_cartesian(ylim = c(5, 20000)) +
         scale_x_log10() +
@@ -1321,8 +1325,8 @@ traits_points <- function(vaf_pred_data, ks_pred_data) {
         theme(legend.position = "none")
   } else {
      p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_type)) +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_type)) +
+        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct)) +
         ylab(expression(Coefficient~italic(b))) +
         ylim(c(-1.5, 5)) +
         scale_x_log10() +
@@ -1336,7 +1340,11 @@ traits_points <- function(vaf_pred_data, ks_pred_data) {
     xlab("VAF (%)")
   p2 <- fig_fun(ks_pred_data, log_ks) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
-    theme(legend.position = c(0.2, 0.75))
+    labs(col = "") +
+    theme(
+      legend.position = c(0.35, 0.8),
+      legend.background = element_blank()
+    )
   p3 <- fig_fun(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
     xlab("VAF (%)")
   p4 <- fig_fun(ks_pred_data, log_ks, coef_a = FALSE) +

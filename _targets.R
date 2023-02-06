@@ -797,7 +797,7 @@ main_list <- list(
 
   tar_target(
     traits_points_plot, {
-      p <- traits_points(vaf_pred_data, ks_pred_data)
+      p <- traits_points(vaf_pred_data, ks_pred_data, xylem_lab)
       my_ggsave(
         "figs/traits_points",
         p,

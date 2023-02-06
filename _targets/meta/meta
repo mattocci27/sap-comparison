@@ -394,7 +394,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|59a0cdb1ff0a1d18|bfa54e212d880986|adef9168d191777d|1440272382||t19297.4278851966s|b2da3daf84b349b0|8342|rds|local|vector|||1.236|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|a5d73fc9f8f2a7bf|||||||||||||||
+main_list|object|bbc5063612061957|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
@@ -511,8 +511,8 @@ traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_nowd|stem|46090ecaab
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf|stem|bb3be0ca9adee59e|0f1a54c08803b41b|3ca4918dac4afa0c|-1139521207||t19300.2760243368s|5b8074f638d9152a|30984|rds|local|vector|||1.824|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf|stem|9f097f7557104298|346b04bb9f4d6e9c|6c1f4c78fd7537af|635445995||t19300.2697417442s|8b5b3474a5c6c2ca|30967|rds|local|vector|||2.121|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd|stem|b8f81c5f759ea948|e085941f510144a3|c6524eabff814d7e|-709414829||t19300.2352290738s|a5ee140afc020428|30956|rds|local|vector|||2.179|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-traits_points|function|17c933c7b31bbecd|||||||||||||||
-traits_points_plot|stem|f231389b08c0a6f1|586c81c212d44845|5529c363be57f69b|-919989325|figs/traits_points.png*figs/traits_points.pdf|t19311.3525002572s|d30d9f6c072cdd82|368524|file|local|vector|||1.299||
+traits_points|function|5fe35b48d2dafa81|||||||||||||||
+traits_points_plot|stem|1e4f919760b8c6a7|f12cb8d487d3ca4f|1637286611722a0a|-919989325|figs/traits_points.png*figs/traits_points.pdf|t19394.552061149s|acd1c4aa6281313a|359873|file|local|vector|||1.333||
 vaf_pred_data|stem|80fca09414f099bc|6e05a0800394acf9|6e6bdcab8412517f|585601239||t19311.1533355164s|a0b019ec6097bd23|20268|rds|local|vector|||1.582||
 without_traits_0.02|stem|38cdbb45267adebe|38396c85924e2613|b84f02e1c05ce256|1772442172|data/without_traits_002.csv|t19351.085859856s|ebfca279227d9f70|90611|file|local|vector|||1.698||
 without_traits_0.025|stem|0be16082d981245c|70b966e985c3e602|27b304f4eab008b4|406005471|data/without_traits_0025.csv|t19351.0858389297s|6e7968f9ab658660|98458|file|local|vector|||1.921||
