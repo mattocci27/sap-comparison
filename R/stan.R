@@ -1328,8 +1328,9 @@ traits_points <- function(vaf_pred_data, ks_pred_data, xylem_lab) {
         geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
         geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct)) +
         ylab(expression(Coefficient~italic(b))) +
-        ylim(c(-1.5, 5)) +
+        # ylim(c(-1.5, 5)) +
         scale_x_log10() +
+        coord_cartesian(ylim = c(0, 4)) +
         my_theme() +
         theme(legend.position = "none")
     }
