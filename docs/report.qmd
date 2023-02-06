@@ -328,8 +328,8 @@ The dashed and solid lines represent posterior medians of the power-law relation
 
 ### `r fig("pg_multi")`
 
-Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients.
-`p_g_lim` indicates the maximum pressure gradient for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Different lines indicate different maximum pressure gradients for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
 
 ![pg_multi](`r here::here("figs/pg_multi.png")`)
 

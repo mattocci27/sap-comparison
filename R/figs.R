@@ -450,26 +450,31 @@ coef_intervals_logistic <- function(draws) {
 line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) {
 
 # s_0025 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.025))
-# s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.02))
-# s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.03))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025))
 # s_0035 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.035))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035))
+# s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02))
+# s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03))
 # s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.04))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04))
 # s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.05))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05))
 # s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.06))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06))
 # s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.07))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07))
 # s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08))
+#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08))
 
+  # data <- tar_read(fd_k_traits_csv)
+  xylem_lab2 <- xylem_lab |>
+    select(sp_short, sp_short_chr, xylem_long_fct)
   d <- read_csv(data) |>
-    filter(is.na(removed_k))
+    filter(is.na(removed_k)) |>
+    rename(sp_short_chr = sp_short) |>
+    left_join(xylem_lab2, by = "sp_short_chr")
 
   s_002 <- s_002 |> mutate(p_g_lim = "0.02")
   s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
@@ -521,19 +526,34 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
     mutate(log_pred = pmap(list(log_xx, data), \(log_xx, data) {data$log_a + data$b * log_xx + data$sigma^2 / 2})) |>
     unnest(cols = c(data, log_xx, log_pred))
 
+  gg_color_hue <- function(n) {
+    hues = seq(15, 375, length = n + 1)
+    hcl(h = hues, l = 65, c = 100)[1:n]
+  }
+  my_cols <- gg_color_hue(4)
+
   ggplot() +
-    #geom_point(data = d, aes(x = k, y = fd, col = xylem_type)) +
-    geom_point(data = d, aes(x = k, y = fd)) +
-    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = p_g_lim)) +
+    geom_point(data = d |>
+      filter(xylem_type == "DP"), aes(x = k, y = fd), col = my_cols[1]) +
+    geom_point(data = d |>
+      filter(xylem_type == "RP"), aes(x = k, y = fd), col = my_cols[2]) +
+    geom_point(data = d |>
+      filter(xylem_type == "Pa"), aes(x = k, y = fd), col = my_cols[3]) +
+    geom_point(data = d |>
+      filter(xylem_type == "L"), aes(x = k, y = fd), col = my_cols[4]) +
+    # geom_point(data = d, aes(x = k, y = fd, col = xylem_long_fct)) +
+    # geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), group = p_g_lim)) +
+    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = as.numeric(p_g_lim), group = p_g_lim)) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
     xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    scale_color_viridis_c(option = "D") +
+    labs(col =expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
     my_theme() +
     theme(
       strip.text = element_text(face = "italic", size = 8),
       legend.position = c(0.85, 0.05)
       )
-
 
 }
 
@@ -696,16 +716,21 @@ ggplot(tmp, aes(x = b, y = log_a, group = .id)) +
 
 }
 
-line_pool_multi <- function(d, s_008, s2_008) {
+line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
   # s_008 <- tar_read(fit_ab_summary_granier_without_traits_sap_all_clean_0.08)
   # s2_008 <- tar_read(fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
 
+  xylem_lab2 <- xylem_lab |>
+    select(sp_short, sp_short_chr, xylem_long_fct)
+
   d <- read_csv(d) |>
-    filter(is.na(removed_k))
+    filter(is.na(removed_k)) |>
+    rename(sp_short_chr = sp_short) |>
+    left_join(xylem_lab2, by = "sp_short_chr")
 
   log_a <- s_008 |>
     filter(str_detect(variable, "alpha\\[1")) |>
-  pull(q50)
+    pull(q50)
   b <- s_008 |>
     filter(str_detect(variable, "alpha\\[2")) |>
     pull(q50)
@@ -742,22 +767,15 @@ line_pool_multi <- function(d, s_008, s2_008) {
     dplyr::select(xylem_type, species, sp_short, log_xx, log_pred, log_pred_pool) |>
     unnest(c(log_xx, log_pred, log_pred_pool))
 
-  # d_dp <- d |>
-  #   filter(xylem_type == "Pa")
-  # pred_dp <- pred_data |>
-  #   filter(xylem_type == "Pa")
-
   d |>
     ggplot() +
-    geom_point(aes(x = k, y = fd, col = xylem_type)) +
+    geom_point(aes(x = k, y = fd, col = xylem_long_fct)) +
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred))) +
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred_pool)), lty = 2) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
-    scale_color_discrete(name = "",
-      breaks = c("DP", "RP", "Pa", "L"),
-      labels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana")) +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
     xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    labs(col = "") +
     my_theme() +
     theme(
       strip.text = element_text(face = "italic", size = 8),
@@ -972,7 +990,7 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
     mutate(sp_num = as.numeric(sp_fct)) |>
     mutate(sp_num1 = str_c("1_", sp_num))  |>
     mutate(sp_num2 = str_c("2_", sp_num))  |>
-    arrange(xylem_fct, species) |>
+    arrange(xylem_long_fct, species) |>
     mutate(sp_short_chr = sp_short) |>
     mutate(sp_short = factor(sp_short_chr, levels = sp_short_chr))
   xylem_lab

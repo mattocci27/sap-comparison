@@ -727,6 +727,7 @@ main_list <- list(
   tar_target(
     pool_multi_plot, {
       p <- line_pool_multi(fd_k_traits_csv,
+       xylem_lab,
        fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
        fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
       my_ggsave(
