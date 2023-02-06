@@ -848,11 +848,18 @@ coef_density <- function(xylem_lab, draws) {
     unique() |>
     group_by(xylem) |>
     nest() |>
+    arrange(xylem) |>
     unnest(data) |>
     ungroup() |>
     mutate(sp_short_chr = as.character(sp_short)) |>
     pull(sp_short_chr)
-  tmp2 <- tmp[str_detect(tmp, "Palm|tree|Liana")]
+  # tmp2 <- tmp[str_detect(tmp, "Palm|tree|Liana")]
+
+  tmp2 <- xylem_lab |>
+    pull(xylem_long_fct) |>
+    unique() |>
+    levels()
+
   tmp3 <- tmp[!str_detect(tmp, "Palm|tree|Liana")]
 
   data_a <- data_a |>
@@ -919,6 +926,7 @@ coef_density <- function(xylem_lab, draws) {
     xlab(expression(Coefficient~italic(a))) +
     ylab("")
 
+  # my_col <- RColorBrewer::brewer.pal(4, "PuOr")
   p2 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
     facet_grid(group ~ ., scales = "free", space = "free") +
     theme_bw() +
@@ -932,6 +940,7 @@ coef_density <- function(xylem_lab, draws) {
     geom_vline(xintercept = 1.23, lty = 1, col = "grey40") +
     geom_density_ridges(col = "grey92") +
     scale_y_discrete(limits = rev) +
+    # scale_fill_manual(values = my_col) +
     xlab(expression(Coefficient~italic(b))) +
     ylab("")
 
@@ -963,12 +972,28 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
     mutate(sp_num = as.numeric(sp_fct)) |>
     mutate(sp_num1 = str_c("1_", sp_num))  |>
     mutate(sp_num2 = str_c("2_", sp_num))  |>
-    arrange(species)
+    arrange(xylem_fct, species) |>
+    mutate(sp_short_chr = sp_short) |>
+    mutate(sp_short = factor(sp_short_chr, levels = sp_short_chr))
   xylem_lab
 }
 
+
+
+
+# s_002 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02)
+# s_0025 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025)
+# s_003 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03)
+# s_0035 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035)
+# s_004 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04)
+# s_005 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05)
+# s_006 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06)
+# s_007 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07)
+# s_008 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
+# tar_load(xylem_lab)
+# tar_load(k_range)
 ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
-  # s_0015 <- s_0015 |> mutate(p_g_lim = "0.015")
+
   s_002 <- s_002 |> mutate(p_g_lim = "0.02")
   s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
   s_003 <- s_003 |> mutate(p_g_lim = "0.03")
@@ -994,7 +1019,6 @@ ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004
       mutate(q50 = exp(q50)) |>
       mutate(q75 = exp(q75)) |>
       mutate(q97_5 = exp(q97_5))
-
   } else {
     data <- data |>
       filter(str_detect(variable, "alpha\\[2"))
@@ -1007,7 +1031,8 @@ ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004
   fig_data <- right_join(fig_data, k_range, by = c("species", "p_g_lim")) |>
     mutate(p_g_lim = as.numeric(p_g_lim))
 
-  p <- ggplot(fig_data, aes(x = p_g_lim, y = q50, group = sp_short, fill = xylem_long_fct)) +
+  p <- ggplot(fig_data, aes(x = p_g_lim, y = q50, group = sp_short,
+    fill = xylem_long_fct)) +
       facet_wrap(~sp_short, ncol = 4, scale = "free_y") +
       geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
       geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.6) +

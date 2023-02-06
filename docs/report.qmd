@@ -335,7 +335,7 @@ Relationships between sap flux density and sap flow index K ((△T~max~-△T)/�
 
 ### `r s_fig("pg_ribbon_a")`
 
-Relationships between the coefficient *a* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+Relationships between the coefficient *a* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
 Light and dark shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
 The maximum applied Pg are different among species because segment length are different.
@@ -346,7 +346,7 @@ Therefore, the lower ranges for maximum applied Pg are also different among spec
 
 ### `r s_fig("pg_ribbon_b")`
 
-Relationships between the coefficient *b* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+Relationships between the coefficient *b* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
@@ -355,10 +355,10 @@ Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ### `r fig("coef_density")`
 
-![coef_density2](`r here::here("figs/coef_density2.png")`)
+![coef_density](`r here::here("figs/coef_density.png")`)
 
-Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that include inter-segment variation.
-Estimates for xylem type level, and species level are shown.
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
+Estimates for xylem type level and species level are shown.
 Different colors indicate different xylem types.
 
 - Coefficient a (median [25% CI, 75% CI]) were explained by:

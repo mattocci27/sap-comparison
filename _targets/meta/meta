@@ -1,7 +1,7 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 .Random.seed|object|527cb61bc1e1eb59|||||||||||||||
-ab_csv|stem|de542817abd5ce62|88cd349f7d70f5ee|2f14da114e4bc368|1788216019|data/all_ab.csv|t19354.3891480519s|c59e0c5fa8266e6b|12846|file|local|vector|||0.839||
-ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
+ab_csv|stem|de542817abd5ce62|88cd349f7d70f5ee|7290e8fd85792890|1788216019|data/all_ab.csv|t19394.3517395036s|c59e0c5fa8266e6b|12846|file|local|vector|||0.829||
+ab_pg_ribbon|function|c5a74e8d8a2d5b79|||||||||||||||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|cd8d2d12ccd6da8e|1787234250|data/ab_var_clean_008.csv|t19351.0859964324s|667c8b8f99843c63|2792|file|local|vector|||0.463||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
@@ -19,8 +19,8 @@ clean_sap_data|function|da4f3213beb5e365|||||||||||||||
 clean_sep|function|69d6dd9823883831|||||||||||||||
 coef_ab_vpart|function|94ec929333b84747|||||||||||||||
 coef_cor|function|babe69355bce119d|||||||||||||||
-coef_density|function|8d76588387308d65|||||||||||||||
-coef_density_plot|stem|9ecc7f50072e60a6|4b08e5bb2ba7027e|309222cd59ccba64|474267242|figs/coef_density.png*figs/coef_density.pdf|t19394.3168923725s|a49c7e1a1e5e3f1f|573627|file|local|vector|||4.021||
+coef_density|function|e0f1a2d9136ec5ab|||||||||||||||
+coef_density_plot|stem|e04b201d495c89f2|4b08e5bb2ba7027e|9737c431dd9a8801|474267242|figs/coef_density.png*figs/coef_density.pdf|t19394.3515807048s|35fb5901911f4782|573752|file|local|vector|||4.049||
 coef_density_plot2|stem|0d373d8d9e3da409|9a1c5773570fdc6d|6d511c3c8677df75|463867481|figs/coef_density2.png*figs/coef_density2.pdf|t19394.3093559063s|60c52d252889b1bf|573091|file|local|vector|||5.465||
 coef_density_sd|function|5c87a1bd8ba1bb09|||||||||||||||
 coef_density_sd_plot|stem|4b8eb33dbea17c57|12ed45e872b391b3|00dfefeba7203052|-1845336212|figs/coef_density_sd.png*figs/coef_density_sd.pdf|t19297.4278668167s|ded03e4c4a8783c9|65193|file|local|vector|||0.813||
@@ -368,7 +368,7 @@ generate_sap_stan_data_segment|function|c19a8c68914c4e27|||||||||||||||
 generate_sap_stan_data_sp|function|4809e4543a18619a|||||||||||||||
 generate_sap_traits_stan_data|function|72e843bcc6365aab|||||||||||||||
 generate_trait_fig_data|function|ddf79a03aee92787|||||||||||||||
-generate_xylem_lab|function|9ac686f629f2965e|||||||||||||||
+generate_xylem_lab|function|cd0fca1ab546a3b1|||||||||||||||
 get_post_para|function|99f861bd3f66fcdd|||||||||||||||
 get_tmp|function|ff4c423586b6b7b9|||||||||||||||
 get_tmp_chr|function|b91d77cb123df618|||||||||||||||
@@ -399,9 +399,9 @@ my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 my_write_csv|function|46eaaee704021b09|||||||||||||||
-pg_multi_plot|stem|4d1bf1401cf380be|70461fc2545a894d|1a496a7322132177|1993914489|figs/pg_multi.png*figs/pg_multi.pdf|t19351.0862004174s|dfa20ac09ee0b64b|1139980|file|local|vector|||2.426||
-pg_ribbon_a|stem|a4bfd722d0a044c1|cdc33bc26324bcf6|bae804722d1c732d|-1370736908|figs/pg_ribbon_a.png*figs/pg_ribbon_a.pdf|t19351.086118842s|39023df6a68ff8d4|524325|file|local|vector|||2.297||
-pg_ribbon_b|stem|7ed929d759a248a3|f4f78e902acaccf5|bae804722d1c732d|-747175607|figs/pg_ribbon_b.png*figs/pg_ribbon_b.pdf|t19351.0861443053s|756298a0ff43fbf9|559418|file|local|vector|||2.054||
+pg_multi_plot|stem|b971a4cdb18a6ed1|70461fc2545a894d|510f9b327e3cf847|1993914489|figs/pg_multi.png*figs/pg_multi.pdf|t19394.3516723266s|62de25d5996f1fc4|1173721|file|local|vector|||2.814||
+pg_ribbon_a|stem|dbcc350d99a16841|cdc33bc26324bcf6|b738123d91c6c61a|-1370736908|figs/pg_ribbon_a.png*figs/pg_ribbon_a.pdf|t19394.3516099183s|7749b4ad3efffcc3|443568|file|local|vector|||2.692||
+pg_ribbon_b|stem|28a16768ce8a1c72|f4f78e902acaccf5|b738123d91c6c61a|-747175607|figs/pg_ribbon_b.png*figs/pg_ribbon_b.pdf|t19394.3516095479s|4b82f86a3fc04aa6|474669|file|local|vector|||2.529||
 piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|fd9b5ff6ce5a469f|100578318||t19242.1381884688s|257b15927dfb4d82|1372|qs|local|vector|||0.001||
 piecewise_logistic_diagnostics_piecewise_logistic|stem|bcb842ca8aadaa21|8a0b2bb054593c22|b3e0a54580b18d70|916581309||t19242.1397576172s|a79d0c805adfc589|137040|fst_tbl|local|vector|||0.003||
 piecewise_logistic_draws_piecewise_logistic|stem|c3f6cf5c2ec4a41b|f74a4223fdf17c7b|b3e0a54580b18d70|-2031418130||t19242.1397668767s|20d596b59a28c997|34025314|fst_tbl|local|vector|||0.169||
@@ -528,4 +528,4 @@ write_ab_csv2|function|9e71c2ee726202ba|||||||||||||||
 write_anova_yml|function|b3368d15fad915cf|||||||||||||||
 write_with_traits_csv|function|1662f30d235e44f5|||||||||||||||
 write_without_traits_csv|function|28d8be684df0b6f9|||||||||||||||
-xylem_lab|stem|d670ab85063d085d|32cdbee333b06533|55bbde6f62e4b215|-610102270||t19273.2462703315s|025dcb950fc2a51b|1319|rds|local|vector|||0.055||
+xylem_lab|stem|4d1e14fc3c0d5db3|32cdbee333b06533|c2adb0a5f8a0d1fa|-610102270||t19394.3515234817s|98949606cf9cbcae|1356|rds|local|vector|||0.365||
