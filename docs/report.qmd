@@ -74,7 +74,13 @@ sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
 ```
 
 ```{r, include=FALSE}
-sma_slope <- sma_fit$coef[[1]][2, ] |> round(2) |> format(nsmall = 2)
+sma_slope <- sma_fit$coef[[1]][2, ] |> bind_rows(
+  d_all, d_xylem2, d_sp2, d_samp2
+) |>
+  mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
+  mutate_if(is.numeric, \(x) format(x, nsmall = 2))
+  DT::datatable()
+round(2) |> format(nsmall = 2)
 sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
 ```
 
@@ -416,6 +422,11 @@ Slopes indicate the effects of traits on the estimates of coefficients *a* and *
 Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 
 ![traits_points](`r here::here("figs/traits_points.png")`)
+
+
+### table
+
+
 
 
 ```{r}

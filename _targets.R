@@ -1026,6 +1026,20 @@ main_list <- list(
       ),
     format = "file"
   ),
+  tar_target(
+    ks_seg_table,
+    generate_summary_trait_table(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_ks,
+      fd_k_traits_csv
+    )
+  ),
+  tar_target(
+    vaf_seg_table,
+    generate_summary_trait_table(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_vaf,
+      fd_k_traits_csv
+    )
+  ),
 
   # tar_quarto(
   #   report_html,

@@ -1354,3 +1354,109 @@ traits_points <- function(vaf_pred_data, ks_pred_data, xylem_lab) {
   p1 + p2 + p3 + p4 +
     plot_annotation(tag_levels = "A") #3
 }
+
+# fit_summary <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
+# d <- read_csv("data/fd_k_traits.csv")
+generate_summary_trait_table <- function(
+  fit_summary, data, remove_abnormal_values = TRUE, upper_pressure = FALSE) {
+  d <- read_csv(data)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  d_samp <- d |>
+    dplyr::select(species, xylem_type, sample_id) |>
+    arrange(xylem_type) |>
+    arrange(sample_id) |>
+    mutate(j = as.factor(sample_id) |> as.numeric()) |>
+    mutate(k = as.factor(species) |> as.numeric()) |>
+    mutate(l = as.factor(xylem_type) |> as.numeric()) |>
+    unique() |>
+    mutate(level = "segments") |>
+    mutate(target = sample_id)
+
+  d_sp <- d_samp |>
+    dplyr::select(species, xylem_type, k, l) |>
+    unique() |>
+    mutate(level = "species") |>
+    mutate(target = species)
+
+  d_xylem <- d_sp |>
+    dplyr::select(xylem_type, l) |>
+    unique() |>
+    mutate(level = "xylem types") |>
+    mutate(target = xylem_type)
+
+  d_sp2 <- fit_summary |>
+    filter(str_detect(variable, "alpha")) |>
+    dplyr::select(variable, q2.5, q97.5, q50, ess_bulk) |>
+    mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
+    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficientba")) |>
+    mutate(predictor = str_c(para2, para3)) |>
+    mutate(k = str_split_fixed(variable, "\\[|\\]|,", 4)[, 3] |>
+      as.numeric()) |>
+    full_join(d_sp) |>
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+
+
+  d_xylem2 <- fit_summary |>
+    filter(str_detect(variable, "beta")) |>
+    dplyr::select(variable, q2.5, q97.5, q50, ess_bulk) |>
+    mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
+    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficient b")) |>
+    mutate(predictor = str_c(para2, para3)) |>
+    mutate(l = str_split_fixed(variable, "\\[|\\]|,", 4)[, 3] |>
+      as.numeric()) |>
+    full_join(d_xylem) |>
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+
+
+  d_samp2 <- fit_summary |>
+    filter(str_detect(variable, "^A\\[")) |>
+    mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
+    mutate(j = str_split_fixed(variable, "\\[|\\]|,", 4)[, 3] |>
+      as.numeric()) |>
+    full_join(d_samp) |>
+    mutate(predictor = ifelse(para == "1", "coefficient a", "coefficient b")) |>
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+
+  d_all <- fit_summary |>
+    filter(str_detect(variable, "gamma")) |>
+    mutate(level = "overall") |>
+    mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
+    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficient b")) |>
+    mutate(predictor = str_c(para2, para3)) |>
+    mutate(target = "overall") |>
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+
+  bind_rows(
+    d_all, d_xylem2, d_sp2, d_samp2) |>
+    mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
+    mutate(ess_bulk = round(ess_bulk, digits = 0)) |>
+    mutate(ess_bulk = format(ess_bulk, nsmall = 0)) |>
+    mutate_if(is.numeric, \(x) format(x, nsmall = 2))
+
+  }
