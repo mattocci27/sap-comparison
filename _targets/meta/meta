@@ -3,6 +3,7 @@ name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iterat
 ab_csv|stem|de542817abd5ce62|88cd349f7d70f5ee|48331a91190d88bf|1788216019|data/all_ab.csv|t19394.4079109125s|c59e0c5fa8266e6b|12846|file|local|vector|||0.787||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|cd8d2d12ccd6da8e|1787234250|data/ab_var_clean_008.csv|t19351.0859964324s|667c8b8f99843c63|2792|file|local|vector|||0.463||
+all_seg_table|stem|a4e44938fdb3345d|063cc89cc2255e5c|fafe8d475d31fca8|2106658492||t19395.4209738938s|e34f5376af2de0a8|9236|rds|local|vector|||0.516||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
 anova_data_err|stem|7d4eda9fc0039321|f7f1dfda3a7000cc|504a599689c2823b|780467494||t19227.3687825832s|70dedaf6f3d70eb8|2117|rds|local|vector|||0.023||
 anova_data_log|stem|e93cdfc9e70a1b64|a61cb0040b8ee2f3|504a599689c2823b|-1005727767||t19227.3688009167s|15a3751d344e39a8|1455|rds|local|vector|||0.177||
@@ -396,7 +397,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|59a0cdb1ff0a1d18|bfa54e212d880986|adef9168d191777d|1440272382||t19297.4278851966s|b2da3daf84b349b0|8342|rds|local|vector|||1.236|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|97e79af59c970509|||||||||||||||
+main_list|object|c964015e9c99e430|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
@@ -513,8 +514,8 @@ traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_nowd|stem|46090ecaab
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf|stem|bb3be0ca9adee59e|0f1a54c08803b41b|3ca4918dac4afa0c|-1139521207||t19300.2760243368s|5b8074f638d9152a|30984|rds|local|vector|||1.824|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf|stem|9f097f7557104298|346b04bb9f4d6e9c|6c1f4c78fd7537af|635445995||t19300.2697417442s|8b5b3474a5c6c2ca|30967|rds|local|vector|||2.121|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd|stem|b8f81c5f759ea948|e085941f510144a3|c6524eabff814d7e|-709414829||t19300.2352290738s|a5ee140afc020428|30956|rds|local|vector|||2.179|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-traits_points|function|25e2646a0dba347b|||||||||||||||
-traits_points_plot|stem|21a5be68e65b9eb6|f12cb8d487d3ca4f|be2f1a9590a7e380|-919989325|figs/traits_points.png*figs/traits_points.pdf|t19394.5904824099s|499b4d221709ae9a|372320|file|local|vector|||1.267||
+traits_points|function|ab2941ae29b1ccf8|||||||||||||||
+traits_points_plot|stem|25a859fba56e6c5f|f12cb8d487d3ca4f|fff01cd5fa7d5517|-919989325|figs/traits_points.png*figs/traits_points.pdf|t19395.4312161579s|3275b63f8fa121a4|361981|file|local|vector|||1.28||
 vaf_pred_data|stem|80fca09414f099bc|6e05a0800394acf9|6e6bdcab8412517f|585601239||t19311.1533355164s|a0b019ec6097bd23|20268|rds|local|vector|||1.582||
 vaf_seg_table|stem|f73e22fb974c6028|9829becbcab59fb8|fd4b3035cda71cd8|-23406847||t19395.4103714649s|dd06d20aca453487|6312|rds|local|vector|||0.539||
 without_traits_0.02|stem|38cdbb45267adebe|38396c85924e2613|b84f02e1c05ce256|1772442172|data/without_traits_002.csv|t19351.085859856s|ebfca279227d9f70|90611|file|local|vector|||1.698||

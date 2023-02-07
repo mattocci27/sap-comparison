@@ -1040,6 +1040,13 @@ main_list <- list(
       fd_k_traits_csv
     )
   ),
+  tar_target(
+    all_seg_table,
+    generate_summary_trait_table(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fd_k_traits_csv
+    )
+  ),
 
   # tar_quarto(
   #   report_html,

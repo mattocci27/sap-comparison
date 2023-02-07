@@ -1348,7 +1348,7 @@ traits_points <- function(vaf_pred_data, ks_pred_data, xylem_lab) {
     )
   p3 <- fig_fun(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
     xlab("VAF (%)")
-  p4 <- fig_fun(ks_pred_data, log_ks, coef_a = FALSE) +
+  p4 <- fig_fun(ks_pred_data, log_ks, coef_a = FALSE, with_ribbon = FALSE) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
 
   p1 + p2 + p3 + p4 +

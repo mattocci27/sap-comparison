@@ -74,13 +74,8 @@ sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
 ```
 
 ```{r, include=FALSE}
-sma_slope <- sma_fit$coef[[1]][2, ] |> bind_rows(
-  d_all, d_xylem2, d_sp2, d_samp2
-) |>
-  mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
-  mutate_if(is.numeric, \(x) format(x, nsmall = 2))
-  DT::datatable()
-round(2) |> format(nsmall = 2)
+sma_slope <- sma_fit$coef[[1]][2, ] |>
+  round(2) |> format(nsmall = 2)
 sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
 ```
 
@@ -427,13 +422,23 @@ Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 ### table
 
 
-
-
 ```{r}
 knitr::knit_exit()
 ```
 
 ```{r}
+s <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
+
+tar_read(ks_seg_table) |>
+  DT::datatable()
+
+s |>
+  filter(str_detect(variable, "gamma")) |>
+  filter(q2.5 * q97.5 > 0)
+
+s |>
+  filter(str_detect(variable, "gamma"))
+
 d <- read_csv(here("data/fd_k_traits.csv"))
 d <- d |>
   filter(is.na(removed_k)) #|>
@@ -812,6 +817,7 @@ l9 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_novaf))
 
 loo_compare(l1, l2, l3, l4, l5, l6, l7, l8, l9)
+
 ```
 
 ```{r, eval=TRUE}
