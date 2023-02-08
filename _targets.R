@@ -773,6 +773,7 @@ main_list <- list(
       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
       fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
+      xylem_lab,
       "log_vaf"
     )
   ),
@@ -782,6 +783,7 @@ main_list <- list(
       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
       fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
+      xylem_lab,
       "log_ks"
     )
   ),
@@ -791,6 +793,7 @@ main_list <- list(
       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
       fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
+      xylem_lab,
       "log_dh"
     )
   ),
@@ -800,6 +803,7 @@ main_list <- list(
       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
       fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
+      xylem_lab,
       "wood_density"
     )
   ),
@@ -809,19 +813,51 @@ main_list <- list(
       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
       fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
+      xylem_lab,
       "log_vf"
     )
   ),
 
+  # tar_target(
+  #   traits_points_plot, {
+  #     p <- traits_points(vaf_pred_data, ks_pred_data, xylem_lab)
+  #     my_ggsave(
+  #       "figs/traits_points",
+  #       p,
+  #       dpi = 300,
+  #       width = 7,
+  #       height = 7
+  #     )
+  #   },
+  #   format = "file"
+  # ),
   tar_target(
-    traits_points_plot, {
-      p <- traits_points(vaf_pred_data, ks_pred_data, xylem_lab)
+    traits_points_main_plot, {
+      p <- traits_points_main(
+              vaf_pred_data, log_vaf,
+              ks_pred_data, log_ks)
       my_ggsave(
-        "figs/traits_points",
+        "figs/traits_points_main",
         p,
         dpi = 300,
-        width = 7,
-        height = 7
+        width = 6.8,
+        height = 6.8
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_points_si_plot, {
+      p <- traits_points_si(
+              wd_pred_data, wood_density,
+              dh_pred_data, log_dh,
+              vf_pred_data, log_vf)
+      my_ggsave(
+        "figs/traits_points_si",
+        p,
+        dpi = 300,
+        width = 6.8,
+        height = 10
       )
     },
     format = "file"

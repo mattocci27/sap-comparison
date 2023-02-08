@@ -1206,7 +1206,7 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
 }
 
 
-generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_name) {
+generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name) {
 # summary_data <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
 # draws <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)
   a_mat <- summary_data |>
@@ -1297,6 +1297,10 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_
     mutate(b_lwr = b_mat$q2.5) |>
     mutate(b_upr = b_mat$q97.5)
 
+  xylem_lab2 <- xylem_lab |>
+    dplyr::select(species, xylem_long_fct)
+  pred_points <- left_join(pred_points, xylem_lab2)
+
   list(pred_points = pred_points, pred_line = pred_line)
 }
 
@@ -1363,6 +1367,100 @@ traits_points <- function(vaf_pred_data, ks_pred_data, xylem_lab) {
 
   p1 + p2 + p3 + p4 +
     plot_annotation(tag_levels = "A") #3
+}
+
+traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TRUE, wd = FALSE) {
+
+  if (wd) {
+    data$pred_points <- data$pred_points |>
+      dplyr::mutate(wood_density = log(wood_density))
+  }
+
+  if (coef_a & with_ribbon) {
+     p <- ggplot() +
+        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m))) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.3, fill = "grey") +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_l), ymax = exp(pred_a_h)), alpha = 0.8, fill = "grey")
+  } else if (with_ribbon) {
+     p <- ggplot() +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m)) +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.2, fill = "grey") +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.8, fill = "grey")
+   } else {
+    p <- ggplot()
+  }
+
+  if (coef_a) {
+     p <- p +
+        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}}), col = xylem_long_fct)) +
+        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.6) +
+        ylab(expression(Coefficient~italic(a))) +
+        coord_cartesian(ylim = c(5, 20000)) +
+        scale_x_log10() +
+        scale_y_log10() +
+        my_theme() +
+        theme(legend.position = "none")
+  } else {
+     p <- p +
+        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct)) +
+        ylab(expression(Coefficient~italic(b))) +
+        # ylim(c(-1.5, 5)) +
+        scale_x_log10() +
+        coord_cartesian(ylim = c(0, 4)) +
+        my_theme() +
+        theme(legend.position = "none")
+    }
+  p
+}
+
+traits_points_main <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks) {
+  p1 <- traits_points_each(vaf_pred_data, log_vaf, with_ribbon = FALSE) +
+    xlab("VAF (%)")
+  p2 <- traits_points_each(ks_pred_data, log_ks) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    labs(col = "") +
+    theme(
+      legend.position = c(0.35, 0.8),
+      legend.background = element_blank()
+    )
+  p3 <- traits_points_each(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab("VAF (%)")
+  p4 <- traits_points_each(ks_pred_data, log_ks, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+
+  p1 + p2 + p3 + p4 +
+    plot_annotation(tag_levels = "A") #3
+}
+
+traits_points_si <- function(
+    wd_pred_data, wood_density,
+    dh_pred_data, log_dh,
+    vf_pred_data, log_vf
+    ) {
+  p1 <- traits_points_each(wd_pred_data, wood_density, with_ribbon = FALSE, wd = TRUE) +
+     scale_x_continuous() +
+    xlab(expression(rho~(g~cm^{-3})))
+  p2 <- traits_points_each(dh_pred_data, log_dh, with_ribbon = FALSE) +
+    labs(col = "") +
+    xlab(expression(D[h]~(mu*{m}))) +
+    theme(
+      legend.position = c(0.35, 0.8),
+      legend.background = element_blank()
+    )
+  p3 <- traits_points_each(vf_pred_data, log_vf, with_ribbon = FALSE) +
+    xlab(expression(VF~(no.~mm^{-2})))
+  p4 <- traits_points_each(wd_pred_data, wood_density, coef_a = FALSE, with_ribbon = FALSE, wd = TRUE) +
+    scale_x_continuous() +
+    xlab(expression(rho~(g~cm^{-3})))
+  p5 <- traits_points_each(dh_pred_data, log_dh, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab(expression(D[h]~(mu*{m})))
+  p6 <- traits_points_each(vf_pred_data, log_vf, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab(expression(VF~(no.~mm^{-2})))
+
+  p1 + p4 + p2 + p5 + p3 + p6 +
+    plot_layout(nrow = 3) +
+    plot_annotation(tag_levels = "A")
 }
 
 # fit_summary <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
