@@ -62,6 +62,7 @@ s_fig_num("coef_int_comb")
 s_fig_num("coef_int_quad_mean")
 s_fig_num("pg_ribbon_a")
 s_fig_num("pg_ribbon_b")
+s_fig_num("traits_points_si")
 ```
 
 # Pressure vs. tension induced flow
@@ -409,15 +410,22 @@ Different colors indicate different xylem types.
 The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. 4B, D).
 VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. 4A, C).
 
-### `r fig("traits_points")`
+### `r fig("traits_points_main")`
 
 Relationships between coefficients *a* and *b* and vessel area fraction (VAF, A, C), sapwood specific hydraulic conductivity (Ks, B, D)
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
 Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 
-![traits_points](`r here::here("figs/traits_points.png")`)
+![traits_points_main](`r here::here("figs/traits_points_main.png")`)
 
+### `r s_fig("traits_points_si")`
+
+Relationships between coefficients *a* and *b* and wood density ($\rho$, A, B), hydraulic-weighted diameter (D~h~, C, D), and vessel frequency per unit area (VF, E, F)
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
+None of the traits showed significant correlation with coefficients *a* and *b*.
+
+![traits_points_si](`r here::here("figs/traits_points_si.png")`)
 
 ### table
 
