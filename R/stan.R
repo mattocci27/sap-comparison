@@ -1449,33 +1449,54 @@ generate_summary_trait_table <- function(
     dplyr::select(xylem_type, l) |>
     unique() |>
     mutate(level = "xylem types") |>
-    mutate(target = xylem_type)
+    mutate(target = xylem_type)# |>
 
   d_sp2 <- fit_summary |>
     filter(str_detect(variable, "alpha")) |>
-    dplyr::select(variable, q2.5, q97.5, q50, ess_bulk) |>
+    dplyr::select(variable, q2.5, q97.5, q50, ess_tail) |>
     mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
-    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    # mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para2 = case_when(
+      para == "1" ~ "intercept for ",
+      para == "2" ~ "effect of wood density on ",
+      para == "3" ~ "effect of dh on ",
+      para == "4" ~ "effect of vaf on ",
+      para == "5" ~ "effect of vf on ",
+      para == "6" ~ "effect of ks on "
+    )) |>
     mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficientba")) |>
     mutate(predictor = str_c(para2, para3)) |>
     mutate(k = str_split_fixed(variable, "\\[|\\]|,", 4)[, 3] |>
       as.numeric()) |>
     full_join(d_sp) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
 
 
   d_xylem2 <- fit_summary |>
     filter(str_detect(variable, "beta")) |>
-    dplyr::select(variable, q2.5, q97.5, q50, ess_bulk) |>
+    dplyr::select(variable, q2.5, q97.5, q50, ess_tail) |>
     mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
-    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
-    mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficient b")) |>
+    # mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para2 = case_when(
+      para == "1" ~ "intercept for ",
+      para == "2" ~ "effect of wood density on ",
+      para == "3" ~ "effect of dh on ",
+      para == "4" ~ "effect of vaf on ",
+      para == "5" ~ "effect of vf on ",
+      para == "6" ~ "effect of ks on "
+    )) |>
+    mutate(para3 = ifelse(str_detect(variable, "_a"), "coefficient a", "cefficient b")) |>
     mutate(predictor = str_c(para2, para3)) |>
     mutate(l = str_split_fixed(variable, "\\[|\\]|,", 4)[, 3] |>
       as.numeric()) |>
     full_join(d_xylem) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
-
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail) |>
+    mutate(target = case_when(
+      target == "DP"  ~ "Diffuse-porous tree",
+      target == "RP"  ~ "Ring-porous tree",
+      target == "Pa"  ~ "Palm",
+      target == "L"  ~ "Liana"
+    ))
 
   d_samp2 <- fit_summary |>
     filter(str_detect(variable, "^A\\[")) |>
@@ -1484,23 +1505,33 @@ generate_summary_trait_table <- function(
       as.numeric()) |>
     full_join(d_samp) |>
     mutate(predictor = ifelse(para == "1", "coefficient a", "coefficient b")) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
 
   d_all <- fit_summary |>
     filter(str_detect(variable, "gamma")) |>
     mutate(level = "overall") |>
     mutate(para = str_split_fixed(variable, "\\[|\\]|,", 4)[, 2]) |>
-    mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    # mutate(para2 = ifelse(para == "1", "intercept", "slope")) |>
+    mutate(para2 = case_when(
+      para == "1" ~ "intercept for ",
+      para == "2" ~ "effect of wood density on ",
+      para == "3" ~ "effect of dh on ",
+      para == "4" ~ "effect of vaf on ",
+      para == "5" ~ "effect of vf on ",
+      para == "6" ~ "effect of ks on "
+    )) |>
     mutate(para3 = ifelse(str_detect(variable, "_a"), " for coefficient a", " for coefficient b")) |>
     mutate(predictor = str_c(para2, para3)) |>
     mutate(target = "overall") |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_bulk)
+    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
 
   bind_rows(
     d_all, d_xylem2, d_sp2, d_samp2) |>
     mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
-    mutate(ess_bulk = round(ess_bulk, digits = 0)) |>
-    mutate(ess_bulk = format(ess_bulk, nsmall = 0)) |>
-    mutate_if(is.numeric, \(x) format(x, nsmall = 2))
-
+    mutate(ess_tail = round(ess_tail, digits = 0)) |>
+    mutate(ess_tail = format(ess_tail, nsmall = 0)) |>
+    mutate_if(is.numeric, \(x) format(x, nsmall = 2)) |>
+    rename(variable_name = variable) |>
+    rename(variable_meaning = predictor) |>
+    rename(effecive_sample_size = ess_tail)
   }

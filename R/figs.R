@@ -997,8 +997,6 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
 }
 
 
-
-
 # s_002 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02)
 # s_0025 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025)
 # s_003 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03)
