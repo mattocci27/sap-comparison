@@ -770,8 +770,8 @@ main_list <- list(
   tar_target(
     vaf_pred_data,
     generate_trait_fig_data(
-      fit_abt_summary_granier_with_traits_sap_trait_clean_vaf,
-      fit_abt_draws_granier_with_traits_sap_trait_clean_vaf,
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
       "log_vaf"
     )
@@ -779,8 +779,8 @@ main_list <- list(
   tar_target(
     ks_pred_data,
     generate_trait_fig_data(
-      fit_abt_summary_granier_with_traits_sap_trait_clean_ks,
-      fit_abt_draws_granier_with_traits_sap_trait_clean_ks,
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
       "log_ks"
     )
@@ -788,10 +788,28 @@ main_list <- list(
   tar_target(
     dh_pred_data,
     generate_trait_fig_data(
-      fit_abt_summary_granier_with_traits_sap_trait_clean_dh,
-      fit_abt_draws_granier_with_traits_sap_trait_clean_dh,
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_all,
       fd_k_traits_csv,
       "log_dh"
+    )
+  ),
+  tar_target(
+    wd_pred_data,
+    generate_trait_fig_data(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_all,
+      fd_k_traits_csv,
+      "wood_density"
+    )
+  ),
+  tar_target(
+    vf_pred_data,
+    generate_trait_fig_data(
+      fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+      fit_abt_draws_granier_with_traits_sap_trait_clean_all,
+      fd_k_traits_csv,
+      "log_vf"
     )
   ),
 

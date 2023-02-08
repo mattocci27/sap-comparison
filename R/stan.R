@@ -1244,13 +1244,23 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, trait_
 
   draws <- janitor::clean_names(draws)
 
+  # tmp <- "gamma_a_6_1"
+  tmp <- case_when(
+    trait_name == "wood_density" ~ "2",
+    trait_name == "log_dh" ~ "3",
+    trait_name == "log_vaf" ~ "4",
+    trait_name == "log_vf" ~ "5",
+    trait_name == "log_ks" ~ "6",
+  )
+  ga <- paste("gamma_a", tmp, "1", sep = "_")
+  gb <- paste("gamma_b", tmp, "1", sep = "_")
+
   coef_a <- draws |>
-    dplyr::select(gamma_a_1_1, gamma_a_2_1) |>
+    dplyr::select(gamma_a_1_1, {{ga}}) |>
     as.matrix()
   coef_b <- draws |>
-    dplyr::select(gamma_b_1_1, gamma_b_2_1) |>
+    dplyr::select(gamma_b_1_1, {{gb}}) |>
     as.matrix()
-
 
   trait <- tmp0 |> pull({{trait_name}})
   ts <- scale(trait) |> range()

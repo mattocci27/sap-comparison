@@ -428,7 +428,14 @@ knitr::knit_exit()
 
 ```{r}
 s <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
+s2 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
 
+d <- tar_read(sap_trait_clean_all)
+
+hist(d$xj[,3])
+
+tar_read(all_seg_table) |>
+  DT::datatable()
 tar_read(ks_seg_table) |>
   DT::datatable()
 
