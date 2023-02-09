@@ -955,78 +955,30 @@ main_list <- list(
         upper_pressure = p))
   ),
 
-  tar_target(
-    without_traits_0.02,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02,
-      "data/without_traits_002.csv"
-      ),
-    format = "file"
+  tar_map(
+    list(stan_summary =
+      rlang::syms(
+      str_c("fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
+        c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
+      output = str_c("data/without_traits_",
+        c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035), ".csv")),
+    tar_target(without_traits,
+      write_without_traits_csv(stan_summary, output),
+     format = "file")
   ),
-  tar_target(
-    without_traits_0.025,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025,
-      "data/without_traits_0025.csv"
-      ),
-    format = "file"
+
+  tar_map(
+    list(path = str_c("data/without_traits_",
+        c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035), ".csv")),
+    tar_target(
+      without_traits_table,
+      generate_summary_non_trait_table(path)
+    )
   ),
-  tar_target(
-    without_traits_0.03,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03,
-      "data/without_traits_003.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.035,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035,
-      "data/without_traits_0035.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.04,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04,
-      "data/without_traits_004.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.05,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05,
-      "data/without_traits_005.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.06,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06,
-      "data/without_traits_006.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.07,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07,
-      "data/without_traits_007.csv"
-      ),
-    format = "file"
-  ),
-  tar_target(
-    without_traits_0.08,
-    write_without_traits_csv(
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-      "data/without_traits_008.csv"
-      ),
-    format = "file"
-  ),
+  # tar_target(
+  #   without_traits_0.08_table,
+  #   generate_summary_non_trait_table(without_traits_0.08)
+  # ),
 
   tar_target(
     ab_csv,

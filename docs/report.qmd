@@ -355,6 +355,42 @@ Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
 
+### `r s_table("without_traits_table_0.02")`
+
+Note: This table is too large and should be put in a separate file.
+We have this table for each maximum applied Pg (0.02 - 0.08).
+
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.02 MPa.
+The column definitions are:
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees.
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+targets::tar_read(without_traits_table_data.without_traits_0.02.csv)) |>
+  DT::datatable()
+```
+
+### `r s_table("without_traits_table_0.08")`
+
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.08 MPa.
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+targets::tar_read(without_traits_table_data.without_traits_0.08.csv)) |>
+  DT::datatable()
+```
+
+
 ## Variance partitioning
 
 ### `r fig("coef_density")`
@@ -364,6 +400,7 @@ Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
 Estimates for xylem type level and species level are shown.
 Different colors indicate different xylem types.
+Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
 
 - Coefficient a (median [25% CI, 75% CI]) were explained by:
     - segments:
@@ -425,7 +462,7 @@ Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 
 Relationships between coefficients *a* and *b* and wood density ($\rho$, A, B), hydraulic-weighted diameter (D~h~, C, D), and vessel frequency per unit area (VF, E, F).
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
-None of the traits showed significant correlations with coefficients *a* and *b*.
+None of the traits showed significant correlations with coefficients *a* or *b*.
 
 ![traits_points_si](`r here::here("figs/traits_points_si.png")`)
 
@@ -453,11 +490,15 @@ targets::tar_read(all_seg_table)) |>
   DT::datatable()
 ```
 
+
 ```{r}
 knitr::knit_exit()
 ```
 
 ```{r}
+
+tar_read(without_traits_table_data.without_traits_0.035.csv)
+
 s <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
 s2 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
 d <- tar_read(sap_trait_clean_all)
@@ -480,7 +521,6 @@ d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_ks))
 d6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all))
-
 
 apply(d1, 2, sum)
 apply(d4, 2, sum)

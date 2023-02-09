@@ -1399,6 +1399,41 @@ traits_points_si <- function(
     plot_annotation(tag_levels = "A")
 }
 
+
+# without_traits_0.08
+generate_summary_non_trait_table <- function(path) {
+  path |>
+  read_csv() |>
+    mutate(variable_meaning =
+      case_when(
+        str_detect(para, "a_") ~ "coefficent a",
+        str_detect(para, "b_") ~ "coefficent b",
+        para == "gamma[1,1]" ~ "coefficent a",
+        para == "gamma[2,1]" ~ "coefficent a"
+      ))  |>
+    mutate(target = str_split_fixed(para, "_a_|_b_|^a_|^b_", 3)[,2]) |>
+    mutate(target = ifelse(target == "", "overall", target)) |>
+    mutate(target = case_when(
+      target == "DP"  ~ "Diffuse-porous tree",
+      target == "RP"  ~ "Ring-porous tree",
+      target == "Pa"  ~ "Palm",
+      target == "L"  ~ "Liana",
+      TRUE ~ target
+    )) |>
+    mutate(level = case_when(
+      str_detect(variable, "gamma") ~ "overall",
+      str_detect(variable, "beta") ~ "xylem types",
+      str_detect(variable, "alpha") ~ "species",
+      str_detect(variable, "A") ~ "segments",
+    )) |>
+    dplyr::select(variable_name = variable, level, target, variable_meaning,
+       q50, q2.5, q97.5, effective_sample_size = ess_tail) |>
+      mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
+      mutate(effective_sample_size = round(effective_sample_size, digits = 0)) |>
+      mutate(effective_sample_size = format(effective_sample_size, nsmall = 0)) |>
+      mutate_if(is.numeric, \(x) format(x, nsmall = 2))
+}
+
 # fit_summary <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
 # d <- read_csv("data/fd_k_traits.csv")
 generate_summary_trait_table <- function(
