@@ -1112,6 +1112,14 @@ main_list <- list(
     )
   ),
 
+  tar_target(
+   varpart_notrait_table,
+   write_varpart_notrait_table(
+     ab_var_clean_008,
+     "data/varpart_notrait.csv"),
+   format = "file"
+  ),
+
   # tar_quarto(
   #   report_html,
   #   "docs/report.qmd"

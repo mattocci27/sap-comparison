@@ -74,4 +74,32 @@ write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab
 #   full_join(pool_a) |>
 #   full_join(pool_b) |>
 #   write_csv("ab_008_without_traits.csv")
+# para <- tar_read(ab_var_clean_008)
 
+write_varpart_notrait_table <- function(para, out) {
+  tmp <- read_csv(para) |>
+    filter(variable %in%
+      c("var_a_segment", "var_a_sp", "var_a_xylem",
+         "var_b_segment", "var_b_sp", "var_b_xylem")) |>
+      mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
+      mutate_if(is.numeric, \(x) format(x, nsmall = 2, trim = TRUE)) |>
+      mutate(var = str_c(q50, "% [", q25, ", ", q75, "]"))  |>
+      dplyr::select(variable, var)
+
+  tmp_a <- tmp  |>
+    filter(str_detect(variable, "_a")) |>
+    rename(a = var)
+  tmp_b <- tmp  |>
+    filter(str_detect(variable, "_b")) |>
+    rename(b = var)
+
+  tmp_a |>
+    mutate(b = tmp_b$b) |>
+    mutate(variable = case_when(
+      str_detect(variable, "segment") ~ "Segments",
+      str_detect(variable, "sp") ~ "Species",
+      str_detect(variable, "xylem") ~ "Xylem types",
+    )) |>
+    rename(Levels = variable) |>
+    my_write_csv(out)
+}

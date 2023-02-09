@@ -338,6 +338,7 @@ read_csv(here("data/all_ab.csv")) |>
     multi_b = multi_full_b
   ) |>
   kbl() |>
+  column_spec(1, italic = TRUE) |>
   kable_classic() |>
   add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
 ```
@@ -425,48 +426,20 @@ targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_wit
 
 Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
 Estimates for xylem type level and species level are shown.
-Different colors indicate different xylem types.
+Different colorsj indicate different xylem types.
 Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
 
-- Coefficient a (median [25% CI, 75% CI]) were explained by:
-    - segments:
-`r get_post_para(para, "var_a_segment", "q50")`%
-[`r get_post_para(para, "var_a_segment", "q25")`,
-`r get_post_para(para, "var_a_segment", "q50", digits = 1, nsmall = 1)`
-].
+### `r s_table("varpart_notrait")`
 
-    - species:
-`r get_post_para(para, "var_a_sp", "q50")`%
-[`r get_post_para(para, "var_a_sp", "q25")`,
-`r get_post_para(para, "var_a_sp", "q50", digits = 1, nsmall = 1)`
-].
+Posterior medians and 50% credible intervals of the explained variance for the coefficient *a* and *b* across three sample levels.
 
-    - xylem types:
-`r get_post_para(para, "var_a_xylem", "q50")`%
-[`r get_post_para(para, "var_a_xylem", "q25")`,
-`r get_post_para(para, "var_a_xylem", "q50", digits = 1, nsmall = 1)`
-].
-
-- Coefficient b (median [25% CI, 75% CI]) were explained by:
-
-    - segments:
-`r get_post_para(para, "var_b_segment", "q50")`%
-[`r get_post_para(para, "var_b_segment", "q25")`,
-`r get_post_para(para, "var_b_segment", "q50", digits = 1, nsmall = 1)`
-].
-
-    - species:
-`r get_post_para(para, "var_b_sp", "q50")`%
-[`r get_post_para(para, "var_b_sp", "q25")`,
-`r get_post_para(para, "var_b_sp", "q50", digits = 1, nsmall = 1)`
-].
-
-    - xylem types:
-`r get_post_para(para, "var_b_xylem", "q50")`%
-[`r get_post_para(para, "var_b_xylem", "q25")`,
-`r get_post_para(para, "var_b_xylem", "q50", digits = 1, nsmall = 1)`
-].
-
+```{r, echo=FALSE}
+read_csv(here("data/varpart_notrait.csv")) |>
+  rename("Coefficient <i>a</i>" = a) |>
+  rename("Coefficient <i>b</i>" = b) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
 
 # Coefficients *a* and *b* with traits
 
