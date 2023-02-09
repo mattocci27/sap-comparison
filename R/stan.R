@@ -1406,10 +1406,8 @@ generate_summary_non_trait_table <- function(path) {
   read_csv() |>
     mutate(variable_meaning =
       case_when(
-        str_detect(para, "a_") ~ "coefficent a",
-        str_detect(para, "b_") ~ "coefficent b",
-        para == "gamma[1,1]" ~ "coefficent a",
-        para == "gamma[2,1]" ~ "coefficent a"
+        str_detect(variable, "\\[1") ~ "coefficient a",
+        str_detect(variable, "\\[2") ~ "coefficient b"
       ))  |>
     mutate(target = str_split_fixed(para, "_a_|_b_|^a_|^b_", 3)[,2]) |>
     mutate(target = ifelse(target == "", "overall", target)) |>

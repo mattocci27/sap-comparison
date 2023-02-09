@@ -65,6 +65,7 @@ s_fig_num("coef_int_quad_mean")
 s_fig_num("pg_ribbon_a")
 s_fig_num("pg_ribbon_b")
 s_fig_num("traits_points_si")
+s_table("summary_of_published_tdm_coefficients ")
 ```
 
 # Pressure vs. tension induced flow
@@ -133,12 +134,18 @@ AP, *Acacia pennata*.
 
 ![sma_ks](`r here::here("figs/sma_ks.png")`)
 
-## `r #s_fig("coef_int_sd")`
 
-Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for standard deviations estimated from the difference between pressure and tension induced flows.
-Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
+### `r s_table("anova_pres_tens")`
 
-![](`r here::here("figs/coef_intervals_sd.png")`){ width=350 }
+Posterior medians and 50% credible intervals of the explained variance for the ratio between pressure- and tension-induced flow rates.
+
+```{r, echo=FALSE}
+tibble(Factor = names(anova_yml) |> str_to_title(),
+  Posterior = unlist(anova_yml)) |>
+  kbl() |>
+  kable_classic(full_width = F)
+```
+
 
 ## `r #s_fig("coef_int_mean")`
 
@@ -316,6 +323,25 @@ Xylem types (80.77% of total variance) were the largest source for the variance 
 
 ## Pool vs multi
 
+### `r s_table("ab_comparison")`
+
+Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
+
+```{r, echo=FALSE}
+read_csv(here("data/all_ab.csv")) |>
+  dplyr::select(
+    Species = species,
+    `Xylem types` = xylem_long_fct,
+    pool_a = pool_full_a,
+    pool_b = multi_full_b,
+    multi_a = multi_full_a,
+    multi_b = multi_full_b
+  ) |>
+  kbl() |>
+  kable_classic() |>
+  add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
+```
+
 ### `r fig("pool_multi")`
 
 Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
@@ -376,7 +402,7 @@ For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-poro
 
 ```{r}
 withr::with_dir(rprojroot::find_root('_targets.R'),
-targets::tar_read(without_traits_table_data.without_traits_0.02.csv)) |>
+targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)) |>
   DT::datatable()
 ```
 
@@ -386,7 +412,7 @@ Bayesian estimates of posterior median, upper and lower credible intervals and e
 
 ```{r}
 withr::with_dir(rprojroot::find_root('_targets.R'),
-targets::tar_read(without_traits_table_data.without_traits_0.08.csv)) |>
+targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08_data.without_traits_segments_0.08.csv)) |>
   DT::datatable()
 ```
 

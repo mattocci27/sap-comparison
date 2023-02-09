@@ -1,14 +1,3 @@
-# library(tidyverse)
-# library(targets)
-
-# tar_load(xylem_lab)
-
-# segments <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
-
-# pool <- tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
-
-# tmp <- tar_read(fit_ab_each_sap_sp_clean_0.08)
-
 clean_sep <- function(data, names_data, var, name) {
   data <- data |>
     filter(variable == var) |>
@@ -45,6 +34,11 @@ clean_all <- function(data, names_data, var, name) {
     dplyr::select(-variable:-q97.5)
 }
 
+# summary_segments <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
+# summary_pool <- tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
+# summary_sep <- tar_read(fit_ab_each_sap_sp_clean_0.08)
+# tar_load(xylem_lab)
+
 write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab, out) {
   segments_sep <- map_dfr(summary_sep$fit_segments,
     \(x)x$summary |> filter(variable %in% c("log_a", "b", "a")))  |>
@@ -69,7 +63,7 @@ write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab
     full_join(clean_all(summary_pool, names_data, "b", "pool_full_b")) |>
     full_join(clean_sep(segments_sep, names_data, "a", "multi_sep_a")) |>
     full_join(clean_sep(segments_sep, names_data, "log_a", "multi_sep_ln_a")) |>
-    full_join(clean_sep(segments_sep, names_data, "b", "multi_sep_a")) |>
+    full_join(clean_sep(segments_sep, names_data, "b", "multi_sep_b")) |>
     full_join(clean_sep(pool_sep, names_data, "a", "pool_sep_a")) |>
     full_join(clean_sep(pool_sep, names_data, "log_a", "pool_sep_ln_a")) |>
     full_join(clean_sep(pool_sep, names_data, "b", "pool_sep_b")) |>
@@ -80,3 +74,4 @@ write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab
 #   full_join(pool_a) |>
 #   full_join(pool_b) |>
 #   write_csv("ab_008_without_traits.csv")
+

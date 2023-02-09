@@ -35,6 +35,7 @@ tar_option_set(
   memory = "transient"
 )
 
+pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
 # if (file.exists("/.dockerenv") | file.exists("/.singularity.d/startscript")) {
 #   Sys.setenv(CMDSTAN = "/opt/cmdstan/cmdstan-2.29.2")
@@ -161,7 +162,17 @@ main_list <- list(
      iter_sampling = 1000,
      adapt_delta = 0.9,
      max_treedepth = 15,
-     seed = 123
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
   ),
   tar_stan_mcmc(
      fit_anova_raw,
@@ -178,7 +189,17 @@ main_list <- list(
      iter_sampling = 1000,
      adapt_delta = 0.95,
      max_treedepth = 15,
-     seed = 123
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
   ),
   tar_stan_mcmc(
      fit_anova,
@@ -194,7 +215,17 @@ main_list <- list(
      iter_sampling = 2000,
      adapt_delta = 0.9999,
      max_treedepth = 15,
-     seed = 123
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
   ),
   tar_stan_mcmc(
      fit_anova_log,
@@ -209,7 +240,17 @@ main_list <- list(
      iter_sampling = 2000,
      adapt_delta = 0.9999,
      max_treedepth = 15,
-     seed = 123
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
   ),
 
 
@@ -960,7 +1001,7 @@ main_list <- list(
       rlang::syms(
       str_c("fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
         c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
-      output = str_c("data/without_traits_",
+      output = str_c("data/without_traits_segments_",
         c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035), ".csv")),
     tar_target(without_traits,
       write_without_traits_csv(stan_summary, output),
@@ -968,12 +1009,29 @@ main_list <- list(
   ),
 
   tar_map(
-    list(path = str_c("data/without_traits_",
-        c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035), ".csv")),
+    list(path = rlang::syms(
+        str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
+        pg,
+        "_data.without_traits_segments_",
+        pg, ".csv")
+    )),
     tar_target(
       without_traits_table,
       generate_summary_non_trait_table(path)
     )
+  ),
+
+  tar_target(
+    without_traits_pool_0.08_csv,
+    write_without_traits_csv(
+      fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+      "data/without_traits_pool_0.08.csv"),
+    format = "file"
+  ),
+  tar_target(
+    without_traits_segments_table_0.08,
+    generate_summary_non_trait_table(
+      without_traits_pool_0.08_csv)
   ),
   # tar_target(
   #   without_traits_0.08_table,
