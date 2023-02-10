@@ -1,7 +1,9 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 .Random.seed|object|527cb61bc1e1eb59|||||||||||||||
+ab_comp_points|function|faa07b6fab48b940|||||||||||||||
 ab_csv|stem|ea65649049f95b20|88cd349f7d70f5ee|306ea09401660587|1788216019|data/all_ab.csv|t19397.4112861111s|67828cb5d73218da|9452|file|local|vector|||0.817||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
+ab_points_plot|stem|640cf12c47618ce6|f26e7db2b02de79a|e21f7bbdd4758ac1|-213042728|figs/ab_points.png*figs/ab_points.pdf|t19398.143887258s|ae3ca4c6517ec2c4|111208|file|local|vector|||0.943||
 ab_var_clean_008|stem|921208dc9305389b|a900c1795f73515b|cd8d2d12ccd6da8e|1787234250|data/ab_var_clean_008.csv|t19397.3951219154s|667c8b8f99843c63|2792|file|local|vector|||0.53||
 all_seg_table|stem|7e77ef85bcc445bd|063cc89cc2255e5c|276ab66a72501c0e|2106658492||t19396.3532223532s|3cea9c3019b7d588|9292|rds|local|vector|||0.397||
 anova_data|stem|825827aff5f3e7f5|8106afe7e3802e0b|504a599689c2823b|-960880509||t19227.3688008704s|ba8f2f557a4dd502|1405|rds|local|vector|||0.187||
@@ -30,6 +32,7 @@ coef_intervals_logistic|function|c92747b090d61c39|||||||||||||||
 coef_intervals_logistic_plot|stem|6210c1a5f3a7536f|296dddf460227be3|cc282068b4bac019|-1344475340|figs/coef_intervals_logistic.png*figs/coef_intervals_logistic.pdf|t19298.3917429545s|11af39875293d5d0|61377|file|local|vector|||0.599||
 coef_intervals_mean|function|86a3105600308b79|||||||||||||||
 coef_intervals_mean_plot|stem|37da33da4070858d|56bf78ff92a27bfd|68f1f79083a7601b|1935044616|figs/coef_intervals_mean.png*figs/coef_intervals_mean.pdf|t19297.427848946s|1962b34b0b2495cf|37234|file|local|vector|||0.365||
+coef_intervals_pres_tens_plot|stem|842058939fad35da|5cca3430ca8162e3|dfd26743f7c4bad7|853988200|figs/coef_intervals_pres_tens.png*figs/coef_intervals_pres_tens.pdf|t19398.0629727978s|c29eba4da83dd0be|68098|file|local|vector|||0.776||
 coef_intervals_sd|function|eafb0ed70b9bcd48|||||||||||||||
 coef_intervals_sd_plot|stem|6c8c75ff1a50c60c|d94a1eece17b0e4d|a5ce538f2b9fa8a7|1496841687|figs/coef_intervals_sd.png*figs/coef_intervals_sd.pdf|t19297.4278392236s|959d14fe6031b9e7|30497|file|local|vector|||0.29||
 coef_sd|function|eafb0ed70b9bcd48|||||||||||||||
@@ -385,7 +388,7 @@ logistic_sp_plot|stem|fd23f2ba7b45b812|f184c52b13460ed0|4ff84ef0207bc009|-707568
 logistic_sp_plot_linear|stem|eaf4afe1f06143e2|bcc0c695f024ff75|c607e9d62b85c46c|-460023371|figs/count_pressure_simple.png*figs/count_pressure_simple.pdf|t19243.3607016751s|4fd737f4ecda9fce|305404|file|local|vector|||1.586||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|59a0cdb1ff0a1d18|bfa54e212d880986|adef9168d191777d|1440272382||t19297.4278851966s|b2da3daf84b349b0|8342|rds|local|vector|||1.236|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|7a740e216e3b0097|||||||||||||||
+main_list|object|765a42b2a8bd8549|||||||||||||||
 my_ggsave|function|2ec22f415a516e53|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||

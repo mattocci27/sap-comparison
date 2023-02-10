@@ -365,6 +365,26 @@ main_list <- list(
   ),
 
   tar_target(
+    coef_intervals_pres_tens_plot, {
+      p1 <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
+      p2 <- coef_intervals_mean(fit_anova_draws_anova_noint_err)
+      p3 <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
+      p <- p1 + p2 + p3 + plot_spacer() +
+        plot_layout(ncol = 2) +
+        plot_annotation(tag_levels = "A")
+      my_ggsave(
+        "figs/coef_intervals_pres_tens",
+        p,
+        dpi = 300,
+        width = 173,
+        height = 173,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+
+  tar_target(
     coef_intervals_diff_plot, {
       p <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
       my_ggsave(
@@ -777,6 +797,24 @@ main_list <- list(
         dpi = 300,
         width = 8,
         height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ab_points_plot, {
+      p <- ab_comp_points(
+        pool_csv = without_traits_pool_0.08_csv,
+        seg_csv =
+        without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08_data.without_traits_segments_0.08.csv,
+        xylem_lab)
+      my_ggsave(
+        "figs/ab_points",
+        p,
+        dpi = 300,
+        width = 173,
+        height = 86,
+        units = "mm"
       )
     },
     format = "file"

@@ -60,13 +60,25 @@ Method parts are tentative.
 # s_fig_num("coef_int_sd")
 # s_fig_num("coef_int_mean")
 # s_fig_num("coef_int_diff")
-s_fig_num("coef_int_comb")
+s_fig_num("diagram")
+s_fig_num("cross_section")
+s_fig_num("coef_intervals_pres_tens")
 s_fig_num("coef_int_quad_mean")
+s_fig_num("pool_multi")
+s_fig_num("ab_points")
+s_fig_num("pg_multi")
 s_fig_num("pg_ribbon_a")
 s_fig_num("pg_ribbon_b")
 s_fig_num("traits_points_si")
-s_table("summary_of_published_tdm_coefficients ")
+s_table("summary_of_published_tdm_coefficients")
 ```
+
+# Not in this file
+
+- `r s_fig("diagram")`: diagram
+- `r s_fig("cross_section")`: cross_section
+- `r s_table("summary_of_published_tdm_coefficients")`: summary of published tdm coefficients
+- Soil and tree properties
 
 # Pressure vs. tension induced flow
 
@@ -85,7 +97,8 @@ sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
 
 ## Results
 
-There was a significant shift in elevation between pressure and tension induced flow rates
+We found that pressure type (pressure vs. tension) has a marginal effect on the induced flow rate.
+Although a strong relationship emerged within each species between tension- and pressure-derived *K~s~*, a significant shift was found in elevation between pressure- and tension-induced flow rates
 (
 `r fig("sma")`a,
 SMA intercept:
@@ -107,12 +120,15 @@ SMA slope:
 `r sma_slope[3]`
 ]
 ).
-These results suggest that pressure induced flow rates tend to be greater than tension induced flow rates for samples of lower flow rates (`r fig("sma")`a).
+Pressure-induced flow rates tend to be greater than tension-induced flow rates for samples of low flow rates, converging with increasing flow rates (`r fig("sma")`a).
 
-Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates (`r str_split(anova_yml$pressure, " ")[[1]][1]` of the total variance, Figs. `r fig_num("sma")`b, `r s_fig_num("coef_int_sd")`-`r s_fig_num("coef_int_diff")`), whereas species difference explained much more variation (`r str_split(anova_yml$species, " ")[[1]][1]` of the total variance, Figs. `r fig_num("sma")`b, `r s_fig_num("coef_int_sd")`-`r s_fig_num("coef_int_diff")`).
-An interaction between species and pressure-level effects was not selected after model selections.
-After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced flow rates still likely to be greater than tension induced flow rates (`r s_fig("coef_int_mean")`).
-
+Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates,
+whereas species difference explained much more variation
+(`r str_split(anova_yml$pressure, " ")[[1]][1]` vs. `r str_split(anova_yml$species, " ")[[1]][1]` of the total variance,
+Figs. `r fig_num("sma")`b &
+`r s_fig_num("coef_intervals_pres_tens")`a;
+`r s_table("anova_pres_tens")`).
+After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced-flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
 
 
 ## `r fig("sma")`
@@ -146,27 +162,7 @@ tibble(Factor = names(anova_yml) |> str_to_title(),
   kable_classic(full_width = F)
 ```
 
-
-## `r #s_fig("coef_int_mean")`
-
-Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
-Positive values indicate pressure induced flow rates are greater than tension induced flow rates.
-Pressure induced flow rates tend to be greater than tension induced flow rates (positive ks_ratio parameter).
-This suggests a probability of getting larger values for pressure induced flow rates than for tension induced flow rates is about 90% (but less than 95%).
-This is consistent with `r fig("sma")`ab.
-
-![coef_intervals_mean](`r here::here("figs/coef_intervals_mean.png")`){ width=350 }
-
-## `r #s_fig("coef_int_diff")`
-
-Posterior medians (circles), 50% (rectangles), and 95% (thin lines) credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
-The estimates for AP is smaller than HH, TG, and VM, suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM given that the overall effects is positive,
-HB shows the similar pattern with AP.
-This is consistent with `r fig("sma")`b.
-
-![coef_intervals_diff](`r here::here("figs/coef_intervals_diff.png")`){ width=350 }
-
-## `r s_fig("coef_int_comb")`
+## `r s_fig("coef_intervals_pres_tens")`
 
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
 (A) Estimates for standard deviations.
@@ -186,6 +182,8 @@ AP, *Acacia pennata*;
 p_2, 0.02 MPa;
 p_5, 0.05 MPa;
 p_8, 0.08 MPa.
+
+![coef_intervals_mean](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
 
 ## Methods
 
@@ -333,7 +331,7 @@ read_csv(here("data/all_ab.csv")) |>
     Species = species,
     `Xylem types` = xylem_long_fct,
     pool_a = pool_full_a,
-    pool_b = multi_full_b,
+    pool_b = pool_full_b,
     multi_a = multi_full_a,
     multi_b = multi_full_b
   ) |>
@@ -343,7 +341,7 @@ read_csv(here("data/all_ab.csv")) |>
   add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
 ```
 
-### `r fig("pool_multi")`
+### `r s_fig("pool_multi")`
 
 Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
 The K values are the averages of two sets of sensors from each segment to account for sapwood variation along the segment.
@@ -351,33 +349,35 @@ The dashed and solid lines represent posterior medians of the power-law relation
 
 ![pool_multi](`r here::here("figs/pool_multi.png")`)
 
-###
 
+### `r s_fig("ab_points")`
+
+![ab_comp](`r here::here("figs/ab_points.png")`)
 
 ## Pressure gradients
 
 
-### `r fig("pg_multi")`
+### `r s_fig("pg_multi")`
 
-Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Different lines indicate different maximum pressure gradients for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
 
 ![pg_multi](`r here::here("figs/pg_multi.png")`)
 
 ### `r s_fig("pg_ribbon_a")`
 
-Relationships between the coefficient *a* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Relationships between the coefficient *a* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
 Light and dark shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
-The maximum applied Pg are different among species because segment length are different.
-Species × maximum applied Pg combinations with less than 5 data points were removed from this visualization.
-Therefore, the lower ranges for maximum applied Pg are also different among species.
+The maximum applied *P~g~* are different among species because segment length are different.
+Species × maximum applied *P~g~* combinations with less than 5 data points were removed from this visualization.
+Therefore, the lower ranges for maximum applied *P~g~* are also different among species.
 
 ![pg_ribbon_a](`r here::here("figs/pg_ribbon_a.png")`)
 
 ### `r s_fig("pg_ribbon_b")`
 
-Relationships between the coefficient *b* and the maximum applied pressure gradient (Pg) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Relationships between the coefficient *b* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 
 ![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
@@ -385,7 +385,7 @@ Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 ### `r s_table("without_traits_table_0.02")`
 
 Note: This table is too large and should be put in a separate file.
-We have this table for each maximum applied Pg (0.02 - 0.08).
+We have this table for each maximum applied *P~g~* (0.02 - 0.08).
 
 Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.02 MPa.
 The column definitions are:

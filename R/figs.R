@@ -1167,3 +1167,60 @@ generate_beta_list <- function(fit_beta, fit_gamma, stan_data, draws, x, y, x_la
     y_lab  = y_lab_parse
     )
 }
+
+ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
+  dp <- read_csv(pool_csv)
+  dp2 <- dp |>
+    filter(str_detect(variable, "alpha")) |>
+    mutate(species = str_split_fixed(para, "_a_|_b_", 2)[, 2]) |>
+    mutate(coef = ifelse(str_detect(para, "_a_"), "a", "b")) |>
+    dplyr::select(species, coef,
+      q50_pool = q50, q2.5_pool = q2.5 , q97.5_pool = q97.5)
+
+  ds <- read_csv(seg_csv)
+  ds2 <- ds |>
+    filter(str_detect(variable, "alpha")) |>
+    mutate(species = str_split_fixed(para, "_a_|_b_", 2)[, 2]) |>
+    mutate(coef = ifelse(str_detect(para, "_a_"), "a", "b")) |>
+    dplyr::select(species, coef,
+      q50_seg = q50, q2.5_seg = q2.5 , q97.5_seg = q97.5)
+
+  d <- full_join(ds2, dp2) |>
+    full_join(xylem_lab)
+
+  p1 <- d |>
+    filter(coef == "a") |>
+    mutate_if(is.numeric, exp) |>
+    ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
+    geom_abline(slope = 1, intercept = 0, lty = 2) +
+    geom_point() +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg)) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool)) +
+    scale_x_log10() +
+    scale_y_log10() +
+    xlab("a - traditional fitting") +
+    ylab("a - multilevel model") +
+    my_theme() +
+    labs(col = "") +
+    theme(
+      legend.position = c(0.75, 0.25),
+      legend.text = element_text(size = 7)
+      )
+
+  p2 <- d |>
+    filter(coef == "b") |>
+    ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
+    geom_abline(slope = 1, intercept = 0, lty = 2) +
+    geom_point() +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg)) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool)) +
+    xlab("b - traditional fitting") +
+    ylab("b - multilevel model") +
+    my_theme() +
+    theme(
+      legend.position = "none"
+      )
+
+  p1 + p2 +
+      plot_annotation(tag_levels = "A")
+}
