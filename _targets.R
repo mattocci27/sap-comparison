@@ -523,26 +523,26 @@ main_list <- list(
         p,
         dpi = 300,
         width = 4.3,
-        height = 16.2,
+        height = 14,
         units = "cm"
       )
     },
     format = "file"
   ),
-  tar_target(
-    logistic_sp_plot_linear, {
-      p <- plot_logistic_sp(simple_logistic_draws_hierarchical_logistic, "data/cond_count.csv", quad = FALSE)
-      my_ggsave(
-        "figs/count_pressure_simple",
-        p,
-        dpi = 300,
-        width = 4.3,
-        height = 16.2,
-        units = "cm"
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   logistic_sp_plot_linear, {
+  #     p <- plot_logistic_sp(simple_logistic_draws_hierarchical_logistic, "data/cond_count.csv", quad = FALSE)
+  #     my_ggsave(
+  #       "figs/count_pressure_simple",
+  #       p,
+  #       dpi = 300,
+  #       width = 4.3,
+  #       height = 16.2,
+  #       units = "cm"
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 
   tar_target(
     coef_intervals_logistic_plot, {

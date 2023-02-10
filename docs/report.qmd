@@ -130,7 +130,6 @@ Figs. `r fig_num("sma")`b &
 `r s_table("anova_pres_tens")`).
 After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced-flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
 
-
 ## `r fig("sma")`
 
 Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (??).
@@ -270,16 +269,17 @@ note:
 
 ## Results
 
-Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (`r s_fig("coef_int_quad_mean")`).
-Each species showed quadratic responses (Figs. `r fig_num("count_pressure")`-`r s_fig_num("coef_int_quad_mean")`).
-The proportion of vessels participating in flow for *Hopea hongayensis* decreased at 0.08 MPa because XXXX.
+Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+Although quadratic function best described the responses, the proportion of vessels participating in flow rate for *Hopea hongayensi* increased was highest in the intermediate pressure, but either remained the same or increased to a maximum moving from the intermediate to the highest pressure in the other four species (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+
 
 ## `r fig("count_pressure")`
 
-Changes in proportion of silicon-stained vessels along perfusion pressures.
+Changes in the proportion of silicon-stained vessels along perfusion pressures for diffuse-porous (A-C: red), ring-porous (D: green), and liana species (E: purple).
 Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
-Size of data points (in blue) is proportional to the total number of vessels.
-The right columns are fluorography images of active vessels under UV light using silicon-perfusion. Red scale at right bottom represents 500$\micro$m.
+The size of data points is proportional to the total number of vessels.
+The right columns are fluorography images of active vessels under UV light using silicon-perfusion.
+The red scale at the bottom right represents 500$\micro$m.
 
 ![count_pressure_quadratic](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
 
@@ -351,6 +351,11 @@ The dashed and solid lines represent posterior medians of the power-law relation
 
 
 ### `r s_fig("ab_points")`
+
+Estimates of coefficients *a* (A) and *b* (B) based on traditional fitting (Granier, 1985) vs. our multilevel model.
+Each point represents the posterior medians of the coefficients for each species.
+Error bars show 95% credible intervals.
+Dashed lines indicate 1:1 lines.
 
 ![ab_comp](`r here::here("figs/ab_points.png")`)
 

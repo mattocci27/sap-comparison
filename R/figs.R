@@ -13,6 +13,11 @@ my_theme <- function(){
   )
 }
 
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
 # theme_set(my_theme)
 sma_scatter <- function(data, log = FALSE) {
 #  targets::tar_load(five_spp_csv)
@@ -326,8 +331,24 @@ logistic <- function(z) {
 }
 
 plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
-  d <- read_csv(data_file) |>
-   filter(!is.na(count))
+  draws <- tar_read(quad_logistic_draws_hierarchical_logistic)
+  d <- read_csv(here::here("data/cond_count.csv")) |>
+  # d <- read_csv(data_file) |>
+   filter(!is.na(count)) |>
+   mutate(xylem_type = case_when(
+    species == "TG" ~ "RP",
+    species == "AP" ~ "L",
+    TRUE ~ "DP"
+   )) |>
+   mutate(xylem_long = case_when(
+      xylem_type == "DP"  ~ "Diffuse-porous tree",
+      xylem_type == "RP"  ~ "Ring-porous tree",
+      xylem_type == "Pa"  ~ "Palm",
+      xylem_type == "L"  ~ "Liana"
+    )) |>
+    mutate(xylem_long_fct = factor(xylem_long,
+    levels = c("Diffuse-porous tree", "Ring-porous tree", "Palm", "Liana"))) |>
+  mutate(species = factor(species, levels = c("HB", "HH", "VM", "TG", "AP")))
 
   x_mean <- mean(d$pressure)
   x_sd <- sd(d$pressure)
@@ -338,7 +359,7 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
     xx_mat <- cbind(1, xx)
   }
 
-  sp <- d$species |> unique() |> as.factor() |> sort()
+  sp <- d$species |> unique()
 
   gamma_ <- draws |>
     janitor::clean_names() |>
@@ -363,14 +384,13 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
     mutate(pred_ll = map(data, \(x)apply(x, 2, quantile, 0.025))) |>
     mutate(pred_hh = map(data, \(x)apply(x, 2, quantile, 0.975))) |>
     dplyr::select(-data) |>
-    mutate(species = sp) |>
+    mutate(species = as.character(sp) |> sort()) |> # alphabetical order in stan
     unnest(cols = c(pred_m, pred_l, pred_h, pred_ll, pred_hh))
 
   fig_data <- tmp2 |>
     mutate_if(is.numeric, logistic) |>
-    mutate(xx = rep(xx_raw, 5))
-
-  my_col <- RColorBrewer::brewer.pal(11, "RdYlBu")
+    mutate(xx = rep(xx_raw, 5)) |>
+    mutate(species = factor(species, levels = c("HB", "HH", "VM", "TG", "AP")))
 
   tag_data <- tibble(
     species = sp,
@@ -379,10 +399,12 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
     y = 95
   )
 
+  my_cols <- gg_color_hue(4)
+
   ggplot() +
-    geom_point(data = d, aes(x = pressure, y = count/total * 100, size = total),
-    alpha = 0.3,
-    col = my_col[10]) +
+    geom_point(data = d, aes(x = pressure, y = count/total * 100,
+      size = total, col = xylem_long_fct),
+    alpha = 0.3) +
     geom_line(data = fig_data, aes(x = xx, y = pred_m), size = 0.5) +
     geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_l, ymax = pred_h), alpha = 0.4) +
     geom_ribbon(data = fig_data, aes(x = xx, ymin = pred_ll, ymax = pred_hh), alpha = 0.4) +
@@ -393,6 +415,7 @@ plot_logistic_sp <- function(draws, data_file, quad = TRUE) {
       size = 3,
       col = "grey10"
       ) +
+    scale_color_manual(values = my_cols[-3]) +
     coord_cartesian(xlim = c(0.015, 0.085)) +
     scale_x_continuous(breaks = c(0.02, 0.05, 0.08)) +
     facet_grid(rows = vars(species), scale = "fixed") +
@@ -526,10 +549,6 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
     mutate(log_pred = pmap(list(log_xx, data), \(log_xx, data) {data$log_a + data$b * log_xx + data$sigma^2 / 2})) |>
     unnest(cols = c(data, log_xx, log_pred))
 
-  gg_color_hue <- function(n) {
-    hues = seq(15, 375, length = n + 1)
-    hcl(h = hues, l = 65, c = 100)[1:n]
-  }
   my_cols <- gg_color_hue(4)
 
   ggplot() +
@@ -1188,14 +1207,18 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
   d <- full_join(ds2, dp2) |>
     full_join(xylem_lab)
 
-  p1 <- d |>
+  da <- d |>
     filter(coef == "a") |>
-    mutate_if(is.numeric, exp) |>
+    mutate_if(is.numeric, exp)
+  min_a <- min(da$q2.5_seg, da$q2.5_pool)
+  max_a <- max(da$q97.5_seg, da$q97.5_pool)
+
+  p1 <- da |>
     ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
     geom_abline(slope = 1, intercept = 0, lty = 2) +
     geom_point() +
-    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg)) +
-    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool)) +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.5) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.5) +
     scale_x_log10() +
     scale_y_log10() +
     xlab("a - traditional fitting") +
@@ -1203,22 +1226,31 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
     my_theme() +
     labs(col = "") +
     theme(
-      legend.position = c(0.75, 0.25),
-      legend.text = element_text(size = 7)
+      # legend.position = c(0.75, 0.25),
+      legend.position = "none"
+      # legend.text = element_text(size = 7)
       )
 
-  p2 <- d |>
-    filter(coef == "b") |>
+  db <- d |>
+    filter(coef == "b")
+  min_b <- min(db$q2.5_seg, db$q2.5_pool)
+  max_b <- max(db$q97.5_seg, db$q97.5_pool)
+
+  p2 <- db |>
     ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
     geom_abline(slope = 1, intercept = 0, lty = 2) +
     geom_point() +
-    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg)) +
-    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool)) +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.5) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.5) +
     xlab("b - traditional fitting") +
     ylab("b - multilevel model") +
+    coord_cartesian(xlim = c(min_b, max_b), ylim = c(min_b, max_b)) +
+    labs(col = "") +
     my_theme() +
     theme(
-      legend.position = "none"
+      # legend.position = "none"
+      legend.position = c(0.7, 0.25),
+      legend.text = element_text(size = 7)
       )
 
   p1 + p2 +
