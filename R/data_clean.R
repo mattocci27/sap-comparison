@@ -64,3 +64,68 @@ clean_cond_count <- function(data, file) {
     write_csv(file)
   paste(file)
 }
+
+rubber_impute <- function(csv, y2015 = TRUE) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date))
+  d2015 <- d |>
+    filter(str_detect(date, "2015")) |>
+    dplyr::select(-t16_0_0)
+  d2016 <- d |>
+    filter(str_detect(date, "2016"))
+  if (y2015) {
+    d2015 |>
+      kNN()
+  } else {
+    d2016 |>
+      kNN()
+  }
+}
+
+rubber_impute <- function(csv, y2015 = TRUE) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date))
+  d2015 <- d |>
+    filter(str_detect(date, "2015")) |>
+    dplyr::select(-t16_0_0)
+  d2016 <- d |>
+    filter(str_detect(date, "2016"))
+  if (y2015) {
+    d2015 |>
+      kNN()
+  } else {
+    d2016 |>
+      kNN()
+  }
+}
+
+missForest_each <- function(csv, tree) {
+  d <- read_csv(csv) |>
+    janitor::clean_names()
+  vpd <- d |>
+    dplyr::select(vpd)
+  missing_df <- d |>
+    dplyr::select(matches(tree))
+  bind_cols(vpd, missing_df) |>
+    as.data.frame() |>
+    missForest::missForest()
+}
+
+missForest_comb <- function(csv, combined_imputed_mapped) {
+  d <- read_csv(csv) |>
+    janitor::clean_names()
+  vpd <- d |>
+    dplyr::select(vpd)
+  missing_df <- d |>
+    dplyr::select(matches("1[2-6]"))
+  imputed_df <- combined_imputed_mapped |>
+    dplyr::select(matches("0_0"))
+  bind_cols(vpd, missing_df, imputed_df) |>
+    as.data.frame() |>
+    missForest(parallelize = "variables")
+}
+
+
+# missForest_many(here("data-raw/rubber_raw_data.csv"))

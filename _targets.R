@@ -6,11 +6,13 @@ library(cmdstanr)
 library(furrr)
 library(clustermq)
 library(bayesplot)
+# library(doParallel)
 
 source("R/data_clean.R")
 source("R/stan.R")
 source("R/figs.R")
 source("R/tables.R")
+source("R/scale.R")
 
 plan(multicore)
 options(clustermq.scheduler = "multicore")
@@ -27,13 +29,18 @@ tar_option_set(packages = c(
   "RColorBrewer",
   "scales",
   "loo",
-  "here"
+  "here",
+  "VIM",
+  "lubridate",
+  "foreach",
+  "doParallel",
+  "missForest"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -43,6 +50,12 @@ pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # }
 
 # cmdstan_version()
+
+# Register the parallel backend
+n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
+cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
+cl <- 19
+doParallel::registerDoParallel(cl)  # Register the parallel backend
 
  # raw data ----------------------------------
 raw_data_list <- list(
@@ -85,6 +98,11 @@ raw_data_list <- list(
   tar_target(
     calibration_raw_data_csv,
     "data-raw/calibration_raw_data.csv",
+    format = "file"
+  ),
+  tar_target(
+    rubber_raw_data_csv,
+    "data-raw/rubber_raw_data.csv",
     format = "file"
   ),
   # tar_target(
@@ -1158,6 +1176,21 @@ main_list <- list(
    format = "file"
   ),
 
+  tar_target(
+    d2015_imputed, {
+    rubber_impute(rubber_raw_data_csv, y2015 = TRUE)
+    }
+  ),
+  tar_target(
+    d2016_imputed, {
+    rubber_impute(rubber_raw_data_csv, y2015 = FALSE)
+    }
+  ),
+  # tar_target(
+  #   test_imputed,
+  #   missForest_each(rubber_raw_data_csv, "t01")
+  # ),
+
   # tar_quarto(
   #   report_html,
   #   "docs/report.qmd"
@@ -1166,4 +1199,46 @@ main_list <- list(
   NULL
 )
 
-append(raw_data_list, main_list)
+#------------------------------------------------------------
+values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+
+impute_mapped <- tar_map(
+  values = values,
+  tar_target(
+    imputed_data,
+      missForest_each(
+        csv = rubber_raw_data_csv,
+        tree = tree
+      )
+  ),
+  tar_target(
+    imputed_df, {
+      imputed_data$ximp |>
+        dplyr::select(-vpd) |>
+        as_tibble()
+    }
+    )
+  )
+
+tar_combined_imputed_data <- tar_combine(
+  combined_imputed_mapped,
+  impute_mapped[["imputed_df"]],
+  command = dplyr::bind_cols(!!!.x)
+)
+
+tar_impute <- list(
+  impute_mapped,
+  tar_combined_imputed_data  ,
+  tar_target(
+    impute_data_full,
+    missForest_comb(
+      rubber_raw_data_csv,
+       combined_imputed_mapped
+    )
+    )
+  )
+
+append(raw_data_list, main_list) |>
+  append(tar_impute)
+
+# append(raw_data_list, main_list)
