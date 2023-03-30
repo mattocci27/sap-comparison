@@ -1228,17 +1228,20 @@ tar_combined_imputed_data <- tar_combine(
 
 tar_impute <- list(
   impute_mapped,
-  tar_combined_imputed_data  ,
+  tar_combined_imputed_data,
   tar_target(
     impute_data_full,
     missForest_comb(
       rubber_raw_data_csv,
        combined_imputed_mapped
     )
+    ),
+  tar_target(
+    imputed_df,
+    generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
     )
   )
 
 append(raw_data_list, main_list) |>
   append(tar_impute)
-
 # append(raw_data_list, main_list)

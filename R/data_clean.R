@@ -127,5 +127,23 @@ missForest_comb <- function(csv, combined_imputed_mapped) {
     missForest(parallelize = "variables")
 }
 
+generate_imputed_df <- function(csv, impute_data_full, combined_imputed_mapped) {
+  date_df <- read_csv(here(csv)) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    dplyr::select(date:par)
 
-# missForest_many(here("data-raw/rubber_raw_data.csv"))
+  impute_data_full_df <- impute_data_full$ximp |> as_tibble() |>
+    dplyr::select(-vpd)
+
+  names_ <- c(names(impute_data_full_df), names(combined_imputed_mapped))
+  dup_names <- names_[duplicated(names_)]
+
+  imputed_cleaned_df  <- impute_data_full_df |>
+    dplyr::select(-dup_names)
+
+  bind_cols(date_df, imputed_cleaned_df, combined_imputed_mapped) %>%
+    dplyr::select(date:vpd, sort(names(.[7:ncol(.)])))
+
+}
+
