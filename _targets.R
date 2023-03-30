@@ -54,7 +54,7 @@ pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # Register the parallel backend
 n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
 cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
-cl <- 19
+# cl <- 19
 doParallel::registerDoParallel(cl)  # Register the parallel backend
 
  # raw data ----------------------------------
@@ -1239,6 +1239,10 @@ tar_impute <- list(
   tar_target(
     imputed_df,
     generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
+    ),
+  tar_target(
+    imputed_all_df,
+    missForest_all(rubber_raw_data_csv)
     )
   )
 

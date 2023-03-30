@@ -571,6 +571,15 @@ d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
   mutate(date = mdy_hm(date)) |>
   dplyr::select(date:time)
 
+
+tmp <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date)) |>
+    dplyr::filter(date <= ymd("2015-03-01")) |>
+    dplyr::select(-date)
+
+apply(tmp, 2, sum, na.rm = TRUE)
+
 d2 <- tar_read(impute_data_full)$ximp |>
   as_tibble() |>
   dplyr::select(matches("1[2-6]"))
@@ -645,12 +654,25 @@ library(lubridate)
 d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
   janitor::clean_names() |>
   mutate(date = mdy_hm(date))
+
+
+date_df <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    dplyr::select(date) |>
+    dplyr::filter(date <= ymd("2016-01-31")) |>
+    dplyr::filter(date >= ymd("2016-01-01"))
+
 tar_load(imputed_df)
 
+tar_load(imputed_all_df)
 
-imputed_long_df <- imputed_df |>
-# imputed_long_df <- d |>
-  pivot_longer(t01_0_0:t16_0_0, names_to = "id", values_to = "k")  |>
+imputed_all_df$ximp |>
+  as_tibble()
+
+imputed_long_df <- bind_cols(date_df, imputed_all_df$ximp) |>
+# imputed_long_df <- imputed_df |>
+  pivot_longer(t01_0_0:t14_0_0, names_to = "id", values_to = "k")  |>
   mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
   mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
   mutate(dep = str_split_fixed(id, "_", 3)[, 3])
@@ -660,6 +682,46 @@ d_long_df <- d |>
   mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
   mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
   mutate(dep = str_split_fixed(id, "_", 3)[, 3])
+
+d_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2016-01-10")) |>
+  dplyr::filter(date > ymd("2016-01-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("missing")
+
+imputed_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2016-01-10")) |>
+  dplyr::filter(date >= ymd("2016-01-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("imputed")
+
+d_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2015-07-10")) |>
+  dplyr::filter(date > ymd("2015-07-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("missing")
+
+imputed_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2015-07-10")) |>
+  dplyr::filter(date > ymd("2015-07-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("imputed")
+
+
+
+hist(rnorm(100))
 
 ggplot(imputed_long_df, aes(x = dir, y = k)) +
   geom_boxplot() +

@@ -101,6 +101,20 @@ rubber_impute <- function(csv, y2015 = TRUE) {
   }
 }
 
+missForest_all <- function(csv) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    dplyr::filter(date <= ymd("2016-01-31")) |>
+    dplyr::filter(date >= ymd("2016-01-01")) |>
+    dplyr::select(-t11_0_2, -t16_0_0) |>
+    dplyr::select(-date)
+
+  d |>
+    as.data.frame() |>
+    missForest(parallelize = "variables")
+}
+
 missForest_each <- function(csv, tree) {
   d <- read_csv(csv) |>
     janitor::clean_names()
