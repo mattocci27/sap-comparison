@@ -115,6 +115,44 @@ missForest_all <- function(csv) {
     missForest(parallelize = "variables")
 }
 
+
+missForest_long <- function(csv) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    as.data.frame() |>
+    missForest::missForest(parallelize = "forests")
+}
+
 missForest_each <- function(csv, tree) {
   d <- read_csv(csv) |>
     janitor::clean_names()

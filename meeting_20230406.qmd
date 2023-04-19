@@ -1,0 +1,307 @@
+---
+title: "Scaling"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+# fontsize: 11pt
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    # embed-resources: true
+    # self_contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  echo = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
+para <- read_csv(here("data/ab_var_clean_008.csv"))
+
+largefontthm <- theme_bw() + theme(
+    axis.title        = element_text(size = 28),
+    axis.text         = element_text(size = 24),
+    strip.text        = element_text(size = 20),
+    plot.title = element_text(size = 32),
+    plot.subtitle = element_text(size = 18),
+    plot.caption = element_text(size = 14),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 16)
+    )
+theme_set(largefontthm)
+
+```
+
+# Imputation (example)
+
+- MissForest algorithms (machine learning)
+- Based on Random forest
+- This captures patterns among groups and temporal autocorrelation
+- This can be improved more.
+
+```{r}
+library(lubridate)
+
+d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date)) |>
+  dplyr::select(date:time)
+
+
+tmp <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date)) |>
+    dplyr::filter(date <= ymd("2015-03-01")) |>
+    dplyr::select(-date)
+
+d2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(imputed_all_list))$ximp |>
+  as_tibble() |>
+  dplyr::select(matches("1[2-6]"))
+
+
+d3 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(combined_imputed_mapped))
+
+d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date))
+
+
+date_df <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    dplyr::select(date) |>
+    dplyr::filter(date <= ymd("2016-01-31")) |>
+    dplyr::filter(date >= ymd("2016-01-01"))
+
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_load(imputed_df))
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_load(imputed_all_df))
+
+imputed_long_df <- bind_cols(date_df, imputed_all_df$ximp) |>
+# imputed_long_df <- imputed_df |>
+  pivot_longer(t01_0_0:t14_0_0, names_to = "id", values_to = "k")  |>
+  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
+
+d_long_df <- d |>
+  pivot_longer(t01_0_0:t16_0_0, names_to = "id", values_to = "k")  |>
+  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
+
+d_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2016-01-10")) |>
+  dplyr::filter(date > ymd("2016-01-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("missing")
+
+imputed_long_df |>
+  filter(tree == "t06" | tree == "t06") |>
+  dplyr::filter(date <= ymd("2016-01-10")) |>
+  dplyr::filter(date >= ymd("2016-01-01")) |>
+  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("imputed")
+
+```
+
+# Fd values
+
+Posterior estimates of a and b values for *Hevea brasiliensis* are:
+
+```{r}
+post <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+post2 <- post |>
+  rename(a = alpha_1_15) |>
+  rename(b = alpha_2_15) |>
+  mutate(a = exp(a)) |>
+  pivot_longer(a:b, names_to = "para", values_to = "value")
+
+post2 |>
+  group_by(para) |>
+  summarize(median = median(value))
+
+post2 |>
+  ggplot(aes(value)) +
+  geom_histogram()  +
+  facet_wrap(~para, scale = "free") +
+  xlab("Posterior estimates") +
+  theme(
+    axis.text        = element_text(size = 20))
+```
+
+These are the sum of Fd values (every 10 mins) for each tree.
+
+- `mid`: median, `ll`: lower 95% CI, `uu`: upper 95% CI, `l`: lower 50% CI, `u`: upper 50% CI
+
+- It's not integrated from the starting time to the end time (it's just sum).
+How should I integrate it?
+
+- I don't have DBH data yet.
+Once, I get the data, should I just scale Fd values by sapwood area?
+
+- How do you want to show the uncertainty of Fd (and annual transpiration) values?
+The large uncertainty of Fd values comes from estimations of a and b values.
+
+
+```{r}
+
+```{r}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(imputed_all_list))$ximp |>
+  as_tibble()
+
+d_long_df <- d |>
+  pivot_longer(t01_0_0:t16_0_0, names_to = "id", values_to = "k")
+```
+
+```{r}
+d2 <- d_long_df |>
+  group_by(id) |>
+  summarize(k = sum(k)) |>
+  ungroup() |>
+  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+  mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+  mutate(dir = case_when(
+    dir == "0" ~ "S",
+    dir == "1" ~ "E",
+    dir == "2" ~ "N",
+    dir == "3" ~ "W"
+  )) |>
+  mutate(dep = case_when(
+    dep == "0" ~ 2,
+    dep == "1" ~ 4,
+    dep == "2" ~ 6,
+  ))  |>
+  mutate(dir = as.factor(dir))
+
+# fit |>
+#   # filter(str_detect(para, "alpha")) |>
+#   filter(str_detect(para, "brasiliensis"))
+
+# nd <- post |>
+#   mutate(iter = 1:nrow(post)) |>
+#   group_by(iter) |>
+#   nest()
+d3 <- d2 |>
+  mutate(fd = map(k, \(k)(post$alpha_1_15  + log(k) * post$alpha_2_15))) |>
+  unnest(cols = c(fd)) |>
+  group_by(id, tree, dir, dep) |>
+  summarize(
+    mid = median(sum(fd) * 600),
+    ll = quantile(sum(fd) * 600, 0.025),
+    l = quantile(sum(fd) * 600, 0.25),
+    u = quantile(sum(fd) * 600, 0.75),
+    uu = quantile(sum(fd) * 600, 0.975))
+
+d3 |>
+  mutate_at(vars(mid:uu), round, 2) |>
+  DT::datatable()
+```
+
+```{r}
+ggplot(d3, aes(x = dep, y = mid)) +
+  geom_point(aes(col = tree)) +
+  geom_line(aes(col = tree, group = tree)) +
+  ylab("Sum of Fd \n(median estimates)") +
+  xlab("Depth (cm)")
+
+ggplot(d3, aes(x = dir, y = mid)) +
+  geom_point(aes(col = tree)) +
+  geom_line(aes(col = tree, group = tree)) +
+  ylab("Sum of Fd \n(median estimates)") +
+  xlab("Direction")
+
+```
+
+```{r}
+d4 <- d3 |>
+  filter(tree == "t01") |>
+  mutate(dir = as.factor(dir)) |>
+  mutate(dir_numeric = as.numeric(dir))
+d4 |>
+  ggplot(aes(x = dir_numeric, y = mid)) +
+  geom_ribbon(aes(ymin = ll, ymax = uu), fill = "lightblue", alpha = 0.6) +
+  geom_ribbon(aes(ymin = l, ymax = u), fill = "lightblue", alpha = 0.8) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = d4$dir_numeric, labels = d4$dir) +
+  ylab("Sum of Fd") +
+  xlab("Direction") +
+  ggtitle("Tree 01")
+
+d4 <- d3 |>
+  filter(tree == "t04") |>
+  mutate(dir = as.factor(dir)) |>
+  mutate(dir_numeric = as.numeric(dir))
+d4 |>
+  ggplot(aes(x = dir_numeric, y = mid)) +
+  geom_ribbon(aes(ymin = ll, ymax = uu), fill = "lightblue", alpha = 0.6) +
+  geom_ribbon(aes(ymin = l, ymax = u), fill = "lightblue", alpha = 0.8) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = d4$dir_numeric, labels = d4$dir) +
+  ylab("Sum of Fd") +
+  xlab("Direction") +
+  ggtitle("Tree 04")
+
+d3 |>
+  filter(tree == "t06") |>
+  ggplot(aes(x = dep, y = mid)) +
+  geom_ribbon(aes(ymin = ll, ymax = uu), fill = "lightblue", alpha = 0.6) +
+  geom_ribbon(aes(ymin = l, ymax = u), fill = "lightblue", alpha = 0.8) +
+  geom_point() +
+  geom_line() +
+  ylab("Sum of Fd") +
+  xlab("Depth (cm)") +
+  ggtitle("Tree 06")
+
+```
