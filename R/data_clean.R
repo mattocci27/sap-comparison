@@ -115,21 +115,25 @@ missForest_all <- function(csv) {
     missForest(parallelize = "variables")
 }
 
+# library(targets)
+# library(tidyverse)
+# tar_read(imputed_long_2015)
 
-missForest_long <- function(csv) {
+missForest_long <- function(csv, year = 2015, month = 1) {
   d <- read_csv(csv) |>
     janitor::clean_names() |>
     mutate(date = mdy_hm(date)) |>
     mutate(year = year(date)) |>
     mutate(month = month(date)) |>
+    filter(month == {{month}}) |>
     mutate(day = day(date)) |>
     mutate(yday = yday(date)) |>
     mutate(time = hour(date) * 60 + minute(date)) |>
     mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
     mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
     dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
-      vpd, par, t01_0_0:t16_0_0) |>
-    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "ks") |>
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
     mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
     mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
     mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
@@ -149,7 +153,49 @@ missForest_long <- function(csv) {
     dplyr::select(-id)
 
    d |>
+    filter(year == {{year}}) |>
     as.data.frame() |>
+    # as_tibble()
+    missForest::missForest(parallelize = "forests")
+}
+
+missForest_long2 <- function(csv, year = 2015, month = 1) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month %in% {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    filter(year == {{year}}) |>
+    as.data.frame() |>
+    # as_tibble()
     missForest::missForest(parallelize = "forests")
 }
 

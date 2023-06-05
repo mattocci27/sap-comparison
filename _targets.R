@@ -1200,54 +1200,74 @@ main_list <- list(
 )
 
 #------------------------------------------------------------
-values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+# values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
+  filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
 
 impute_mapped <- tar_map(
   values = values,
   tar_target(
     imputed_data,
-      missForest_each(
+      missForest_long(
         csv = rubber_raw_data_csv,
-        tree = tree
+        year = year,
+        month = month
       )
-  ),
-  tar_target(
-    imputed_df, {
-      imputed_data$ximp |>
-        dplyr::select(-vpd) |>
-        as_tibble()
-    }
-    )
+  )#,
+  # tar_target(
+  #   imputed_df, {
+  #     imputed_data$ximp |>
+  #       dplyr::select(-vpd) |>
+  #       as_tibble()
+  #   }
+  #   )
   )
 
-tar_combined_imputed_data <- tar_combine(
-  combined_imputed_mapped,
-  impute_mapped[["imputed_df"]],
-  command = dplyr::bind_cols(!!!.x)
-)
+# tar_combined_imputed_data <- tar_combine(
+#   combined_imputed_mapped,
+#   impute_mapped[["imputed_df"]],
+#   command = dplyr::bind_cols(!!!.x)
+# )
 
 tar_impute <- list(
   impute_mapped,
-  tar_combined_imputed_data,
-  tar_target(
-    impute_data_full,
-    missForest_comb(
-      rubber_raw_data_csv,
-       combined_imputed_mapped
-    )
-    ),
-  tar_target(
-    imputed_df,
-    generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
-    ),
-  tar_target(
-    imputed_all_list,
-    missForest_all(rubber_raw_data_csv)
-    ),
-  tar_target(
-    imputed_long_list,
-    missForest_long(rubber_raw_data_csv)
-    )
+  # tar_combined_imputed_data,
+  # tar_target(
+  #   impute_data_full,
+  #   missForest_comb(
+  #     rubber_raw_data_csv,
+  #      combined_imputed_mapped
+  #   )
+  #   ),
+  # tar_target(
+  #   imputed_df,
+  #   generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
+  #   ),
+  # tar_target(
+  #   imputed_all_list,
+  #   missForest_all(rubber_raw_data_csv)
+  #   ),
+  # tar_target(
+  #   imputed_long_2015,
+  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 1)
+  #   ),
+  # tar_target(
+  #   imputed_long_2015_2,
+  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 2)
+  #   ),
+  # tar_target(
+  #   imputed_long_2015_3,
+  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 3)
+  #   ),
+  # tar_target(
+  #   imputed_long_2015_123,
+  #   missForest_long2(rubber_raw_data_csv, year = 2015, month = c(1, 2, 3))
+  #   ),
+  # tar_target(
+  #   imputed_long_2016,
+  #   missForest_long(rubber_raw_data_csv, year = 2016)
+  #   ),
+  NULL
   )
 
 append(raw_data_list, main_list) |>
