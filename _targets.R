@@ -1201,8 +1201,12 @@ main_list <- list(
 
 #------------------------------------------------------------
 # values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+
 values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
   filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
+
+values2 <- expand_grid(year = 2016, month = c(9, 10, 12)) |>
+  mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
 
 impute_mapped <- tar_map(
   values = values,
@@ -1213,25 +1217,43 @@ impute_mapped <- tar_map(
         year = year,
         month = month
       )
-  )#,
-  # tar_target(
-  #   imputed_df, {
-  #     imputed_data$ximp |>
-  #       dplyr::select(-vpd) |>
-  #       as_tibble()
-  #   }
-  #   )
+  ),
+  tar_target(
+    imputed_df, {
+      imputed_data$ximp |>
+        as_tibble()
+    }
+    ),
+  tar_target(
+    imputed_df_btrans,
+    backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
+  )
   )
 
-# tar_combined_imputed_data <- tar_combine(
-#   combined_imputed_mapped,
-#   impute_mapped[["imputed_df"]],
-#   command = dplyr::bind_cols(!!!.x)
-# )
+tar_combined_imputed_data <- tar_combine(
+  combined_imputed_mapped,
+  impute_mapped[["imputed_df"]],
+  command = dplyr::bind_rows(!!!.x)
+)
 
+impute_rest_mapped <- tar_map(
+  values = values2,
+  tar_target(
+    imputed_rest,
+    {
+      tmp <- missForest_clean(
+        csv = rubber_raw_data_csv,
+        year = year,
+        month = month)
+      bind_rows(tmp, df_name) |>
+        missForest(parallelize = "forests")
+    }
+  )
+)
 tar_impute <- list(
   impute_mapped,
-  # tar_combined_imputed_data,
+  tar_combined_imputed_data,
+  impute_rest_mapped,
   # tar_target(
   #   impute_data_full,
   #   missForest_comb(

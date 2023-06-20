@@ -129,9 +129,9 @@ missForest_long <- function(csv, year = 2015, month = 1) {
     mutate(day = day(date)) |>
     mutate(yday = yday(date)) |>
     mutate(time = hour(date) * 60 + minute(date)) |>
-    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
-    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
-    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, cos_transformed_day, cos_transformed_time,
       vpd, par, t01_0_0:t15_0_0) |>
     pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
     mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
@@ -159,7 +159,7 @@ missForest_long <- function(csv, year = 2015, month = 1) {
     missForest::missForest(parallelize = "forests")
 }
 
-missForest_long2 <- function(csv, year = 2015, month = 1) {
+missForest_clean <- function(csv, year = 2015, month = 1) {
   d <- read_csv(csv) |>
     janitor::clean_names() |>
     mutate(date = mdy_hm(date)) |>
@@ -169,9 +169,9 @@ missForest_long2 <- function(csv, year = 2015, month = 1) {
     mutate(day = day(date)) |>
     mutate(yday = yday(date)) |>
     mutate(time = hour(date) * 60 + minute(date)) |>
-    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
-    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
-    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, yday, cos_transformed_day, cos_transformed_time,
       vpd, par, t01_0_0:t15_0_0) |>
     pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
     mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
@@ -194,9 +194,29 @@ missForest_long2 <- function(csv, year = 2015, month = 1) {
 
    d |>
     filter(year == {{year}}) |>
-    as.data.frame() |>
-    # as_tibble()
-    missForest::missForest(parallelize = "forests")
+    as.data.frame()
+}
+
+backtransform_date <- function(csv, year = 2015, month = 1, imputed_df) {
+  df_time <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month %in% {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    dplyr::select(year, yday, time, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    filter(year == {{year}})
+
+  imputed_df |>
+    rename(yday = cos_transformed_day) |>
+    rename(time = cos_transformed_time) |>
+    mutate(yday = df_time$yday) |>
+    mutate(time = df_time$time)
+
 }
 
 missForest_each <- function(csv, tree) {
