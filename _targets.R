@@ -1232,7 +1232,7 @@ impute_mapped <- tar_map(
 
 tar_combined_imputed_data <- tar_combine(
   combined_imputed_mapped,
-  impute_mapped[["imputed_df"]],
+  impute_mapped[["imputed_df_btrans"]],
   command = dplyr::bind_rows(!!!.x)
 )
 
@@ -1248,12 +1248,27 @@ impute_rest_mapped <- tar_map(
       bind_rows(tmp, df_name) |>
         missForest(parallelize = "forests")
     }
-  )
+   ),
+   tar_target(
+     imputed_df2,
+     clean_imputed_df(imputed_rest)
+   ),
+   tar_target(
+     imputed_df_btrans2,
+     backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
+   )
+)
+
+tar_combined_imputed_rest_data <- tar_combine(
+  combined_imputed_rest_mapped,
+  impute_rest_mapped[["imputed_df_btrans2"]],
+  command = dplyr::bind_rows(!!!.x)
 )
 tar_impute <- list(
   impute_mapped,
   tar_combined_imputed_data,
   impute_rest_mapped,
+  tar_combined_imputed_rest_data,
   # tar_target(
   #   impute_data_full,
   #   missForest_comb(

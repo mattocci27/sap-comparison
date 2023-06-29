@@ -231,6 +231,13 @@ missForest_each <- function(csv, tree) {
     missForest::missForest()
 }
 
+clean_imputed_df <- function(imputed_rest) {
+  imputed_rest$ximp |>
+    as_tibble() |>
+    dplyr::select(-yday) |>
+    filter(year == 2016)
+}
+
 missForest_comb <- function(csv, combined_imputed_mapped) {
   d <- read_csv(csv) |>
     janitor::clean_names()
