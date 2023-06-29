@@ -1269,6 +1269,19 @@ tar_impute <- list(
   tar_combined_imputed_data,
   impute_rest_mapped,
   tar_combined_imputed_rest_data,
+  tar_target(
+    imputed_full_df, {
+      bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
+      arrange(dir) |>
+      arrange(dep) |>
+      arrange(tree) |>
+      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+      mutate(h = time %/% 60) |>
+      mutate(m = time %% 60) |>
+      mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+      dplyr::select(-h, -m)
+    }
+  ),
   # tar_target(
   #   impute_data_full,
   #   missForest_comb(
