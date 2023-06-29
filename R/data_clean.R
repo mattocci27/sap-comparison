@@ -238,6 +238,43 @@ clean_imputed_df <- function(imputed_rest) {
     filter(year == 2016)
 }
 
+make_long_nonimputed_df <- function(csv) {
+  read_csv(csv) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date)) |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date)) |>
+  mutate(time = hour(date) * 60 + minute(date)) |>
+  mutate(h = time %/% 60) |>
+  mutate(m = time %% 60) |>
+  mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+  mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+  dplyr::select(year, date, time,
+    vpd, par, t01_0_0:t15_0_0) |>
+  pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+  mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+  mutate(dir = case_when(
+    dir == "0" ~ "S",
+    dir == "1" ~ "E",
+    dir == "2" ~ "N",
+    dir == "3" ~ "W"
+  )) |>
+  mutate(dep = case_when(
+    dep == "0" ~ 2,
+    dep == "1" ~ 4,
+    dep == "2" ~ 6,
+  )) |>
+  mutate(tree = as.factor(tree)) |>
+  mutate(dir = as.factor(dir)) |>
+  dplyr::select(-id) |>
+  arrange(date) |>
+  arrange(dir) |>
+  arrange(dep) |>
+  arrange(tree)
+}
+
 missForest_comb <- function(csv, combined_imputed_mapped) {
   d <- read_csv(csv) |>
     janitor::clean_names()

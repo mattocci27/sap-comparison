@@ -653,8 +653,41 @@ library(lubridate)
 
 d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
   janitor::clean_names() |>
-  mutate(date = mdy_hm(date))
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date))
 
+d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "ks")
+
+d2 <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
+  janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    filter(year == 2015)
 
 date_df <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
     janitor::clean_names() |>
@@ -929,4 +962,438 @@ When I impute missing values using missForest, is it a good idea to use the tang
 
 ```{r}
 tar_read(imputed_long_list)
+```
+
+```{r}
+renv::install("tarchetypes")
+renv::install("languageserver")
+renv::install("janitor")
+
+library(targets)
+library(tidyverse)
+tmp <-
+ bind_rows(tar_read(data_with_na), tar_read(combined_imputed_mapped)) |>
+  head()
+      filter(month %in% c(9, 10, 12))
+
+tar_read(data_with_na) |>  str()
+
+tar_read(data_with_na) |>  summary()
+
+missForest::missForest(tmp)
+
+tar_read(data_with_na) |>
+  mutate(yday_back = ((atan(tangent_transformed_day) / (2 * pi)) * 365) + 1) |>
+  summary()
+
+yday <- 1:365
+tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)
+cosine_transformed_day = cos((yday - 1) / 365 * 2 * pi)
+
+What about time (h) of the day (0h-24h)? What kind of transformation should I apply to this variable?
+
+tibble(yday, tangent_transformed_day, cosine_transformed_day) |>
+  ggplot(aes(x = yday, y = cosine_transformed_day)) +
+  geom_point()
+
+plot(yday, tangent_transformed_day)
+
+
+# Create a dataframe with hour from 0 to 24
+data <- data.frame(hour = 0:1440)
+
+# Perform the cosine and sine transformations
+data <- data %>%
+  mutate(
+    cosine_transformed_hour = cos((hour / 1440) * 2 * pi),
+    sine_transformed_hour = sin((hour / 1440) * 2 * pi)
+  )
+
+# Plot original and transformed data
+ggplot(data) +
+  geom_line(aes(x = hour, y = cosine_transformed_hour), color = 'blue') +
+  geom_line(aes(x = hour, y = sine_transformed_hour), color = 'red') +
+  labs(title = 'Cosine and Sine Transformation of Hour of the Day',
+       x = 'Hour of the Day',
+       y = 'Transformed Hour') +
+  scale_colour_manual("",
+                      breaks = c("cosine_transformed_hour", "sine_transformed_hour"),
+                      values = c("blue", "red"))
+
+summary(tmp)
+
+hoge |>
+  filter(str_detect(name, "combined"))
+
+csv <- tar_read(rubber_raw_data_csv)
+
+tmp <- missForest_clean(csv, year = 2016, month = 12)
+summary(tmp)
+
+d <- read_csv(csv)
+
+hoge <- tar_manifest()
+
+library(tidyverse)
+
+hoge |>
+  filter(str_detect(name, "imputed_data"))
+
+values <- expand_grid(year = c(2015, 2016), month = 1:12)
+
+Can you make short for the following R code?
+
+values |>
+  filter(year != 2016 | month != 10) |>
+  filter(year != 2016 | month != 9)
+
+values |>
+  filter(!(year == 2016 & (month == 10 | month == 9)))
+
+d1 |> summary()
+
+df <- tar_read(imputed_full_df)
+
+month <- 12
+year <- 2016
+d1 <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    # filter(month == {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id) |>
+    filter(year == {{year}})
+
+d1$ks
+
+month <- 2
+d2 <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    filter(year == 2015) |>
+    mutate(month = month(date)) |>
+    filter(month == {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+month <- 3
+
+d3 <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    filter(year == 2015) |>
+    mutate(month = month(date)) |>
+    filter(month == {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(tangent_transformed_day = tan((yday - 1) / 365 * 2 * pi)) |>
+    mutate(tangent_transformed_time = tan(time / 1440 * 2 * pi)) |>
+    dplyr::select(year, tangent_transformed_day, tangent_transformed_time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+apply(d1, 2, is.na) |>
+  colSums()
+apply(d2, 2, is.na) |>
+  colSums()
+apply(d3, 2, is.na) |>
+  colSums()
+
+dim(d1)
+dim(d2)
+dim(d3)
+
+tar_read(data_with_na) |> str()
+hist(tar_read(data_with_na)$cos_transformed_day)
+
+tmp <- tar_read(data_with_na)$cos_transformed_day
+yday = (acos(tmp) / (2 * pi)) * 365 + 1
+yday |> unique()
+
+hist(365 - unique(yday))
+
+plot(1:92, unique(tmp))
+unique(tmp) |> hist()
+
+back_transform_day <- function(cos_transformed_day) {
+  yday <- ifelse(cos_transformed_day >= 0,
+                 (acos(cos_transformed_day) / (2 * pi)) * 365 + 1,
+                 (2 * pi - acos(-cos_transformed_day) / (2 * pi)) * 365 + 1)
+  return(yday)
+}
+
+back_transform_day <- function(cos_transformed_day) {
+  yday <- ifelse(cos_transformed_day >= 0,
+                 (acos(cos_transformed_day) / (2 * pi)) * 365 + 1,
+                 (2 - acos(-cos_transformed_day) / (2 * pi)) * 365 + 1)
+  return(yday)
+}
+tmp <- tar_read(data_with_na) |>
+  mutate(yday2 = back_transform_day(cos_transformed_day))
+
+tmp2 <- tmp |>
+  dplyr::select(yday, yday2) |>
+  unique()
+
+rownames(tmp2) <- NULL
+
+yday <- 1:365
+# Assuming 'yday' is a numeric vector representing the day of the year
+cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)
+sin_transformed_day = sin((yday - 1) / 365 * 2 * pi)
+
+# To back-transform
+back_transformed_day = (atan2(sin_transformed_day, cos_transformed_day) / (2 * pi)) * 365 + 1
+
+# atan2 returns a value in the interval [-pi, pi], so we need to adjust negative values
+back_transformed_day[back_transformed_day < 0] = back_transformed_day[back_transformed_day < 0] + 365
+
+
+acos(1)
+
+cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)
+
+hist(yday)
+
+tar_read(combined_imputed_mapped) |> str()
+
+tar_read(imputed_df_2015_9)
+
+impute_rest_mapped <- tar_map(
+  values = values2,
+  tar_target(
+    imputed_rest,
+    {
+      tmp <- missForest_clean(
+        csv = rubber_raw_data_csv,
+        year = year,
+        month = month)
+      bind_rows(tmp, df_name) |>
+        missForest(parallelize = "forests")
+    }
+  )
+)
+
+hoge |>
+  filter(str_detect(name, "imputed_rest"))
+
+ csv <- tar_read(rubber_raw_data_csv)
+
+d <- read_csv(csv) |>
+  janitor::clean_names() |>
+  mutate(date = mdy_hm(date)) |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date)) |>
+  mutate(time = hour(date) * 60 + minute(date)) |>
+  mutate(h = time %/% 60) |>
+  mutate(m = time %% 60) |>
+  mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+  mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+  dplyr::select(year, date, time,
+    vpd, par, t01_0_0:t15_0_0) |>
+  pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+  mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+  mutate(dir = case_when(
+    dir == "0" ~ "S",
+    dir == "1" ~ "E",
+    dir == "2" ~ "N",
+    dir == "3" ~ "W"
+  )) |>
+  mutate(dep = case_when(
+    dep == "0" ~ 2,
+    dep == "1" ~ 4,
+    dep == "2" ~ 6,
+  )) |>
+  mutate(tree = as.factor(tree)) |>
+  mutate(dir = as.factor(dir)) |>
+  dplyr::select(-id) |>
+  arrange(date) |>
+  arrange(dir) |>
+  arrange(dep) |>
+  arrange(tree)
+
+tar_read(imputed_df_btrans_2016_1) |>
+  mutate(hours = )
+
+hoge |>
+  filter(str_detect(name, "combined_imputed_rest_mapped"))
+
+df <- tar_read(combined_imputed_mapped) |>
+  bind_rows(tar_read(combined_imputed_rest_mapped)) |>
+  arrange(dir) |>
+  arrange(dep) |>
+
+arrange(tree)
+
+tar_read(imputed_full_df)
+
+df <- tar_read(imputed_full_df)
+
+
+df |>
+
+df2 <- df |>
+  mutate(id = paste(tree, dir, dep, sep = "_")) |>
+  dplyr::select(-dir, -dep, -tree, -vpd, -par) |>
+  pivot_wider(names_from = "id", values_from = "ks") |>
+  write_csv("imputed.csv")
+
+
+df2 |>
+  filter(is.na(t01_N_2))
+
+df |>
+  mutate(id = paste(tree, dir, dep, sep = "_")) |>
+  filter(id == "t01_N_2") |>
+  filter(date == "2016-11-30") |>
+  filter(time == "09:30:00")
+
+  write_csv("imputed.csv")
+
+  summary(df)
+
+df |>
+  mutate(h = time %/% 60) |>
+  mutate(m = time %% 60) |>
+  mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+  dplyr::select(-h, -m)
+
+
+
+
+
+
+library(lubridate)
+
+
+df2 <- df |>
+  mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1))
+
+
+tar_read(imputed_df_2016_2)
+
+tar_read(imputed_df2_2016_9_imputed_df_2015_9) |>
+  mutate(year = as.integer(year)) |>
+        dplyr::filter(year == 2015)
+
+tar_read(imputed_df2_2016_9_imputed_df_2015_9) |> str()
+tar_read(imputed_df2_2016_9_imputed_df_2015_9) |> str()
+
+tar_read(imputed_df_btrans2_2016_10_imputed_df_2015_10)
+
+tar_read(imputed_df2_2016_9_imputed_df_2015_9) |>
+  as.data.frame() |> head()
+
+|>
+  filter(year == 2016)
+
+tar_read(imputed_df2_2016_12_imputed_df_2015_12)
+
+df_9 <- tar_read(imputed_rest_2016_9_imputed_df_2015_9)$ximp |>
+  as_tibble() |>
+  filter(year == 2016)
+
+tmp <- tar_read(imputed_df_btrans2_2016_10_imputed_df_2015_10)
+backtransform_date(tar_read(rubber_raw_data_csv), 2016, 10, tmp)
+
+hoge |>
+  filter(str_detect(name, "btrans2"))
+
+tar_read(imputed_rest_2016_9_imputed_df_2015_9)
+
+
+hoge |>
+  filter(str_detect(name, "imputed_df")) |> pull(name)
+
+tar_load(rubber_raw_data_csv)
+
+tar_read(imputed_df_2016_1)
+
+missForest_clean2(rubber_raw_data_csv, 2016, 1) |> names()
+
+read_csv(rubber_raw_data_csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date))
+
+tmp_time <- get_date(rubber_raw_data_csv, 2016, 1)
+tar_read(impute_df_new_2016_8)
+
+tmp_ori |>
+  rename(yday = cos_transformed_day) |>
+  rename(time = cos_transformed_time) |>
+  mutate(yday = tmp_time$yday) |>
+  mutate(time = tmp_time$time)
+
+
+
 ```

@@ -1272,51 +1272,21 @@ tar_impute <- list(
   tar_target(
     imputed_full_df, {
       bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
+      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+      arrange(date) |>
       arrange(dir) |>
       arrange(dep) |>
       arrange(tree) |>
-      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
       mutate(h = time %/% 60) |>
       mutate(m = time %% 60) |>
       mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
-      dplyr::select(-h, -m)
+      dplyr::select(year, date, time, vpd, par, ks, tree, dir, dep)
     }
   ),
-  # tar_target(
-  #   impute_data_full,
-  #   missForest_comb(
-  #     rubber_raw_data_csv,
-  #      combined_imputed_mapped
-  #   )
-  #   ),
-  # tar_target(
-  #   imputed_df,
-  #   generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
-  #   ),
-  # tar_target(
-  #   imputed_all_list,
-  #   missForest_all(rubber_raw_data_csv)
-  #   ),
-  # tar_target(
-  #   imputed_long_2015,
-  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 1)
-  #   ),
-  # tar_target(
-  #   imputed_long_2015_2,
-  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 2)
-  #   ),
-  # tar_target(
-  #   imputed_long_2015_3,
-  #   missForest_long(rubber_raw_data_csv, year = 2015, month = 3)
-  #   ),
-  # tar_target(
-  #   imputed_long_2015_123,
-  #   missForest_long2(rubber_raw_data_csv, year = 2015, month = c(1, 2, 3))
-  #   ),
-  # tar_target(
-  #   imputed_long_2016,
-  #   missForest_long(rubber_raw_data_csv, year = 2016)
-  #   ),
+  tar_target(
+    nonimputed_full_df,
+    make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
   NULL
   )
 
