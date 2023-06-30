@@ -571,7 +571,6 @@ d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
   mutate(date = mdy_hm(date)) |>
   dplyr::select(date:time)
 
-
 tmp <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
   janitor::clean_names() |>
   mutate(date = mdy_hm(date)) |>
@@ -594,14 +593,82 @@ d5 <- d4 |>
   mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
   mutate(dep = str_split_fixed(id, "_", 3)[, 3])
 
-d5 |>
-  filter(tree == "t01" | tree == "t02") |>
-  dplyr::filter(day <= 10) |>
-  ggplot(aes(x = date, y = k, col = dir, lty = tree, shape = dep)) +
+d <- tar_read(imputed_full_df)
+d2 <- tar_read(nonimputed_full_df)
+
+a <- d |>
+  filter(str_detect(date, "2015-02")) |>
+  nrow()
+
+b <- d |>
+  filter(str_detect(date, "2015-02")) |>
+  nrow()
+
+tmp <- d2 |>
+  mutate(month = month(date)) |>
+  group_by(year, month) |>
+  summarize(total_n = n())
+
+tmp2 <- d2 |>
+  mutate(month = month(date)) |>
+  filter(is.na(ks)) |>
+  group_by(year, month) |>
+  summarize(na_n = n())
+
+
+tmp3 <- full_join(tmp, tmp2) |>
+  ungroup() |>
+  mutate(ratio = na_n / total_n) |>
+  mutate(ym = str_c(year, month, sep = "-"))
+
+ggplot(tmp3, aes(x = ym, y = na_n / total_n)) +
+  geom_bar(stat = "identity")
+
+sum(tmp3$na_n) / sum(tmp3$total_n)
+
+tmp3 |>
+  arrange(ratio)
+
+tar_read(imputed_data_2015_1)$OOBerror
+tar_read(imputed_data_2015_2)$OOBerror
+tar_read(imputed_data_2015_3)$OOBerror
+
+d2 |>
+  filter(str_detect(date, "2015-02")) |>
+  filter(is.na(ks)) |>
+  nrow()
+
+d2 |>
+  filter(str_detect(date, "2015-02")) |>
+  nrow()
+
+
+d |>
+  mutate(date = paste(date, time)) |>
+  mutate(date = ymd_hms(date))  |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date)) |>
+  dplyr::filter(yday <= 275) |>
+  dplyr::filter(yday > 270) |>
+  filter(year == 2016)
+
+df2 <- df |>
+  filter(tree == "t01" | tree == "t02")  |>
+  filter(dir == "N") |>
+  filter(dep == 2) |>
+  mutate(date = paste(date, time)) |>
+  mutate(date = ymd_hms(date))  |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date))
+
+df2 |>
+  dplyr::filter(yday <= 275) |>
+  dplyr::filter(yday > 270) |>
+  filter(year == 2016) |>
+  ggplot(aes(x = date, y = ks, col = tree, lty = tree, shape = as.factor(dep))) +
   geom_point() +
   geom_line() +
   ggtitle("missing")
-
 
 tmp <- names(d)[-1:-7]
 
@@ -613,10 +680,7 @@ d2 <- tibble(
 
 tar_read(impute_data_full)$ximp |> str()
 tar_read(combined_imputed_mapped) |> str()
-
-
-
-
+df
 
 
 ```
@@ -1023,7 +1087,7 @@ ggplot(data) +
 summary(tmp)
 
 hoge |>
-  filter(str_detect(name, "combined"))
+  filter(str_detect(name, "rest"))
 
 csv <- tar_read(rubber_raw_data_csv)
 
@@ -1031,17 +1095,34 @@ tmp <- missForest_clean(csv, year = 2016, month = 12)
 summary(tmp)
 
 d <- read_csv(csv)
-
 hoge <- tar_manifest()
-
 library(tidyverse)
+
+tar_read(imputed_data_2015_1)$OOBerror[1]
+
+tar_read(imputed_data_2015_2)$OOBerror
+
+tmp <- tar_read(combined_nrmse)
+tmp2 <- tar_read(combined_nrmse_rest) |>
+  mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
+bind_rows(tmp, tmp2) |>
+  arrange(id)
+
+input_string <- "nramse2_2016_9_imputed_df_2015_9"
+str_extract(input_string, "(?<=imputed_df_).*$")
+
+tar_read(nrmse_df)
+
+hist(nrmse_df$NRMSE)
+
+tar_read(imputed_rest_2016_10_imputed_df_2015_10)$OOBerror
+tar_read(imputed_rest_2016_9_imputed_df_2015_9)$OOBerror
+tar_read(imputed_rest_2016_10_imputed_df_2015_10)$OOBerror
 
 hoge |>
   filter(str_detect(name, "imputed_data"))
 
 values <- expand_grid(year = c(2015, 2016), month = 1:12)
-
-Can you make short for the following R code?
 
 values |>
   filter(year != 2016 | month != 10) |>
@@ -1049,6 +1130,8 @@ values |>
 
 values |>
   filter(!(year == 2016 & (month == 10 | month == 9)))
+
+iris.imp <- missForest(iris.mis, verbose = TRUE)
 
 d1 |> summary()
 
@@ -1318,7 +1401,10 @@ df |>
   filter(date == "2016-11-30") |>
   filter(time == "09:30:00")
 
-  write_csv("imputed.csv")
+
+
+
+write_csv("imputed.csv")
 
   summary(df)
 
@@ -1329,12 +1415,7 @@ df |>
   dplyr::select(-h, -m)
 
 
-
-
-
-
 library(lubridate)
-
 
 df2 <- df |>
   mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1))
@@ -1371,7 +1452,6 @@ hoge |>
 
 tar_read(imputed_rest_2016_9_imputed_df_2015_9)
 
-
 hoge |>
   filter(str_detect(name, "imputed_df")) |> pull(name)
 
@@ -1393,7 +1473,5 @@ tmp_ori |>
   rename(time = cos_transformed_time) |>
   mutate(yday = tmp_time$yday) |>
   mutate(time = tmp_time$time)
-
-
 
 ```

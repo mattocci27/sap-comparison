@@ -1225,6 +1225,10 @@ impute_mapped <- tar_map(
     }
     ),
   tar_target(
+    nramse,
+    imputed_data$OOBerror[1]
+    ),
+  tar_target(
     imputed_df_btrans,
     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
   )
@@ -1234,6 +1238,12 @@ tar_combined_imputed_data <- tar_combine(
   combined_imputed_mapped,
   impute_mapped[["imputed_df_btrans"]],
   command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_nrmse <- tar_combine(
+  combined_nrmse,
+  impute_mapped[["nramse"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
 )
 
 impute_rest_mapped <- tar_map(
@@ -1249,14 +1259,24 @@ impute_rest_mapped <- tar_map(
         missForest(parallelize = "forests")
     }
    ),
-   tar_target(
-     imputed_df2,
-     clean_imputed_df(imputed_rest)
+  tar_target(
+    imputed_df2,
+    clean_imputed_df(imputed_rest)
    ),
+  tar_target(
+    nramse2,
+    imputed_rest$OOBerror[1]
+    ),
    tar_target(
      imputed_df_btrans2,
      backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
    )
+)
+
+tar_combined_nrmse_rest <- tar_combine(
+  combined_nrmse_rest,
+  impute_rest_mapped[["nramse2"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
 )
 
 tar_combined_imputed_rest_data <- tar_combine(
@@ -1264,11 +1284,24 @@ tar_combined_imputed_rest_data <- tar_combine(
   impute_rest_mapped[["imputed_df_btrans2"]],
   command = dplyr::bind_rows(!!!.x)
 )
+
 tar_impute <- list(
   impute_mapped,
   tar_combined_imputed_data,
+  tar_combined_nrmse,
   impute_rest_mapped,
   tar_combined_imputed_rest_data,
+  tar_combined_nrmse_rest,
+  tar_target(
+    nrmse_df, {
+      tmp1 <- combined_nrmse |>
+        mutate(id = str_extract(id, "(?<=nramse_).*$"))
+      tmp2 <- combined_nrmse_rest |>
+        mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
+      bind_rows(tmp1, tmp2) |>
+        arrange(id)
+    }
+  ),
   tar_target(
     imputed_full_df, {
       bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
