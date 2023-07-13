@@ -30,7 +30,7 @@ apptainer exec --env RENV_PATHS_CACHE=/home/${USER}/renv \
 To run analysis:
 
 ```bash
-apptainer exec --env RENV_PATHS_CACHE=/home/${USER}/renv \
+jHapptainer exec --env RENV_PATHS_CACHE=/home/${USER}/renv \
 	--env RENV_PATHS_PREFIX_AUTO=TRUE \
 	radian.sif Rscript run.R
 ```

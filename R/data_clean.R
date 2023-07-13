@@ -309,3 +309,16 @@ generate_imputed_df <- function(csv, impute_data_full, combined_imputed_mapped) 
 
 }
 
+
+generate_dbh_sap_stan_data <- function(sapwood_depth_csv) {
+  d <- read_csv(sapwood_depth_csv)
+  list(
+    y = log(d$sapwood_depth),
+    x = log(d$dbh),
+    N = nrow(d)
+  )
+}
+
+generate_full_date_dbh <- function(girth_increment_csv, initial_dbh_csv) {
+
+}
