@@ -642,15 +642,16 @@ d2 |>
   filter(str_detect(date, "2015-02")) |>
   nrow()
 
-
-d |>
+df_imp <- tar_read(imputed_full_df) |>
   mutate(date = paste(date, time)) |>
   mutate(date = ymd_hms(date))  |>
   mutate(year = year(date)) |>
-  mutate(yday = yday(date)) |>
-  dplyr::filter(yday <= 275) |>
-  dplyr::filter(yday > 270) |>
-  filter(year == 2016)
+  mutate(yday = yday(date))
+df_mis <- tar_read(nonimputed_full_df) |>
+  mutate(date = paste(date, time)) |>
+  mutate(date = ymd_hms(date))  |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date))
 
 df2 <- df |>
   filter(tree == "t01" | tree == "t02")  |>
@@ -661,14 +662,26 @@ df2 <- df |>
   mutate(year = year(date)) |>
   mutate(yday = yday(date))
 
-df2 |>
-  dplyr::filter(yday <= 275) |>
+p <- df_imp |>
+  dplyr::filter(yday <= 300) |>
   dplyr::filter(yday > 270) |>
-  filter(year == 2016) |>
-  ggplot(aes(x = date, y = ks, col = tree, lty = tree, shape = as.factor(dep))) +
+  filter(year == 2015) |>
+  ggplot(aes(x = date, y = ks, col = tree, lty = dir, shape = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  ggtitle("imputed")
+ggsave("hoge.png", p, width = 50, height = 20, units = "cm")
+
+
+p2 <- df_mis |>
+  dplyr::filter(yday <= 300) |>
+  dplyr::filter(yday > 270) |>
+  filter(year == 2015) |>
+  ggplot(aes(x = date, y = ks, col = tree, lty = dir, shape = as.factor(dep))) +
   geom_point() +
   geom_line() +
   ggtitle("missing")
+ggsave("hoge2.png", p2, width = 50, height = 20, units = "cm")
 
 tmp <- names(d)[-1:-7]
 
@@ -1111,8 +1124,7 @@ bind_rows(tmp, tmp2) |>
 input_string <- "nramse2_2016_9_imputed_df_2015_9"
 str_extract(input_string, "(?<=imputed_df_).*$")
 
-tar_read(nrmse_df)
-
+tar_load(nrmse_df)
 hist(nrmse_df$NRMSE)
 
 tar_read(imputed_rest_2016_10_imputed_df_2015_10)$OOBerror
@@ -1128,6 +1140,7 @@ values |>
   filter(year != 2016 | month != 10) |>
   filter(year != 2016 | month != 9)
 
+Now I need DBH data. Can you send
 values |>
   filter(!(year == 2016 & (month == 10 | month == 9)))
 
@@ -1474,4 +1487,238 @@ tmp_ori |>
   mutate(yday = tmp_time$yday) |>
   mutate(time = tmp_time$time)
 
+tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
+
+d <- tar_read(imputed_full_df)
+
+tmp <- tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15, sigma)
+
+calc_log_fd <- function(ks, log_a, b, sigma) {
+  log_a + b * ks + sigma^2 / 2
+}
+
+d2 <- head(d, 200)
+
+d |>
+  mutate(log_fd = calc_log_fd(ks, tmp[1, 1], tmp[1, 2], tmp[1, 3])) |>
+  mutate(fd = exp(log_fd))
+```
+
+```{r}
+library(tidyverse)
+
+d1 <- read_csv("data-raw/girth_increment.csv")
+d2 <- read_csv("data-raw/initial_dbh.csv")
+d3 <- read_csv("data-raw/sapwood_depth.csv")
+
+plot(sapwood_depth ~ dbh, data = d3)
+plot(sapwood_depth ~ dbh, log = "xy", data = d3)
+
+fit1 <- lm(sapwood_depth ~ dbh, data = d3)
+fit2 <- lm(log(sapwood_depth) ~ log(dbh), data = d3)
+
+summary(fit1)
+summary(fit2)
+
+AIC(fit1, fit2)
+
+hist(d3$sapwood_depth)
+hist(d3$dbh)
+
+log(d3$sapwood_depth) |> hist()
+log(d3$dbh) |> hist()
+
+targets::tar_read(fit_dbh_sapwood_summary_normal)
+targets::tar_read(fit_dbh_sapwood_draws_normal)
+```
+
+# Sapwood length
+```{r}
+d3 <- read_csv("data-raw/sapwood_depth.csv")
+# Defining the DBH range
+x <- seq(min(log(d3$dbh)), max(log(d3$dbh)), length = 80)
+
+# Reading the model fit
+fit_draws <- targets::tar_read(fit_dbh_sapwood_draws_normal)
+
+# Creating a nested data frame
+nested_draws <- fit_draws %>%
+  mutate(draw = row_number()) %>%
+  nest(data = c(alpha, beta, sigma))
+
+# Generating predictions for each draw and each x value
+pred_df <- expand.grid(x = x, draw = 1:nrow(nested_draws)) %>%
+  left_join(nested_draws, by = "draw") %>%
+  mutate(pred_log = map2_dbl(data, x, ~.x$alpha + .x$beta * .y),
+         pred = map2_dbl(data, pred_log, ~exp(.y + (.x$sigma^2 / 2))),  # correction here
+         x = exp(x)) %>%
+  select(-data)
+
+# Calculating the median and 95% CI for each x value
+pred_summary <- pred_df %>%
+  group_by(x) %>%
+  summarise(median = median(pred),
+            lower = quantile(pred, 0.025),
+            upper = quantile(pred, 0.975))
+
+# Plotting the posterior predictions
+ggplot(pred_summary, aes(x = x)) +
+  geom_line(aes(y = median), color = "blue") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.4) +
+  labs(x = "DBH", y = "Sapwood length") +
+  theme_bw()
+```
+
+# Sapwood area
+
+```{r}
+library(tidyverse)
+d1 <- read_csv("data-raw/girth_increment.csv")
+d2 <- read_csv("data-raw/initial_dbh.csv")
+d1[is.na(d1)] <- 0
+
+# Transform the girth increment data frame to a long format
+d1_long <- d1 %>%
+  rename_with(~ paste0("tree_", .x), -Date) %>%
+  pivot_longer(-Date, names_to = "tree_id", values_to = "increment") %>%
+  mutate(Date = lubridate::dmy(Date), tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
+
+# Transform the initial DBH data frame to a long format
+# d2 <- d2
+
+# Join the transformed data frames by tree_id
+dbh_data <- d1_long %>%
+  left_join(d2, by = "tree_id") %>%
+  group_by(tree_id) %>%
+  arrange(Date) %>%
+  mutate(dbh = initial_dbh + cumsum(increment)) %>%
+  ungroup()
+
+fit_draws2 <- fit_draws |>
+  dplyr::select(alpha, beta, sigma)
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x) + para$sigma^2 / 2
+  exp(log_mu)
+}
+
+calc_s <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (2 * r - b - depth) * 2
+}
+
+calc_s0 <- function(dbh, sap, bark = 0.77) {
+  r <- dbh / 2 - bark
+  pi * (r - 6)^2 - pi * (r - sap)^2
+}
+
+
+xx <- seq(1, 20, length = 80)
+yy <- calc_s0(50, xx)
+plot(xx, yy)
+
+hoge <- dbh_data |>
+  filter(tree_id != 16) |>
+  mutate(para = list(fit_draws2)) |>
+  mutate(sap = map2(dbh, para, pred_sap)) |>
+  mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+  mutate(m = map_dbl(sap, quantile, 0.5)) |>
+  mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+  mutate(s2 = calc_s(dbh, 2)) |>
+  mutate(s4 = calc_s(dbh, 4)) |>
+  mutate(s6 = calc_s(dbh, 6)) |>
+  mutate(s0_ll = calc_s0(dbh, ll)) |>
+  mutate(s0_m = calc_s0(dbh, m)) |>
+  mutate(s0_hh = calc_s0(dbh, hh))
+
+hoge |>
+  filter(s0_ll > 0)
+
+rnorm(100) |> quantile(c(0, 0.025, 0.975))
+
+dbh_data |> as.data.frame()
+
+ggplot(dbh_data, aes(y = dbh, x = Date, col = as.factor(tree_id))) +
+  geom_point() +
+  geom_line() +
+  scale_y_log10() +
+  facet_wrap(~ tree_id, ncol = 4)
+
+dbh_data2 <- dbh_data |>
+  janitor::clean_names() |>
+  mutate(year = year(date)) |>
+  mutate(yday = yday(date))  |>
+  mutate(day = ifelse(year == 2016, yday + 365, yday))
+
+fit1 <- lme4::lmer(log(dbh) ~ log(day) + (1 | tree_id), data = dbh_data2)
+fit2 <- lme4::lmer(log(dbh) ~ day + (1 | tree_id), data = dbh_data2)
+fit3 <- lme4::lmer(log(dbh) ~ date + (1 | tree_id), data = dbh_data2)
+
+AIC(fit1, fit2, fit3)
+
+summary(fit2)
+summary(fit3)
+```
+
+
+```{r}
+
+dbh_data |>
+  janitor::clean_names()
+
+# Suppose these are your dates and DBH measurements for a single tree
+dates <- c(1, 2, 3, 4, 5)  # these would be your actual date numbers
+dbh <- c(10, 12, 14, 16, 18)
+
+# Suppose you want to estimate DBH at date 2.5
+date_to_predict <- 2.5
+
+# Use the approx() function to perform linear interpolation
+dbh_predicted <- approx(x = dates, y = dbh, xout = date_to_predict)$y
+
+print(dbh_predicted)  # this should print 13.0
+
+
+dbh_data <- dbh_data %>%
+  janitor::clean_names() %>%
+  arrange(tree_id, date)  # Arrange data by tree_id and date
+
+# Now create a new data frame where each tree_id has a row for each date
+
+all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
+
+dbh_data_interpolated <- dbh_data %>%
+  group_by(tree_id) %>%
+  do(data.frame(date = all_dates,
+                dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
+                stringsAsFactors = FALSE)) %>%
+  ungroup()
+
+ggplot(dbh_data_interpolated, aes(y = dbh, x = date, col = as.factor(tree_id))) +
+  # geom_point() +
+  geom_line() +
+  scale_y_log10() +
+  facet_wrap(~ tree_id, ncol = 4)
+
+dbh_data_interpolated  |>
+  filter(tree_id != 16) |>
+  mutate(para = list(fit_draws2)) |>
+  mutate(sap = map2(dbh, para, pred_sap)) |>
+  mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+  mutate(m = map_dbl(sap, quantile, 0.5)) |>
+  mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+  mutate(s2 = calc_s(dbh, 2)) |>
+  mutate(s4 = calc_s(dbh, 4)) |>
+  mutate(s6 = calc_s(dbh, 6)) |>
+  mutate(s0_ll = calc_s0(dbh, ll)) |>
+  mutate(s0_m = calc_s0(dbh, m)) |>
+  mutate(s0_hh = calc_s0(dbh, hh))
+
+
+d <- read_csv("data-raw/rubber_raw_data.csv")
+
+tail(d)
 ```

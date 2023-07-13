@@ -105,6 +105,21 @@ raw_data_list <- list(
     "data-raw/rubber_raw_data.csv",
     format = "file"
   ),
+  tar_target(
+    girth_increment_csv,
+    "data-raw/girth_increment.csv",
+    format = "file"
+  ),
+  tar_target(
+    initial_dbh_csv,
+    "data-raw/initial_dbh.csv",
+    format = "file"
+  ),
+  tar_target(
+    sapwood_depth_csv,
+    "data-raw/sapwood_depth.csv",
+    format = "file"
+  ),
   # tar_target(
   #   ks_spp_err_csv,
   #   "data/ks_pres_tens_spp_err.csv",
@@ -1323,6 +1338,37 @@ tar_impute <- list(
   NULL
   )
 
+sapwood_list <- list(
+  tar_target(
+    dbh_sap_stan_data,
+    generate_dbh_sap_stan_data(sapwood_depth_csv)
+  ),
+  tar_stan_mcmc(
+     fit_dbh_sapwood,
+     "stan/normal.stan",
+     data = dbh_sap_stan_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 2000,
+     iter_sampling = 2000,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
+  )
+)
+
 append(raw_data_list, main_list) |>
-  append(tar_impute)
+  append(tar_impute) |>
+  append(sapwood_list)
 # append(raw_data_list, main_list)
