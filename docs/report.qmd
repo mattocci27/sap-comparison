@@ -1573,18 +1573,27 @@ ggplot(pred_summary, aes(x = x)) +
 
 # Sapwood area
 
+
+I need to check the data for inital DBH measurement.
+
 ```{r}
 library(tidyverse)
-d1 <- read_csv("data-raw/girth_increment.csv")
+d1 <- read_csv("data-raw/girth_increment.csv")  |>
+  janitor::clean_names()
 d2 <- read_csv("data-raw/initial_dbh.csv")
 d1[is.na(d1)] <- 0
 
-# Transform the girth increment data frame to a long format
-d1_long <- d1 %>%
-  rename_with(~ paste0("tree_", .x), -Date) %>%
-  pivot_longer(-Date, names_to = "tree_id", values_to = "increment") %>%
-  mutate(Date = lubridate::dmy(Date), tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
+d1_re <- data.frame(date = c("24/12/2014"), matrix(rep(0, 16), nrow = 1, ncol = 16))  |>
+  janitor::clean_names() |>
+  bind_rows(d1)
 
+names(d1_re)[-1] <- 1:16
+
+# transform the girth increment data frame to a long format
+d1_long <- d1_re %>%
+  rename_with(~ paste0("tree_", .x), -date) %>%
+  pivot_longer(-date, names_to = "tree_id", values_to = "increment") %>%
+  mutate(date = lubridate::dmy(date), tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
 # Transform the initial DBH data frame to a long format
 # d2 <- d2
 
@@ -1592,7 +1601,7 @@ d1_long <- d1 %>%
 dbh_data <- d1_long %>%
   left_join(d2, by = "tree_id") %>%
   group_by(tree_id) %>%
-  arrange(Date) %>%
+  arrange(date) %>%
   mutate(dbh = initial_dbh + cumsum(increment)) %>%
   ungroup()
 
@@ -1614,7 +1623,6 @@ calc_s0 <- function(dbh, sap, bark = 0.77) {
   r <- dbh / 2 - bark
   pi * (r - 6)^2 - pi * (r - sap)^2
 }
-
 
 xx <- seq(1, 20, length = 80)
 yy <- calc_s0(50, xx)
@@ -1641,7 +1649,7 @@ rnorm(100) |> quantile(c(0, 0.025, 0.975))
 
 dbh_data |> as.data.frame()
 
-ggplot(dbh_data, aes(y = dbh, x = Date, col = as.factor(tree_id))) +
+ggplot(dbh_data, aes(y = dbh, x = date, col = as.factor(tree_id))) +
   geom_point() +
   geom_line() +
   scale_y_log10() +
@@ -1665,6 +1673,8 @@ summary(fit3)
 
 
 ```{r}
+library(targets)
+library(tidyverse)
 
 dbh_data |>
   janitor::clean_names()
@@ -1681,13 +1691,10 @@ dbh_predicted <- approx(x = dates, y = dbh, xout = date_to_predict)$y
 
 print(dbh_predicted)  # this should print 13.0
 
-
-dbh_data <- dbh_data %>%
-  janitor::clean_names() %>%
+dbh_data <- dbh_data |>
   arrange(tree_id, date)  # Arrange data by tree_id and date
 
 # Now create a new data frame where each tree_id has a row for each date
-
 all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
 
 dbh_data_interpolated <- dbh_data %>%
@@ -1695,13 +1702,17 @@ dbh_data_interpolated <- dbh_data %>%
   do(data.frame(date = all_dates,
                 dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
                 stringsAsFactors = FALSE)) %>%
-  ungroup()
+  ungroup() |>
+  filter(date < "2017-01-01") |>
+  mutate(tree_id = sprintf("t%02d", tree_id))
 
 ggplot(dbh_data_interpolated, aes(y = dbh, x = date, col = as.factor(tree_id))) +
   # geom_point() +
   geom_line() +
   scale_y_log10() +
   facet_wrap(~ tree_id, ncol = 4)
+
+imp_df <- tar_read(imputed_full_df)
 
 dbh_data_interpolated  |>
   filter(tree_id != 16) |>
@@ -1718,7 +1729,270 @@ dbh_data_interpolated  |>
   mutate(s0_hh = calc_s0(dbh, hh))
 
 
-d <- read_csv("data-raw/rubber_raw_data.csv")
+# Create a sequence of times with increments of 10 minutes
+time_seq <- seq(from = as.POSIXct("00:00:00", format = "%H:%M:%S", tz = "UTC"),
+                to = as.POSIXct("23:50:00", format = "%H:%M:%S", tz = "UTC"),
+                by = "10 min")
+# Convert the sequence to 'HH:MM:SS' format
+time_seq_formatted <- format(time_seq, format = "%H:%M:%S")
 
-tail(d)
+dbh_data_full <- dbh_data_interpolated |>
+  mutate(dbh = map(dbh, rep, 144)) |>
+  mutate(time = list(time_seq_formatted)) |>
+  unnest(cols = c(dbh, time))
+
+tmp <- imp_df |> head(2000)
+
+
+imp_df <- imp_df |>
+  mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W")))
+
+imp_df2 <- imp_df |>
+  filter(ks > 1e-6)
+  # filter(ks != 0)
+
+fit1 <- lme4::lmer(ks ~ dir_fct + as.factor(dep) + (1 | tree), data = imp_df2)
+fit2 <- lme4::lmer(log(ks) ~ dir_fct + as.factor(dep) + (1 | tree), data = imp_df2)
+
+library(tictoc)
+tic()
+fit3 <- lme4::lmer(log(ks) ~ dir_fct + as.factor(dep) + (1 | tree) + (1 | date) + (1 |time), data = imp_df2)
+toc()
+
+tic()
+fit4 <- imp_df2 |>
+  mutate(tmp = paste(date, time)) %>%
+  lme4::lmer(log(ks) ~ dir_fct + as.factor(dep) + (1 | tree) + (1 | tmp), data = .)
+toc()
+
+fit5 <- lm(log(ks) ~ dir_fct + as.factor(dep), data = imp_df2)
+AIC(fit1, fit2, fit3, fit4, fit5)
+
+summary(fit4)
+
+hist(imp_df$ks)
+summary(log(imp_df2$ks))
+
+k <- 2.22e-16
+
+imp_df2 |>
+  filter(ks < 1e-6)
+
+imp_df2 |>
+  arrange(ks)
+
+  filter(ks < 0.000001) |>
+  pull(ks) |>
+  log() |>
+  hist()
+
+
+# d <- read_csv("data-raw/rubber_raw_data.csv")
+# tail(d)
+hoge <- left_join(imp_df, dbh_data_full, by = c("date", "time", "tree" = "tree_id"))
+
+tmp <- imp_df |>
+  dplyr::select(-dir_fct) |>
+  pivot_wider(names_from = c(tree, dir, dep), values_from = ks)
+
+tmp2 <- tmp %>%
+  filter_at(vars(matches("t[0-9]")), all_vars(. != 0))
+
+tmp2 |>
+  pivot_longer(cols = matches("t[0-9]"), names_to = "tree", values_to = "ks")
+
+
+```
+
+When we want to calculate the 95% confidence interval of the product of two random variables, can we use the following method?
+
+Can you make a time vector in R with increments of 10 minutes?
+
+00:00:00
+
+23:50:00
+
+```{r}
+xx <- rnorm(2000)
+yy <- rnorm(2000)
+quantile(xx)
+quantile(yy)
+quantile(xx * yy)
+```
+
+
+The upper qunatile of xx * yy is always smaller thant the product of the upper quantiles of xx and yy.
+
+```{r}
+# load the necessary library
+library(boot)
+
+# bootstrap
+set.seed(123)
+bootstrap_samples <- replicate(2000, {
+  indices <- sample(1:length(xx), replace = TRUE)
+  quantile(xx[indices] * yy[indices], probs = c(0.025, 0.975))
+})
+
+# get 95% quantiles
+lower_quantile <- quantile(bootstrap_samples[1,], 0.025)
+upper_quantile <- quantile(bootstrap_samples[2,], 0.975)
+
+lower_quantile
+upper_quantile
+```
+
+
+I have this data frame.
+Date is from 2015-01-01 to 2016-12-31.
+tree_id is from 1 to 16.
+
+```
+[ins] r$> dbh_data_interpolated
+# A tibble: 11,696 × 3
+   tree_id date         dbh
+     <dbl> <date>     <dbl>
+ 1       1 2015-01-01  18.0
+ 2       1 2015-01-02  18.0
+ 3       1 2015-01-03  18.0
+ 4       1 2015-01-04  18.1
+ 5       1 2015-01-05  18.1
+ 6       1 2015-01-06  18.1
+ 7       1 2015-01-07  18.1
+ 8       1 2015-01-08  18.2
+ 9       1 2015-01-09  18.2
+```
+
+```{r}
+d1 <- read_csv("data-raw/girth_increment.csv")  |>
+  janitor::clean_names()
+d2 <- read_csv("data-raw/initial_dbh.csv")
+d1[is.na(d1)] <- 0
+
+d1_re <- data.frame(date = c("24/12/2014"), matrix(rep(0, 16), nrow = 1, ncol = 16))  |>
+  janitor::clean_names() |>
+  bind_rows(d1)
+
+names(d1_re)[-1] <- 1:16
+
+# transform the girth increment data frame to a long format
+d1_long <- d1_re %>%
+  rename_with(~ paste0("tree_", .x), -date) %>%
+  pivot_longer(-date, names_to = "tree_id", values_to = "increment") %>%
+  mutate(date = lubridate::dmy(date), tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
+
+# Join the transformed data frames by tree_id
+dbh_data <- d1_long %>%
+  left_join(d2, by = "tree_id") %>%
+  group_by(tree_id) %>%
+  arrange(date) %>%
+  mutate(dbh = initial_dbh + cumsum(increment)) %>%
+  ungroup() |>
+  arrange(tree_id, date)  # Arrange data by tree_id and date
+
+# Now create a new data frame where each tree_id has a row for each date
+all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
+
+dbh_data_interpolated <- dbh_data %>%
+  group_by(tree_id) %>%
+  do(data.frame(date = all_dates,
+                dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
+                stringsAsFactors = FALSE)) %>%
+  ungroup() |>
+  filter(date < "2017-01-01") |>
+  filter(date >= "2015-01-01") |>
+  mutate(tree_id = sprintf("t%02d", tree_id))
+
+# Reading the model fit
+fit_draws <- targets::tar_read(fit_dbh_sapwood_draws_normal)
+fit_draws2 <- fit_draws |>
+  dplyr::select(alpha, beta, sigma)
+
+imp_df <- tar_read(imputed_full_df)
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x) + para$sigma^2 / 2
+  exp(log_mu)
+}
+
+calc_s <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (2 * r - b - depth) * 2
+}
+
+calc_s0 <- function(dbh, sap, bark = 0.77) {
+  r <- dbh / 2 - bark
+  pi * (r - 6)^2 - pi * (r - sap)^2
+}
+
+moge <- dbh_data_interpolated  |>
+  filter(tree_id != 16) |>
+  mutate(para = list(fit_draws2)) |>
+  mutate(sap = map2(dbh, para, pred_sap)) |>
+  mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+  mutate(m = map_dbl(sap, quantile, 0.5)) |>
+  mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+  mutate(s2 = calc_s(dbh, 2)) |>
+  mutate(s4 = calc_s(dbh, 4)) |>
+  mutate(s6 = calc_s(dbh, 6)) |>
+  mutate(s0_ll = calc_s0(dbh, ll)) |>
+  mutate(s0_m = calc_s0(dbh, m)) |>
+  mutate(s0_hh = calc_s0(dbh, hh))
+
+moge  |>
+  filter(s0_m > 0) |>
+  arrange(dbh)
+
+k <- 1e-6
+# k <- 0.02
+0.0119*k^1.231 * 3600 * 24 * 365
+```
+
+
+```{r}
+
+imp_df2 <- imp_df |>
+  filter(ks > 1e-6) |>
+  group_by(date, tree, dir, dep) |>
+  summarize(ks = mean(ks)) |>
+  # mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
+  mutate(dep_fct = as.factor(dep)) |>
+  mutate(dir_fct = as.factor(dir))
+
+fit3 <- lme4::lmer(log(ks) ~ dir_fct + dep_fct + (1 | tree) + (1 | date), data = imp_df2)
+
+  imp_df2 <- imp_df |>
+    filter(ks > 1e-6) |>
+    # mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
+    group_by(date, tree, dir, dep) |>
+    summarize(ks = mean(ks)) |>
+    # mutate(time2 = date |> as.factor() |> as.numeric()) |>
+    mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    mutate(dep_fct = as.factor(dep)) |>
+    ungroup()
+
+
+
+summary(imp_df2)
+imp_df2 |> pull(ks) |> log() |> hist()
+
+xd <- model.matrix(log(ks) ~  dir_fct + dep_fct, data = imp_df2)
+
+tmp <- list(
+  N = nrow(imp_df2),
+  K = ncol(xd),
+  M = imp_df2 |> pull(tree) |> unique() |> length(),
+  T = imp_df2 |> pull(time2) |> unique() |> length(),
+  log_ks = log(imp_df2$ks),
+  time = imp_df2 |> pull(time2),
+  tree = imp_df2 |> pull(tree) |> as.factor() |> as.numeric(),
+  x = xd,
+  NULL
+)
+str(tmp)
+
+log(1.4)
+
+tar_read(dir_dep_stan_data) |> str()
 ```

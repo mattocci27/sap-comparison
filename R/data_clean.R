@@ -309,7 +309,6 @@ generate_imputed_df <- function(csv, impute_data_full, combined_imputed_mapped) 
 
 }
 
-
 generate_dbh_sap_stan_data <- function(sapwood_depth_csv) {
   d <- read_csv(sapwood_depth_csv)
   list(
@@ -321,4 +320,30 @@ generate_dbh_sap_stan_data <- function(sapwood_depth_csv) {
 
 generate_full_date_dbh <- function(girth_increment_csv, initial_dbh_csv) {
 
+}
+
+generate_dir_dep_stan_data <- function(imputed_full_df) {
+  imp_df <- imputed_full_df |>
+    filter(ks > 1e-6) |>
+    # mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
+    group_by(date, tree, dir, dep) |>
+    summarize(ks = mean(ks)) |>
+    # mutate(time2 = date |> as.factor() |> as.numeric()) |>
+    mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    mutate(dep_fct = as.factor(dep)) |>
+    mutate(time2 = date |> as.factor() |> as.numeric()) |>
+    ungroup()
+
+  xd <- model.matrix(log(ks) ~  dir_fct + dep_fct, data = imp_df)
+
+  tmp <- list(
+    N = nrow(imp_df),
+    K = ncol(xd),
+    M = imp_df |> pull(tree) |> unique() |> length(),
+    T = imp_df |> pull(time2) |> unique() |> length(),
+    log_ks = log(imp_df$ks),
+    time = imp_df |> pull(time2),
+    tree = imp_df |> pull(tree) |> as.factor() |> as.numeric(),
+    x = xd
+  )
 }
