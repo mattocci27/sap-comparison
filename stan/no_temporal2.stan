@@ -14,28 +14,21 @@ parameters {
   vector[K] beta;
   real<lower=0> sigma;  // error SD
   vector[M] phi_raw;
-  vector[T] epsilon;
-  real<lower=-1, upper=1> rho;  // autocorrelation coefficient
-  real<lower=0> tau;
+  vector[T] theta_raw;
+  vector<lower=0>[2] tau;
 }
 
 transformed parameters {
-  vector[T] theta;  // AR1-structured error terms
-  vector[M] phi = phi_raw * tau;  // tree random effects
-  theta[1] = epsilon[1];
-  for (t in 2:T) {
-    theta[t] = rho * theta[t - 1] + epsilon[t];
-  }
+  vector[M] phi = phi_raw * tau[1];  // tree random effects
+  vector[T] theta = theta_raw * tau[2];  // time random effects
 }
 
 model {
-  vector[N] mu = log_ks_ref + x * beta + phi[tree] + theta[time];
   beta ~ normal(0, 2.5);
-  epsilon ~ normal(0, 2.5);
   tau ~ normal(0, 2.5);
   phi_raw ~ normal(0, 1);
-  log_ks ~ normal(mu, sigma);
-  // log_ks ~ normal(log_ks_ref + x * beta + phi[tree] + theta[time], sigma);
+  theta_raw ~ normal(0, 1);
+  log_ks ~ normal(log_ks_ref + x * beta + phi[tree] + theta[time], sigma);
 }
 
 generated quantities {

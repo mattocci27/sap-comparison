@@ -1338,6 +1338,16 @@ tar_impute <- list(
   NULL
   )
 
+tar_dir_dep <- list(
+  tar_target(
+    dir_dep_imp_data,
+    generate_dir_dep_imp_data(
+      imputed_full_df,
+      post_dir = fit_dir_dep_draws_no_temporal_hourly_dir,
+      post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
+  )
+)
+
 sapwood_list <- list(
   tar_target(
     dbh_sap_stan_data,
@@ -1366,36 +1376,42 @@ sapwood_list <- list(
        posterior::default_convergence_measures()
     )
   ),
-  tar_target(
-    dir_dep_stan_data,
-    generate_dir_dep_stan_data(imputed_full_df)
-  ),
-  tar_stan_mcmc(
-     fit_dir_dep,
-     c("stan/temporal.stan", "stan/no_temporal.stan"),
-     data = dir_dep_stan_data,
-     refresh = 0,
-     chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 2000,
-     iter_sampling = 2000,
-     adapt_delta = 0.9,
-     max_treedepth = 15,
-     seed = 123,
-     return_draws = TRUE,
-     return_diagnostics = TRUE,
-     return_summary = TRUE,
-     summaries = list(
-       mean = ~mean(.x),
-       sd = ~sd(.x),
-       mad = ~mad(.x),
-       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-       posterior::default_convergence_measures()
+  tar_map(
+    values = expand_grid(time_res = c("daily", "hourly"), fct = c("dir", "dep")),
+    # values = expand_grid(time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")),
+    tar_target(
+      dir_dep_stan_data,
+      generate_dir_dep_stan_data(imputed_full_df, time_res = time_res, fct = fct)
+    ),
+    tar_stan_mcmc(
+      fit_dir_dep,
+      "stan/no_temporal.stan",
+      data = dir_dep_stan_data,
+      refresh = 1,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 4),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.9,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+     )
     )
-  )
+  ),
+  NULL
 )
 
 append(raw_data_list, main_list) |>
   append(tar_impute) |>
-  append(sapwood_list)
+  append(sapwood_list) |>
+  append(tar_dir_dep)
 # append(raw_data_list, main_list)

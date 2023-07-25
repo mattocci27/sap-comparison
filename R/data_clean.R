@@ -322,28 +322,164 @@ generate_full_date_dbh <- function(girth_increment_csv, initial_dbh_csv) {
 
 }
 
-generate_dir_dep_stan_data <- function(imputed_full_df) {
-  imp_df <- imputed_full_df |>
+generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")) {
+  # Create a reference data frame
+  ref_df <- imputed_full_df |>
+    filter(dir == "S" & dep == 2) |>
+    select(year, date, time, tree, ks) |>
     filter(ks > 1e-6) |>
-    # mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
-    group_by(date, tree, dir, dep) |>
-    summarize(ks = mean(ks)) |>
-    # mutate(time2 = date |> as.factor() |> as.numeric()) |>
-    mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
-    mutate(dep_fct = as.factor(dep)) |>
-    mutate(time2 = date |> as.factor() |> as.numeric()) |>
-    ungroup()
+    rename(ks_ref = ks)
 
-  xd <- model.matrix(log(ks) ~  dir_fct + dep_fct, data = imp_df)
+  if (time_res == "daily") {
+    imp_df <- imputed_full_df |>
+      left_join(ref_df, by = c("year", "date", "time", "tree")) |>
+      group_by(date, tree, dir, dep) |>
+      summarise(ks = mean(ks, na.rm = TRUE),
+                ks_ref = mean(ks_ref, na.rm = TRUE),
+                .groups = "drop") |>
+      filter(dir != "S" | dep != 2) |>
+      mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+      mutate(dep_fct = as.factor(dep)) |>
+      mutate(time2 = date |> as.factor() |> as.numeric()) |>
+      filter(ks > 1e-6) |>
+      filter(!is.na(ks_ref))
+  } else if (time_res == "hourly") {
+    imp_df <- imputed_full_df |>
+      left_join(ref_df, by = c("year", "date", "time", "tree")) |>
+      mutate(hour = as.integer(substr(time, 1, 2))) |>
+      group_by(year, date, hour, tree, dir, dep) |>
+      summarise(ks = mean(ks, na.rm = TRUE),
+                ks_ref = mean(ks_ref, na.rm = TRUE),
+                .groups = "drop") |>
+      filter(dir != "S" | dep != 2) |>
+      mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+      mutate(dep_fct = as.factor(dep)) |>
+      mutate(time2 = paste(date, hour) |> as.factor() |> as.numeric()) |>
+      filter(ks > 1e-6) |>
+      filter(!is.na(ks_ref))
+  } else {
+    imp_df <- imputed_full_df |>
+      left_join(ref_df, by = c("year", "date", "time", "tree")) |>
+      filter(dir != "S" | dep != 2) |>
+      mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+      mutate(dep_fct = as.factor(dep)) |>
+      mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
+      filter(ks > 1e-6) |>
+      filter(!is.na(ks_ref))
+  }
 
-  tmp <- list(
+  if (fct == "dep") {
+    imp_df <- imp_df |>
+      filter(dir == "S")
+    xd <- model.matrix(log(ks) ~  dep_fct, data = imp_df)
+  } else {
+    imp_df <- imp_df |>
+      filter(dep == 2)
+    xd <- model.matrix(log(ks) ~  dir_fct, data = imp_df)
+  }
+
+  # no intercept
+  xd <- xd[, -1]
+
+  list(
     N = nrow(imp_df),
     K = ncol(xd),
     M = imp_df |> pull(tree) |> unique() |> length(),
-    T = imp_df |> pull(time2) |> unique() |> length(),
     log_ks = log(imp_df$ks),
-    time = imp_df |> pull(time2),
-    tree = imp_df |> pull(tree) |> as.factor() |> as.numeric(),
+    log_ks_ref = log(imp_df$ks_ref),
+    tree = imp_df |> pull(tree) |> as.character() |> as.factor() |> as.numeric(),
     x = xd
   )
+}
+
+generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
+
+  post_dir <- post_dir |>
+    janitor::clean_names()
+  post_dep <- post_dep |>
+    janitor::clean_names()
+
+  beta_dir_post <- post_dir |>
+    dplyr::select(starts_with("beta"))
+  beta_dir_post_2 <- bind_cols(1, beta_dir_post)
+  colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
+
+  beta_dep_post <- post_dep |>
+    dplyr::select(starts_with("beta"))
+  beta_dep_post2 <- bind_cols(1, beta_dep_post)
+  colnames(beta_dep_post2) <- c(2, 4, 6)
+
+  beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
+  beta_dir_post_4 <- as_tibble(beta_dir_post_4)
+  beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
+  beta_dir_post_6 <- as_tibble(beta_dir_post_6)
+
+  beta_df <- bind_rows(
+      beta_dir_post_2 |>
+        mutate(dep = 2),
+      beta_dir_post_4 |>
+        mutate(dep = 4),
+      beta_dir_post_6 |>
+        mutate(dep = 6)
+    ) |>
+    pivot_longer(-dep, names_to = "dir") |>
+    mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    group_by(dep, dir) |>
+    nest() |>
+    rename(beta = data)
+
+  date_vec <- imputed_full_df |>
+    select(date) |>
+    distinct() |>
+    pull()
+
+  time_vec <- imputed_full_df |>
+    select(time) |>
+    distinct() |>
+    pull()
+
+  tmp <- expand_grid(date = date_vec, time = time_vec,
+    dir = factor(c("S", "N", "E", "W"), levels = c("S", "N", "E", "W")),
+    dep = c(2, 4, 6), tree = sprintf("t%02d", 1:15)) |>
+    mutate(year = str_sub(date, 1, 4) |> as.numeric())
+
+  ref_df <- imputed_full_df |>
+    filter(dir == "S" & dep == 2) |>
+    select(year, date, time, tree, ks) |>
+    rename(ks_ref = ks)
+
+  imp_df <- imputed_full_df |>
+    full_join(ref_df, by = c("year", "date", "time", "tree")) |>
+    mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    mutate(dep_fct = as.factor(dep)) |>
+    mutate(time2 = paste(date, time) |> as.factor() |> as.numeric())  |>
+    dplyr::select(year, date, time, ks, ks_ref, tree, dir, dep) |>
+    mutate(tree = as.character(tree))
+
+  imp_long <- full_join(tmp, imp_df, by = c("year", "date", "time", "tree", "dir", "dep"))
+
+  imp_nd <- imp_long |>
+    group_by(dep, dir) |>
+    nest()
+
+  imp_nd2 <- full_join(imp_nd, beta_df)
+
+  imp_nd3 <- imp_nd2 |>
+    mutate(beta_mid = map_dbl(beta, \(x)unlist(x) |> median())) |>
+    mutate(beta_var = map_dbl(beta, var)) |>
+    mutate(pred_sd = map(data, \(x) sqrt(log(x$ks_ref)^2 * beta_var))) |>
+    mutate(pred_m = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid)) |>
+    mutate(pred_ll = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid - 1.96 * beta_var)) |>
+    mutate(pred_uu = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid + 1.96 * beta_var))
+
+  imp_new <- imp_nd3 |>
+    dplyr::select(dir, dep, data, pred_m, pred_ll, pred_uu) |>
+    unnest(cols = c(data, pred_m, pred_ll, pred_uu)) |>
+    ungroup() |>
+    mutate(across(c(pred_m, pred_ll, pred_uu),
+                  ~ case_when(is.infinite(.x) ~ NA,
+                              # is.na(.x) ~ 0,
+                              TRUE ~ .x)))
+  imp_new
+  # imp_nd3
 }
