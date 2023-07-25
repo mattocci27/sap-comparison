@@ -14,6 +14,8 @@ anova_lmvn_data|stem|e1127709be171b73|c20bec9ba68f8fe7|a56dae98343d9a78|38009344
 anova_mvn_data|stem|68310cf7ced92374|2ab6bf0800a50beb|a56dae98343d9a78|-1732430895||t19226.6869102256s|1a9a7bc9cce36d30|2085|rds|local|vector|||0.036||
 anova_yml|stem|fbfbfbec61ecc7ed|86f4d33ee87afd7a|4d7e326463742283|71144427|yml/anova.yml|t19397.3209575899s|0e696b453c03de61|85|file|local|vector|||0.261||
 backtransform_date|function|c46353a785131d68|||||||||||||||
+calc_s|function|7f39ba2639afdc2a|||||||||||||||
+calc_s0|function|63bea40f63789069|||||||||||||||
 calibration_raw_data_csv|stem|43ac9d4294b1b66d|01d8057ed06171fc|ef46db3751d8e999|736523717|data-raw/calibration_raw_data.csv|t19262.2467175521s|8680e05e86675212|142088|file|local|vector|||0.089||
 cl|object|bfd2ca4835bfbdf3|||||||||||||||
 clean_all|function|4d1a293bb58eac52|||||||||||||||
@@ -49,6 +51,7 @@ cond_count_raw_csv|stem|afa1d7fa864c4e3c|3e1e21b3c7839bc2|ef46db3751d8e999|30577
 create_stan_tab|function|d23d841ad0c22173|||||||||||||||
 d2015_imputed|stem|c799643cbfc26635|e20e0ccb40185fb2|bcf183a30084d81f|-1802835465||t19422.4418712868s|6251cf826ee78bc1|8851136|rds|local|vector|||18705.818||
 d2016_imputed|stem|f989737313428bd6|13361434037d977c|bcf183a30084d81f|-1207463547||t19422.7503848924s|215d7650f7469e87|6824227|rds|local|vector|||26644.466||
+dbh_imp_data|stem|a5d3eac4ba0ba14a|875928367032ab16|11c08be7c91ba461|1505787540||t19563.6223033208s|1e9b8a94011d32e0|2422239467|rds|local|vector|||12.396||
 dbh_sap_stan_data|stem|29f47d924c2d81ff|2a7b123ce099cd8d|7fadfb025d49bec8|741940435||t19549.1266979593s|732cb9fc41365a4a|739|rds|local|vector|||1.149||
 dh_pred_data|stem|f83f16a5453dc739|b4da0bc9c3898b35|a29bd76ebf130ed8|-242097646||t19396.2829900029s|e7a6af57b5802a05|20415|rds|local|vector|||2.283||
 dir_dep_full_stan_data|stem|604f2413b0ffab23|f7b1d4633b6abe7a|b95174a03df20a15|614866319||t19556.6433088418s|ead113f3d4aeaba6|41307454|rds|local|vector|||7.521||
@@ -431,12 +434,14 @@ generate_ab_var_data|function|54656b8f54bc6c7c|||||||||||||||
 generate_anova_data|function|6bc05b28ae02757c|||||||||||||||
 generate_anova_mvn_data|function|391bc75c8ab3a47c|||||||||||||||
 generate_beta_list|function|81d8a6288e4ae300|||||||||||||||
+generate_dbh_imp_data|function|53927c41421d3c8b|||||||||||||||
 generate_dbh_sap_stan_data|function|2ae4949449e48826|||||||||||||||
 generate_dir_dep_imp_data|function|934eb03259e3722f|||||||||||||||
 generate_dir_dep_stan_data|function|2928497f3dfab7b7|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
 generate_dummy_data_ab|function|edf8aac2a546b7ae|||||||||||||||
 generate_full_date_dbh|function|7b5de0087402a3cd|||||||||||||||
+generate_imp_dbh_data|function|d99851e2e0cabf58|||||||||||||||
 generate_imputed_df|function|0f789a491d45cc73|||||||||||||||
 generate_k_range|function|4ef822ee3defd670|||||||||||||||
 generate_logistic_stan_data|function|3fc36a50ea29a681|||||||||||||||
@@ -610,6 +615,7 @@ piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f7
 piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19242.1398174331s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
 plot_logistic_sp|function|b1e72171f9d1e5e5|||||||||||||||
 pool_multi_plot|stem|ccba2aa0b664bbe8|7c08bcb0c2fb3ec7|d9d2d45965a5315c|980054747|figs/pool_multi.png*figs/pool_multi.pdf|t19394.4258664875s|ec0874ac0ef0b62e|1016949|file|local|vector|||2.788||
+pred_sap|function|f7e115e0fe511e77|||||||||||||||
 quad_logistic_data|stem|3b2c788409de8019|bfe08f945a1ef032|0f05a3a92b4677ce|838584692||t19242.1496826011s|ccfa23508eb18bd8|1663|qs|local|vector|||0.202||
 quad_logistic_diagnostics_hierarchical_logistic|stem|b07bbc4c2e939654|cd7139a20a683806|67ee91a7aab60c21|-1718178995||t19243.2862920292s|60c423b1cc14a6c1|144348|fst_tbl|local|vector|||0.003||
 quad_logistic_draws_hierarchical_logistic|stem|7f49ebcd52a08da1|ba67c2309f179ee0|67ee91a7aab60c21|-727744604||t19243.2862892977s|37c4d45610afc716|32666880|fst_tbl|local|vector|||0.042||
@@ -681,7 +687,7 @@ sap_trait_clean_vaf|stem|ad6a00c2ac599929|2ffe4a05947418a1|5029cf70e1f0a976|1626
 sap_trait_clean_vf|stem|d94aef076a495c1d|45c05655ec9affe3|5029cf70e1f0a976|-1588369659||t19311.5619642579s|ac69904de6184df2|10588|rds|local|vector|||0.346||
 sap_trait_clean_wd|stem|ae5622d13e9a60be|2af687c7214b83df|5029cf70e1f0a976|-1496744351||t19311.5619640264s|19d62a0a6e649a53|10190|rds|local|vector|||0.36||
 sapwood_depth_csv|stem|e94d547ae146209c|0e367d6c80cbbba1|ef46db3751d8e999|-430861753|data-raw/sapwood_depth.csv|t19548.3744019008s|01d717670daa253d|1008|file|local|vector|||1.24||
-sapwood_list|object|ff519be2b13f4089|||||||||||||||
+sapwood_list|object|db3576c72a9e374b|||||||||||||||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19243.2858748467s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|27ca53b1660a164b|-1956970355||t19243.2858775319s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.162||

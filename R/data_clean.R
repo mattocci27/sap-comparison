@@ -483,3 +483,85 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
   imp_new
   # imp_nd3
 }
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x) + para$sigma^2 / 2
+  exp(log_mu)
+}
+
+calc_s <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (2 * r - b - depth) * 2
+}
+
+calc_s0 <- function(dbh, sap, bark = 0.77) {
+  r <- dbh / 2 - bark
+  pi * (r - 6)^2 - pi * (r - sap)^2
+}
+
+generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_sapwood_draws_normal) {
+
+  d1 <- read_csv(girth_increment_csv)  |>
+    janitor::clean_names()
+  d2 <- read_csv(initial_dbh_csv)
+  d1[is.na(d1)] <- 0
+
+  d1_re <- data.frame(date = c("24/12/2014"), matrix(rep(0, 16), nrow = 1, ncol = 16))  |>
+    janitor::clean_names() |>
+    bind_rows(d1)
+
+  names(d1_re)[-1] <- 1:16
+
+# transform the girth increment data frame to a long format
+  d1_long <- d1_re %>%
+    rename_with(~ paste0("tree_", .x), -date) %>%
+    pivot_longer(-date, names_to = "tree_id", values_to = "increment") %>%
+    mutate(
+      date = lubridate::dmy(date),
+      tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
+
+# Join the transformed data frames by tree_id
+  dbh_data <- d1_long %>%
+    left_join(d2, by = "tree_id") %>%
+    group_by(tree_id) %>%
+    arrange(date) %>%
+    mutate(dbh = initial_dbh + cumsum(increment)) %>%
+    ungroup() |>
+    arrange(tree_id, date)  # Arrange data by tree_id and date
+
+# Now create a new data frame where each tree_id has a row for each date
+  all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
+
+  dbh_data_interpolated <- dbh_data %>%
+    group_by(tree_id) %>%
+    do(data.frame(date = all_dates,
+                  dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
+                  stringsAsFactors = FALSE)) %>%
+    ungroup() |>
+    filter(date < "2017-01-01") |>
+    filter(date >= "2015-01-01") |>
+    mutate(tree_id = sprintf("t%02d", tree_id))
+
+# Reading the model fit
+  fit_draws <- fit_dbh_sapwood_draws_normal
+  fit_draws2 <- fit_draws |>
+    dplyr::select(alpha, beta, sigma)
+
+  # imp_df <- imputed_full_df
+
+  moge <- dbh_data_interpolated  |>
+    filter(tree_id != 16) |>
+    mutate(para = list(fit_draws2)) |>
+    mutate(sap = map2(dbh, para, pred_sap)) |>
+    mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+    mutate(m = map_dbl(sap, quantile, 0.5)) |>
+    mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+    mutate(s2 = calc_s(dbh, 2)) |>
+    mutate(s4 = calc_s(dbh, 4)) |>
+    mutate(s6 = calc_s(dbh, 6)) |>
+    mutate(s0_ll = calc_s0(dbh, ll)) |>
+    mutate(s0_m = calc_s0(dbh, m)) |>
+    mutate(s0_hh = calc_s0(dbh, hh))
+  moge
+}

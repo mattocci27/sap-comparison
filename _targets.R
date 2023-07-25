@@ -1407,6 +1407,13 @@ sapwood_list <- list(
      )
     )
   ),
+  tar_target(
+    dbh_imp_data,
+    generate_dbh_imp_data(
+      girth_increment_csv,
+      initial_dbh_csv,
+      fit_dbh_sapwood_draws_normal)
+  ),
   NULL
 )
 
