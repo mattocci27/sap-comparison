@@ -1345,6 +1345,22 @@ tar_dir_dep <- list(
       imputed_full_df,
       post_dir = fit_dir_dep_draws_no_temporal_hourly_dir,
       post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
+  ),
+  tar_target(
+    post_ab,
+    generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
+  ),
+  tar_target(
+    post_dir_dep,
+    generate_post_dir_dep(
+      fit_dir_dep_draws_no_temporal_hourly_dir,
+      fit_dir_dep_draws_no_temporal_hourly_dep)
+  ),
+  tar_target(
+    post_slen, {
+      fit_dbh_sapwood_draws_normal |>
+        dplyr::select(alpha, beta, sigma)
+    }
   )
 )
 

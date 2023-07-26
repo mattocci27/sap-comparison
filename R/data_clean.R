@@ -392,8 +392,50 @@ generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "h
   )
 }
 
-generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
+generate_post_dir_dep <- function(post_dir, post_dep) {
+  post_dir <- post_dir |>
+    janitor::clean_names()
+  post_dep <- post_dep |>
+    janitor::clean_names()
 
+  beta_dir_post <- post_dir |>
+    dplyr::select(starts_with("beta"))
+  beta_dir_post_2 <- bind_cols(0, beta_dir_post)
+  colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
+
+  beta_dep_post <- post_dep |>
+    dplyr::select(starts_with("beta"))
+  beta_dep_post2 <- bind_cols(1, beta_dep_post)
+  colnames(beta_dep_post2) <- c(2, 4, 6)
+
+  beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
+  beta_dir_post_4 <- as_tibble(beta_dir_post_4)
+  beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
+  beta_dir_post_6 <- as_tibble(beta_dir_post_6)
+
+  beta_df <- bind_rows(
+      beta_dir_post_2 |>
+        mutate(dep = 2),
+      beta_dir_post_4 |>
+        mutate(dep = 4),
+      beta_dir_post_6 |>
+        mutate(dep = 6)) |>
+    pivot_longer(-dep, names_to = "dir") |>
+    mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    group_by(dep, dir) |>
+    nest() |>
+    rename(beta = data) |>
+    mutate(beta = map(beta, `[[`, 1))
+  beta_df
+}
+
+generate_post_ab <- function(draws) {
+  draws |>
+    janitor::clean_names() |>
+    dplyr::select(alpha_1_15, alpha_2_15, sigma)
+}
+
+generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
   post_dir <- post_dir |>
     janitor::clean_names()
   post_dep <- post_dep |>
@@ -420,8 +462,7 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
       beta_dir_post_4 |>
         mutate(dep = 4),
       beta_dir_post_6 |>
-        mutate(dep = 6)
-    ) |>
+        mutate(dep = 6)) |>
     pivot_longer(-dep, names_to = "dir") |>
     mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
     group_by(dep, dir) |>
@@ -449,6 +490,7 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
     rename(ks_ref = ks)
 
   imp_df <- imputed_full_df |>
+    full_join(tmp, by = c("year", "date", "time", "tree", "dir", "dep")) |>
     full_join(ref_df, by = c("year", "date", "time", "tree")) |>
     mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
     mutate(dep_fct = as.factor(dep)) |>
@@ -456,9 +498,9 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
     dplyr::select(year, date, time, ks, ks_ref, tree, dir, dep) |>
     mutate(tree = as.character(tree))
 
-  imp_long <- full_join(tmp, imp_df, by = c("year", "date", "time", "tree", "dir", "dep"))
+  # imp_long <- full_join(tmp, imp_df, by = c("year", "date", "time", "tree", "dir", "dep"))
 
-  imp_nd <- imp_long |>
+  imp_nd <- imp_df |>
     group_by(dep, dir) |>
     nest()
 
@@ -485,8 +527,8 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
 }
 
 pred_sap <- function(x, para) {
-  log_mu <- para$alpha + para$beta * log(x) + para$sigma^2 / 2
-  exp(log_mu)
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu + para$sigma^2 / 2)
 }
 
 calc_s <- function(dbh, depth, bark = 0.77) {
@@ -504,7 +546,9 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_
 
   d1 <- read_csv(girth_increment_csv)  |>
     janitor::clean_names()
-  d2 <- read_csv(initial_dbh_csv)
+  d2 <- read_csv(initial_dbh_csv) |>
+    rename(tree = tree_id) |>
+    mutate(tree = sprintf("t%02d", tree))
   d1[is.na(d1)] <- 0
 
   d1_re <- data.frame(date = c("24/12/2014"), matrix(rep(0, 16), nrow = 1, ncol = 16))  |>
@@ -516,32 +560,33 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_
 # transform the girth increment data frame to a long format
   d1_long <- d1_re %>%
     rename_with(~ paste0("tree_", .x), -date) %>%
-    pivot_longer(-date, names_to = "tree_id", values_to = "increment") %>%
+    pivot_longer(-date, names_to = "tree", values_to = "increment") %>%
     mutate(
       date = lubridate::dmy(date),
-      tree_id = as.numeric(str_replace(tree_id, "tree_", "")))
+      tree = as.numeric(str_replace(tree, "tree_", ""))) |>
+    mutate(tree = sprintf("t%02d", tree))
 
-# Join the transformed data frames by tree_id
+# Join the transformed data frames by tree
   dbh_data <- d1_long %>%
-    left_join(d2, by = "tree_id") %>%
-    group_by(tree_id) %>%
+    left_join(d2, by = "tree") %>%
+    group_by(tree) %>%
     arrange(date) %>%
     mutate(dbh = initial_dbh + cumsum(increment)) %>%
     ungroup() |>
-    arrange(tree_id, date)  # Arrange data by tree_id and date
+    arrange(tree, date)  # Arrange data by tree and date
 
-# Now create a new data frame where each tree_id has a row for each date
+# Now create a new data frame where each tree has a row for each date
   all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
 
   dbh_data_interpolated <- dbh_data %>%
-    group_by(tree_id) %>%
+    group_by(tree) %>%
     do(data.frame(date = all_dates,
                   dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
                   stringsAsFactors = FALSE)) %>%
     ungroup() |>
     filter(date < "2017-01-01") |>
-    filter(date >= "2015-01-01") |>
-    mutate(tree_id = sprintf("t%02d", tree_id))
+    filter(date >= "2015-01-01") #|>
+    # mutate(tree = sprintf("t%02d", tree))
 
 # Reading the model fit
   fit_draws <- fit_dbh_sapwood_draws_normal
@@ -551,17 +596,17 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_
   # imp_df <- imputed_full_df
 
   moge <- dbh_data_interpolated  |>
-    filter(tree_id != 16) |>
-    mutate(para = list(fit_draws2)) |>
-    mutate(sap = map2(dbh, para, pred_sap)) |>
-    mutate(ll = map_dbl(sap, quantile, 0.025)) |>
-    mutate(m = map_dbl(sap, quantile, 0.5)) |>
-    mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+    filter(tree != "t16") |>
+    # mutate(para = list(fit_draws2)) |>
+    # mutate(sap = map2(dbh, para, pred_sap)) |>
+    # mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+    # mutate(m = map_dbl(sap, quantile, 0.5)) |>
+    # mutate(hh = map_dbl(sap, quantile, 0.975)) |>
     mutate(s2 = calc_s(dbh, 2)) |>
     mutate(s4 = calc_s(dbh, 4)) |>
-    mutate(s6 = calc_s(dbh, 6)) |>
-    mutate(s0_ll = calc_s0(dbh, ll)) |>
-    mutate(s0_m = calc_s0(dbh, m)) |>
-    mutate(s0_hh = calc_s0(dbh, hh))
+    mutate(s6 = calc_s(dbh, 6)) #|>
+    # mutate(s0_ll = calc_s0(dbh, ll)) |>
+    # mutate(s0_m = calc_s0(dbh, m)) |>
+    # mutate(s0_hh = calc_s0(dbh, hh))
   moge
 }
