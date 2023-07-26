@@ -1361,6 +1361,10 @@ tar_dir_dep <- list(
       fit_dbh_sapwood_draws_normal |>
         dplyr::select(alpha, beta, sigma)
     }
+  ),
+  tar_target(
+    ab_uncertainty_df,
+    generate_ab_uncertainty(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep)
   )
 )
 
@@ -1427,8 +1431,7 @@ sapwood_list <- list(
     dbh_imp_data,
     generate_dbh_imp_data(
       girth_increment_csv,
-      initial_dbh_csv,
-      fit_dbh_sapwood_draws_normal)
+      initial_dbh_csv)
   ),
   NULL
 )

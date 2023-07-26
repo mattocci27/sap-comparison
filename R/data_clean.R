@@ -432,7 +432,8 @@ generate_post_dir_dep <- function(post_dir, post_dep) {
 generate_post_ab <- function(draws) {
   draws |>
     janitor::clean_names() |>
-    dplyr::select(alpha_1_15, alpha_2_15, sigma)
+    dplyr::select(alpha_1_15, alpha_2_15, sigma) |>
+    rename(a = alpha_1_15, b = alpha_2_15)
 }
 
 generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
@@ -537,12 +538,19 @@ calc_s <- function(dbh, depth, bark = 0.77) {
   pi * (2 * r - b - depth) * 2
 }
 
-calc_s0 <- function(dbh, sap, bark = 0.77) {
-  r <- dbh / 2 - bark
-  pi * (r - 6)^2 - pi * (r - sap)^2
+calc_s_plus <- function(dbh, sap, bark = 0.77) {
+  r1 <- dbh / 2 - 6 - bark
+  r2 <- dbh / 2 - sap - bark
+  pi * (r1^2 - r2^2)
 }
 
-generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_sapwood_draws_normal) {
+calc_s_cut <- function(dbh, sap, bark = 0.77) {
+  r1 <- dbh / 2 - 4 - bark
+  r2 <- dbh / 2 - sap - bark
+  pi * (r1^2 - r2^2)
+}
+
+generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
 
   d1 <- read_csv(girth_increment_csv)  |>
     janitor::clean_names()
@@ -588,25 +596,70 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv, fit_dbh_
     filter(date >= "2015-01-01") #|>
     # mutate(tree = sprintf("t%02d", tree))
 
+  dbh_data_interpolated |>
+    filter(tree != "t16")
 # Reading the model fit
-  fit_draws <- fit_dbh_sapwood_draws_normal
-  fit_draws2 <- fit_draws |>
-    dplyr::select(alpha, beta, sigma)
+  # fit_draws <- fit_dbh_sapwood_draws_normal
+  # fit_draws2 <- fit_draws |>
+  #   dplyr::select(alpha, beta, sigma)
 
   # imp_df <- imputed_full_df
 
-  moge <- dbh_data_interpolated  |>
-    filter(tree != "t16") |>
-    # mutate(para = list(fit_draws2)) |>
-    # mutate(sap = map2(dbh, para, pred_sap)) |>
-    # mutate(ll = map_dbl(sap, quantile, 0.025)) |>
-    # mutate(m = map_dbl(sap, quantile, 0.5)) |>
-    # mutate(hh = map_dbl(sap, quantile, 0.975)) |>
-    mutate(s2 = calc_s(dbh, 2)) |>
-    mutate(s4 = calc_s(dbh, 4)) |>
-    mutate(s6 = calc_s(dbh, 6)) #|>
-    # mutate(s0_ll = calc_s0(dbh, ll)) |>
-    # mutate(s0_m = calc_s0(dbh, m)) |>
-    # mutate(s0_hh = calc_s0(dbh, hh))
-  moge
+  # moge <- dbh_data_interpolated  |>
+  #   filter(tree != "t16") |>
+  #   # mutate(para = list(fit_draws2)) |>
+  #   # mutate(sap = map2(dbh, para, pred_sap)) |>
+  #   # mutate(ll = map_dbl(sap, quantile, 0.025)) |>
+  #   # mutate(m = map_dbl(sap, quantile, 0.5)) |>
+  #   # mutate(hh = map_dbl(sap, quantile, 0.975)) |>
+  #   mutate(s2 = calc_s(dbh, 2)) |>
+  #   mutate(s4 = calc_s(dbh, 4)) |>
+  #   mutate(s6 = calc_s(dbh, 6)) #|>
+  #   # mutate(s0_ll = calc_s0(dbh, ll)) |>
+  #   # mutate(s0_m = calc_s0(dbh, m)) |>
+  #   # mutate(s0_hh = calc_s0(dbh, hh))
+  # moge
+}
+
+calc_fd <- function(log_ks, post) {
+  mu <- post$a + post$b * log_ks
+  exp(mu + post$sigma^2 / 2)
+}
+
+generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep) {
+
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+
+  tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = log(ks_ref) + dep_dir_mid) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), 0, log_ks))
+
+  dbh_df <- dbh_imp_data |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+
+  tmp3 <- tmp2 |>
+    # head(100) |>
+    mutate(post_ab = list(post_ab)) |>
+    mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
+    mutate(fd_m = map_dbl(fd, median)) |>
+    mutate(fd_ll = map_dbl(fd, quantile, 0.025)) |>
+    mutate(fd_l = map_dbl(fd, quantile, 0.25)) |>
+    mutate(fd_h = map_dbl(fd, quantile, 0.75)) |>
+    mutate(fd_hh = map_dbl(fd, quantile, 0.975)) |>
+    dplyr::select(-post_ab, -fd)
+
+  tmp3
 }
