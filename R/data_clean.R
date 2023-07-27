@@ -623,10 +623,19 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
 
 calc_fd <- function(log_ks, post) {
   mu <- post$a + post$b * log_ks
-  exp(mu + post$sigma^2 / 2)
+  exp(mu)
 }
 
-generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep) {
+#' @title Modified createFolds function
+create_single_fold <- function(data, k, i) {
+  fold_sizes <- floor(nrow(data) / k)
+  folds <- split(data, rep(1:k, each = fold_sizes, length.out = nrow(data)))
+  tmp <- folds[[i]]
+  tmp |>
+    dplyr::select(colnames(data))
+}
+
+generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep, k = 20, i = 1) {
 
   post_slen_m  <- post_slen |>
     summarize(across(everything(), median))
@@ -650,8 +659,8 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab, pos
 
   tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
 
-  tmp3 <- tmp2 |>
-    # head(100) |>
+  create_single_fold(tmp2, k, i) |>
+    head(100) |>
     mutate(post_ab = list(post_ab)) |>
     mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
     mutate(fd_m = map_dbl(fd, median)) |>
@@ -661,5 +670,123 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab, pos
     mutate(fd_hh = map_dbl(fd, quantile, 0.975)) |>
     dplyr::select(-post_ab, -fd)
 
-  tmp3
+  # tmp3
 }
+
+
+generate_ab_uncertainty2 <- function(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep, k = 100, i = 1) {
+
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+
+  tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = log(ks_ref) + dep_dir_mid) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), 0, log_ks))
+
+  dbh_df <- dbh_imp_data |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+  k <- 1000
+  i <- 1
+
+
+library(tictoc)
+# plan(multisession, workers = 24)
+
+k <- 100
+i <- 1
+tic()
+create_single_fold(tmp2, k, i) |>
+  mutate(post_ab = list(post_ab)) |>
+  mutate(fd = map2(log_ks, post_ab, calc_fd2))
+toc()
+
+
+library(parallel)
+
+tic()
+tmp3 <- create_single_fold(tmp2, k, i) |>
+  mutate(post_ab = list(post_ab))
+
+# Combine log_ks and post_ab into a list of lists
+inputs <- mapply(list, tmp3$log_ks, tmp3$post_ab, SIMPLIFY = FALSE)
+
+# Use mclapply() with calc_fd2() function
+fd_results <- mclapply(inputs, function(x) calc_fd2(x[[1]], x[[2]]), mc.cores = parallel::detectCores())
+
+tmp3 <- tmp3 |>
+  mutate(fd = fd_results,
+         fd_m = map_dbl(fd, median))
+toc()
+
+
+tic()
+tmp3 <- create_single_fold(tmp2, k, i) |>
+  head(10) |>
+  mutate(post_ab = list(post_ab)) |>
+  mutate(fd = map2(log_ks, post_ab, calc_fd2)) |>
+  mutate(fd_m = map_dbl(fd, median))
+toc()
+
+tic()
+tmp4 <- create_single_fold(tmp2, k, i) |>
+    mutate(post_ab = list(post_ab)) |>
+    mutate(fd = map2(log_ks, post_ab, calc_fd_cpp_vectorized)) |>
+    mutate(fd_m = map_dbl(fd, median))
+toc()
+
+
+tmp3$fd_m
+tmp4$fd_m
+
+a <- post_ab |> pull(a)
+b <- post_ab |> pull(b)
+
+y_stats_fun <- function(x) {
+  log_mu <- a + b * x
+  y <- exp(log_mu)
+  y_median <- median(y)
+  y_ci <- quantile(y, c(0.025, 0.975))
+  return(c(y_median, y_ci))
+}
+
+tmp4 <- create_single_fold(tmp2, k, i)
+
+tic()
+  tmp4 |>
+    mutate(post_ab = list(post_ab)) |>
+    mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
+    mutate(fd_ll = map_dbl(fd, quantile, 0.025)) |>
+    mutate(fd_m = map_dbl(fd, quantile, 0.5)) |>
+    mutate(fd_hh = map_dbl(fd, quantile, 0.975))
+toc()
+
+tic()
+y_stats_list <- map(tmp4$log_ks, y_stats_fun)
+toc()
+
+
+  create_single_fold(tmp2, k, i) |>
+    mutate(post_ab = list(post_ab)) |>
+    mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
+    mutate(fd_m = map_dbl(fd, median)) |>
+    mutate(fd_ll = map_dbl(fd, quantile, 0.025)) |>
+    mutate(fd_l = map_dbl(fd, quantile, 0.25)) |>
+    mutate(fd_h = map_dbl(fd, quantile, 0.75)) |>
+    mutate(fd_hh = map_dbl(fd, quantile, 0.975)) |>
+    dplyr::select(-post_ab, -fd)
+
+  # tmp3
+}
+
