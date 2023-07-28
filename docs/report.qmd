@@ -537,3 +537,37 @@ d |>
   kbl() |>
   kable_classic()
 ````
+
+```{r}
+d <- tar_read(ab_uncertainty_full_df)
+
+log(0)
+
+tar_load(post_ab_mc)
+
+tar_load(dbh_imp_data)
+
+dbh_imp_data |>
+  group_by(tree) |>
+  summarize(dbh_max = max(dbh), dbh_mid = median(dbh), .groups = "drop")
+
+log(0.02646577)
+
+apply(post_ab_mc, 2, median)
+
+tmp <- d |>
+  filter(date == "2015-01-01" & time == "00:00:00" & tree == "t01")
+
+fd <- exp(5.6 - 1.01 * 3.908941)
+fd * 92.06923/4 * 600 /10000
+
+r <- 18.2 / 2
+pi * r^2
+
+sum(tmp$s) / 4
+
+d |>
+  arrange(ks_ref)
+
+```
+
