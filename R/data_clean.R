@@ -660,14 +660,33 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
 
   tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
 
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+
+  s_df <- bind_rows(s_df, s6_df)
+
   rm(tmp)
+  rm(tmp2)
   rm(dbh_df)
   rm(dir_dep_imp_data)
   rm(dbh_imp_data)
+  rm(s6_df)
   # k <- 50
   # i <- 1
   # tmp <- create_single_fold(tmp2, k, i) |> setDT()
-  create_single_fold(tmp2, k, i) |>
+  create_single_fold(s_df, k, i) |>
     setDT() |>
     mutate(post_ab = list(post_ab_mc)) |>
     mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
@@ -678,5 +697,25 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
     mutate(fd_h = map_dbl(fd, quantile, 0.75)) |>
     mutate(fd_hh = map_dbl(fd, quantile, 0.975)) |>
     dplyr::select(-fd)
+
 }
 
+ab_scaling <- function(ab_uncertainty_full_df) {
+  ab_uncertainty_full_df |>
+    mutate(
+      across(
+        .cols = c("fd_m", "fd_ll", "fd_l", "fd_h", "fd_hh"),
+        .fns = ~ .x * s / 4 * 600 ,
+        .names = "s_10m_{.col}"
+      )
+    ) |>
+  group_by(tree) |>
+  summarize(
+    across(
+      .cols = starts_with("s_10m_fd_"),
+      .fns = ~ sum(.x) / 2 * 1e-9,
+      .names = "s_total_{.col}"
+    )
+  ) |>
+  rename_with(~ str_replace(., "s_total_s_10m_fd_", "s_total_fd_"), starts_with("s_total_s_10m_fd_"))
+}

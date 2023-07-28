@@ -17,6 +17,8 @@ source("R/scale.R")
 plan(multicore)
 options(clustermq.scheduler = "multicore")
 
+set.seed(123)
+
 tar_option_set(packages = c(
   "tidyverse",
   "patchwork",
@@ -1392,7 +1394,11 @@ tar_combined_ab_uncertainty <- tar_combine(
 )
 uncertainty_list <- list(
   uncertainty_mapped,
-  tar_combined_ab_uncertainty
+  tar_combined_ab_uncertainty,
+  tar_target(
+    ab_scaling_df,
+    ab_scaling(ab_uncertainty_full_df)
+  )
 )
 
 sapwood_list <- list(
