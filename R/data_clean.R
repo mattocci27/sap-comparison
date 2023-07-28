@@ -700,6 +700,9 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
 
 }
 
+# dividing by 4 is to get the quarter of the area (each direction)
+# 600 is the number of seconds in 10 min
+# dividing by 10000 to convert from cm2 to m2
 ab_scaling <- function(ab_uncertainty_full_df) {
   ab_uncertainty_full_df |>
     mutate(
