@@ -17,6 +17,8 @@ source("R/scale.R")
 plan(multicore)
 options(clustermq.scheduler = "multicore")
 
+set.seed(123)
+
 tar_option_set(packages = c(
   "tidyverse",
   "patchwork",
@@ -34,13 +36,14 @@ tar_option_set(packages = c(
   "lubridate",
   "foreach",
   "doParallel",
-  "missForest"
+  "missForest",
+  "data.table"
 ))
 
-# tar_option_set(
-#   garbage_collection = TRUE,
-#   memory = "transient"
-# )
+tar_option_set(
+  garbage_collection = TRUE,
+  memory = "transient"
+)
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -103,6 +106,21 @@ raw_data_list <- list(
   tar_target(
     rubber_raw_data_csv,
     "data-raw/rubber_raw_data.csv",
+    format = "file"
+  ),
+  tar_target(
+    girth_increment_csv,
+    "data-raw/girth_increment.csv",
+    format = "file"
+  ),
+  tar_target(
+    initial_dbh_csv,
+    "data-raw/initial_dbh.csv",
+    format = "file"
+  ),
+  tar_target(
+    sapwood_depth_csv,
+    "data-raw/sapwood_depth.csv",
     format = "file"
   ),
   # tar_target(
@@ -1200,56 +1218,260 @@ main_list <- list(
 )
 
 #------------------------------------------------------------
-values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+# values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
+
+values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
+  filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
+
+values2 <- expand_grid(year = 2016, month = c(9, 10, 12)) |>
+  mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
 
 impute_mapped <- tar_map(
   values = values,
   tar_target(
     imputed_data,
-      missForest_each(
+      missForest_long(
         csv = rubber_raw_data_csv,
-        tree = tree
+        year = year,
+        month = month
       )
   ),
   tar_target(
     imputed_df, {
       imputed_data$ximp |>
-        dplyr::select(-vpd) |>
         as_tibble()
     }
-    )
+    ),
+  tar_target(
+    nramse,
+    imputed_data$OOBerror[1]
+    ),
+  tar_target(
+    imputed_df_btrans,
+    backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
+  )
   )
 
 tar_combined_imputed_data <- tar_combine(
   combined_imputed_mapped,
-  impute_mapped[["imputed_df"]],
-  command = dplyr::bind_cols(!!!.x)
+  impute_mapped[["imputed_df_btrans"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_nrmse <- tar_combine(
+  combined_nrmse,
+  impute_mapped[["nramse"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+
+impute_rest_mapped <- tar_map(
+  values = values2,
+  tar_target(
+    imputed_rest,
+    {
+      tmp <- missForest_clean(
+        csv = rubber_raw_data_csv,
+        year = year,
+        month = month)
+      bind_rows(tmp, df_name) |>
+        missForest(parallelize = "forests")
+    }
+   ),
+  tar_target(
+    imputed_df2,
+    clean_imputed_df(imputed_rest)
+   ),
+  tar_target(
+    nramse2,
+    imputed_rest$OOBerror[1]
+    ),
+   tar_target(
+     imputed_df_btrans2,
+     backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
+   )
+)
+
+tar_combined_nrmse_rest <- tar_combine(
+  combined_nrmse_rest,
+  impute_rest_mapped[["nramse2"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+
+tar_combined_imputed_rest_data <- tar_combine(
+  combined_imputed_rest_mapped,
+  impute_rest_mapped[["imputed_df_btrans2"]],
+  command = dplyr::bind_rows(!!!.x)
 )
 
 tar_impute <- list(
   impute_mapped,
   tar_combined_imputed_data,
+  tar_combined_nrmse,
+  impute_rest_mapped,
+  tar_combined_imputed_rest_data,
+  tar_combined_nrmse_rest,
   tar_target(
-    impute_data_full,
-    missForest_comb(
-      rubber_raw_data_csv,
-       combined_imputed_mapped
-    )
-    ),
+    nrmse_df, {
+      tmp1 <- combined_nrmse |>
+        mutate(id = str_extract(id, "(?<=nramse_).*$"))
+      tmp2 <- combined_nrmse_rest |>
+        mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
+      bind_rows(tmp1, tmp2) |>
+        arrange(id)
+    }
+  ),
   tar_target(
-    imputed_df,
-    generate_imputed_df(rubber_raw_data_csv, impute_data_full, combined_imputed_mapped)
-    ),
+    imputed_full_df, {
+      bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
+      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+      arrange(date) |>
+      arrange(dir) |>
+      arrange(dep) |>
+      arrange(tree) |>
+      mutate(h = time %/% 60) |>
+      mutate(m = time %% 60) |>
+      mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+      dplyr::select(year, date, time, vpd, par, ks, tree, dir, dep)
+    }
+  ),
   tar_target(
-    imputed_all_list,
-    missForest_all(rubber_raw_data_csv)
-    ),
-  tar_target(
-    imputed_long_list,
-    missForest_long(rubber_raw_data_csv)
-    )
+    nonimputed_full_df,
+    make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
+  NULL
   )
 
+tar_dir_dep <- list(
+  tar_target(
+    dir_dep_imp_data,
+    generate_dir_dep_imp_data(
+      imputed_full_df,
+      post_dir = fit_dir_dep_draws_no_temporal_hourly_dir,
+      post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
+  ),
+  tar_target(
+    post_ab,
+    generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
+  ),
+  tar_target(
+    post_dir_dep,
+    generate_post_dir_dep(
+      fit_dir_dep_draws_no_temporal_hourly_dir,
+      fit_dir_dep_draws_no_temporal_hourly_dep)
+  ),
+  tar_target(
+    post_slen, {
+      fit_dbh_sapwood_draws_normal |>
+        dplyr::select(alpha, beta, sigma)
+    }
+  ),
+  tar_target(
+    post_ab_mc,
+    post_ab |> sample_n(1000)
+  ),
+  tar_target(
+    post_dir_dep_mc,
+    post_dir_dep |> mutate(beta = map(beta, sample, 1000))
+  ),
+  tar_target(
+    post_slen_mc,
+    post_slen |> sample_n(1000)
+  ),
+  NULL
+)
+
+uncertainty_mapped <- tar_map(
+    values = list(folds = 1:40),
+    tar_target(
+      ab_uncertainty_df,
+      generate_ab_uncertainty(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep, k = 40, i = folds)
+    ))
+
+tar_combined_ab_uncertainty <- tar_combine(
+  ab_uncertainty_full_df,
+  uncertainty_mapped[["ab_uncertainty_df"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+uncertainty_list <- list(
+  uncertainty_mapped,
+  tar_combined_ab_uncertainty,
+  tar_target(
+    ab_scaling_df,
+    ab_scaling(ab_uncertainty_full_df)
+  )
+)
+
+sapwood_list <- list(
+  tar_target(
+    dbh_sap_stan_data,
+    generate_dbh_sap_stan_data(sapwood_depth_csv)
+  ),
+  tar_stan_mcmc(
+     fit_dbh_sapwood,
+     "stan/normal.stan",
+     data = dbh_sap_stan_data,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 2000,
+     iter_sampling = 2000,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+    )
+  ),
+  tar_map(
+    values = expand_grid(time_res = c("daily", "hourly"), fct = c("dir", "dep")),
+    # values = expand_grid(time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")),
+    tar_target(
+      dir_dep_stan_data,
+      generate_dir_dep_stan_data(imputed_full_df, time_res = time_res, fct = fct)
+    ),
+    tar_stan_mcmc(
+      fit_dir_dep,
+      "stan/no_temporal.stan",
+      data = dir_dep_stan_data,
+      refresh = 1,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 4),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.9,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+     )
+    )
+  ),
+  tar_target(
+    dbh_imp_data,
+    generate_dbh_imp_data(
+      girth_increment_csv,
+      initial_dbh_csv)
+  ),
+  NULL
+)
+
 append(raw_data_list, main_list) |>
-  append(tar_impute)
+  append(tar_impute) |>
+  append(sapwood_list) |>
+  append(tar_dir_dep) |>
+  append(uncertainty_list)
 # append(raw_data_list, main_list)

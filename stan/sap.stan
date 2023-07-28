@@ -31,7 +31,7 @@ parameters {
   vector<lower=0,upper=pi()/2>[Mj-1] tau_unif_alpha_j;
 
   vector[Mj] mu_beta_l_tilde;
-  vector<lower=0,upper=pi()/2>[Mj] tau_unif_beta_l;
+  vector<lower=0,upper=pi()/jk2>[Mj] tau_unif_beta_l;
   vector<lower=0,upper=pi()/2>[Mj] tau_unif_beta_k;
   vector<lower=0,upper=pi()/2>[Mj-1] tau_unif_beta_j;
 

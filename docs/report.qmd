@@ -494,439 +494,80 @@ targets::tar_read(all_seg_table)) |>
   DT::datatable()
 ```
 
+# Scaling
 
-```{r}
-knitr::knit_exit()
-```
+## Uncertainty from a-b coefficients
 
-```{r}
+Sup flux per 10 min is calculated as:
+$$
+S_{10min} = a \times K_s^b \times A_{sap} \times 600
+$$
 
-tar_read(without_traits_table_data.without_traits_0.035.csv)
+where $K_s$ is the esimated value from directions and depths when sencors are not avaiable and the oberved value when sensors are avaiable,
+$A_{sap}$ is sapwood area esimated from DBH and sapwood length,
+and 600 is the number of seconds in 10 min.
 
-s <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all)
-s2 <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
-d <- tar_read(sap_trait_clean_all)
-hist(d$xj[,3])
-tar_read(all_seg_table) |>
-  DT::datatable()
+There 4 components contribute to the uncertainty in sap flux per 10 min:
 
-tar_read(ks_seg_table) |>
-  DT::datatable()
+- a, b
+- ks (estimated from directions)
+- ks (estimated from depths)
+- sapwood length (estiamted from DBH)
 
-s |>
-  filter(str_detect(variable, "gamma")) |>
-  filter(q2.5 * q97.5 > 0)
-```
+For now, only the uncertainty from a-b coefficients are included in the final estimates.
+Medians were used for other components.
 
-```{r}
-d1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all))
-d4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_ks))
-d6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(fit_abt_diagnostics_granier_with_traits_sap_trait_clean_all))
+The sap flux for each 10-minute interval was aggregated for each tree, resulting in a two-year total sap flux per tree.
+To obtain an annual value, this two-year total was divided by 2.
+The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
 
-apply(d1, 2, sum)
-apply(d4, 2, sum)
-apply(d6, 2, sum)
+Columns are:
 
-d4 |>
-  filter(divergent__ == 1)
-d6 |>
-  filter(divergent__ == 1)
+- s_total_fd_m: total sap flow (median, 50% quantile)
+- s_total_fd_ll: total sap flow (2.5% quantile)
+- s_total_fd_l: total sap flow (25% quantile)
+- s_total_fd_h: total sap flow (75% quantile)
+- s_total_fd_hh: total sap flow (97.5% quantile)
 
-l1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all))
-l2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_dh))
-l3 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd))
-l4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf))
-l5 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf))
-l6 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks))
-l7 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_nowd))
-l8 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_novf))
-l9 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_novaf))
-
-loo_compare(l1, l2, l3, l4, l5, l6, l7, l8, l9)
-```
-
-```{r, eval=FALSE}
-devtools::session_info()
-```
-
-```{r}
-library(tidyverse)
-library(here)
-library(lubridate)
-
-d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
-  janitor::clean_names() |>
-  mutate(date = mdy_hm(date)) |>
-  dplyr::select(date:time)
-
-
-tmp <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
-  janitor::clean_names() |>
-  mutate(date = mdy_hm(date)) |>
-    dplyr::filter(date <= ymd("2015-03-01")) |>
-    dplyr::select(-date)
-
-apply(tmp, 2, sum, na.rm = TRUE)
-
-d2 <- tar_read(impute_data_full)$ximp |>
-  as_tibble() |>
-  dplyr::select(matches("1[2-6]"))
-d3 <- tar_read(combined_imputed_mapped)
-
-d4 <- bind_cols(d, d2, d3)
-
-d5 <- d4 |>
-  head(4000) |>
-  pivot_longer(t12_0_0:t11_0_0, names_to = "id", values_to = "k") |>
-  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
-
-d5 |>
-  filter(tree == "t01" | tree == "t02") |>
-  dplyr::filter(day <= 10) |>
-  ggplot(aes(x = date, y = k, col = dir, lty = tree, shape = dep)) +
-  geom_point() +
-  geom_line() +
-  ggtitle("missing")
-
-
-tmp <- names(d)[-1:-7]
-
-d2 <- tibble(
-  tree = str_split_fixed(tmp, "_", 3)[,1],
-  dir = str_split_fixed(tmp, "_", 3)[,2],
-  dep = str_split_fixed(tmp, "_", 3)[,3]) |>
-  as.data.frame()
-
-tar_read(impute_data_full)$ximp |> str()
-tar_read(combined_imputed_mapped) |> str()
-
-
-
-
-
-
-```
-
-```{r}
-
-d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
-  janitor::clean_names() |>
-  mutate(date = mdy_hm(date)) |>
-  dplyr::select(date:par) |>
-  dplyr::select(-vpd)
-
-d2 <- tar_read(impute_data_full)$ximp |> as_tibble() |>
-  dplyr::select(-vpd)
-
-d3 <- tar_read(combined_imputed_mapped)
-
-names_ <- c(names(d2), names(d3))
-dup_names <- names_[duplicated(names_)]
-
-d4 <- d2 |>
-  dplyr::select(-dup_names)
-
-imputed_df <- bind_cols(d, d4, d3) %>%
-  dplyr::select(date:vpd, sort(names(.[7:45])))
-
-
-dim(d)
-
-library(tidyverse)
-library(targets)
-library(here)
-library(lubridate)
-
-d <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
-  janitor::clean_names() |>
-  mutate(date = mdy_hm(date))
-
-
-date_df <- read_csv(here("data-raw/rubber_raw_data.csv")) |>
-    janitor::clean_names() |>
-    mutate(date = mdy_hm(date)) |>
-    dplyr::select(date) |>
-    dplyr::filter(date <= ymd("2016-01-31")) |>
-    dplyr::filter(date >= ymd("2016-01-01"))
-
-tar_load(imputed_df)
-tar_load(imputed_all_df)
-
-imputed_all_df$ximp |>
-  as_tibble()
-
-imputed_long_df <- bind_cols(date_df, imputed_all_df$ximp) |>
-# imputed_long_df <- imputed_df |>
-  pivot_longer(t01_0_0:t14_0_0, names_to = "id", values_to = "k")  |>
-  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
-
-d_long_df <- d |>
-  pivot_longer(t01_0_0:t16_0_0, names_to = "id", values_to = "k")  |>
-  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
-
-d_long_df |>
-  filter(tree == "t06" | tree == "t06") |>
-  dplyr::filter(date <= ymd("2016-01-10")) |>
-  dplyr::filter(date > ymd("2016-01-01")) |>
-  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
-  geom_point() +
-  geom_line() +
-  ggtitle("missing")
-
-imputed_long_df |>
-  filter(tree == "t06" | tree == "t06") |>
-  dplyr::filter(date <= ymd("2016-01-10")) |>
-  dplyr::filter(date >= ymd("2016-01-01")) |>
-  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
-  geom_point() +
-  geom_line() +
-  ggtitle("imputed")
-
-d_long_df |>
-  filter(tree == "t06" | tree == "t06") |>
-  dplyr::filter(date <= ymd("2015-07-10")) |>
-  dplyr::filter(date > ymd("2015-07-01")) |>
-  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
-  geom_point() +
-  geom_line() +
-  ggtitle("missing")
-
-imputed_long_df |>
-  filter(tree == "t06" | tree == "t06") |>
-  dplyr::filter(date <= ymd("2015-07-10")) |>
-  dplyr::filter(date > ymd("2015-07-01")) |>
-  ggplot(aes(x = date, y = k, col = dep, lty = tree, shape = dep)) +
-  geom_point() +
-  geom_line() +
-  ggtitle("imputed")
-
-
-hist(rnorm(100))
-
-ggplot(imputed_long_df, aes(x = dir, y = k)) +
-  geom_boxplot() +
-  facet_wrap(~tree) +
-  scale_y_log10() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ggtitle("direction imputed")
-
-ggplot(imputed_long_df, aes(x = dep, y = k)) +
-  geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ggtitle("depth")
-
-imputed_long_df |>
-  group_by(tree, dir, dep) |>
-  summarize(k = sum(k))
-```
-
-
-```{r}
-# Load required packages
-library(tibble)
-library(missForest)
-library(dplyr)
-library(ggplot2)
-
-# Set random seed for reproducibility
-set.seed(42)
-
-# Generate a dummy dataset
-n <- 100
-group <- factor(rep(c("A", "B"), each = n))
-time <- rep(1:n, 2)
-x <- rnorm(2 * n)
-y <- c(2 * x[1:n] + 0.5 * time[1:n] + rnorm(n), 5 * x[(n + 1):(2 * n)] + 0.5 * time[(n + 1):(2 * n)] + rnorm(n))
-
-# Introduce missing values in y
-missing_index <- sample(1:(2 * n), size = 40)
-y[missing_index] <- NA
-
-# Create the tibble
-dummy_data <- tibble(group, time, x, y) |>
-  as.data.frame()
-
-# Impute missing values using missForest
-imputed_data <- missForest(dummy_data)
-
-# Extract the imputed dataset
-dummy_data_imputed <- imputed_data$ximp
-
-# Visualize the original and imputed data
-dummy_data %>%
-  add_row(dummy_data_imputed[missing_index, ]) %>%
-  mutate(Imputed = if_else(is.na(y), "Imputed", "Original")) %>%
-  ggplot(aes(x = x, y = y, color = group, shape = Imputed)) +
-  geom_point() +
-  theme_minimal() +
-  labs(title = "Original and Imputed Data", x = "X", y = "Y") +
-  scale_shape_manual(values = c(16, 17))
-
-```
-
-
-```{r}
-d <- tar_read(imputed_all_list)$ximp |>
-  as_tibble()
-
-d_long_df <- d |>
-  pivot_longer(t01_0_0:t16_0_0, names_to = "id", values_to = "k")
-tar_read(ks_pred_data)
-fit <- read_csv("data/without_traits_segments_0.08.csv")
-
-
-post <- tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
-  janitor::clean_names() |>
-  dplyr::select(alpha_1_15, alpha_2_15)
-
-d2 <- d_long_df |>
-  group_by(id) |>
-  summarize(k = sum(k)) |>
-  ungroup() |>
-  mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-  mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-  mutate(dep = str_split_fixed(id, "_", 3)[, 3])
-
-# fit |>
-#   # filter(str_detect(para, "alpha")) |>
-#   filter(str_detect(para, "brasiliensis"))
-
-# nd <- post |>
-#   mutate(iter = 1:nrow(post)) |>
-#   group_by(iter) |>
-#   nest()
-
-d3 <- d2 |>
-  mutate(fd = map(k, \(k)(post$alpha_1_15  + log(k) * post$alpha_2_15))) |>
-  unnest(cols = c(fd)) |>
-  group_by(id, tree, dir, dep) |>
-  summarize(
-    mid = median(fd),
-    ll = quantile(fd, 0.025),
-    uu = quantile(fd, 0.975))
-```
-
-Please update the code so that each tree * diretion * depth combination has the same time series length. I.e., if the 1st combination has 100 observations, from time 1 to time 100, the other combinations should also have 100 observations from time 1 to time 100.
-
-then all other combinations should have 100 observations. You can do this by adding a new column to the data frame that contains the time series length for each combination. Then, you can use the `tidyr::fill()` function to fill in the missing values. You can then use the `tidyr::spread()` function to convert the data frame from long to wide format. Finally, you can use the `missForest::missForest()` function to impute the missing values. Here is an example:
-
-```{r}
-
-
-
-```{r}
-
-Based on the output NRMSE and PCC values, how can I judge if the model esimated missing value well?
-
-The above code uses tidy data structure (i.e., longer format). What if I used wider format? Does this affect the estimates of missForest?
-
-```{r}
-# Load required libraries
-# Create a sample dataset
-set.seed(123)
-n <- 100
-tree <- factor(rep(1:5, each = 4 * 3 * n))
-direction <- factor(rep(1:4, each = 3 * n, times = 5))
-depth <- factor(rep(1:3, times = 4 * 5 * n))
-k <- rnorm(5 * 4 * 3 * n, mean = 50, sd = 10)
-
-# Add temporal pattern to k
-time <- rep(1:n, times = 5 * 4 * 3)
-k <- k + 5 * sin(2 * pi * time / 20)
-
-# Add group specific offsets to k
-k <- k + as.numeric(tree) * 2 + as.numeric(direction) * 1.5 + as.numeric(depth) * 0.5
-
-# Introduce missing values
-set.seed(456)
-missing_idx <- sample(1:(5 * 4 * 3 * n), size = 500, replace = FALSE)
-k[missing_idx] <- NA
-
-# Combine variables into a data frame
-data <- data.frame(tree = tree, direction = direction, depth = depth, k = k, time = time)
-
-data |>
-  mutate(id = interaction(tree, direction, depth)) |>
-  pivot_wider(names_from = id, values_from = k)
-
-data_wide <- data %>%
-  unite("group", c("tree", "direction", "depth"), remove = FALSE) %>%
-  spread(key = "group", value = "k")
-
-# Validation metrics
-nrmse <- imputed_data$OOBerror[1]
-pcc <- imputed_data$OOBerror[2]
-
-cat("Normalized Root Mean Squared Error (NRMSE):", nrmse, "\n")
-cat("Proportion of Correctly Imputed Classifications (PCC):", pcc, "\n")
-
-# Perform data imputation using missForest
-set.seed(789)
-imputed_data <- missForest(data)
-
-# Extract the imputed dataset
-data_imputed <- imputed_data$ximp
-
-# Original data plot
-p_original <- data |>
-  filter(tree == 1 & depth == 1) |>
-  ggplot(aes(x = time, y = k, color = interaction(tree, direction, depth))) +
-  # geom_point() +
-  geom_line() +
-  theme_minimal() +
-  ggtitle("Original Data") +
-  xlab("Time") +
-  ylab("k")
-print(p_original)
-
-# Imputed data plot
-p_imputed <- ggplot(data_imputed, aes(x = time, y = k, color = interaction(tree, direction, depth))) +
-  geom_point() +
-  geom_line() +
-  theme_minimal() +
-  ggtitle("Imputed Data") +
-  xlab("Time") +
-  ylab("k")
-
-print(p_imputed)
-
-hm(1000)
-
-head(d)
-
-How can I make colmuns for month, day, and time for the following ?
-d <- tibble(date = c("1/1/15 0:00", "1/1/15 0:10")) |>
-  mutate(date = mdy_hm(date))
+```{r, echo=FALSE}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_scaling_df))
 
 d |>
- mutate(month = month(date),
-         day = day(date),
-         time = format(date, "%H:%M"))
-
-```
-
-Can you covert the day starting from January 1 to ending December 31 to a single column of day of the year?
-
-When I impute missing values using missForest, is it a good idea to use the tangent-transformed day_of_year?
+  kbl() |>
+  kable_classic()
+````
 
 ```{r}
-tar_read(imputed_long_list)
+d <- tar_read(ab_uncertainty_full_df)
+
+log(0)
+
+tar_load(post_ab_mc)
+
+tar_load(dbh_imp_data)
+
+dbh_imp_data |>
+  group_by(tree) |>
+  summarize(dbh_max = max(dbh), dbh_mid = median(dbh), .groups = "drop")
+
+log(0.02646577)
+
+apply(post_ab_mc, 2, median)
+
+tmp <- d |>
+  filter(date == "2015-01-01" & time == "00:00:00" & tree == "t01")
+
+fd <- exp(5.6 - 1.01 * 3.908941)
+fd * 92.06923/4 * 600 /10000
+
+r <- 18.2 / 2
+pi * r^2
+
+sum(tmp$s) / 4
+
+d |>
+  arrange(ks_ref)
+
 ```
+
