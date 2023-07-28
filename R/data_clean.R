@@ -647,8 +647,8 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
     ungroup()
 
   tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
-    mutate(log_ks = log(ks_ref) + dep_dir_mid) |>
-    mutate(log_ks = ifelse(is.infinite(log_ks), 0, log_ks)) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks)) |>
     dplyr::select(-pred_m, -pred_ll, -pred_uu)
 
   dbh_df <- dbh_imp_data |>
@@ -683,19 +683,18 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
   rm(dir_dep_imp_data)
   rm(dbh_imp_data)
   rm(s6_df)
-  # k <- 50
-  # i <- 1
-  # tmp <- create_single_fold(tmp2, k, i) |> setDT()
+
   create_single_fold(s_df, k, i) |>
     setDT() |>
+    head(10000) |>
     mutate(post_ab = list(post_ab_mc)) |>
     mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
     dplyr::select(-post_ab) |>
-    mutate(fd_m = map_dbl(fd, median)) |>
-    mutate(fd_ll = map_dbl(fd, quantile, 0.025)) |>
-    mutate(fd_l = map_dbl(fd, quantile, 0.25)) |>
-    mutate(fd_h = map_dbl(fd, quantile, 0.75)) |>
-    mutate(fd_hh = map_dbl(fd, quantile, 0.975)) |>
+    mutate(fd_m = map_dbl(fd, median, na.rm = TRUE)) |>
+    mutate(fd_ll = map_dbl(fd, quantile, 0.025, na.rm = TRUE)) |>
+    mutate(fd_l = map_dbl(fd, quantile, 0.25, na.rm = TRUE)) |>
+    mutate(fd_h = map_dbl(fd, quantile, 0.75, na.rm = TRUE)) |>
+    mutate(fd_hh = map_dbl(fd, quantile, 0.975, na.rm = TRUE)) |>
     dplyr::select(-fd)
 
 }
@@ -716,7 +715,7 @@ ab_scaling <- function(ab_uncertainty_full_df) {
   summarize(
     across(
       .cols = starts_with("s_10m_fd_"),
-      .fns = ~ sum(.x) / 2 * 1e-6,
+      .fns = ~ sum(.x, na.rm = TRUE) / 2 * 1e-6,
       .names = "s_total_{.col}"
     )
   ) |>
