@@ -519,8 +519,7 @@ Medians were used for other components.
 
 The sap flux for each 10-minute interval was aggregated for each tree, resulting in a two-year total sap flux per tree.
 To obtain an annual value, this two-year total was divided by 2.
-The annual sap flux (Gg year^-1^ per tree) was then converted to Giga units by multiplying it by 10^-9.
-
+The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
 
 Columns are:
 

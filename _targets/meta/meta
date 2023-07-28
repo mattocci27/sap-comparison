@@ -4,8 +4,8 @@ ab_comp_points|function|ddd934d0cd9a050d|||||||||||||||
 ab_csv|stem|ea65649049f95b20|88cd349f7d70f5ee|306ea09401660587|1788216019|data/all_ab.csv|t19397.4112861111s|67828cb5d73218da|9452|file|local|vector|||0.817||
 ab_pg_ribbon|function|792d0ab8e29d3c9b|||||||||||||||
 ab_points_plot|stem|ea48eb0704cc08f6|f26e7db2b02de79a|82a95afdd406a5d9|-213042728|figs/ab_points.png*figs/ab_points.pdf|t19398.2288473955s|caf3741ed0837bc8|123427|file|local|vector|||0.905||
-ab_scaling|function|6e2a3a387087e251|||||||||||||||
-ab_scaling_df|stem|92beaaf01de4b1c9|f7cfc4d7cf9bced4|f14e9a27b19617be|-1292925837||t19566.1310702866s|02ebb87ccb90993b|855|rds|local|vector|||2.387||
+ab_scaling|function|d833baf7aafbf9b8|||||||||||||||
+ab_scaling_df|stem|9b5367c2a8c210b0|f7cfc4d7cf9bced4|821f0b7a75981d59|-1292925837||t19566.1701625474s|81a4a15ad8d2db75|853|rds|local|vector|||2.509||
 ab_uncertainty_df_1|stem|046fd2dc6002a0a4|f8f59a86317b73c6|f5d42e9da5ebf596|-1857139985||t19565.6594928106s|3797cd957e8b5dd9|29632396|rds|local|vector|||439.207||
 ab_uncertainty_df_10|stem|b6d20a7b8c978130|c039a286f02b6a61|f5d42e9da5ebf596|-1122373297||t19565.6647002921s|bdf7ce6895c9b191|28049519|rds|local|vector|||423.535||
 ab_uncertainty_df_11|stem|7050bb82a2824a7d|a70fb058702bea00|f5d42e9da5ebf596|-1352509984||t19565.6700589497s|c9eacd79d998976f|26867213|rds|local|vector|||436.531||

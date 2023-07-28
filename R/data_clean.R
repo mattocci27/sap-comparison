@@ -705,7 +705,7 @@ ab_scaling <- function(ab_uncertainty_full_df) {
     mutate(
       across(
         .cols = c("fd_m", "fd_ll", "fd_l", "fd_h", "fd_hh"),
-        .fns = ~ .x * s / 4 * 600 ,
+        .fns = ~ .x * s / 4 * 600 / 10000,
         .names = "s_10m_{.col}"
       )
     ) |>
@@ -713,7 +713,7 @@ ab_scaling <- function(ab_uncertainty_full_df) {
   summarize(
     across(
       .cols = starts_with("s_10m_fd_"),
-      .fns = ~ sum(.x) / 2 * 1e-9,
+      .fns = ~ sum(.x) / 2 * 1e-6,
       .names = "s_total_{.col}"
     )
   ) |>
