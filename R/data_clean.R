@@ -437,39 +437,40 @@ generate_post_ab <- function(draws) {
     rename(log_a = alpha_1_15, b = alpha_2_15)
 }
 
-generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
-  post_dir <- post_dir |>
-    janitor::clean_names()
-  post_dep <- post_dep |>
-    janitor::clean_names()
+generate_dir_dep_imp_data <- function(imputed_full_df) {
+# generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
+  # post_dir <- post_dir |>
+  #   janitor::clean_names()
+  # post_dep <- post_dep |>
+  #   janitor::clean_names()
 
-  beta_dir_post <- post_dir |>
-    dplyr::select(starts_with("beta"))
-  beta_dir_post_2 <- bind_cols(1, beta_dir_post)
-  colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
+  # beta_dir_post <- post_dir |>
+  #   dplyr::select(starts_with("beta"))
+  # beta_dir_post_2 <- bind_cols(1, beta_dir_post)
+  # colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
 
-  beta_dep_post <- post_dep |>
-    dplyr::select(starts_with("beta"))
-  beta_dep_post2 <- bind_cols(1, beta_dep_post)
-  colnames(beta_dep_post2) <- c(2, 4, 6)
+  # beta_dep_post <- post_dep |>
+  #   dplyr::select(starts_with("beta"))
+  # beta_dep_post2 <- bind_cols(1, beta_dep_post)
+  # colnames(beta_dep_post2) <- c(2, 4, 6)
 
-  beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
-  beta_dir_post_4 <- as_tibble(beta_dir_post_4)
-  beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
-  beta_dir_post_6 <- as_tibble(beta_dir_post_6)
+  # beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
+  # beta_dir_post_4 <- as_tibble(beta_dir_post_4)
+  # beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
+  # beta_dir_post_6 <- as_tibble(beta_dir_post_6)
 
-  beta_df <- bind_rows(
-      beta_dir_post_2 |>
-        mutate(dep = 2),
-      beta_dir_post_4 |>
-        mutate(dep = 4),
-      beta_dir_post_6 |>
-        mutate(dep = 6)) |>
-    pivot_longer(-dep, names_to = "dir") |>
-    mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
-    group_by(dep, dir) |>
-    nest() |>
-    rename(beta = data)
+  # beta_df <- bind_rows(
+  #     beta_dir_post_2 |>
+  #       mutate(dep = 2),
+  #     beta_dir_post_4 |>
+  #       mutate(dep = 4),
+  #     beta_dir_post_6 |>
+  #       mutate(dep = 6)) |>
+  #   pivot_longer(-dep, names_to = "dir") |>
+  #   mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
+  #   group_by(dep, dir) |>
+  #   nest() |>
+  #   rename(beta = data)
 
   date_vec <- imputed_full_df |>
     select(date) |>
@@ -500,31 +501,33 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
     dplyr::select(year, date, time, ks, ks_ref, tree, dir, dep) |>
     mutate(tree = as.character(tree))
 
+  imp_df
+
   # imp_long <- full_join(tmp, imp_df, by = c("year", "date", "time", "tree", "dir", "dep"))
 
-  imp_nd <- imp_df |>
-    group_by(dep, dir) |>
-    nest()
+  # imp_nd <- imp_df |>
+  #   group_by(dep, dir) |>
+  #   nest()
 
-  imp_nd2 <- full_join(imp_nd, beta_df)
+  # imp_nd2 <- full_join(imp_nd, beta_df)
 
-  imp_nd3 <- imp_nd2 |>
-    mutate(beta_mid = map_dbl(beta, \(x)unlist(x) |> median())) |>
-    mutate(beta_var = map_dbl(beta, var)) |>
-    mutate(pred_sd = map(data, \(x) sqrt(log(x$ks_ref)^2 * beta_var))) |>
-    mutate(pred_m = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid)) |>
-    mutate(pred_ll = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid - 1.96 * beta_var)) |>
-    mutate(pred_uu = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid + 1.96 * beta_var))
+  # imp_nd3 <- imp_nd2 |>
+  #   mutate(beta_mid = map_dbl(beta, \(x)unlist(x) |> median())) |>
+  #   mutate(beta_var = map_dbl(beta, var)) |>
+  #   mutate(pred_sd = map(data, \(x) sqrt(log(x$ks_ref)^2 * beta_var))) |>
+  #   mutate(pred_m = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid)) |>
+  #   mutate(pred_ll = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid - 1.96 * beta_var)) |>
+  #   mutate(pred_uu = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid + 1.96 * beta_var))
 
-  imp_new <- imp_nd3 |>
-    dplyr::select(dir, dep, data, pred_m, pred_ll, pred_uu) |>
-    unnest(cols = c(data, pred_m, pred_ll, pred_uu)) |>
-    ungroup() |>
-    mutate(across(c(pred_m, pred_ll, pred_uu),
-                  ~ case_when(is.infinite(.x) ~ NA,
-                              # is.na(.x) ~ 0,
-                              TRUE ~ .x)))
-  imp_new
+  # imp_new <- imp_nd3 |>
+  #   dplyr::select(dir, dep, data, pred_m, pred_ll, pred_uu) |>
+  #   unnest(cols = c(data, pred_m, pred_ll, pred_uu)) |>
+  #   ungroup() |>
+  #   mutate(across(c(pred_m, pred_ll, pred_uu),
+  #                 ~ case_when(is.infinite(.x) ~ NA,
+  #                             # is.na(.x) ~ 0,
+  #                             TRUE ~ .x)))
+  # imp_new
   # imp_nd3
 }
 
@@ -551,9 +554,9 @@ calc_s_cut <- function(dbh, sap, bark = 0.77) {
 }
 
 generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
-
   d1 <- read_csv(girth_increment_csv)  |>
-    janitor::clean_names()
+    janitor::clean_names() |>
+    mutate(across(where(is.numeric), \(x) x * 0.1)) # mm to cm
   d2 <- read_csv(initial_dbh_csv) |>
     rename(tree = tree_id) |>
     mutate(tree = sprintf("t%02d", tree))
@@ -565,23 +568,30 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
 
   names(d1_re)[-1] <- 1:16
 
-# transform the girth increment data frame to a long format
-  d1_long <- d1_re %>%
-    rename_with(~ paste0("tree_", .x), -date) %>%
-    pivot_longer(-date, names_to = "tree", values_to = "increment") %>%
+# transform the girth increment data frame to a long format of dbh increment
+  d1_long <- d1_re |>
+    rename_with(~ paste0("tree_", .x), -date) |>
+    pivot_longer(-date, names_to = "tree", values_to = "girth_increment") |>
     mutate(
       date = lubridate::dmy(date),
       tree = as.numeric(str_replace(tree, "tree_", ""))) |>
     mutate(tree = sprintf("t%02d", tree))
 
 # Join the transformed data frames by tree
-  dbh_data <- d1_long %>%
-    left_join(d2, by = "tree") %>%
-    group_by(tree) %>%
-    arrange(date) %>%
-    mutate(dbh = initial_dbh + cumsum(increment)) %>%
+  dbh_data <- d1_long |>
+    left_join(d2, by = "tree") |>
+    group_by(tree) |>
+    arrange(date) |>
+    mutate(girth = pi * initial_dbh + cumsum(girth_increment)) |>
+    mutate(dbh = girth / pi) |>
     ungroup() |>
     arrange(tree, date)  # Arrange data by tree and date
+
+  # dbh_data |>
+  #   mutate(initial_dbh = round(initial_dbh, 2)) |>
+  #   mutate(dbh = round(dbh, 2)) |>
+  #   mutate(girth = round(girth, 2))  |>
+  #   DT::datatable)
 
 # Now create a new data frame where each tree has a row for each date
   all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
@@ -595,8 +605,7 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
     filter(date < "2017-01-01") |>
     filter(date >= "2015-01-01")
 
-  dbh_data_interpolated |>
-    filter(tree != "t16")
+  dbh_data_interpolated
 }
 
 calc_fd <- function(log_ks, post) {
@@ -613,7 +622,14 @@ create_single_fold <- function(data, k, i) {
     dplyr::select(colnames(data))
 }
 
-generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep, k = 50, i = 1) {
+calc_quantiles <- function(x, na.rm = TRUE) {
+  q <- quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975), na.rm = na.rm)
+  return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
+}
+
+generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
+  post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep,
+  k = 50, i = 1) {
 
   post_slen_m  <- post_slen |>
     summarize(across(everything(), median))
@@ -624,12 +640,11 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_pool
     unnest(cols = c()) |>
     ungroup()
 
-  tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
     mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
-    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks)) |>
-    dplyr::select(-pred_m, -pred_ll, -pred_uu)
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
 
-  dbh_df <- dbh_imp_data |>
+  dbh_df <- dbh_imp_df |>
     mutate(slen = pred_sap(dbh, post_slen_m))  |>
     mutate(s_0_2 = calc_s(dbh, 2)) |>
     mutate(s_2_4 = calc_s(dbh, 4)) |>
@@ -659,28 +674,22 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_pool
   rm(tmp)
   rm(tmp2)
   rm(dbh_df)
-  rm(dir_dep_imp_data)
-  rm(dbh_imp_data)
+  rm(dir_dep_imp_df)
+  rm(dbh_imp_df)
   rm(s6_df)
 
   create_single_fold(s_df, k, i) |>
     setDT() |>
+    head(10000) |>
     mutate(post_ab_pool = list(post_ab_pool_mc)) |>
     mutate(post_ab_segments = list(post_ab_segments_mc)) |>
-    mutate(fd_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
-    mutate(fd_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
-    dplyr::select(-post_ab_pool, -post_ab_segments) |>
-    mutate(fd_pool_m = map_dbl(fd_pool, median, na.rm = TRUE)) |>
-    mutate(fd_pool_ll = map_dbl(fd_pool, quantile, 0.025, na.rm = TRUE)) |>
-    mutate(fd_pool_l = map_dbl(fd_pool, quantile, 0.25, na.rm = TRUE)) |>
-    mutate(fd_pool_h = map_dbl(fd_pool, quantile, 0.75, na.rm = TRUE)) |>
-    mutate(fd_pool_hh = map_dbl(fd_pool, quantile, 0.975, na.rm = TRUE)) |>
-    mutate(fd_segments_m = map_dbl(fd_segments, median, na.rm = TRUE)) |>
-    mutate(fd_segments_ll = map_dbl(fd_segments, quantile, 0.025, na.rm = TRUE)) |>
-    mutate(fd_segments_l = map_dbl(fd_segments, quantile, 0.25, na.rm = TRUE)) |>
-    mutate(fd_segments_h = map_dbl(fd_segments, quantile, 0.75, na.rm = TRUE)) |>
-    mutate(fd_segments_hh = map_dbl(fd_segments, quantile, 0.975, na.rm = TRUE)) |>
-    dplyr::select(-fd_pool, -fd_segments)
+    mutate(fd_10min_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
+    mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+    mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
+    mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+    dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+    unnest_wider(fd_pool, names_sep = "_") |>
+    unnest_wider(fd_segments, names_sep = "_")
 
 }
 
@@ -705,4 +714,43 @@ ab_scaling <- function(ab_uncertainty_full_df) {
     )
   ) |>
   rename_with(~ str_replace(., "s_total_s_10m_fd_", "s_total_"), starts_with("s_total_s_10m_fd_"))
+}
+
+
+add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
+  t16_df <- read_csv(rubber_raw_data_csv) |>
+    janitor::clean_names() |>
+    dplyr::select(date, t16_0_0)
+
+  t16_df_re <- t16_df |>
+    rename(ks_t16 = t16_0_0) |>
+    mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
+    mutate(dep = 2) |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(time = format(date, "%H:%M:%S")) |>
+    mutate(date = as_date(date))
+
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks)) |>
+    mutate(ks = exp(log_ks))
+
+  mean_ks_df <- tmp |>
+    group_by(year, date, time, dir, dep) |>
+    summarize(ks = mean(ks, na.rm = TRUE), .groups = "drop")
+
+  t16_df_full <- full_join(mean_ks_df, t16_df_re, by = c("year", "date", "time", "dir", "dep")) |>
+    mutate(ks = ifelse(is.na(ks_t16), ks, ks_t16)) |>
+    dplyr::select(-ks_t16) |>
+    mutate(tree = "t16")
+
+  full_join(dir_dep_imp_df, t16_df_full, by = c("year", "date", "time", "ks", "tree", "dir", "dep"))
+
 }
