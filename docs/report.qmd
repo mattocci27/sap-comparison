@@ -522,28 +522,114 @@ To obtain an annual value, this two-year total was divided by 2.
 The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
 
 Columns are:
-
-- s_total_fd_m: total sap flow (median, 50% quantile)
-- s_total_fd_ll: total sap flow (2.5% quantile)
-- s_total_fd_l: total sap flow (25% quantile)
-- s_total_fd_h: total sap flow (75% quantile)
-- s_total_fd_hh: total sap flow (97.5% quantile)
+ - x_pool: pooled (traditional) fitting
+ - x_segments: segments (multilevel) fitting
+ - x_m: median, 50% quantile
+ - x_ll: 2.5% quantile
+ - x_l: 25% quantile
+ - x_h: 75% quantile
+ - x_hh: 97.5% quantile
 
 ```{r, echo=FALSE}
 d <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(ab_scaling_df))
 
 d |>
+  mutate(
+    across(
+      where(is.numeric),
+      \(x)round(x, 2))) |>
   kbl() |>
   kable_classic()
 ````
 
+```{r, echo=FALSE}
+knitr::knit_exit()
+```
+
 ```{r}
 d <- tar_read(ab_uncertainty_full_df)
 
+tar_load(dir_dep_imp_data)
+tar_load(dbh_imp_data)
+tar_load(post_ab_pool_mc)
+tar_load(post_ab_segments_mc)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+
 log(0)
 
+tar_read(ab_scaling_df)
+
+18 secs
+
+tar_read(ab_scaling_df)
+
 tar_load(post_ab_mc)
+
+tar_read(ab_uncertainty_df_2) |>
+  filter(is.na(fd_m))
+
+tar_read(ab_uncertainty_df_2)
+
+draws <- tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_load(fd_k_traits_csv)
+
+read_csv(fd_k_traits_csv) |>
+    pull(species) |>
+    as.factor() |>
+    levels()
+
+    unique() |> levels()
+
+
+tar_read(post_ab_pool_mc) |>
+  apply(2, median)
+tar_read(post_ab_segments_mc) |>
+  apply(2, median)
+
+tmp <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_pool)
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(b) |> median()
+
+tmp2 <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_segments)
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(b) |> median()
+
+hoge |>
+  filter(str_detect(name, "sap_all_clean_0.08")) |>
+
+hoge |>
+  filter(str_detect(name, "fit_ab_each"))
+
+names(draws)
+
+tar_read(sap_all_clean_0.08) |> str()
+
+
+tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
 
 tar_load(dbh_imp_data)
 
@@ -564,10 +650,14 @@ fd * 92.06923/4 * 600 /10000
 r <- 18.2 / 2
 pi * r^2
 
+tmp <- c(NA, 2, 2, 5)
+median(tmp, na.rm = TRUE)
+quantile(tmp, 0.5, na.rm = TRUE)
+
 sum(tmp$s) / 4
 
 d |>
   arrange(ks_ref)
-
+NA - log(2)
 ```
 

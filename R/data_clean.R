@@ -429,11 +429,12 @@ generate_post_dir_dep <- function(post_dir, post_dep) {
   beta_df
 }
 
+# 15: Hevea brasiliensis
 generate_post_ab <- function(draws) {
   draws |>
     janitor::clean_names() |>
     dplyr::select(alpha_1_15, alpha_2_15, sigma) |>
-    rename(a = alpha_1_15, b = alpha_2_15)
+    rename(log_a = alpha_1_15, b = alpha_2_15)
 }
 
 generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
@@ -529,7 +530,6 @@ generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
 
 pred_sap <- function(x, para) {
   log_mu <- para$alpha + para$beta * log(x)
-  exp(log_mu + para$sigma^2 / 2)
 }
 
 calc_s <- function(dbh, depth, bark = 0.77) {
@@ -593,36 +593,14 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
                   stringsAsFactors = FALSE)) %>%
     ungroup() |>
     filter(date < "2017-01-01") |>
-    filter(date >= "2015-01-01") #|>
-    # mutate(tree = sprintf("t%02d", tree))
+    filter(date >= "2015-01-01")
 
   dbh_data_interpolated |>
     filter(tree != "t16")
-# Reading the model fit
-  # fit_draws <- fit_dbh_sapwood_draws_normal
-  # fit_draws2 <- fit_draws |>
-  #   dplyr::select(alpha, beta, sigma)
-
-  # imp_df <- imputed_full_df
-
-  # moge <- dbh_data_interpolated  |>
-  #   filter(tree != "t16") |>
-  #   # mutate(para = list(fit_draws2)) |>
-  #   # mutate(sap = map2(dbh, para, pred_sap)) |>
-  #   # mutate(ll = map_dbl(sap, quantile, 0.025)) |>
-  #   # mutate(m = map_dbl(sap, quantile, 0.5)) |>
-  #   # mutate(hh = map_dbl(sap, quantile, 0.975)) |>
-  #   mutate(s2 = calc_s(dbh, 2)) |>
-  #   mutate(s4 = calc_s(dbh, 4)) |>
-  #   mutate(s6 = calc_s(dbh, 6)) #|>
-  #   # mutate(s0_ll = calc_s0(dbh, ll)) |>
-  #   # mutate(s0_m = calc_s0(dbh, m)) |>
-  #   # mutate(s0_hh = calc_s0(dbh, hh))
-  # moge
 }
 
 calc_fd <- function(log_ks, post) {
-  mu <- post$a + post$b * log_ks
+  mu <- post$log_a + post$b * log_ks
   exp(mu)
 }
 
@@ -635,7 +613,7 @@ create_single_fold <- function(data, k, i) {
     dplyr::select(colnames(data))
 }
 
-generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, post_slen, post_dir_dep, k = 50, i = 1) {
+generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep, k = 50, i = 1) {
 
   post_slen_m  <- post_slen |>
     summarize(across(everything(), median))
@@ -671,6 +649,7 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
   s6_df <- tmp2 |>
     filter(dep == 6) |>
     filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
     mutate(s = s_6_c) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
     mutate(log_ks = log_ks - log(2))
@@ -686,16 +665,22 @@ generate_ab_uncertainty <- function(dir_dep_imp_data, dbh_imp_data, post_ab_mc, 
 
   create_single_fold(s_df, k, i) |>
     setDT() |>
-    head(10000) |>
-    mutate(post_ab = list(post_ab_mc)) |>
-    mutate(fd = map2(log_ks, post_ab, calc_fd)) |>
-    dplyr::select(-post_ab) |>
-    mutate(fd_m = map_dbl(fd, median, na.rm = TRUE)) |>
-    mutate(fd_ll = map_dbl(fd, quantile, 0.025, na.rm = TRUE)) |>
-    mutate(fd_l = map_dbl(fd, quantile, 0.25, na.rm = TRUE)) |>
-    mutate(fd_h = map_dbl(fd, quantile, 0.75, na.rm = TRUE)) |>
-    mutate(fd_hh = map_dbl(fd, quantile, 0.975, na.rm = TRUE)) |>
-    dplyr::select(-fd)
+    mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+    mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+    mutate(fd_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
+    mutate(fd_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+    dplyr::select(-post_ab_pool, -post_ab_segments) |>
+    mutate(fd_pool_m = map_dbl(fd_pool, median, na.rm = TRUE)) |>
+    mutate(fd_pool_ll = map_dbl(fd_pool, quantile, 0.025, na.rm = TRUE)) |>
+    mutate(fd_pool_l = map_dbl(fd_pool, quantile, 0.25, na.rm = TRUE)) |>
+    mutate(fd_pool_h = map_dbl(fd_pool, quantile, 0.75, na.rm = TRUE)) |>
+    mutate(fd_pool_hh = map_dbl(fd_pool, quantile, 0.975, na.rm = TRUE)) |>
+    mutate(fd_segments_m = map_dbl(fd_segments, median, na.rm = TRUE)) |>
+    mutate(fd_segments_ll = map_dbl(fd_segments, quantile, 0.025, na.rm = TRUE)) |>
+    mutate(fd_segments_l = map_dbl(fd_segments, quantile, 0.25, na.rm = TRUE)) |>
+    mutate(fd_segments_h = map_dbl(fd_segments, quantile, 0.75, na.rm = TRUE)) |>
+    mutate(fd_segments_hh = map_dbl(fd_segments, quantile, 0.975, na.rm = TRUE)) |>
+    dplyr::select(-fd_pool, -fd_segments)
 
 }
 
@@ -706,7 +691,7 @@ ab_scaling <- function(ab_uncertainty_full_df) {
   ab_uncertainty_full_df |>
     mutate(
       across(
-        .cols = c("fd_m", "fd_ll", "fd_l", "fd_h", "fd_hh"),
+        .cols = starts_with("fd"),
         .fns = ~ .x * s / 4 * 600 / 10000,
         .names = "s_10m_{.col}"
       )
@@ -719,5 +704,5 @@ ab_scaling <- function(ab_uncertainty_full_df) {
       .names = "s_total_{.col}"
     )
   ) |>
-  rename_with(~ str_replace(., "s_total_s_10m_fd_", "s_total_fd_"), starts_with("s_total_s_10m_fd_"))
+  rename_with(~ str_replace(., "s_total_s_10m_fd_", "s_total_"), starts_with("s_total_s_10m_fd_"))
 }

@@ -40,10 +40,10 @@ tar_option_set(packages = c(
   "data.table"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1350,7 +1350,11 @@ tar_dir_dep <- list(
       post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
   ),
   tar_target(
-    post_ab,
+    post_ab_pool,
+    generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
+  ),
+  tar_target(
+    post_ab_segments,
     generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
   ),
   tar_target(
@@ -1366,8 +1370,12 @@ tar_dir_dep <- list(
     }
   ),
   tar_target(
-    post_ab_mc,
-    post_ab |> sample_n(1000)
+    post_ab_pool_mc,
+    post_ab_pool |> sample_n(1000)
+  ),
+  tar_target(
+    post_ab_segments_mc,
+    post_ab_segments |> sample_n(1000)
   ),
   tar_target(
     post_dir_dep_mc,
@@ -1381,11 +1389,17 @@ tar_dir_dep <- list(
 )
 
 uncertainty_mapped <- tar_map(
-    values = list(folds = 1:40),
+    values = list(folds = 1:20),
     tar_target(
       ab_uncertainty_df,
-      generate_ab_uncertainty(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep, k = 40, i = folds)
-    ))
+      generate_ab_uncertainty(
+        dir_dep_imp_data,
+        dbh_imp_data,
+        post_ab_pool_mc = post_ab_pool_mc,
+        post_ab_segments_mc = post_ab_segments_mc,
+        post_slen, post_dir_dep, k = 20, i = folds)
+    )
+  )
 
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_full_df,
