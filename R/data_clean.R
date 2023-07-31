@@ -438,39 +438,6 @@ generate_post_ab <- function(draws) {
 }
 
 generate_dir_dep_imp_data <- function(imputed_full_df) {
-# generate_dir_dep_imp_data <- function(imputed_full_df, post_dir, post_dep) {
-  # post_dir <- post_dir |>
-  #   janitor::clean_names()
-  # post_dep <- post_dep |>
-  #   janitor::clean_names()
-
-  # beta_dir_post <- post_dir |>
-  #   dplyr::select(starts_with("beta"))
-  # beta_dir_post_2 <- bind_cols(1, beta_dir_post)
-  # colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
-
-  # beta_dep_post <- post_dep |>
-  #   dplyr::select(starts_with("beta"))
-  # beta_dep_post2 <- bind_cols(1, beta_dep_post)
-  # colnames(beta_dep_post2) <- c(2, 4, 6)
-
-  # beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
-  # beta_dir_post_4 <- as_tibble(beta_dir_post_4)
-  # beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
-  # beta_dir_post_6 <- as_tibble(beta_dir_post_6)
-
-  # beta_df <- bind_rows(
-  #     beta_dir_post_2 |>
-  #       mutate(dep = 2),
-  #     beta_dir_post_4 |>
-  #       mutate(dep = 4),
-  #     beta_dir_post_6 |>
-  #       mutate(dep = 6)) |>
-  #   pivot_longer(-dep, names_to = "dir") |>
-  #   mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
-  #   group_by(dep, dir) |>
-  #   nest() |>
-  #   rename(beta = data)
 
   date_vec <- imputed_full_df |>
     select(date) |>
@@ -502,37 +469,11 @@ generate_dir_dep_imp_data <- function(imputed_full_df) {
     mutate(tree = as.character(tree))
 
   imp_df
-
-  # imp_long <- full_join(tmp, imp_df, by = c("year", "date", "time", "tree", "dir", "dep"))
-
-  # imp_nd <- imp_df |>
-  #   group_by(dep, dir) |>
-  #   nest()
-
-  # imp_nd2 <- full_join(imp_nd, beta_df)
-
-  # imp_nd3 <- imp_nd2 |>
-  #   mutate(beta_mid = map_dbl(beta, \(x)unlist(x) |> median())) |>
-  #   mutate(beta_var = map_dbl(beta, var)) |>
-  #   mutate(pred_sd = map(data, \(x) sqrt(log(x$ks_ref)^2 * beta_var))) |>
-  #   mutate(pred_m = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid)) |>
-  #   mutate(pred_ll = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid - 1.96 * beta_var)) |>
-  #   mutate(pred_uu = map2(data, pred_sd, \(x, y)log(x$ks_ref) + beta_mid + 1.96 * beta_var))
-
-  # imp_new <- imp_nd3 |>
-  #   dplyr::select(dir, dep, data, pred_m, pred_ll, pred_uu) |>
-  #   unnest(cols = c(data, pred_m, pred_ll, pred_uu)) |>
-  #   ungroup() |>
-  #   mutate(across(c(pred_m, pred_ll, pred_uu),
-  #                 ~ case_when(is.infinite(.x) ~ NA,
-  #                             # is.na(.x) ~ 0,
-  #                             TRUE ~ .x)))
-  # imp_new
-  # imp_nd3
 }
 
 pred_sap <- function(x, para) {
   log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu)
 }
 
 calc_s <- function(dbh, depth, bark = 0.77) {
@@ -661,6 +602,7 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     )) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
 
+  # deeper than 6cm
   s6_df <- tmp2 |>
     filter(dep == 6) |>
     filter(s_6_c > 0) |>
@@ -680,17 +622,16 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
 
   create_single_fold(s_df, k, i) |>
     setDT() |>
-    head(10000) |>
     mutate(post_ab_pool = list(post_ab_pool_mc)) |>
     mutate(post_ab_segments = list(post_ab_segments_mc)) |>
     mutate(fd_10min_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
     mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
     mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
     mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+    mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
     dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
     unnest_wider(fd_pool, names_sep = "_") |>
     unnest_wider(fd_segments, names_sep = "_")
-
 }
 
 # dividing by 4 is to get the quarter of the area (each direction)
@@ -754,3 +695,4 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
   full_join(dir_dep_imp_df, t16_df_full, by = c("year", "date", "time", "ks", "tree", "dir", "dep"))
 
 }
+

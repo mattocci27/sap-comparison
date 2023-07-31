@@ -40,10 +40,10 @@ tar_option_set(packages = c(
   "data.table"
 ))
 
-# tar_option_set(
-#   garbage_collection = TRUE,
-#   memory = "transient"
-# )
+tar_option_set(
+  garbage_collection = TRUE,
+  memory = "transient"
+)
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1346,8 +1346,6 @@ tar_dir_dep <- list(
     dir_dep_imp_df,
     generate_dir_dep_imp_data(
       imputed_full_df)
-      # post_dir = fit_dir_dep_draws_no_temporal_hourly_dir,
-      # post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
   ),
   tar_target(
     post_ab_pool,
@@ -1393,7 +1391,7 @@ tar_dir_dep <- list(
 )
 
 uncertainty_mapped <- tar_map(
-    values = list(folds = 1:2),
+    values = list(folds = 1:30),
     tar_target(
       ab_uncertainty_df,
       generate_ab_uncertainty(
@@ -1401,7 +1399,7 @@ uncertainty_mapped <- tar_map(
         dbh_imp_df,
         post_ab_pool_mc = post_ab_pool_mc,
         post_ab_segments_mc = post_ab_segments_mc,
-        post_slen, post_dir_dep, k = 20, i = folds)
+        post_slen, post_dir_dep, k = 30, i = folds)
     )
   )
 
@@ -1417,10 +1415,6 @@ uncertainty_list <- list(
     ab_scaling_df,
     ab_scaling(ab_uncertainty_full_df)
   ),
-  #  tar_quarto(
-  #   report_html,
-  #   "docs/report.qmd"
-  # ),
   NULL
 )
 
