@@ -500,50 +500,411 @@ targets::tar_read(all_seg_table)) |>
 
 Sup flux per 10 min is calculated as:
 $$
-S_{10min} = a \times K_s^b \times A_{sap} \times 600
+S_{10min} = a \times K^b \times A_{sap} \times 600
 $$
 
-where $K_s$ is the esimated value from directions and depths when sencors are not avaiable and the oberved value when sensors are avaiable,
-$A_{sap}$ is sapwood area esimated from DBH and sapwood length,
+where $K$ is the estimated value from directions and depths when sensors are not available and the observed value when sensors are available,
+$A_{sap}$ is sapwood area estimated from DBH and sapwood length,
 and 600 is the number of seconds in 10 min.
 
-There 4 components contribute to the uncertainty in sap flux per 10 min:
+These are 4 components that contribute to the uncertainty in sap flux per 10 min:
 
 - a, b
-- ks (estimated from directions)
-- ks (estimated from depths)
-- sapwood length (estiamted from DBH)
+- K (estimated from directions)
+- K (estimated from depths)
+- sapwood length (estimated from DBH)
 
-For now, only the uncertainty from a-b coefficients are included in the final estimates.
+Only the uncertainty from a-b coefficients is included in the final estimates.
 Medians were used for other components.
-
-The sap flux for each 10-minute interval was aggregated for each tree, resulting in a two-year total sap flux per tree.
 To obtain an annual value, this two-year total was divided by 2.
 The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
 
-Columns are:
-
-- s_total_fd_m: total sap flow (median, 50% quantile)
-- s_total_fd_ll: total sap flow (2.5% quantile)
-- s_total_fd_l: total sap flow (25% quantile)
-- s_total_fd_h: total sap flow (75% quantile)
-- s_total_fd_hh: total sap flow (97.5% quantile)
+Values are the annual sap flux for each tree (Mg year^-1^ per tree).
 
 ```{r, echo=FALSE}
 d <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(ab_scaling_df))
 
+write_csv(d, here("data/ab_scaling_df.csv"))
+
+
 d |>
+  mutate(
+    across(
+      where(is.numeric),
+      \(x)round(x, 2))) |>
   kbl() |>
   kable_classic()
-````
+```
+
+Columns are:
+
+ - x_pool: pooled (traditional) fitting
+ - x_segments: segments (multilevel) fitting
+ - x_ll: 2.5% quantile
+ - x_l: 25% quantile
+ - x_m: 50% quantile (median)
+ - x_h: 75% quantile
+ - x_hh: 97.5% quantile
+ - s_total_granier: estimated by Fd = 119*K^1.23
+
+The table below shows the sum of all trees divided by 600 m^2^.
+The unit is Kg m^-2^ year^-1^ (or mm year^-1^).
+
+```{r, echo=FALSE}
+# Sum numeric columns
+d |>
+  # summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 * 16  else NA) |>
+  summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 else NA) |>
+  dplyr::rename_all(~str_replace(., "s_total", "s_ground")) |>
+  dplyr::select(-tree) |>
+  kbl() |>
+  kable_classic()
+```
+
+The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
+Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
+Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
+
+```{r, echo=FALSE}
+knitr::knit_exit()
+```
 
 ```{r}
-d <- tar_read(ab_uncertainty_full_df)
+d <- targets::tar_read(ab_uncertainty_full_df)
+library(tidyverse)
+
+n1 <- d |>
+  filter(slen > 6) |>
+  nrow()
+
+targets::tar_read(ab_uncertainty_df_1)
+
+calc_s <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (2 * r - b - depth) * 2
+}
+
+calc_s2 <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  r1 <- r - depth
+  r2 <- r - b
+  pi * (r2^2 - r1^2)
+}
+
+calc_s_cut(30, 5)
+calc_s_plus(30, 5)
+
+dbh <- 30
+bark <- 0.77
+r <- dbh / 2 - bark
+rs <- r - 8
+
+pi * r^2
+calc_s(30, 2) + calc_s(30, 4) + calc_s(30, 6) + calc_s_plus(30, 8) + pi * rs^2
+
+d |>
+  filter(dep != 2) |>
+  filter(dep != 4) |>
+  filter(dep != 6)
+
+119 * 0.0265 ^1.23
+n1 / nrow(d)
+
+d |>
+  summarise_all(~if(is.numeric(.)) mean(., na.rm = TRUE)  * 1000 / 365 else NA)
+
+120 kg day-1 tree-1
+
+55.08	* 1000 / 365
+
+tmp <- d |>
+  filter(date == "2015-08-01" & tree == "t01") |>
+  mutate(s_re = s / 4 / 10000) |>
+  filter(time == "00:00:00")
+
+tar_read(post_ab_segments) |>
+  apply(2, median)
+
+log_a <- 5.6
+a <- exp(log_a)
+b <- 1.09
+
+# 600 is the number of seconds in 10 mins
+# 600 * 144 is the number of seconds in 24 hours
+# 600 * 144 * 365 is the number of seconds in a year
+# /1000 is the conversion from g to kg
+
+k <- 0.1
+a <- 119
+b <- 1.23
+a * k^b * 600 * 144 * 365 / 1000
+
+One tree uses: 600/16 = 37.5 m2
+DBH:30 cm -> sapwood area: 400 cm2 = 0.04m2
+
+k <- 0.1
+log_a <- 5.6
+a <- exp(log_a)
+b <- 1.09
+a * k^b * 600 * 144 * 365 / 1000 * 0.04 / 37.5
+739 kg m-2
+
+a * k^b * 600 * 144 * 365 / 1000 * 0.04 / 1000
+
+27.7 / 0.0375
+55 / 0.0375
+
+
+tmp <- d |>
+  filter(date < "2015-01-05" & tree == "t01")
+
+tmp |>
+  mutate(date2 = paste(date, time) |> lubridate::ymd_hms()) |>
+  ggplot(aes(x = date2, y = exp(log_ks), col = dir, shape = as.factor(dep), lty = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  ylab("K")
+
+
+
+a * k^b * 144 * 365 * 1e-3
+100 * k^b * 600 * 144 * 365 *  1e-3
+
+100 * k^b
+
+a * k^b  600
+
+55000 / 365
+600 / 365
+
+exp(-3.5)
+
+tmp2 <- d |>
+  filter(ks < 0.01)
+
+tmp2 |>
+  arrange(log_ks)
+
+d |>
+  filter(is.na(log_ks))
+
+nrow(tmp2) / nrow(d)
+
+r <- 0.3 / 2
+
+a * k^b * 600 * pi * r^2
+
+tmp <- d |>
+  filter(date == "2015-08-01" & tree == "t01") |>
+  mutate(s_re = s / 4 / 10000) |>
+  filter(time == "00:00:00")
+
+ggplot(tmp, aes(x = log(ks), y = log_ks)) +
+  geom_point()
+
+sum(tmp2$fd_pool_m * tmp2$s_re, na.rm = TRUE)
+sum(tmp$fd_pool_m * tmp$s_re, na.rm = TRUE)
+
+hist(tmp$ks)
+
+
+tar_read(fit_dbh_sapwood_summary_normal)
+
+d |>
+  filter(slen > 6)
+
+d |>
+
+xx <- seq(20, 58, length = 80)
+targets::tar_load(post_slen)
+
+library(purrr)
+library(tidyverse)
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu)
+}
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu + sigma/2)
+}
+
+tmp <- tibble(xx) |>
+  mutate(post = list(post_slen)) |>
+  mutate(pred = map2(xx, post, pred_sap)) |>
+  mutate(dbh = map(pred, calc_quantiles)) |>
+  unnest_wider(dbh)
+
+ggplot(tmp, aes(x = xx)) +
+  geom_hline(yintercept = 4, lty = 2) +
+  geom_hline(yintercept = 6, lty = 2) +
+  geom_line(aes(y = m)) +
+  geom_ribbon(aes(ymin = ll, ymax = hh), alpha = 0.4) +
+  xlab("DBH (cm)") +
+  ylab("Sapwood length (cm)")  +
+  theme_bw()
+
+
+
+# Create a data frame with one row for each combination of xx and the rows in post_slen
+expand_grid(xx = xx, post_slen) %>%
+  # Apply the pred_sap function to each row
+  mutate(pred = map2(xx, alpha, ~pred_sap(.x, list(alpha = .y, beta = beta)))) %>%
+  # Group by xx so that we can calculate percentiles for each value of xx
+  group_by(xx) %>%
+  # Calculate the median and confidence intervals
+  summarise(
+    median = median(pred),
+    lower = quantile(pred, 0.025),
+    upper = quantile(pred, 0.975)
+  ) -> predictions
+
+# Now you can plot the prediction line with confidence intervals
+ggplot(predictions, aes(x = xx, y = median)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3) +
+  theme_minimal() +
+  labs(x = "X", y = "Prediction", title = "Prediction Line with 95% Confidence Intervals")
+
+    df_pred <- post_slen %>%
+    as_tibble() %>%
+    setNames(seq_len(ncol(.))) %>%
+    tibble::rownames_to_column("posterior_sample") %>%
+    tidyr::pivot_longer(
+      cols = c(-posterior_sample),
+      names_to = "obs",
+      values_to = "fitted"
+    )
+
+
+
+post_slen$alpha
+
+
+mapply(pred_sap, xx, post_slen)
+
+pred_sap(xx, post_slen)
+
+d$slen |> summary()
+d$dep |> unique()
+
+tar_load(dir_dep_imp_df)
+tar_load(post_ab_pool_mc)
+tar_load(post_ab_segments_mc)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+
+tar_load(dbh_imp_df)
+tar_load(post_slen)
+post_slen_m  <- post_slen |>
+   summarize(across(everything(), quantile, 0.975))
+
+dbh_df <- dbh_imp_data |>
+  mutate(slen = pred_sap(dbh, post_slen_m))  |>
+  mutate(s_0_2 = calc_s(dbh, 2)) |>
+  mutate(s_2_4 = calc_s(dbh, 4)) |>
+  mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+  mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+summary(dbh_df$slen)
+
+dbh_df2 <- dbh_imp_data |>
+  mutate(slen = pred_sap(dbh, post_slen_m))  |>
+  mutate(s_0_2 = calc_s(dbh, 2)) |>
+  mutate(s_2_4 = calc_s(dbh, 4)) |>
+  mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+  mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+d |>
+  group_by(tree) |>
+  summarize(
+    initial_dbh = min(dbh),
+    final_dbh = max(dbh)
+  )
+
 
 log(0)
 
+tar_read(ab_scaling_df)
+
+
+tar_read(ab_scaling_df)
+
 tar_load(post_ab_mc)
+
+tar_read(ab_uncertainty_df_2) |>
+  filter(is.na(fd_m))
+
+tar_read(ab_uncertainty_df_2)
+
+draws <- tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_load(fd_k_traits_csv)
+
+read_csv(fd_k_traits_csv) |>
+    pull(species) |>
+    as.factor() |>
+    levels()
+
+    unique() |> levels()
+
+
+tar_read(post_ab_pool_mc) |>
+  apply(2, median)
+tar_read(post_ab_segments_mc) |>
+  apply(2, median)
+
+tmp <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_pool)
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(b) |> median()
+
+tmp2 <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_segments)
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(b) |> median()
+
+hoge |>
+  filter(str_detect(name, "sap_all_clean_0.08")) |>
+
+hoge |>
+  filter(str_detect(name, "fit_ab_each"))
+
+names(draws)
+
+tar_read(sap_all_clean_0.08) |> str()
+
+d <- targets::tar_read(imputed_full_df)
+
+hist(d$ks)
+
+
+
+tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
 
 tar_load(dbh_imp_data)
 
@@ -564,10 +925,178 @@ fd * 92.06923/4 * 600 /10000
 r <- 18.2 / 2
 pi * r^2
 
+tmp <- c(NA, 2, 2, 5)
+median(tmp, na.rm = TRUE)
+quantile(tmp, 0.5, na.rm = TRUE)
+
 sum(tmp$s) / 4
 
 d |>
   arrange(ks_ref)
+NA - log(2)
+
+tar_load(rubber_raw_data_csv)
+tar_load(imputed_full_df)
+tar_load(dir_dep_imp_data)
+
+d <- read_csv(rubber_raw_data_csv) |>
+  janitor::clean_names() |>
+  dplyr::select(date, time, vpd, par, t16_0_0)
+
+d2 <- d |>
+  rename(ks = t16_0_0) |>
+  mutate(dir = "S") |>
+  mutate(dep = 2)
+
+mean_ks_df <- imputed_full_df |>
+  group_by(date, time, dir, dep) |>
+  summarize(ks = mean(ks), .groups = "drop")
+
+tar_read(ab_uncertainty_full_df)
+
+
+d1 <- tar_read(dir_dep_imp_data)
+
+d2 <- tar_read(t16_df) |>
+  mutate(tree = "t16")
+
+d2 |>
+
+mutate()
+
+nrow(d1) + nrow(d2)
+
+d3 <- full_join(d1, d2, by = c("year", "date", "time", "ks", "tree", "dir", "dep"))
+
+# ===================
+
+
+d
+
+d <- targets::tar_read(ab_uncertainty_full_df)
+
+d <- read_csv(rubber_raw_data_csv) |>
+  janitor::clean_names() |>
+  dplyr::select(date, t16_0_0)
+
+d2 <- d |>
+  rename(ks_t16 = t16_0_0) |>
+  mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
+  mutate(dep = 2) |>
+  mutate(date = mdy_hm(date)) |>
+  mutate(year = year(date)) |>
+  mutate(time = format(date, "%H:%M:%S")) |>
+  mutate(date = as_date(date))
+
+tar_load(post_dir_dep )
+tar_load(dir_dep_imp_data)
+
+post_dir_dep_m <- post_dir_dep |>
+  mutate(dep_dir_mid = map_dbl(beta, median)) |>
+  dplyr::select(-beta) |>
+  unnest(cols = c()) |>
+  ungroup()
+
+tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
+  mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+  mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+
+tmp2 <- tmp  |>
+  mutate(ks = exp(log_ks))
+
+mean_ks_df <- tmp2 |>
+  group_by(date, time, dir, dep) |>
+  summarize(ks = mean(ks, na.rm = TRUE), .groups = "drop")
+
+tmp3 <- full_join(mean_ks_df, d2, by = c("date", "time", "dir", "dep"))
+
+tmp4 <- tmp3 |>
+  mutate(ks = ifelse(is.na(ks_t16), ks, ks_t16)) |>
+  dplyr::select(-ks_t16)
+
+dbh_df$slen |> hist()
+
+# ===================
+
+d1 <- targets::tar_read(ab_uncertainty_df_1)
+d1
+
+targets::tar_read(ab_uncertainty_df_2)
+
+d20 <- targets::tar_read(ab_uncertainty_df_20)
+d20
+
+targets::tar_read(ab_uncertainty_df_1) |>
+  filter(ks == 0)
+
+d$slen |> summary()
+
+targets::tar_read(dbh_imp_df) |>
+  group_by(tree) |>
+  summarize(dbh_max = max(dbh), dbh_mid = median(dbh), .groups = "drop")
+
+targets::tar_read(ab_uncertainty_df_1) |>
+  head(100) |>
+  write_csv("test100.csv")
+
+dbh_imp_df |>
+  filter(date == "2015-01-01")
+
+
+
+
+d <- targets::tar_read(ab_uncertainty_full_df)
+
+
+
+d2 <- targets::tar_read(dir_dep_imp_full_df)
+tmp |>
+  group_by(tree) |>
+  summarize(n = n())
+
+mean_ks_df
+mean_ks_df2
+
+n1 <- d |>
+  dplyr::select(date, time, t16_0_0) |>
+  filter(is.na(t16_0_0)) |>
+  nrow()
+
+n2 <- d |>
+  dplyr::select(date, time, t16_0_0) |>
+  nrow()
+
+n1/n2
+
+xx <- seq(0.01, 1, length = 100)
+y1 <- 119*xx^1.23
+y2 <- 200*xx^1
+
+plot(xx, y2, type = "l")
+points(xx, y1, type = "l", col = "red")
+
+exp(-3.63)
+
+tar_load(dir_dep_imp_df)
+tar_load(dbh_imp_df)
+tar_load(post_ab_pool_mc)
+tar_load(post_ab_segments_mc)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+
+d1 <- targets::tar_read(ab_uncertainty_df_1)
+exp(5.6 -3.63 * 1.01)
+exp(4.9 -3.63 * 0.71)
+119*exp(-3.631)^1.23
+
+0.02^1.23
+0.02^1
+0.02^0.75
+
+targets::tar_read(post_ab_pool) |> apply(2, median)
+targets::tar_read(post_ab_segments) |> apply(2, median)
 
 ```
+
+
 

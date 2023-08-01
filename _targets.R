@@ -1343,14 +1343,16 @@ tar_impute <- list(
 
 tar_dir_dep <- list(
   tar_target(
-    dir_dep_imp_data,
+    dir_dep_imp_df,
     generate_dir_dep_imp_data(
-      imputed_full_df,
-      post_dir = fit_dir_dep_draws_no_temporal_hourly_dir,
-      post_dep = fit_dir_dep_draws_no_temporal_hourly_dep)
+      imputed_full_df)
   ),
   tar_target(
-    post_ab,
+    post_ab_pool,
+    generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
+  ),
+  tar_target(
+    post_ab_segments,
     generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
   ),
   tar_target(
@@ -1366,8 +1368,12 @@ tar_dir_dep <- list(
     }
   ),
   tar_target(
-    post_ab_mc,
-    post_ab |> sample_n(1000)
+    post_ab_pool_mc,
+    post_ab_pool |> sample_n(1000)
+  ),
+  tar_target(
+    post_ab_segments_mc,
+    post_ab_segments |> sample_n(1000)
   ),
   tar_target(
     post_dir_dep_mc,
@@ -1377,15 +1383,25 @@ tar_dir_dep <- list(
     post_slen_mc,
     post_slen |> sample_n(1000)
   ),
+  tar_target(
+    dir_dep_imp_full_df,
+    add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
+  ),
   NULL
 )
 
 uncertainty_mapped <- tar_map(
-    values = list(folds = 1:40),
+    values = list(folds = 1:30),
     tar_target(
       ab_uncertainty_df,
-      generate_ab_uncertainty(dir_dep_imp_data, dbh_imp_data, post_ab, post_slen, post_dir_dep, k = 40, i = folds)
-    ))
+      generate_ab_uncertainty(
+        dir_dep_imp_full_df,
+        dbh_imp_df,
+        post_ab_pool_mc = post_ab_pool_mc,
+        post_ab_segments_mc = post_ab_segments_mc,
+        post_slen, post_dir_dep, k = 30, i = folds)
+    )
+  )
 
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_full_df,
@@ -1398,7 +1414,8 @@ uncertainty_list <- list(
   tar_target(
     ab_scaling_df,
     ab_scaling(ab_uncertainty_full_df)
-  )
+  ),
+  NULL
 )
 
 sapwood_list <- list(
@@ -1461,7 +1478,7 @@ sapwood_list <- list(
     )
   ),
   tar_target(
-    dbh_imp_data,
+    dbh_imp_df,
     generate_dbh_imp_data(
       girth_increment_csv,
       initial_dbh_csv)
