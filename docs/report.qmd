@@ -519,26 +519,11 @@ Medians were used for other components.
 To obtain an annual value, this two-year total was divided by 2.
 The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
 
-Values are the annual sap flux for each tree (Mg year^-1^ per tree).
-
-```{r, echo=FALSE}
-d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(ab_scaling_df))
-
-write_csv(d, here("data/ab_scaling_df.csv"))
-
-
-d |>
-  mutate(
-    across(
-      where(is.numeric),
-      \(x)round(x, 2))) |>
-  kbl() |>
-  kable_classic()
-```
+Values are the annual sap flux for each tree and for each applied Pg (Mg year^-1^ per tree).
 
 Columns are:
 
+ - pg: pressure gradients
  - x_pool: pooled (traditional) fitting
  - x_segments: segments (multilevel) fitting
  - x_ll: 2.5% quantile
@@ -546,14 +531,74 @@ Columns are:
  - x_m: 50% quantile (median)
  - x_h: 75% quantile
  - x_hh: 97.5% quantile
- - s_total_granier: estimated by Fd = 119*K^1.23
-
-The table below shows the sum of all trees divided by 600 m^2^.
-The unit is Kg m^-2^ year^-1^ (or mm year^-1^).
+ - s_total_granier: estimated by Fd = 119*K^1.23 (this values are assgined for pg = 0.02 for a coding purpose)
 
 ```{r, echo=FALSE}
+# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(ab_uncertainty_full_df))
+
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_df)) |>
+  filter(!is.na(tree)) |>
+  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+  rename(s_total_granier_m = s_total_granier) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = sum
+    ), .groups = "drop")
+
+
+write_csv(d, here("data/ab_scaling_df.csv"))
+
+d |>
+  mutate(
+    across(
+      where(is.numeric),
+      \(x)round(x, 2))) |>
+  DT::datatable()
+  # kbl() |>
+  # kable_classic()
+```
+
+
+The figure below shows the sum of all trees divided by 600 m^2^.
+Thick bars indicate medians, and error bars indicate 95% quantiles based on the uncertainty of a-b coefficients.
+The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
+Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
+Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
+
+```{r, echo=FALSE}
+d2 <- d |>
+  pivot_longer(3:13,
+    names_to = "variable",
+    values_to = "value") |>
+  mutate(model = str_split_fixed(variable, "_", 4)[,3])  |>
+  mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
+
+d3 <- d2 |>
+  group_by(pg, model, quantile) |>
+  summarize(tr = sum(value) / 600 * 1000) |>
+  ungroup() |>
+  mutate(pg = ifelse(model == "granier", "granier", pg)) |>
+  mutate(pg = as.factor(pg)) |>
+  filter(!is.na(tr))
+
+d4 <- d3 |>
+  pivot_wider(names_from = quantile, values_from = tr)
+ggplot(d4, aes(x = pg, y = m, fill = model, group = model)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
+  ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+  theme_bw()
+```
+
+
+```{r, eval = FALSE, echo=FALSE}
 # Sum numeric columns
 d |>
+  mutate(pg = as.character(pg)) |>
   # summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 * 16  else NA) |>
   summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 else NA) |>
   dplyr::rename_all(~str_replace(., "s_total", "s_ground")) |>
@@ -562,9 +607,6 @@ d |>
   kable_classic()
 ```
 
-The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
-Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
-Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
 
 ```{r, echo=FALSE}
 knitr::knit_exit()
@@ -1076,8 +1118,10 @@ plot(xx, y2, type = "l")
 points(xx, y1, type = "l", col = "red")
 
 exp(-3.63)
+library(targets)
+library(tidyverse)
 
-tar_load(dir_dep_imp_df)
+dir_dep_imp_df <- tar_read(dir_dep_imp_full_df)
 tar_load(dbh_imp_df)
 tar_load(post_ab_pool_mc)
 tar_load(post_ab_segments_mc)
@@ -1085,6 +1129,7 @@ tar_load(post_slen)
 tar_load(post_dir_dep)
 
 d1 <- targets::tar_read(ab_uncertainty_df_1)
+
 exp(5.6 -3.63 * 1.01)
 exp(4.9 -3.63 * 0.71)
 119*exp(-3.631)^1.23
@@ -1096,7 +1141,235 @@ exp(4.9 -3.63 * 0.71)
 targets::tar_read(post_ab_pool) |> apply(2, median)
 targets::tar_read(post_ab_segments) |> apply(2, median)
 
-```
+library(tictoc)
 
+dir_dep_imp_df |> dim()
+dbh_imp_df  |> dim()
+
+tic()
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+toc()
+
+tic()
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+toc()
+
+tic()
+  dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, 30, 1)
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+toc()
+
+tic()
+  dbh_df <- dbh_imp_df |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+toc()
+
+tic()
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+toc()
+
+tic()
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+toc()
+
+  # deeper than 6cm
+tic()
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+toc()
+
+tic()
+  s_df <- bind_rows(s_df, s6_df)
+toc()
+
+
+
+tic()
+s_df |>
+  head(10000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+calc_fd1 <- function(log_ks) {
+  mu <- post_ab_pool_mc$log_a + post_ab_pool_mc$b * log_ks
+  exp(mu)
+}
+calc_fd2 <- function(log_ks) {
+  mu <- post_ab_segments_mc$log_a + post_ab_segments_mc$b * log_ks
+  exp(mu)
+}
+
+
+tic()
+s_df |>
+  head(1000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = map2(log_ks, post_jab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+library(furrr)
+library(future)
+plan(multicore)
+
+tic()
+s_df |>
+  head(100000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = future_map2(log_ks, post_ab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = future_map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = future_map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = future_map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+Can you make this R code parallel? df is a tibble object and I want to apply function_a and funciton_b.
+
+df |>
+  mutate(tmp1 = map(x, function_a)) |>
+  mutate(tmp2 = map(x, function_b))
+
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "post_ab_"))
+  # filter(str_detect(name, "ab_uncertainty_df")) |>
+  pull(command)
+
+tar_read(post_ab_pool_mc2_2_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+tar_read(post_ab_pool_mc2_1_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+
+tar_read(post_ab_segments_mc_2_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+tar_read(post_ab_segments_mc2_3_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+
+
+hoge |>
+  filter(str_detect(name, "fit_ab_draws")) |>
+  filter(str_detect(name, "clean"))
+
+
+library(tidyverse)
+
+targets::tar_read(ab_uncertainty_full_df) |>
+  group_by(tree) |>
+  summarize(
+    across(
+      .cols = is.numeric,
+      .fns = sum
+    )
+  )
+
+
+fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08
+fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08
+
+values = list(stan_data = rlang::syms(c(
+
+paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))
+
+tmp <- paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))
+rlang::syms(tmp)
+
+  values = expand_grid(folds = 1:20,
+    post_ab_pool = c(paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_",
+      # c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))))
+      c(0.02, 0.03)))) |>
+    mutate(post_ab_segments = str_replace_all(post_ab_pool, "pool", "segments")) |>
+    mutate(post_ab_pool = rlang::syms(post_ab_pool)) |>
+    mutate(post_ab_segments = rlang::syms(post_ab_segments))
+
+    values = expand_grid(folds = 1:20,
+      pg = c(0.02, 0.03)) |>
+      # pg = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)) |>
+      mutate(post_ab_pool = c(paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg))) |>
+      mutate(post_ab_segments = str_replace_all(post_ab_pool, "pool", "segments")) |>
+      mutate(post_ab_pool = rlang::syms(post_ab_pool)) |>
+      mutate(post_ab_segments = rlang::syms(post_ab_segments))
+
+values
+
+targets::tar_read(ab_uncertainty_full_df)
+
+targets::tar_read(ab_uncertainty_full_df) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = is.numeric,
+      .fns = sum
+    )
+
+post_ab_segments_mc_
+0.02
+"_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_"
+0.02
+"_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_"
+0.02
+
+pg = c(0.02, 0.03)
+paste0(
+  "post_ab_pool_mc_",
+  pg,
+  "_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_",
+  pg,
+  "fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_",
+  pg
+)
+
+tar_read(post_ab_segments_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+post_ab_pool_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02
+post_ab_segments_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02
+
+hoge$name
+
+```
 
 

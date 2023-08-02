@@ -581,6 +581,8 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     unnest(cols = c()) |>
     ungroup()
 
+  # add folds here
+  dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, k, i)
   tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
     mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
     mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
@@ -620,7 +622,7 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
   rm(dbh_imp_df)
   rm(s6_df)
 
-  create_single_fold(s_df, k, i) |>
+  s_df |>
     setDT() |>
     mutate(post_ab_pool = list(post_ab_pool_mc)) |>
     mutate(post_ab_segments = list(post_ab_segments_mc)) |>
@@ -631,7 +633,8 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
     dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
     unnest_wider(fd_pool, names_sep = "_") |>
-    unnest_wider(fd_segments, names_sep = "_")
+    unnest_wider(fd_segments, names_sep = "_") |>
+    ab_scaling()
 }
 
 # dividing by 4 is to get the quarter of the area (each direction)

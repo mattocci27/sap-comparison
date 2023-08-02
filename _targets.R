@@ -761,6 +761,22 @@ main_list <- list(
   ),
 
   tar_map(
+    values = tibble(pg = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)) |>
+      mutate(post_ab_pool = c(paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg))) |>
+      mutate(post_ab_segments = str_replace_all(post_ab_pool, "pool", "segments")) |>
+      mutate(post_ab_pool = rlang::syms(post_ab_pool)) |>
+      mutate(post_ab_segments = rlang::syms(post_ab_segments)),
+    tar_target(
+      post_ab_pool_mc,
+      generate_post_ab(post_ab_pool) |> sample_n(1000)
+    ),
+    tar_target(
+      post_ab_segments_mc,
+      generate_post_ab(post_ab_segments) |> sample_n(1000)
+    )
+  ),
+
+  tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
     tar_target(sap_sp_raw,
       generate_sap_stan_data_sp(fd_k_traits_csv,
@@ -1347,14 +1363,14 @@ tar_dir_dep <- list(
     generate_dir_dep_imp_data(
       imputed_full_df)
   ),
-  tar_target(
-    post_ab_pool,
-    generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
-  ),
-  tar_target(
-    post_ab_segments,
-    generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
-  ),
+  # tar_target(
+  #   post_ab_pool,
+  #   generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
+  # ),
+  # tar_target(
+  #   post_ab_segments,
+  #   generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
+  # ),
   tar_target(
     post_dir_dep,
     generate_post_dir_dep(
@@ -1367,14 +1383,14 @@ tar_dir_dep <- list(
         dplyr::select(alpha, beta, sigma)
     }
   ),
-  tar_target(
-    post_ab_pool_mc,
-    post_ab_pool |> sample_n(1000)
-  ),
-  tar_target(
-    post_ab_segments_mc,
-    post_ab_segments |> sample_n(1000)
-  ),
+  # tar_target(
+  #   post_ab_pool_mc,
+  #   post_ab_pool |> sample_n(1000)
+  # ),
+  # tar_target(
+  #   post_ab_segments_mc,
+  #   post_ab_segments |> sample_n(1000)
+  # ),
   tar_target(
     post_dir_dep_mc,
     post_dir_dep |> mutate(beta = map(beta, sample, 1000))
@@ -1391,15 +1407,37 @@ tar_dir_dep <- list(
 )
 
 uncertainty_mapped <- tar_map(
-    values = list(folds = 1:30),
+    values = expand_grid(folds = 1:30,
+      # pg = c(0.02, 0.03)) |>
+      pg = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)) |>
+      mutate(post_ab_pool_mc =
+        paste0(
+          "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
+        )) |>
+      mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
+      mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
+      mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
+    tar_target(
+      post_ab_pool_mc2, {
+        set.seed(123)
+        generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
+      }
+    ),
+    tar_target(
+      post_ab_segments_mc2, {
+        set.seed(123)
+        generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
+      }
+    ),
     tar_target(
       ab_uncertainty_df,
       generate_ab_uncertainty(
         dir_dep_imp_full_df,
         dbh_imp_df,
-        post_ab_pool_mc = post_ab_pool_mc,
-        post_ab_segments_mc = post_ab_segments_mc,
-        post_slen, post_dir_dep, k = 30, i = folds)
+        post_ab_pool_mc = post_ab_pool_mc2,
+        post_ab_segments_mc = post_ab_segments_mc2,
+        post_slen, post_dir_dep, k = 30, i = folds) |>
+        mutate(pg = pg)
     )
   )
 
@@ -1411,10 +1449,10 @@ tar_combined_ab_uncertainty <- tar_combine(
 uncertainty_list <- list(
   uncertainty_mapped,
   tar_combined_ab_uncertainty,
-  tar_target(
-    ab_scaling_df,
-    ab_scaling(ab_uncertainty_full_df)
-  ),
+  # tar_target(
+  #   ab_scaling_df,
+  #   ab_scaling(ab_uncertainty_full_df)
+  # ),
   NULL
 )
 
@@ -1448,7 +1486,6 @@ sapwood_list <- list(
   ),
   tar_map(
     values = expand_grid(time_res = c("daily", "hourly"), fct = c("dir", "dep")),
-    # values = expand_grid(time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")),
     tar_target(
       dir_dep_stan_data,
       generate_dir_dep_stan_data(imputed_full_df, time_res = time_res, fct = fct)
