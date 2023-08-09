@@ -47,6 +47,7 @@ library(bayesplot)
 source(here("R", "stan.R"))
 source(here("R", "render.R"))
 source(here("R", "figs.R"))
+source(here("R", "data_clean.R"))
 anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
 para <- read_csv(here("data/ab_var_clean_008.csv"))
 ```
@@ -503,8 +504,99 @@ This algorithm uses an ensemble of decision trees, known as a Random Forest, to 
 It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
 The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
 As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
-Because our dataset is enormous (> 4M rows), we applied missForest to each month separately.
+Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
 The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+
+```{r, echo=FALSE, message=FALSE}
+library(patchwork)
+missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month %in% {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, yday, date, time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    filter(year == {{year}}) |>
+    as.data.frame()
+}
+
+# tar_read(imputed_df_btrans_2015_6)
+imputed_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(imputed_df_btrans_2015_6)) |>
+    mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
+    mutate(hour = time %/% 60) |>
+    mutate(mins = time %% 60)  |>
+    mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S"))
+
+rubber_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(rubber_raw_data_csv))
+
+tmp <- missForest_clean_keep_date(
+  csv = here(rubber_df),
+  year = 2015,
+  month = 6) |>
+  as_tibble() |>
+  filter(yday >= 151 + 9) |>
+  filter(yday <  151 + 14) |>
+  filter(tree == "t11")
+# tmp |>
+#   filter(is.na(ks))
+tmp2 <- imputed_df |>
+  filter(yday >= 151 + 9) |>
+  filter(yday <  151 + 14) |>
+  filter(tree == "t11")
+# tmp |>
+#   filter(is.na(ks))
+
+p1 <- ggplot(tmp, aes(x = date, y = ks, col = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "K") +
+  ggtitle("Raw data")
+
+p2 <- ggplot(tmp2, aes(x = date_time, y = ks, col = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "K") +
+  ggtitle("Imputed data")
+
+p1 + p2
+```
+
+Example: Missing value imputations for tree ID 11 in June 2015
+
+
 
 ## Imputation for unmesaured K values (directions and depths)
 
@@ -520,6 +612,66 @@ Over two years, we conducted xxx measurements of DBH.
 We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
 We modeled sapwood length as a function of DBH using a Bayesian linear model.
 We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
+
+```{r, echo=FALSE, fig.height=7}
+# library(tidyverse)
+# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#    targets::tar_read(sapwood_depth_csv)) |> read_csv()
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(dbh_imp_df))
+
+girth <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(girth_increment_csv)) |> here() |> read_csv() |>
+    janitor::clean_names() |>
+    mutate(date = lubridate::dmy(date))
+
+d2 <- d |>
+  filter(date %in% girth$date)
+
+ggplot(d, aes(date, dbh)) +
+  geom_line() +
+  geom_point(data = d2) +
+  ylab("DBH (cm)") +
+  xlab("Date")  +
+  facet_wrap(~tree) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30))
+```
+```{r, echo=FALSE}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+   targets::tar_read(sapwood_depth_csv)) |> here() |> read_csv()
+post_slen <- withr::with_dir(rprojroot::find_root('_targets.R'),
+   targets::tar_read(fit_dbh_sapwood_draws_normal))
+
+calc_quantiles <- function(x, na.rm = TRUE) {
+  q <- quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975), na.rm = na.rm)
+  return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
+}
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu)
+}
+
+xx <- seq(10, 58, length = 80)
+
+tmp <- tibble(xx) |>
+  mutate(post = list(post_slen)) |>
+  mutate(pred = map2(xx, post, pred_sap)) |>
+  mutate(dbh = map(pred, calc_quantiles)) |>
+  unnest_wider(dbh)
+
+ggplot(tmp) +
+  geom_point(data = d, aes(x = dbh, y = sapwood_depth)) +
+  geom_hline(yintercept = 4, lty = 2) +
+  geom_hline(yintercept = 6, lty = 2) +
+  geom_line(aes(x = xx, y = m)) +
+  geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+  scale_y_continuous(breaks = c(2, 4, 6, 8, 10, 12)) +
+  xlab("DBH (cm)") +
+  ylab("Sapwood length (cm)")  +
+  theme_bw()
+```
 
 ## Uncertainty from a-b coefficients
 
