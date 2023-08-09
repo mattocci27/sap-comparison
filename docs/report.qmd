@@ -496,6 +496,31 @@ targets::tar_read(all_seg_table)) |>
 
 # Scaling
 
+## Imputation for missing K value
+
+We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
+This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
+It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
+The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
+As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
+Because our dataset is enormous (> 4M rows), we applied missForest to each month separately.
+The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+
+## Imputation for unmesaured K values (directions and depths)
+
+We have K values for three depths (0-2cm, 2-4cm, and 4-6cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
+We used the K values measured at a 0-2cm depth and from the southern direction as reference values, and estimated the effects of depth and direction on K using a Bayesian linear mixed model.
+When there are observed K values for the focal depeth and direction, we used the observed values for the subsequent analysis.
+When there are no observed K values for the focal depeth and direction, we used the predicted median K values from the linear mixed model for the subsequent analysis.
+K values were completely missing for tree ID 16 in 2015. We assigned the mean K values from the other trees to this tree.
+
+## Interpolation for DBH and estimation for sapwood length
+
+Over two years, we conducted xxx measurements of DBH.
+We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
+We modeled sapwood length as a function of DBH using a Bayesian linear model.
+We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
+
 ## Uncertainty from a-b coefficients
 
 Sup flux per 10 min is calculated as:
