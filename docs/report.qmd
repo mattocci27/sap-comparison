@@ -726,6 +726,18 @@ d <- withr::with_dir(rprojroot::find_root('_targets.R'),
       .fns = sum
     ), .groups = "drop")
 
+d_ab <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_granier_df)) |>
+  filter(!is.na(tree)) |>
+  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+  rename(s_total_granier_m = s_total_granier) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = sum
+    ), .groups = "drop")
+
 
 write_csv(d, here("data/ab_scaling_df.csv"))
 
@@ -746,12 +758,12 @@ The estimates from Granier's equation look more reasonable and estimates from ou
 Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
 Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
 
-```{r, echo=FALSE}
+```{r, fig.width=9, echo=FALSE}
 d2 <- d |>
   pivot_longer(3:13,
     names_to = "variable",
     values_to = "value") |>
-  mutate(model = str_split_fixed(variable, "_", 4)[,3])  |>
+  mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
   mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
 
 d3 <- d2 |>
@@ -764,7 +776,30 @@ d3 <- d2 |>
 
 d4 <- d3 |>
   pivot_wider(names_from = quantile, values_from = tr)
-ggplot(d4, aes(x = pg, y = m, fill = model, group = model)) +
+
+d2_ab <- d_ab |>
+  pivot_longer(3:ncol(d_ab),
+    names_to = "variable",
+    values_to = "value") |>
+  mutate(model = str_split_fixed(variable, "_", 5)[, 3]) |>
+  mutate(ab = str_split_fixed(variable, "_", 5)[, 4]) |>
+  mutate(model = paste(model, ab, sep = "_")) |>
+  mutate(quantile = str_split_fixed(variable, "_", 5)[, 5])
+
+d3_ab <- d2_ab |>
+  group_by(pg, model, quantile) |>
+  summarize(tr = sum(value) / 600 * 1000) |>
+  ungroup() |>
+  mutate(pg = ifelse(model == "granier", "granier", pg)) |>
+  mutate(pg = as.factor(pg)) |>
+  filter(!is.na(tr))
+
+d4_ab <- d3_ab |>
+  pivot_wider(names_from = quantile, values_from = tr)
+
+d5 <- bind_rows(d4, d4_ab)
+
+ggplot(d5, aes(x = pg, y = m, fill = model, group = model)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
   ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
@@ -1546,6 +1581,24 @@ post_ab_pool_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean
 post_ab_segments_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02
 
 hoge$name
+
+targets::tar_read(ab_uncertainty_full_granier_df)
+
+
+|>
+
+  mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    mutate(fd_segments_a = map(fd_10min_segments_a, calc_quantiles)) |>
+    mutate(fd_pool_b = map(fd_10min_pool_b, calc_quantiles)) |>
+    mutate(fd_segments_b = map(fd_10min_segments_b, calc_quantiles)) |>
+    dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool_a, -fd_10min_segments_a, -fd_10min_pool_b, -fd_10min_segments_b) |>
+     unnest_wider(fd_pool_a, names_sep = "_") |>
+    unnest_wider(fd_segments_a, names_sep = "_") |>
+    unnest_wider(fd_pool_b, names_sep = "_") |>
+    unnest_wider(fd_segments_b, names_sep = "_") |>
+    ab_scaling()
+
 
 ```
 

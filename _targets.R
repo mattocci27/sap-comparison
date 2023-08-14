@@ -1440,19 +1440,56 @@ uncertainty_mapped <- tar_map(
         mutate(pg = pg)
     )
   )
+uncertainty_granier_mapped <- tar_map(
+    values = expand_grid(folds = 1:60,
+      pg = c(0.08)) |>
+      mutate(post_ab_pool_mc =
+        paste0(
+          "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
+        )) |>
+      mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
+      mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
+      mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
+    tar_target(
+      post_ab_pool_mc3, {
+        set.seed(123)
+        generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
+      }
+    ),
+    tar_target(
+      post_ab_segments_mc3, {
+        set.seed(123)
+        generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
+      }
+    ),
+    tar_target(
+      ab_uncertainty_granier_df,
+      generate_ab_uncertainty_granier(
+        dir_dep_imp_full_df,
+        dbh_imp_df,
+        post_ab_pool_mc = post_ab_pool_mc3,
+        post_ab_segments_mc = post_ab_segments_mc3,
+        post_slen, post_dir_dep, k = 60, i = folds) |>
+        mutate(pg = pg)
+    )
+  )
 
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_full_df,
   uncertainty_mapped[["ab_uncertainty_df"]],
   command = dplyr::bind_rows(!!!.x)
 )
+tar_combined_ab_uncertainty_granier <- tar_combine(
+  ab_uncertainty_full_granier_df,
+  uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
 uncertainty_list <- list(
   uncertainty_mapped,
+  uncertainty_granier_mapped,
   tar_combined_ab_uncertainty,
-  # tar_target(
-  #   ab_scaling_df,
-  #   ab_scaling(ab_uncertainty_full_df)
-  # ),
+  tar_combined_ab_uncertainty_granier,
   NULL
 )
 

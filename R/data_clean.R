@@ -554,6 +554,16 @@ calc_fd <- function(log_ks, post) {
   exp(mu)
 }
 
+calc_fd_granier_a <- function(log_ks, post) {
+  mu <- log(119) + post$b * log_ks
+  exp(mu)
+}
+
+calc_fd_granier_b <- function(log_ks, post) {
+  mu <- post$log_a + 1.23 * log_ks
+  exp(mu)
+}
+
 #' @title Modified createFolds function
 create_single_fold <- function(data, k, i) {
   fold_sizes <- floor(nrow(data) / k)
@@ -634,6 +644,80 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
     unnest_wider(fd_pool, names_sep = "_") |>
     unnest_wider(fd_segments, names_sep = "_") |>
+    ab_scaling()
+}
+
+generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
+  post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep,
+  k = 50, i = 1) {
+
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+
+  # add folds here
+  dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, k, i)
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+
+  dbh_df <- dbh_imp_df |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+
+  # deeper than 6cm
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+
+  s_df <- bind_rows(s_df, s6_df)
+
+  rm(tmp)
+  rm(tmp2)
+  rm(dbh_df)
+  rm(dir_dep_imp_df)
+  rm(dbh_imp_df)
+  rm(s6_df)
+
+  s_df |>
+    setDT() |>
+    mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+    mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+    mutate(fd_10min_pool_a = map2(log_ks, post_ab_pool, calc_fd_granier_a)) |>
+    mutate(fd_10min_segments_a = map2(log_ks, post_ab_segments, calc_fd_granier_a)) |>
+    mutate(fd_10min_pool_b = map2(log_ks, post_ab_pool, calc_fd_granier_b)) |>
+    mutate(fd_10min_segments_b = map2(log_ks, post_ab_segments, calc_fd_granier_b)) |>
+    mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    mutate(fd_segments_a = map(fd_10min_segments_a, calc_quantiles)) |>
+    mutate(fd_pool_b = map(fd_10min_pool_b, calc_quantiles)) |>
+    mutate(fd_segments_b = map(fd_10min_segments_b, calc_quantiles)) |>
+    dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool_a, -fd_10min_segments_a, -fd_10min_pool_b, -fd_10min_segments_b) |>
+    unnest_wider(fd_pool_a, names_sep = "_") |>
+    unnest_wider(fd_segments_a, names_sep = "_") |>
+    unnest_wider(fd_pool_b, names_sep = "_") |>
+    unnest_wider(fd_segments_b, names_sep = "_") |>
     ab_scaling()
 }
 
