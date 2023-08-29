@@ -739,7 +739,7 @@ d_ab <- withr::with_dir(rprojroot::find_root('_targets.R'),
     ), .groups = "drop")
 
 
-write_csv(d, here("data/ab_scaling_df.csv"))
+# write_csv(d, here("data/ab_scaling_df.csv"))
 
 d |>
   mutate(
@@ -758,54 +758,8 @@ The estimates from Granier's equation look more reasonable and estimates from ou
 Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
 Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
 
-```{r, fig.width=9, echo=FALSE}
-d2 <- d |>
-  pivot_longer(3:13,
-    names_to = "variable",
-    values_to = "value") |>
-  mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
-  mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
 
-d3 <- d2 |>
-  group_by(pg, model, quantile) |>
-  summarize(tr = sum(value) / 600 * 1000) |>
-  ungroup() |>
-  mutate(pg = ifelse(model == "granier", "granier", pg)) |>
-  mutate(pg = as.factor(pg)) |>
-  filter(!is.na(tr))
-
-d4 <- d3 |>
-  pivot_wider(names_from = quantile, values_from = tr)
-
-d2_ab <- d_ab |>
-  pivot_longer(3:ncol(d_ab),
-    names_to = "variable",
-    values_to = "value") |>
-  mutate(model = str_split_fixed(variable, "_", 5)[, 3]) |>
-  mutate(ab = str_split_fixed(variable, "_", 5)[, 4]) |>
-  mutate(model = paste(model, ab, sep = "_")) |>
-  mutate(quantile = str_split_fixed(variable, "_", 5)[, 5])
-
-d3_ab <- d2_ab |>
-  group_by(pg, model, quantile) |>
-  summarize(tr = sum(value) / 600 * 1000) |>
-  ungroup() |>
-  mutate(pg = ifelse(model == "granier", "granier", pg)) |>
-  mutate(pg = as.factor(pg)) |>
-  filter(!is.na(tr))
-
-d4_ab <- d3_ab |>
-  pivot_wider(names_from = quantile, values_from = tr)
-
-d5 <- bind_rows(d4, d4_ab)
-
-ggplot(d5, aes(x = pg, y = m, fill = model, group = model)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
-  ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
-  theme_bw()
-```
-
+![tr_sacled_bars](`r here::here("figs/tr_scaled_bars.png")`)
 
 ```{r, eval = FALSE, echo=FALSE}
 # Sum numeric columns

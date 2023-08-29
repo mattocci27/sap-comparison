@@ -1256,3 +1256,48 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
   p1 + p2 +
       plot_annotation(tag_levels = "A")
 }
+
+# 800m2
+tr_scaled_bars <- function(ab_uncertainty_full_df) {
+  d <- ab_uncertainty_full_df |>
+    filter(!is.na(tree)) |>
+    mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+    rename(s_total_granier_m = s_total_granier) |>
+    group_by(tree, pg) |>
+    summarize(
+      across(
+        .cols = where(is.numeric),
+        .fns = sum
+      ), .groups = "drop")
+
+  d2 <- d |>
+    pivot_longer(3:13,
+      names_to = "variable",
+      values_to = "value") |>
+    mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
+    mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
+
+  d3 <- d2 |>
+    group_by(pg, model, quantile) |>
+    summarize(tr = sum(value) / 800 * 1000) |>
+    ungroup() |>
+    mutate(pg = ifelse(model == "granier", "NA", pg)) |>
+    mutate(pg = factor(pg, levels = c(
+      "NA",
+      "0.02", "0.025", "0.03", "0.035", "0.04", "0.05", "0.06", "0.07", "0.08"
+    ))) |>
+    filter(!is.na(tr))
+
+  d4 <- d3 |>
+    pivot_wider(names_from = quantile, values_from = tr) #|>
+    # complete(pg, nesting(model), fill = list(tr = 0))
+
+  ggplot(d4, aes(x = pg, y = m, fill = model, group = model)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
+    scale_fill_viridis_d() +
+    ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+    xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+    theme_bw()
+}
+

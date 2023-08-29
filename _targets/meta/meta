@@ -1701,6 +1701,8 @@ tar_impute|object|a8bbf4a18079e4b0|||||||||||||||
 test|stem|0181bbeeb0b3572a|729552a304506858|1f2a6a978a288023|1064684737|data/ab_without_traits.csv|t19397.3951851084s|3cf32e70b8fb6243|8349|file|local|vector|||1.917||
 test_fun|function|69b720b1555714c4|||||||||||||||
 tidy_predictions|function|4de722f36d67b4f5|||||||||||||||
+tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
+tr_scaled_bars_plot|stem|0e890baae6876539|074c29109b99b5e4|a5c34369ffb6f2d8|1936597449|figs/tr_scaled_bars.png*figs/tr_scaled_bars.pdf|t19598.3340714678s|7c03a52c47497e5c|72700|file|local|vector|||1.169||
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_all|stem|64072952f2f4bc08|20b4275a966102d0|6c96c1fb2405e76e|-26809971||t19300.3439756766s|c9f90fb5e1292df9|30969|rds|local|vector|||1.819|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_dh|stem|a5f81bed8b966e2f|f25fe0e17e14ced9|5b7ffc57f9770c6e|1627907450||t19300.2545760197s|20256d8287e8fc45|30970|rds|local|vector|||2.143|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks|stem|fd8b9b295c733f2c|ae431d0f244c05a7|8f78193ca84e6e3f|-361814542||t19300.2168750771s|17e0725a2c807129|30975|rds|local|vector|||2.555|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
@@ -1717,7 +1719,7 @@ traits_points_main_plot|stem|86937237e6921fdd|4af4c7e3ef57dd45|1c30ae50494e439d|
 traits_points_si|function|142c91c108fd7121|||||||||||||||
 traits_points_si_plot|stem|b519f9db9eb90c10|0b9c7a054a002dd3|ac4514b4d98964c2|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19396.2880639321s|2c16d99c5fbfc86d|529009|file|local|vector|||1.553||
 uncertainty_granier_mapped|object|bcf3fc7fa6b40bcd|||||||||||||||
-uncertainty_list|object|7ba570ccc2a40c4e|||||||||||||||
+uncertainty_list|object|6d5e9d86be3bb1ce|||||||||||||||
 uncertainty_mapped|object|d83c606a75e91fa5|||||||||||||||
 vaf_pred_data|stem|bbb966f6c1b4d418|58ebe1207b1d482d|a29bd76ebf130ed8|585601239||t19396.2829997252s|7873bbcfed8e7586|20418|rds|local|vector|||2.351||
 vaf_seg_table|stem|16312d80b987aa03|9829becbcab59fb8|976a7db13a3a3118|-23406847||t19396.353278743s|c92536422f06f877|6314|rds|local|vector|||0.16||

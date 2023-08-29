@@ -1490,6 +1490,19 @@ uncertainty_list <- list(
   uncertainty_granier_mapped,
   tar_combined_ab_uncertainty,
   tar_combined_ab_uncertainty_granier,
+  tar_target(
+    tr_scaled_bars_plot, {
+      p <- tr_scaled_bars(ab_uncertainty_full_df)
+      my_ggsave(
+        "figs/tr_scaled_bars",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+    },
+    format = "file"
+  ),
   NULL
 )
 
