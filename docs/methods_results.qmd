@@ -1,0 +1,1552 @@
+---
+title: "Figures"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+csl: apa.csl
+bibliography: [sap-comparison.bib]
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+source(here("R", "data_clean.R"))
+anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
+para <- read_csv(here("data/ab_var_clean_008.csv"))
+```
+
+
+```{r, include=FALSE}
+s_fig_num("diagram")
+s_fig_num("cross_section")
+s_fig_num("coef_intervals_pres_tens")
+s_fig_num("coef_int_quad_mean")
+s_fig_num("pool_multi")
+s_fig_num("ab_points")
+s_fig_num("pg_multi")
+s_fig_num("pg_ribbon_a")
+s_fig_num("pg_ribbon_b")
+s_fig_num("traits_points_si")
+s_table("summary_of_published_tdm_coefficients")
+```
+
+# Not in this file
+
+- `r s_fig("diagram")`: diagram
+- `r s_fig("cross_section")`: cross_section
+- `r s_table("summary_of_published_tdm_coefficients")`: summary of published tdm coefficients
+- Soil and tree properties
+
+# Pressure vs. tension induced flow
+
+```{r, include=FALSE}
+# tar_load(ks_spp_err_csv)
+ks_spp_err_csv <- withr::with_dir(rprojroot::find_root('_targets.R'), targets::tar_read(ks_spp_err_csv))
+d <- read_csv(here(ks_spp_err_csv))
+sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
+```
+
+```{r, include=FALSE}
+sma_slope <- sma_fit$coef[[1]][2, ] |>
+  round(2) |> format(nsmall = 2)
+sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
+```
+
+## Results
+
+We found that pressure type (pressure vs. tension) has a marginal effect on the induced flow rate.
+Although a strong relationship emerged within each species between tension- and pressure-derived *K~s~*, a significant shift was found in elevation between pressure- and tension-induced flow rates
+(
+`r fig("sma")`a,
+SMA intercept:
+`r sma_int[1]`
+[95% CI:
+`r sma_int[2]`
+,
+`r sma_int[3]`
+]
+).
+The SMA slope was different from 1
+(
+`r fig("sma")`a,
+SMA slope:
+`r sma_slope[1]`
+[95% CI:
+`r sma_slope[2]`
+,
+`r sma_slope[3]`
+]
+).
+Pressure-induced flow rates tend to be greater than tension-induced flow rates for samples of low flow rates, converging with increasing flow rates (`r fig("sma")`a).
+
+Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates,
+whereas species difference explained much more variation
+(`r str_split(anova_yml$pressure, " ")[[1]][1]` vs. `r str_split(anova_yml$species, " ")[[1]][1]` of the total variance,
+Figs. `r fig_num("sma")`b &
+`r s_fig_num("coef_intervals_pres_tens")`a;
+`r s_table("anova_pres_tens")`).
+After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced-flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
+
+## `r fig("sma")`
+
+Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (??).
+(A) Relationship between sample mean pressure- and tension-induced flow rates.
+Blue solid line indicates a standardized major axis (SMA) regression.
+The 95% confidence interval is represented as the shaded area.
+(B) Comparisons between pressure- and tension-induced flow rates at three levels for three diffuse-porous, one ring-porous, and one liana species.
+The center line in each box indicates the median, and upper and lower box sides indicate the interquartile range.
+The whiskers extend to a maximum of 1.5 times the interquartile range.
+This is only to simplify the visualization, and statistical results are shown in SX.
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*.
+
+
+![sma_ks](`r here::here("figs/sma_ks.png")`)
+
+
+### `r s_table("anova_pres_tens")`
+
+Posterior medians and 50% credible intervals of the explained variance for the ratio between pressure- and tension-induced flow rates.
+
+```{r, echo=FALSE}
+tibble(Factor = names(anova_yml) |> str_to_title(),
+  Posterior = unlist(anova_yml)) |>
+  kbl() |>
+  kable_classic(full_width = F)
+```
+
+## `r s_fig("coef_intervals_pres_tens")`
+
+Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
+(A) Estimates for standard deviations.
+(B) Estimates for the effect of each predictor.
+(C) Estimates for differences in effects between predictors.
+There is large variation but pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates of the total variance in (A).
+Positive values indicate pressure induced flow rates are greater than tension induced flow rates in (B) and (C).
+The positive ks_ratio parameter in (B) suggests that pressure induced flow rates tend to be greater than tension induced flow rates.
+The estimate for AP is smaller than HH, TG, and VM in (C), suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM.
+HB shows the similar pattern with AP.
+ks_ratio, ratio of pressure induced flow rates to tension induced flow rates;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*;
+p_2, 0.02 MPa;
+p_5, 0.05 MPa;
+p_8, 0.08 MPa.
+
+![coef_intervals_mean](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
+
+## Methods
+
+**This is just a note for now.**
+
+### Analysis (ANOVA-like hierarchical model)
+
+We can make the hierarchical model like the previous model, but we can include measurement errors from the raw data too.
+We don't want to waste the data!
+
+$$
+y^{meas}_{1ijk} \sim N(y_{1ijk}, \sigma_{y1ijk})
+$$
+
+$$
+y^{meas}_{2ijk} \sim N(y_{2ijk}, \sigma_{y2ijk})
+$$
+
+$$
+\alpha_j \sim N(0, \sigma_{\alpha})
+$$
+$$
+\beta_j \sim N(0, \sigma_{\beta})
+$$
+
+$$
+\mathrm{ln}\; y_{1ijk} \sim N(\mu + \alpha_j + \beta_k + \mathrm{ln}\; y_{2ijk}, \sigma)
+$$
+
+- *i*: Observation
+
+- *j*: Species
+
+- *k*: Pressure level
+
+- $y^{meas}_{1ijk}$: Measured mean pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (data).
+$y^{meas}_{2ijk}$ is for tension calibration.
+
+- $y_{1ijk}$: True pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (parameter).
+$y_{2ijk}$ is for tension calibration.
+
+- $\sigma_{y1jk}$: Standard deviation of pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
+This data can be estimated from the raw data with multiple measurements.
+$\sigma_{y2jk}$ is for tension calibration.
+
+- $\mu$: Overall (species and pressure-level independent) effects.
+
+- $\alpha_j$: Species effect
+
+- $\beta_k$: Pressure-level effect
+
+- $\sigma_{\alpha}$: Standard deviation of the species effect
+
+- $\sigma_{\beta}$: Standard deviation of the pressure-level effect
+
+- $\sigma$: Standard deviation of the model (i.e., residuals)
+
+
+I will show several figures from this single analysis.
+
+We can translate the posterior distribution of standard deviations into an ANOVA like statement.
+
+For example, we can calculate the species effect like:
+
+$$
+\frac{\sigma^2_{\alpha}}{\sigma^2_{\alpha} + \sigma^2_{\beta} + \sigma^2} \times 100\;(\%)
+$$
+
+The effect of interactions was not selected after model selections.
+
+note:
+
+- median and 50% CIs
+
+- Species: `r anova_yml$species`
+
+- Pressure: `r anova_yml$pressure`
+
+- Residuals: `r anova_yml$residuals`
+
+
+
+# Pressure vs. number of active vessels
+
+## Results
+
+Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+Although quadratic function best described the responses, the proportion of vessels participating in flow rate for *Hopea hongayensi* increased was highest in the intermediate pressure, but either remained the same or increased to a maximum moving from the intermediate to the highest pressure in the other four species (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+
+
+## `r fig("count_pressure")`
+
+Changes in the proportion of silicon-stained vessels along perfusion pressures for diffuse-porous (A-C: red), ring-porous (D: green), and liana species (E: purple).
+Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
+The size of data points is proportional to the total number of vessels.
+The right columns are fluorography images of active vessels under UV light using silicon-perfusion.
+The red scale at the bottom right represents 500$\micro$m.
+
+![count_pressure_quadratic](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
+
+## `r s_fig("coef_int_quad_mean")`
+
+Posterior medians (circles), 50% (rectangle), and 95% (thin lines) credible intervals (CIs) for model coefficients of the effects of perfusion pressure on the probability of a vessel filled with silicon.
+All, Common effects across all the species;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*.
+
+![coef_intervals_logistic](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
+
+## Methods
+
+**tentative**
+
+We modeled the probability of a vessel filled with silicon as linear and quadratic logistic functions of perfusion pressures with varying- intercepts and slopes by species (Supporting information X).
+Model selection using Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO; @Vehtari2014; @Vehtari2017) suggested that the quadratic model performed better (the difference in expected log pointwise predictive accuracies between the two models was 207.9), and thus we only report the result of the quadratic model.
+
+
+## Stan code
+
+```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge"}
+```
+
+# Coefficients *a* and *b* without traits
+
+## Results
+
+The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. S5-6; Table S4).
+Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S7-9).
+Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
+Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (Fig. 3 and Table S5).
+Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*, while segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
+
+
+## Pool vs multi
+
+### `r s_table("ab_comparison")`
+
+Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
+
+```{r, echo=FALSE}
+read_csv(here("data/all_ab.csv")) |>
+  dplyr::select(
+    Species = species,
+    `Xylem types` = xylem_long_fct,
+    pool_a = pool_full_a,
+    pool_b = pool_full_b,
+    multi_a = multi_full_a,
+    multi_b = multi_full_b
+  ) |>
+  kbl() |>
+  column_spec(1, italic = TRUE) |>
+  kable_classic() |>
+  add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
+```
+
+### `r s_fig("pool_multi")`
+
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+The K values are the averages of two sets of sensors from each segment to account for sapwood variation along the segment.
+The dashed and solid lines represent posterior medians of the power-law relationships without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation, respectively.
+
+![pool_multi](`r here::here("figs/pool_multi.png")`)
+
+
+### `r s_fig("ab_points")`
+
+Estimates of coefficients *a* (A) and *b* (B) based on traditional fitting (Granier, 1985) vs. our multilevel model.
+Each point represents the posterior medians of the coefficients for each species.
+Error bars show 95% credible intervals.
+Dashed lines indicate 1:1 lines.
+
+![ab_comp](`r here::here("figs/ab_points.png")`)
+
+## Pressure gradients
+
+
+### `r s_fig("pg_multi")`
+
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Different lines indicate different maximum pressure gradients for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+
+![pg_multi](`r here::here("figs/pg_multi.png")`)
+
+### `r s_fig("pg_ribbon_a")`
+
+Relationships between the coefficient *a* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+Light and dark shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
+The maximum applied *P~g~* are different among species because segment length are different.
+Species × maximum applied *P~g~* combinations with less than 5 data points were removed from this visualization.
+Therefore, the lower ranges for maximum applied *P~g~* are also different among species.
+
+![pg_ribbon_a](`r here::here("figs/pg_ribbon_a.png")`)
+
+### `r s_fig("pg_ribbon_b")`
+
+Relationships between the coefficient *b* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
+
+![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
+
+### `r s_table("without_traits_table_0.02")`
+
+Note: This table is too large and should be put in a separate file.
+We have this table for each maximum applied *P~g~* (0.02 - 0.08).
+
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.02 MPa.
+The column definitions are:
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees.
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)) |>
+  DT::datatable()
+```
+
+### `r s_table("without_traits_table_0.08")`
+
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.08 MPa.
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08_data.without_traits_segments_0.08.csv)) |>
+  DT::datatable()
+```
+
+
+## Variance partitioning
+
+### `r fig("coef_density")`
+
+![coef_density](`r here::here("figs/coef_density.png")`)
+
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
+Estimates for xylem type level and species level are shown.
+Different colorsj indicate different xylem types.
+Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
+
+### `r s_table("varpart_notrait")`
+
+Posterior medians and 50% credible intervals of the explained variance for the coefficient *a* and *b* across three sample levels.
+
+```{r, echo=FALSE}
+read_csv(here("data/varpart_notrait.csv")) |>
+  rename("Coefficient <i>a</i>" = a) |>
+  rename("Coefficient <i>b</i>" = b) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+# Coefficients *a* and *b* with traits
+
+## Results
+
+The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. 4B, D).
+VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. 4A, C).
+
+### `r fig("traits_points_main")`
+
+Relationships between coefficients *a* and *b* and vessel area fraction (VAF, A, C), sapwood specific hydraulic conductivity (Ks, B, D)
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
+Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
+Light and dark shaded regions indicate 95% and 50% CIs, respectively.
+
+![traits_points_main](`r here::here("figs/traits_points_main.png")`)
+
+### `r s_fig("traits_points_si")`
+
+Relationships between coefficients *a* and *b* and wood density ($\rho$, A, B), hydraulic-weighted diameter (D~h~, C, D), and vessel frequency per unit area (VF, E, F).
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
+None of the traits showed significant correlations with coefficients *a* or *b*.
+
+![traits_points_si](`r here::here("figs/traits_points_si.png")`)
+
+### `r s_table("all_seg_table")`
+
+Note: This table is too large and should be put in a separate file.
+
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model with all traits.
+The column definitions are:
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+targets::tar_read(all_seg_table)) |>
+  DT::datatable()
+```
+
+# Scaling
+
+## Imputation for missing K value
+
+We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
+This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
+It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
+The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
+As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
+Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
+The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+
+```{r, echo=FALSE, message=FALSE}
+library(patchwork)
+missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month %in% {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, yday, date, time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    filter(year == {{year}}) |>
+    as.data.frame()
+}
+
+# tar_read(imputed_df_btrans_2015_6)
+imputed_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(imputed_df_btrans_2015_6)) |>
+    mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
+    mutate(hour = time %/% 60) |>
+    mutate(mins = time %% 60)  |>
+    mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S"))
+
+rubber_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(rubber_raw_data_csv))
+
+tmp <- missForest_clean_keep_date(
+  csv = here(rubber_df),
+  year = 2015,
+  month = 6) |>
+  as_tibble() |>
+  filter(yday >= 151 + 9) |>
+  filter(yday <  151 + 14) |>
+  filter(tree == "t11")
+# tmp |>
+#   filter(is.na(ks))
+tmp2 <- imputed_df |>
+  filter(yday >= 151 + 9) |>
+  filter(yday <  151 + 14) |>
+  filter(tree == "t11")
+# tmp |>
+#   filter(is.na(ks))
+
+p1 <- ggplot(tmp, aes(x = date, y = ks, col = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "K") +
+  ggtitle("Raw data")
+
+p2 <- ggplot(tmp2, aes(x = date_time, y = ks, col = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "K") +
+  ggtitle("Imputed data")
+
+p1 + p2
+```
+
+Example: Missing value imputations for tree ID 11 in June 2015
+
+
+
+## Imputation for unmesaured K values (directions and depths)
+
+We have K values for three depths (0-2cm, 2-4cm, and 4-6cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
+We used the K values measured at a 0-2cm depth and from the southern direction as reference values, and estimated the effects of depth and direction on K using a Bayesian linear mixed model.
+When there are observed K values for the focal depeth and direction, we used the observed values for the subsequent analysis.
+When there are no observed K values for the focal depeth and direction, we used the predicted median K values from the linear mixed model for the subsequent analysis.
+K values were completely missing for tree ID 16 in 2015. We assigned the mean K values from the other trees to this tree.
+
+## Interpolation for DBH and estimation for sapwood length
+
+Over two years, we conducted xxx measurements of DBH.
+We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
+We modeled sapwood length as a function of DBH using a Bayesian linear model.
+We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
+
+```{r, echo=FALSE, fig.height=7}
+# library(tidyverse)
+# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#    targets::tar_read(sapwood_depth_csv)) |> read_csv()
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(dbh_imp_df))
+
+girth <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(girth_increment_csv)) |> here() |> read_csv() |>
+    janitor::clean_names() |>
+    mutate(date = lubridate::dmy(date))
+
+d2 <- d |>
+  filter(date %in% girth$date)
+
+ggplot(d, aes(date, dbh)) +
+  geom_line() +
+  geom_point(data = d2) +
+  ylab("DBH (cm)") +
+  xlab("Date")  +
+  facet_wrap(~tree) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30))
+```
+```{r, echo=FALSE}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+   targets::tar_read(sapwood_depth_csv)) |> here() |> read_csv()
+post_slen <- withr::with_dir(rprojroot::find_root('_targets.R'),
+   targets::tar_read(fit_dbh_sapwood_draws_normal))
+
+calc_quantiles <- function(x, na.rm = TRUE) {
+  q <- quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975), na.rm = na.rm)
+  return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
+}
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu)
+}
+
+xx <- seq(10, 58, length = 80)
+
+tmp <- tibble(xx) |>
+  mutate(post = list(post_slen)) |>
+  mutate(pred = map2(xx, post, pred_sap)) |>
+  mutate(dbh = map(pred, calc_quantiles)) |>
+  unnest_wider(dbh)
+
+ggplot(tmp) +
+  geom_point(data = d, aes(x = dbh, y = sapwood_depth)) +
+  geom_hline(yintercept = 4, lty = 2) +
+  geom_hline(yintercept = 6, lty = 2) +
+  geom_line(aes(x = xx, y = m)) +
+  geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+  scale_y_continuous(breaks = c(2, 4, 6, 8, 10, 12)) +
+  xlab("DBH (cm)") +
+  ylab("Sapwood length (cm)")  +
+  theme_bw()
+```
+
+## Uncertainty from a-b coefficients
+
+Sup flux per 10 min is calculated as:
+$$
+S_{10min} = a \times K^b \times A_{sap} \times 600
+$$
+
+where $K$ is the estimated value from directions and depths when sensors are not available and the observed value when sensors are available,
+$A_{sap}$ is sapwood area estimated from DBH and sapwood length,
+and 600 is the number of seconds in 10 min.
+
+These are 4 components that contribute to the uncertainty in sap flux per 10 min:
+
+- a, b
+- K (estimated from directions)
+- K (estimated from depths)
+- sapwood length (estimated from DBH)
+
+Only the uncertainty from a-b coefficients is included in the final estimates.
+Medians were used for other components.
+To obtain an annual value, this two-year total was divided by 2.
+The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
+
+Values are the annual sap flux for each tree and for each applied Pg (Mg year^-1^ per tree).
+
+Columns are:
+
+ - pg: pressure gradients
+ - x_pool: pooled (traditional) fitting
+ - x_segments: segments (multilevel) fitting
+ - x_ll: 2.5% quantile
+ - x_l: 25% quantile
+ - x_m: 50% quantile (median)
+ - x_h: 75% quantile
+ - x_hh: 97.5% quantile
+ - s_total_granier: estimated by Fd = 119*K^1.23 (this values are assgined for pg = 0.02 for a coding purpose)
+
+```{r, echo=FALSE}
+# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#   targets::tar_read(ab_uncertainty_full_df))
+
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_df)) |>
+  filter(!is.na(tree)) |>
+  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+  rename(s_total_granier_m = s_total_granier) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = sum
+    ), .groups = "drop")
+
+d_ab <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_granier_df)) |>
+  filter(!is.na(tree)) |>
+  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+  rename(s_total_granier_m = s_total_granier) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = sum
+    ), .groups = "drop")
+
+
+# write_csv(d, here("data/ab_scaling_df.csv"))
+
+d |>
+  mutate(
+    across(
+      where(is.numeric),
+      \(x)round(x, 2))) |>
+  DT::datatable()
+  # kbl() |>
+  # kable_classic()
+```
+
+
+The figure below shows the sum of all trees divided by 600 m^2^.
+Thick bars indicate medians, and error bars indicate 95% quantiles based on the uncertainty of a-b coefficients.
+The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
+Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
+Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
+
+
+![tr_sacled_bars](`r here::here("figs/tr_scaled_bars.png")`)
+
+```{r, eval = FALSE, echo=FALSE}
+# Sum numeric columns
+d |>
+  mutate(pg = as.character(pg)) |>
+  # summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 * 16  else NA) |>
+  summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 else NA) |>
+  dplyr::rename_all(~str_replace(., "s_total", "s_ground")) |>
+  dplyr::select(-tree) |>
+  kbl() |>
+  kable_classic()
+```
+
+
+```{r, echo=FALSE}
+knitr::knit_exit()
+```
+
+```{r}
+d <- targets::tar_read(ab_uncertainty_full_df)
+library(tidyverse)
+
+n1 <- d |>
+  filter(slen > 6) |>
+  nrow()
+
+targets::tar_read(ab_uncertainty_df_1)
+
+calc_s <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (2 * r - b - depth) * 2
+}
+
+calc_s2 <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  r1 <- r - depth
+  r2 <- r - b
+  pi * (r2^2 - r1^2)
+}
+
+calc_s_cut(30, 5)
+calc_s_plus(30, 5)
+
+dbh <- 30
+bark <- 0.77
+r <- dbh / 2 - bark
+rs <- r - 8
+
+pi * r^2
+calc_s(30, 2) + calc_s(30, 4) + calc_s(30, 6) + calc_s_plus(30, 8) + pi * rs^2
+
+d |>
+  filter(dep != 2) |>
+  filter(dep != 4) |>
+  filter(dep != 6)
+
+119 * 0.0265 ^1.23
+n1 / nrow(d)
+
+d |>
+  summarise_all(~if(is.numeric(.)) mean(., na.rm = TRUE)  * 1000 / 365 else NA)
+
+120 kg day-1 tree-1
+
+55.08	* 1000 / 365
+
+tmp <- d |>
+  filter(date == "2015-08-01" & tree == "t01") |>
+  mutate(s_re = s / 4 / 10000) |>
+  filter(time == "00:00:00")
+
+tar_read(post_ab_segments) |>
+  apply(2, median)
+
+log_a <- 5.6
+a <- exp(log_a)
+b <- 1.09
+
+# 600 is the number of seconds in 10 mins
+# 600 * 144 is the number of seconds in 24 hours
+# 600 * 144 * 365 is the number of seconds in a year
+# /1000 is the conversion from g to kg
+
+k <- 0.1
+a <- 119
+b <- 1.23
+a * k^b * 600 * 144 * 365 / 1000
+
+One tree uses: 600/16 = 37.5 m2
+DBH:30 cm -> sapwood area: 400 cm2 = 0.04m2
+
+k <- 0.1
+log_a <- 5.6
+a <- exp(log_a)
+b <- 1.09
+a * k^b * 600 * 144 * 365 / 1000 * 0.04 / 37.5
+739 kg m-2
+
+a * k^b * 600 * 144 * 365 / 1000 * 0.04 / 1000
+
+27.7 / 0.0375
+55 / 0.0375
+
+
+tmp <- d |>
+  filter(date < "2015-01-05" & tree == "t01")
+
+tmp |>
+  mutate(date2 = paste(date, time) |> lubridate::ymd_hms()) |>
+  ggplot(aes(x = date2, y = exp(log_ks), col = dir, shape = as.factor(dep), lty = as.factor(dep))) +
+  geom_point() +
+  geom_line() +
+  ylab("K")
+
+
+
+a * k^b * 144 * 365 * 1e-3
+100 * k^b * 600 * 144 * 365 *  1e-3
+
+100 * k^b
+
+a * k^b  600
+
+55000 / 365
+600 / 365
+
+exp(-3.5)
+
+tmp2 <- d |>
+  filter(ks < 0.01)
+
+tmp2 |>
+  arrange(log_ks)
+
+d |>
+  filter(is.na(log_ks))
+
+nrow(tmp2) / nrow(d)
+
+r <- 0.3 / 2
+
+a * k^b * 600 * pi * r^2
+
+tmp <- d |>
+  filter(date == "2015-08-01" & tree == "t01") |>
+  mutate(s_re = s / 4 / 10000) |>
+  filter(time == "00:00:00")
+
+ggplot(tmp, aes(x = log(ks), y = log_ks)) +
+  geom_point()
+
+sum(tmp2$fd_pool_m * tmp2$s_re, na.rm = TRUE)
+sum(tmp$fd_pool_m * tmp$s_re, na.rm = TRUE)
+
+hist(tmp$ks)
+
+
+tar_read(fit_dbh_sapwood_summary_normal)
+
+d |>
+  filter(slen > 6)
+
+d |>
+
+xx <- seq(20, 58, length = 80)
+targets::tar_load(post_slen)
+
+library(purrr)
+library(tidyverse)
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu)
+}
+
+pred_sap <- function(x, para) {
+  log_mu <- para$alpha + para$beta * log(x)
+  exp(log_mu + sigma/2)
+}
+
+tmp <- tibble(xx) |>
+  mutate(post = list(post_slen)) |>
+  mutate(pred = map2(xx, post, pred_sap)) |>
+  mutate(dbh = map(pred, calc_quantiles)) |>
+  unnest_wider(dbh)
+
+ggplot(tmp, aes(x = xx)) +
+  geom_hline(yintercept = 4, lty = 2) +
+  geom_hline(yintercept = 6, lty = 2) +
+  geom_line(aes(y = m)) +
+  geom_ribbon(aes(ymin = ll, ymax = hh), alpha = 0.4) +
+  xlab("DBH (cm)") +
+  ylab("Sapwood length (cm)")  +
+  theme_bw()
+
+
+
+# Create a data frame with one row for each combination of xx and the rows in post_slen
+expand_grid(xx = xx, post_slen) %>%
+  # Apply the pred_sap function to each row
+  mutate(pred = map2(xx, alpha, ~pred_sap(.x, list(alpha = .y, beta = beta)))) %>%
+  # Group by xx so that we can calculate percentiles for each value of xx
+  group_by(xx) %>%
+  # Calculate the median and confidence intervals
+  summarise(
+    median = median(pred),
+    lower = quantile(pred, 0.025),
+    upper = quantile(pred, 0.975)
+  ) -> predictions
+
+# Now you can plot the prediction line with confidence intervals
+ggplot(predictions, aes(x = xx, y = median)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3) +
+  theme_minimal() +
+  labs(x = "X", y = "Prediction", title = "Prediction Line with 95% Confidence Intervals")
+
+    df_pred <- post_slen %>%
+    as_tibble() %>%
+    setNames(seq_len(ncol(.))) %>%
+    tibble::rownames_to_column("posterior_sample") %>%
+    tidyr::pivot_longer(
+      cols = c(-posterior_sample),
+      names_to = "obs",
+      values_to = "fitted"
+    )
+
+
+
+post_slen$alpha
+
+
+mapply(pred_sap, xx, post_slen)
+
+pred_sap(xx, post_slen)
+
+d$slen |> summary()
+d$dep |> unique()
+
+tar_load(dir_dep_imp_df)
+tar_load(post_ab_pool_mc)
+tar_load(post_ab_segments_mc)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+
+tar_load(dbh_imp_df)
+tar_load(post_slen)
+post_slen_m  <- post_slen |>
+   summarize(across(everything(), quantile, 0.975))
+
+dbh_df <- dbh_imp_data |>
+  mutate(slen = pred_sap(dbh, post_slen_m))  |>
+  mutate(s_0_2 = calc_s(dbh, 2)) |>
+  mutate(s_2_4 = calc_s(dbh, 4)) |>
+  mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+  mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+summary(dbh_df$slen)
+
+dbh_df2 <- dbh_imp_data |>
+  mutate(slen = pred_sap(dbh, post_slen_m))  |>
+  mutate(s_0_2 = calc_s(dbh, 2)) |>
+  mutate(s_2_4 = calc_s(dbh, 4)) |>
+  mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+  mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+d |>
+  group_by(tree) |>
+  summarize(
+    initial_dbh = min(dbh),
+    final_dbh = max(dbh)
+  )
+
+
+log(0)
+
+tar_read(ab_scaling_df)
+
+
+tar_read(ab_scaling_df)
+
+tar_load(post_ab_mc)
+
+tar_read(ab_uncertainty_df_2) |>
+  filter(is.na(fd_m))
+
+tar_read(ab_uncertainty_df_2)
+
+draws <- tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names()
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_read(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(alpha_1_15, alpha_2_15)
+
+tar_load(fd_k_traits_csv)
+
+read_csv(fd_k_traits_csv) |>
+    pull(species) |>
+    as.factor() |>
+    levels()
+
+    unique() |> levels()
+
+
+tar_read(post_ab_pool_mc) |>
+  apply(2, median)
+tar_read(post_ab_segments_mc) |>
+  apply(2, median)
+
+tmp <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_pool)
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp[[1]]$draws) |>
+  pull(b) |> median()
+
+tmp2 <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis") |>
+  pull(fit_segments)
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(log_a) |> median()
+posterior::as_draws_df(tmp2[[1]]$draws) |>
+  pull(b) |> median()
+
+hoge |>
+  filter(str_detect(name, "sap_all_clean_0.08")) |>
+
+hoge |>
+  filter(str_detect(name, "fit_ab_each"))
+
+names(draws)
+
+tar_read(sap_all_clean_0.08) |> str()
+
+d <- targets::tar_read(imputed_full_df)
+
+hist(d$ks)
+
+
+
+tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
+
+tar_load(dbh_imp_data)
+
+dbh_imp_data |>
+  group_by(tree) |>
+  summarize(dbh_max = max(dbh), dbh_mid = median(dbh), .groups = "drop")
+
+log(0.02646577)
+
+apply(post_ab_mc, 2, median)
+
+tmp <- d |>
+  filter(date == "2015-01-01" & time == "00:00:00" & tree == "t01")
+
+fd <- exp(5.6 - 1.01 * 3.908941)
+fd * 92.06923/4 * 600 /10000
+
+r <- 18.2 / 2
+pi * r^2
+
+tmp <- c(NA, 2, 2, 5)
+median(tmp, na.rm = TRUE)
+quantile(tmp, 0.5, na.rm = TRUE)
+
+sum(tmp$s) / 4
+
+d |>
+  arrange(ks_ref)
+NA - log(2)
+
+tar_load(rubber_raw_data_csv)
+tar_load(imputed_full_df)
+tar_load(dir_dep_imp_data)
+
+d <- read_csv(rubber_raw_data_csv) |>
+  janitor::clean_names() |>
+  dplyr::select(date, time, vpd, par, t16_0_0)
+
+d2 <- d |>
+  rename(ks = t16_0_0) |>
+  mutate(dir = "S") |>
+  mutate(dep = 2)
+
+mean_ks_df <- imputed_full_df |>
+  group_by(date, time, dir, dep) |>
+  summarize(ks = mean(ks), .groups = "drop")
+
+tar_read(ab_uncertainty_full_df)
+
+
+d1 <- tar_read(dir_dep_imp_data)
+
+d2 <- tar_read(t16_df) |>
+  mutate(tree = "t16")
+
+d2 |>
+
+mutate()
+
+nrow(d1) + nrow(d2)
+
+d3 <- full_join(d1, d2, by = c("year", "date", "time", "ks", "tree", "dir", "dep"))
+
+# ===================
+
+
+d
+
+d <- targets::tar_read(ab_uncertainty_full_df)
+
+d <- read_csv(rubber_raw_data_csv) |>
+  janitor::clean_names() |>
+  dplyr::select(date, t16_0_0)
+
+d2 <- d |>
+  rename(ks_t16 = t16_0_0) |>
+  mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
+  mutate(dep = 2) |>
+  mutate(date = mdy_hm(date)) |>
+  mutate(year = year(date)) |>
+  mutate(time = format(date, "%H:%M:%S")) |>
+  mutate(date = as_date(date))
+
+tar_load(post_dir_dep )
+tar_load(dir_dep_imp_data)
+
+post_dir_dep_m <- post_dir_dep |>
+  mutate(dep_dir_mid = map_dbl(beta, median)) |>
+  dplyr::select(-beta) |>
+  unnest(cols = c()) |>
+  ungroup()
+
+tmp <- full_join(dir_dep_imp_data, post_dir_dep_m, by = c("dir", "dep")) |>
+  mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+  mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+
+tmp2 <- tmp  |>
+  mutate(ks = exp(log_ks))
+
+mean_ks_df <- tmp2 |>
+  group_by(date, time, dir, dep) |>
+  summarize(ks = mean(ks, na.rm = TRUE), .groups = "drop")
+
+tmp3 <- full_join(mean_ks_df, d2, by = c("date", "time", "dir", "dep"))
+
+tmp4 <- tmp3 |>
+  mutate(ks = ifelse(is.na(ks_t16), ks, ks_t16)) |>
+  dplyr::select(-ks_t16)
+
+dbh_df$slen |> hist()
+
+# ===================
+
+d1 <- targets::tar_read(ab_uncertainty_df_1)
+d1
+
+targets::tar_read(ab_uncertainty_df_2)
+
+d20 <- targets::tar_read(ab_uncertainty_df_20)
+d20
+
+targets::tar_read(ab_uncertainty_df_1) |>
+  filter(ks == 0)
+
+d$slen |> summary()
+
+targets::tar_read(dbh_imp_df) |>
+  group_by(tree) |>
+  summarize(dbh_max = max(dbh), dbh_mid = median(dbh), .groups = "drop")
+
+targets::tar_read(ab_uncertainty_df_1) |>
+  head(100) |>
+  write_csv("test100.csv")
+
+dbh_imp_df |>
+  filter(date == "2015-01-01")
+
+
+
+
+d <- targets::tar_read(ab_uncertainty_full_df)
+
+
+
+d2 <- targets::tar_read(dir_dep_imp_full_df)
+tmp |>
+  group_by(tree) |>
+  summarize(n = n())
+
+mean_ks_df
+mean_ks_df2
+
+n1 <- d |>
+  dplyr::select(date, time, t16_0_0) |>
+  filter(is.na(t16_0_0)) |>
+  nrow()
+
+n2 <- d |>
+  dplyr::select(date, time, t16_0_0) |>
+  nrow()
+
+n1/n2
+
+xx <- seq(0.01, 1, length = 100)
+y1 <- 119*xx^1.23
+y2 <- 200*xx^1
+
+plot(xx, y2, type = "l")
+points(xx, y1, type = "l", col = "red")
+
+exp(-3.63)
+library(targets)
+library(tidyverse)
+
+dir_dep_imp_df <- tar_read(dir_dep_imp_full_df)
+tar_load(dbh_imp_df)
+tar_load(post_ab_pool_mc)
+tar_load(post_ab_segments_mc)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+
+d1 <- targets::tar_read(ab_uncertainty_df_1)
+
+exp(5.6 -3.63 * 1.01)
+exp(4.9 -3.63 * 0.71)
+119*exp(-3.631)^1.23
+
+0.02^1.23
+0.02^1
+0.02^0.75
+
+targets::tar_read(post_ab_pool) |> apply(2, median)
+targets::tar_read(post_ab_segments) |> apply(2, median)
+
+library(tictoc)
+
+dir_dep_imp_df |> dim()
+dbh_imp_df  |> dim()
+
+tic()
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+toc()
+
+tic()
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+toc()
+
+tic()
+  dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, 30, 1)
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+toc()
+
+tic()
+  dbh_df <- dbh_imp_df |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+toc()
+
+tic()
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+toc()
+
+tic()
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+toc()
+
+  # deeper than 6cm
+tic()
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+toc()
+
+tic()
+  s_df <- bind_rows(s_df, s6_df)
+toc()
+
+
+
+tic()
+s_df |>
+  head(10000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+calc_fd1 <- function(log_ks) {
+  mu <- post_ab_pool_mc$log_a + post_ab_pool_mc$b * log_ks
+  exp(mu)
+}
+calc_fd2 <- function(log_ks) {
+  mu <- post_ab_segments_mc$log_a + post_ab_segments_mc$b * log_ks
+  exp(mu)
+}
+
+
+tic()
+s_df |>
+  head(1000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = map2(log_ks, post_jab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+library(furrr)
+library(future)
+plan(multicore)
+
+tic()
+s_df |>
+  head(100000) |>
+  setDT() |>
+  mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+  mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+  mutate(fd_10min_pool = future_map2(log_ks, post_ab_pool, calc_fd)) |>
+  mutate(fd_10min_segments = future_map2(log_ks, post_ab_segments, calc_fd)) |>
+  mutate(fd_pool = future_map(fd_10min_pool, calc_quantiles)) |>
+  mutate(fd_segments = future_map(fd_10min_segments, calc_quantiles)) |>
+  mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+  dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
+  unnest_wider(fd_pool, names_sep = "_") |>
+  unnest_wider(fd_segments, names_sep = "_")
+toc()
+
+Can you make this R code parallel? df is a tibble object and I want to apply function_a and funciton_b.
+
+df |>
+  mutate(tmp1 = map(x, function_a)) |>
+  mutate(tmp2 = map(x, function_b))
+
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "post_ab_"))
+  # filter(str_detect(name, "ab_uncertainty_df")) |>
+  pull(command)
+
+tar_read(post_ab_pool_mc2_2_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+tar_read(post_ab_pool_mc2_1_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+
+tar_read(post_ab_segments_mc_2_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+tar_read(post_ab_segments_mc2_3_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+
+
+hoge |>
+  filter(str_detect(name, "fit_ab_draws")) |>
+  filter(str_detect(name, "clean"))
+
+
+library(tidyverse)
+
+targets::tar_read(ab_uncertainty_full_df) |>
+  group_by(tree) |>
+  summarize(
+    across(
+      .cols = is.numeric,
+      .fns = sum
+    )
+  )
+
+
+fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08
+fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08
+
+values = list(stan_data = rlang::syms(c(
+
+paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))
+
+tmp <- paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))
+rlang::syms(tmp)
+
+  values = expand_grid(folds = 1:20,
+    post_ab_pool = c(paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_",
+      # c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08))))
+      c(0.02, 0.03)))) |>
+    mutate(post_ab_segments = str_replace_all(post_ab_pool, "pool", "segments")) |>
+    mutate(post_ab_pool = rlang::syms(post_ab_pool)) |>
+    mutate(post_ab_segments = rlang::syms(post_ab_segments))
+
+    values = expand_grid(folds = 1:20,
+      pg = c(0.02, 0.03)) |>
+      # pg = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08)) |>
+      mutate(post_ab_pool = c(paste0("fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg))) |>
+      mutate(post_ab_segments = str_replace_all(post_ab_pool, "pool", "segments")) |>
+      mutate(post_ab_pool = rlang::syms(post_ab_pool)) |>
+      mutate(post_ab_segments = rlang::syms(post_ab_segments))
+
+values
+
+targets::tar_read(ab_uncertainty_full_df)
+
+targets::tar_read(ab_uncertainty_full_df) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = is.numeric,
+      .fns = sum
+    )
+
+post_ab_segments_mc_
+0.02
+"_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_"
+0.02
+"_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_"
+0.02
+
+pg = c(0.02, 0.03)
+paste0(
+  "post_ab_pool_mc_",
+  pg,
+  "_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_",
+  pg,
+  "fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_",
+  pg
+)
+
+tar_read(post_ab_segments_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02)
+
+post_ab_pool_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02
+post_ab_segments_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02
+
+hoge$name
+
+targets::tar_read(ab_uncertainty_full_granier_df)
+
+
+|>
+
+  mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    mutate(fd_segments_a = map(fd_10min_segments_a, calc_quantiles)) |>
+    mutate(fd_pool_b = map(fd_10min_pool_b, calc_quantiles)) |>
+    mutate(fd_segments_b = map(fd_10min_segments_b, calc_quantiles)) |>
+    dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool_a, -fd_10min_segments_a, -fd_10min_pool_b, -fd_10min_segments_b) |>
+     unnest_wider(fd_pool_a, names_sep = "_") |>
+    unnest_wider(fd_segments_a, names_sep = "_") |>
+    unnest_wider(fd_pool_b, names_sep = "_") |>
+    unnest_wider(fd_segments_b, names_sep = "_") |>
+    ab_scaling()
+
+
+```
+
+
