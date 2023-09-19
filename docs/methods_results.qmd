@@ -89,17 +89,20 @@ sma_slope <- sma_fit$coef[[1]][2, ] |>
 sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
 ```
 
+## Methods
+
+
+
 ## Results
 
-We found that pressure type (pressure vs. tension) has a marginal effect on the induced flow rate.
+We found that pressure type (pressure vs. tension) had a marginal effect on the induced flow rate.
 Although a strong relationship emerged within each species between tension- and pressure-derived *K~s~*, a significant shift was found in elevation between pressure- and tension-induced flow rates
 (
 `r fig("sma")`a,
 SMA intercept:
 `r sma_int[1]`
 [95% CI:
-`r sma_int[2]`
-,
+`r sma_int[2]`,
 `r sma_int[3]`
 ]
 ).
@@ -109,43 +112,37 @@ The SMA slope was different from 1
 SMA slope:
 `r sma_slope[1]`
 [95% CI:
-`r sma_slope[2]`
-,
+`r sma_slope[2]`,
 `r sma_slope[3]`
 ]
 ).
 Pressure-induced flow rates tend to be greater than tension-induced flow rates for samples of low flow rates, converging with increasing flow rates (`r fig("sma")`a).
 
-Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates,
+Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained little variation in the differences between pressure- and tension-induced flow rates,
 whereas species difference explained much more variation
 (`r str_split(anova_yml$pressure, " ")[[1]][1]` vs. `r str_split(anova_yml$species, " ")[[1]][1]` of the total variance,
 Figs. `r fig_num("sma")`b &
 `r s_fig_num("coef_intervals_pres_tens")`a;
 `r s_table("anova_pres_tens")`).
-After controlling species and pressure-level effects (i.e., hierarchical model), pressure induced-flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
+After controlling species and pressure-level effects (i.e., hierarchical model), pressure-induced flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
 
-## `r fig("sma")`
-
-Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (??).
+![`r fig("sma")`:
+Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (???).
 (A) Relationship between sample mean pressure- and tension-induced flow rates.
-Blue solid line indicates a standardized major axis (SMA) regression.
+The blue solid line indicates a standardized major axis (SMA) regression.
 The 95% confidence interval is represented as the shaded area.
 (B) Comparisons between pressure- and tension-induced flow rates at three levels for three diffuse-porous, one ring-porous, and one liana species.
-The center line in each box indicates the median, and upper and lower box sides indicate the interquartile range.
+The center line in each box indicates the median and the upper and lower box sides indicate the interquartile range.
 The whiskers extend to a maximum of 1.5 times the interquartile range.
-This is only to simplify the visualization, and statistical results are shown in SX.
+Statistical results are shown in SX.
 HH, *Hopea hongayensis*;
 VM, *Vatica mangachapoi*;
 HB, *Hevea brasiliensis*;
 TG, *Tectona grandis*;
 AP, *Acacia pennata*.
+](`r here::here("figs/sma_ks.png")`)
 
-
-![sma_ks](`r here::here("figs/sma_ks.png")`)
-
-
-### `r s_table("anova_pres_tens")`
-
+`r s_table("anova_pres_tens")`:
 Posterior medians and 50% credible intervals of the explained variance for the ratio between pressure- and tension-induced flow rates.
 
 ```{r, echo=FALSE}
@@ -155,18 +152,17 @@ tibble(Factor = names(anova_yml) |> str_to_title(),
   kable_classic(full_width = F)
 ```
 
-## `r s_fig("coef_intervals_pres_tens")`
-
+![`r s_fig("coef_intervals_pres_tens")`
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
 (A) Estimates for standard deviations.
 (B) Estimates for the effect of each predictor.
 (C) Estimates for differences in effects between predictors.
-There is large variation but pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained very little variation in the differences between pressure- and tension-induced flow rates of the total variance in (A).
-Positive values indicate pressure induced flow rates are greater than tension induced flow rates in (B) and (C).
-The positive ks_ratio parameter in (B) suggests that pressure induced flow rates tend to be greater than tension induced flow rates.
-The estimate for AP is smaller than HH, TG, and VM in (C), suggesting that the difference between pressure and tension induced flow rates tends to be smaller for AP compared to HH, TG, and VM.
-HB shows the similar pattern with AP.
-ks_ratio, ratio of pressure induced flow rates to tension induced flow rates;
+There is a large variation in pressure-level, but pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained little variation in the differences between pressure- and tension-induced flow rates of the total variance in (A).
+Positive values indicate pressure-induced flow rates are greater than tension-induced flow rates in (B) and (C).
+The positive ks_ratio parameter in (B) suggests that pressure-induced flow rates are greater than tension-induced flow rates.
+The estimate for AP is smaller than HH, TG, and VM in (C), suggesting that the difference between pressure and tension-induced flow rates tends to be smaller for AP compared to HH, TG, and VM.
+HB shows a similar pattern to AP.
+ks_ratio, a ratio of pressure-induced flow rates to tension-induced flow rates;
 HH, *Hopea hongayensis*;
 VM, *Vatica mangachapoi*;
 HB, *Hevea brasiliensis*;
@@ -175,8 +171,7 @@ AP, *Acacia pennata*;
 p_2, 0.02 MPa;
 p_5, 0.05 MPa;
 p_8, 0.08 MPa.
-
-![coef_intervals_mean](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
+](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
 
 ## Methods
 
@@ -257,28 +252,27 @@ note:
 
 - Residuals: `r anova_yml$residuals`
 
-
-
 # Pressure vs. number of active vessels
+
+## Methods
+
+We modeled the probability of a vessel filled with silicon as linear and quadratic logistic functions of perfusion pressures with varying- intercepts and slopes by species (Supporting information X).
+Model selection using Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO; @Vehtari2014; @Vehtari2017) suggested that the quadratic model performed better (the difference in expected log pointwise predictive accuracies between the two models was 207.9), and thus we only report the result of the quadratic model.
 
 ## Results
 
 Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
 Although quadratic function best described the responses, the proportion of vessels participating in flow rate for *Hopea hongayensi* increased was highest in the intermediate pressure, but either remained the same or increased to a maximum moving from the intermediate to the highest pressure in the other four species (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
 
-
-## `r fig("count_pressure")`
-
+![`r fig("count_pressure")`
 Changes in the proportion of silicon-stained vessels along perfusion pressures for diffuse-porous (A-C: red), ring-porous (D: green), and liana species (E: purple).
 Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
 The size of data points is proportional to the total number of vessels.
 The right columns are fluorography images of active vessels under UV light using silicon-perfusion.
 The red scale at the bottom right represents 500$\micro$m.
+](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
 
-![count_pressure_quadratic](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
-
-## `r s_fig("coef_int_quad_mean")`
-
+![`r s_fig("coef_int_quad_mean")`
 Posterior medians (circles), 50% (rectangle), and 95% (thin lines) credible intervals (CIs) for model coefficients of the effects of perfusion pressure on the probability of a vessel filled with silicon.
 All, Common effects across all the species;
 HH, *Hopea hongayensis*;
@@ -286,16 +280,7 @@ VM, *Vatica mangachapoi*;
 HB, *Hevea brasiliensis*;
 TG, *Tectona grandis*;
 AP, *Acacia pennata*.
-
-![coef_intervals_logistic](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
-
-## Methods
-
-**tentative**
-
-We modeled the probability of a vessel filled with silicon as linear and quadratic logistic functions of perfusion pressures with varying- intercepts and slopes by species (Supporting information X).
-Model selection using Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO; @Vehtari2014; @Vehtari2017) suggested that the quadratic model performed better (the difference in expected log pointwise predictive accuracies between the two models was 207.9), and thus we only report the result of the quadratic model.
-
+](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
 
 ## Stan code
 
@@ -304,19 +289,26 @@ Model selection using Pareto-smoothed importance sampling leave-one-out cross-va
 
 # Coefficients *a* and *b* without traits
 
+## Methods
+
+While we employed a power-law function as a model form, we used two different Bayesian model approaches to analyze the relationship between *F*~d~ and K.
+We call this approach the "multilevel approach."
+On the other hand, our second approach followed a more conventional route.
+Here, species serve as the unit of analysis, and inter-segment variation is not considered.
+We have labeled this method as the "pooled approach."
+
 ## Results
 
-The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. S5-6; Table S4).
-Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S7-9).
+The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table S4).
+Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S`r s_fig("pg_multi")`-`r s_fig("pg_ribbon_b")`).
 Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
-Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (Fig. 3 and Table S5).
-Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*, while segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
-
+Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table S5).
+Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*.
+In comparison, segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
 
 ## Pool vs multi
 
-### `r s_table("ab_comparison")`
-
+`r s_table("ab_comparison")`:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
 
 ```{r, echo=FALSE}
@@ -335,51 +327,40 @@ read_csv(here("data/all_ab.csv")) |>
   add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
 ```
 
-### `r s_fig("pool_multi")`
-
-Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue) and liana (green) species.
+![`r s_fig("pool_multi")`
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 The K values are the averages of two sets of sensors from each segment to account for sapwood variation along the segment.
 The dashed and solid lines represent posterior medians of the power-law relationships without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation, respectively.
+](`r here::here("figs/pool_multi.png")`)
 
-![pool_multi](`r here::here("figs/pool_multi.png")`)
 
-
-### `r s_fig("ab_points")`
-
+![`r s_fig("ab_points")`
 Estimates of coefficients *a* (A) and *b* (B) based on traditional fitting (Granier, 1985) vs. our multilevel model.
 Each point represents the posterior medians of the coefficients for each species.
 Error bars show 95% credible intervals.
 Dashed lines indicate 1:1 lines.
-
-![ab_comp](`r here::here("figs/ab_points.png")`)
+](`r here::here("figs/ab_points.png")`)
 
 ## Pressure gradients
 
-
-### `r s_fig("pg_multi")`
-
+![`r s_fig("pg_multi")`
 Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Different lines indicate different maximum pressure gradients for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+](`r here::here("figs/pg_multi.png")`)
 
-![pg_multi](`r here::here("figs/pg_multi.png")`)
-
-### `r s_fig("pg_ribbon_a")`
-
+![`r s_fig("pg_ribbon_a")`
 Relationships between the coefficient *a* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
-Light and dark shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
-The maximum applied *P~g~* are different among species because segment length are different.
+Light and dark-shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
+The maximum applied *P~g~* are different among species because segment lengths are different.
 Species × maximum applied *P~g~* combinations with less than 5 data points were removed from this visualization.
 Therefore, the lower ranges for maximum applied *P~g~* are also different among species.
+](`r here::here("figs/pg_ribbon_a.png")`)
 
-![pg_ribbon_a](`r here::here("figs/pg_ribbon_a.png")`)
-
-### `r s_fig("pg_ribbon_b")`
-
+![`r s_fig("pg_ribbon_b")`
 Relationships between the coefficient *b* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
 Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
-
-![pg_ribbon_b](`r here::here("figs/pg_ribbon_b.png")`)
+](`r here::here("figs/pg_ribbon_b.png")`)
 
 ### `r s_table("without_traits_table_0.02")`
 
@@ -419,14 +400,12 @@ targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_wit
 
 ## Variance partitioning
 
-### `r fig("coef_density")`
-
-![coef_density](`r here::here("figs/coef_density.png")`)
-
+![`r fig("coef_density")`
 Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
 Estimates for xylem type level and species level are shown.
 Different colorsj indicate different xylem types.
 Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
+](`r here::here("figs/coef_density.png")`)
 
 ### `r s_table("varpart_notrait")`
 
@@ -442,27 +421,26 @@ read_csv(here("data/varpart_notrait.csv")) |>
 
 # Coefficients *a* and *b* with traits
 
+## Methods
+
+
 ## Results
 
 The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. 4B, D).
 VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. 4A, C).
 
-### `r fig("traits_points_main")`
-
+![`r fig("traits_points_main")`
 Relationships between coefficients *a* and *b* and vessel area fraction (VAF, A, C), sapwood specific hydraulic conductivity (Ks, B, D)
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
 Light and dark shaded regions indicate 95% and 50% CIs, respectively.
+](`r here::here("figs/traits_points_main.png")`)
 
-![traits_points_main](`r here::here("figs/traits_points_main.png")`)
-
-### `r s_fig("traits_points_si")`
-
+![`r s_fig("traits_points_si")`
 Relationships between coefficients *a* and *b* and wood density ($\rho$, A, B), hydraulic-weighted diameter (D~h~, C, D), and vessel frequency per unit area (VF, E, F).
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
 None of the traits showed significant correlations with coefficients *a* or *b*.
-
-![traits_points_si](`r here::here("figs/traits_points_si.png")`)
+](`r here::here("figs/traits_points_si.png")`)
 
 ### `r s_table("all_seg_table")`
 
