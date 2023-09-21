@@ -8,6 +8,7 @@ bibliography: [sap-comparison.bib]
 crossref:
   fig-title: Fig.
   fig-prefix: Fig.
+prefer-html: true
 format:
   html:
     theme: spacelab #readable #sandstone #spacelab #flatly
@@ -287,17 +288,39 @@ AP, *Acacia pennata*.
 ```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge"}
 ```
 
-# Coefficients *a* and *b* without traits
+# Coefficients *a* and *b*
 
 ## Methods
 
-While we employed a power-law function as a model form, we used two different Bayesian model approaches to analyze the relationship between *F*~d~ and K.
+Using a power-law function as the foundational model form, we applied two different Bayesian model approaches to analyze the relationship between *F*~d~ and K.
+Our first approach treated segments as the unit of analysis, considering inter-segment, interspecific, and xylem-type variations.
 We call this approach the "multilevel approach."
 On the other hand, our second approach followed a more conventional route.
-Here, species serve as the unit of analysis, and inter-segment variation is not considered.
+Here, we treated species as the unit of analysis, and inter-segment variation was not considered.
 We have labeled this method as the "pooled approach."
+Considering the dependency of K ranges on the maximum applied pressure gradients (*P~g~*), we used nine distinct datasets based on different ranges of *P~g~* in our analysis
+(Maximum *P~g~*  [MPa m^-1^]:
+0.02,
+0.025,
+0.03,
+0.035,
+0.04,
+0.05,
+0.06,
+0.07, and
+0.08).
+
+Additionally, we built Bayesian hierarchical models that incorporated wood traits ($\rho$, VAF, VF, and D~h~) and hydraulic trait K~s~.
+These traits were included as species-level predictors for coefficients *a* and *b*, and were integrated into our "multilevel approach."
 
 ## Results
+
+There are:
+
+- Pool vs multi
+- Pressure gradients
+- Variance partitioning
+- Model with traits
 
 The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table S4).
 Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S`r s_fig("pg_multi")`-`r s_fig("pg_ribbon_b")`).
@@ -306,7 +329,8 @@ Our multilevel model revealed little variance in the estimates of coefficient *a
 Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*.
 In comparison, segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
 
-## Pool vs multi
+The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. `r fig_num("traits_points_main")`B, D).
+VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. `r fig_num("traits_points_main")`A, C).
 
 `r s_table("ab_comparison")`:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
@@ -341,7 +365,6 @@ Error bars show 95% credible intervals.
 Dashed lines indicate 1:1 lines.
 ](`r here::here("figs/ab_points.png")`)
 
-## Pressure gradients
 
 ![`r s_fig("pg_multi")`
 Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
@@ -397,9 +420,6 @@ targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_wit
   DT::datatable()
 ```
 
-
-## Variance partitioning
-
 ![`r fig("coef_density")`
 Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
 Estimates for xylem type level and species level are shown.
@@ -419,15 +439,6 @@ read_csv(here("data/varpart_notrait.csv")) |>
   kable_classic()
 ```
 
-# Coefficients *a* and *b* with traits
-
-## Methods
-
-
-## Results
-
-The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. 4B, D).
-VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. 4A, C).
 
 ![`r fig("traits_points_main")`
 Relationships between coefficients *a* and *b* and vessel area fraction (VAF, A, C), sapwood specific hydraulic conductivity (Ks, B, D)
