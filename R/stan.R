@@ -439,6 +439,99 @@ clean_sap_data <- function(data, file) {
 
 }
 
+generate_sap_traits_no_xylem_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  # library(tidyverse)
+  # d <- read_csv("data/fd_k_traits.csv")
+  d <- read_csv(data)
+
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  d_sp <- d |>
+    group_by(species) |>
+    summarize(
+      wood_density = mean(wood_density),
+      log_dh = mean(log(dh)),
+      log_vaf = mean(log(vaf)),
+      log_vf = mean(log(vf)),
+      log_ks = mean(log(ks))
+    )
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  seg_to_sp <- tmp |> pull(species) |> as.factor() |> as.numeric()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+  tmp2 <- apply(tmp, 2, scale)
+  #tmp2 <- na.omit(tmp) |> as.matrix()
+  xj <- cbind(1, tmp2)
+
+  tmp_sp <- d_sp |>
+    dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+  tmp2_sp <- apply(tmp_sp, 2, scale)
+  xk <- cbind(1, tmp2_sp)
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  kk <- unique(d$species) |> length()
+  uk <- matrix(rep(1, kk), ncol = kk)
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    uj = t(uj),
+    uk = uk,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj),
+    kk = seg_to_sp,
+    xk = xk
+  )
+  stan_data
+}
+
 generate_sap_traits_stan_data <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, trait_set = "all") {
   # library(tidyverse)
   # d <- read_csv("data/fd_k_traits.csv")

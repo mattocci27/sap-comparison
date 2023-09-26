@@ -11,7 +11,7 @@ crossref:
 prefer-html: true
 format:
   html:
-    theme: spacelab #readable #sandstone #spacelab #flatly
+    theme: spacelab
     toc: true
     toc-depth: 2
     toc-title: Contents
@@ -315,6 +315,20 @@ These traits were included as species-level predictors for coefficients *a* and 
 
 ## Results
 
+```{r, echo=FALSE}
+d <- read_csv(here("data/varpart_notrait.csv"))
+a_xylem <- d |>
+  filter(Levels == "Xylem types") |>
+  pull(a) |>
+  str_extract("[0-9]+\\.[0-9]+") |>
+  as.numeric()
+b_seg <- d |>
+  filter(Levels == "Segments") |>
+  pull(b) |>
+  str_extract("[0-9]+\\.[0-9]+") |>
+  as.numeric()
+```
+
 There are:
 
 - Pool vs multi
@@ -322,12 +336,12 @@ There are:
 - Variance partitioning
 - Model with traits
 
-The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table S4).
-Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Fig. S`r s_fig("pg_multi")`-`r s_fig("pg_ribbon_b")`).
+The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
+Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Figs. `r s_fig_num("pg_multi")`-`r s_fig_num("pg_ribbon_b")`).
 Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
-Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table S5).
-Xylem types (80.77% of total variance) were the largest source for the variance for coefficient *a*.
-In comparison, segments (40.26% of total variance) were the largest source for the variance for coefficient *b* (Table S5).
+Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
+Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
+In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
 
 The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. `r fig_num("traits_points_main")`B, D).
 VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. `r fig_num("traits_points_main")`A, C).
@@ -437,6 +451,26 @@ read_csv(here("data/varpart_notrait.csv")) |>
   rename("Coefficient <i>b</i>" = b) |>
   kbl(escape = FALSE) |>
   kable_classic()
+```
+
+<!-- Only Ks vs a was significant  -->
+```{r, eval=FALSE}
+targets::tar_read(ks_pred_data)
+targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all) |>
+  filter(str_detect(variable, "gamma_a"))
+targets::tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_all) |>
+  filter(str_detect(variable, "gamma_b"))
+
+library(tidyverse)
+d <- targets::tar_read(fd_k_traits_csv) |> read_csv()
+
+d |>
+  dplyr::select(wood_density, swc) |>
+  unique() |>
+  ggplot(aes(wood_density, swc)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10()
 ```
 
 
@@ -635,7 +669,7 @@ pred_sap <- function(x, para) {
   exp(log_mu)
 }
 
-xx <- seq(10, 58, length = 80)
+xx <- seq(10, 40, length = 80)
 
 tmp <- tibble(xx) |>
   mutate(post = list(post_slen)) |>
@@ -1536,6 +1570,22 @@ targets::tar_read(ab_uncertainty_full_granier_df)
     ab_scaling()
 
 
+targets::tar_visnetwork(names = sma_ks_plot)
+
+targets::tar_read(ks_trees_csv) |>
+  read_csv() |>
+  write_csv("ks_trees.csv")
+
+targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem)  |>
+  janitor::clean_names() |>
+  filter(str_detect(variable, "beta"))  |>
+  filter(q2_5 * q97_5 > 0)
+
+targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem_sp)  |>
+  janitor::clean_names() |>
+  filter(str_detect(variable, "beta"))  |>
+  filter(q2_5 * q97_5 > 0)
+
+tar_load(fd_k_traits_csv)
+d <- read_csv(fd_k_traits_csv)
 ```
-
-

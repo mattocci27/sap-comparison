@@ -499,6 +499,8 @@ targets::tar_read(all_seg_table)) |>
 
 ## Imputation for missing K value
 
+Does this make sense? Can you add some simple explnations for readers?
+
 We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
 This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
 It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
@@ -1555,5 +1557,4 @@ targets::tar_read(ab_uncertainty_full_granier_df)
 
 
 ```
-
 

@@ -40,10 +40,10 @@ tar_option_set(packages = c(
   "data.table"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -673,7 +673,6 @@ main_list <- list(
       )
     )
   ),
-
   tar_map(
     values = list(
       mcmc = rlang::syms(c(
@@ -692,6 +691,39 @@ main_list <- list(
       my_loo(mcmc)
     )
   ),
+
+
+  tar_target(
+    stan_data_no_xylem,
+    generate_sap_traits_no_xylem_stan_data(fd_k_traits_csv,
+                             remove_abnormal_values = TRUE)
+  ),
+  tar_stan_mcmc(
+   fit_abt2,
+   c("stan/granier_with_traits_no_xylem.stan",
+   "stan/granier_with_traits_no_xylem_sp.stan"),
+   data = stan_data_no_xylem,
+   refresh = 0,
+   chains = 4,
+   parallel_chains = getOption("mc.cores", 4),
+   iter_warmup = 1000,
+   iter_sampling = 1000,
+   adapt_delta = 0.9,
+   max_treedepth = 15,
+   seed = 123,
+   return_draws = TRUE,
+   return_diagnostics = TRUE,
+   return_summary = TRUE,
+   summaries = list(
+     mean = ~mean(.x),
+     sd = ~sd(.x),
+     mad = ~mad(.x),
+     ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+     posterior::default_convergence_measures()
+     )
+   ),
+
+
 
   # tar_target(
   #   traits_loo,

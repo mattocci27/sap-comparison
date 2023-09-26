@@ -523,7 +523,7 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
     left_join(d2, by = "tree") |>
     group_by(tree) |>
     arrange(date) |>
-    mutate(girth = pi * initial_dbh + cumsum(girth_increment)) |>
+    mutate(girth = pi * initial_dbh + girth_increment) |>
     mutate(dbh = girth / pi) |>
     ungroup() |>
     arrange(tree, date)  # Arrange data by tree and date
