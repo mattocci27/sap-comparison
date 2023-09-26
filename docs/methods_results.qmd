@@ -354,6 +354,10 @@ read_csv(here("data/all_ab.csv")) |>
   dplyr::select(
     Species = species,
     `Xylem types` = xylem_long_fct,
+    pool_a2 = pool_sep_a,
+    pool_b2 = pool_sep_b,
+    multi_a2 = multi_sep_a,
+    multi_b2 = multi_sep_b,
     pool_a = pool_full_a,
     pool_b = pool_full_b,
     multi_a = multi_full_a,
@@ -362,7 +366,12 @@ read_csv(here("data/all_ab.csv")) |>
   kbl() |>
   column_spec(1, italic = TRUE) |>
   kable_classic() |>
-  add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
+  add_header_above(c(" " = 2,
+  "Pooled Segments Model" = 2, "Multilevel Model" = 2,
+  "Pooled Segments Model" = 2, "Multilevel Model" = 2)) |>
+  add_header_above(c(" " = 2,
+  "Species-Specific Models" = 4, "Pooled Species Model" = 4))
+  # add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
 ```
 
 ![`r s_fig("pool_multi")`

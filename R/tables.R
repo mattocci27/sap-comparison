@@ -10,12 +10,16 @@ clean_sep <- function(data, names_data, var, name) {
 }
 
 clean_all <- function(data, names_data, var, name) {
-   data <- data |>
+  # data <- summary_segments
+  data <- data |>
     filter(str_detect(variable, "^a")) |>
     full_join(names_data, by = "variable") |>
     dplyr::select(species, xylem_long_fct, variable, q50, q2.5, q97.5) |>
-    mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
-    mutate_if(is.numeric, \(x) format(x, nsmall = 2, trim = TRUE)) |>
+    mutate(across(c(q50, q2.5, q97.5),
+                  ~ ifelse(str_detect(variable, "alpha\\[1"), exp(.x), .x))) |>
+    mutate(across(where(is.numeric), round, digits = 2)) |>
+    mutate(across(where(is.numeric),
+                  ~ format(.x, nsmall = 2, trim = TRUE))) |>
     mutate(multilevel_a = str_c(q50, " [", q2.5, ", ", q97.5, "]")) |>
     arrange(xylem_long_fct, species)
 
@@ -42,11 +46,15 @@ clean_all <- function(data, names_data, var, name) {
 write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab, out) {
   segments_sep <- map_dfr(summary_sep$fit_segments,
     \(x)x$summary |> filter(variable %in% c("log_a", "b", "a")))  |>
-    mutate(species = rep(summary_sep$species, each = 3))
+    mutate(species = rep(summary_sep$species, each = 3)) |>
+    mutate(across(c(q50, q2.5, q97.5),
+                  ~ ifelse(str_detect(variable, "log_a"), exp(.x), .x)))
 
   pool_sep <- map_dfr(summary_sep$fit_pool,
     \(x)x$summary |> filter(variable %in% c("log_a", "b", "a")))  |>
-    mutate(species = rep(summary_sep$species, each = 3))
+    mutate(species = rep(summary_sep$species, each = 3)) |>
+    mutate(across(c(q50, q2.5, q97.5),
+                  ~ ifelse(str_detect(variable, "log_a"), exp(.x), .x)))
 
   names_data <- xylem_lab |>
     mutate(alpha1 = str_replace_all(sp_num1, "_", ",")) |>
