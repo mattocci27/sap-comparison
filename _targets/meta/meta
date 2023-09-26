@@ -627,15 +627,15 @@ fit_abt_draws_granier_with_traits_sap_trait_clean_nowd|stem|c939439e854a486c|04f
 fit_abt_draws_granier_with_traits_sap_trait_clean_vaf|stem|e810717f32244dee|c4085fe8bdcaced1|16007cf446c27ad7|-79683273||t19300.27601517s|14161ee3fee30f31|211162170|fst_tbl|local|vector|||0.584||
 fit_abt_draws_granier_with_traits_sap_trait_clean_vf|stem|2c7f45e5775ac51a|0e28ff832f9ae78f|b4cca533b07b0560|-1719539035||t19300.2697557259s|8622ac5aa84d430a|211161806|fst_tbl|local|vector|||0.618||
 fit_abt_draws_granier_with_traits_sap_trait_clean_wd|stem|2d3a47fd9a9baf01|c706c781e3eb13cd|96a2557f755cb948|279828624||t19300.2352516667s|f7b8885007078461|211162544|fst_tbl|local|vector|||0.945||
-fit_abt_file_granier_with_traits_sap_trait_clean_all|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|219427494|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_dh|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1162684062|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_ks|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-491118844|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_novaf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|957708749|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0.001||
-fit_abt_file_granier_with_traits_sap_trait_clean_novf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|1798609960|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_nowd|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1960650648|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_vaf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|1515119731|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_vf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1024657138|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
-fit_abt_file_granier_with_traits_sap_trait_clean_wd|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|2123424795|stan/granier_with_traits.stan|t19626.3822000371s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_all|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|219427494|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_dh|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1162684062|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_ks|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-491118844|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_novaf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|957708749|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0.001||
+fit_abt_file_granier_with_traits_sap_trait_clean_novf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|1798609960|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_nowd|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1960650648|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_vaf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|1515119731|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_vf|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|-1024657138|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
+fit_abt_file_granier_with_traits_sap_trait_clean_wd|stem|14d91b329ebf75b6|e34a2b98d955db69|ef46db3751d8e999|2123424795|stan/granier_with_traits.stan|t19626.6289368893s|47bedfb4abb69d48|2827|file|local|vector|||0||
 fit_abt_mcmc_granier_with_traits_sap_trait_clean_all|stem|1f15394ae74b561b|c9955fecbe9a4151|58d9a4f19b4f1571|1943452306||t19300.3439101199s|97346c30bb536621|269564914|qs|local|vector|||19078.637||
 fit_abt_mcmc_granier_with_traits_sap_trait_clean_dh|stem|dc1e567d46c7e8cf|4346ba2662341882|009fc90e2e822d20|-1659183039||t19300.2544868051s|fa7970c95a147561|176315362|qs|local|vector|||11344.369||
 fit_abt_mcmc_granier_with_traits_sap_trait_clean_ks|stem|dbb363bfab494922|2b805e6c107a338d|30eb3a67b8258b98|-401242907||t19300.2167611416s|61c1c50430a3d0f4|175922314|qs|local|vector|||8085.034||
@@ -680,7 +680,7 @@ fit_abt2_file_granier_with_traits_no_xylem_sap_trait_clean_nowd|stem|d6f4cf94db1
 fit_abt2_file_granier_with_traits_no_xylem_sap_trait_clean_vaf|stem|d6f4cf94db198ee7|ab7a91ccb0270b37|ef46db3751d8e999|1881709990|stan/granier_with_traits_no_xylem.stan|t19626.0806084313s|92fa6a899934c31c|2157|file|local|vector|||0.001||
 fit_abt2_file_granier_with_traits_no_xylem_sap_trait_clean_vf|stem|d6f4cf94db198ee7|ab7a91ccb0270b37|ef46db3751d8e999|1465574377|stan/granier_with_traits_no_xylem.stan|t19626.0806084313s|92fa6a899934c31c|2157|file|local|vector|||0||
 fit_abt2_file_granier_with_traits_no_xylem_sap_trait_clean_wd|stem|d6f4cf94db198ee7|ab7a91ccb0270b37|ef46db3751d8e999|257086162|stan/granier_with_traits_no_xylem.stan|t19626.0806084313s|92fa6a899934c31c|2157|file|local|vector|||0||
-fit_abt2_file_granier_with_traits_no_xylem_sp|stem|8776bcef121ec073|8c47c64e0d40021d|ef46db3751d8e999|-175063559|stan/granier_with_traits_no_xylem_sp.stan|t19626.3843235564s|d7a33be0f1b3dfa9|1630|file|local|vector|||0.001||
+fit_abt2_file_granier_with_traits_no_xylem_sp|stem|8776bcef121ec073|8c47c64e0d40021d|ef46db3751d8e999|-175063559|stan/granier_with_traits_no_xylem_sp.stan|t19626.6292908776s|d7a33be0f1b3dfa9|1630|file|local|vector|||0.001||
 fit_abt2_mcmc_granier_with_traits_no_xylem|stem|d43c28df9d90abe3|7b4de252762464c1|ad718dceafc3043d|902325508||t19626.4065729348s|37452973185437ff|130784941|qs|local|vector|||519.487||
 fit_abt2_mcmc_granier_with_traits_no_xylem_sap_trait_clean_all|stem|fe3f20964cf5e9db|b524eef727cc1f82|28393cf0dec59cf3|-896940143||t19626.0978704805s|3f8e04e4e01dd04e|700174|qs|local|vector|||11.607||
 fit_abt2_mcmc_granier_with_traits_no_xylem_sap_trait_clean_dh|stem|0f06514a6645e5f3|a7e8563204e8956e|62b1cea0aee35fea|2123341825||t19626.0902884978s|973736dfe7614351|66120|qs|local|vector|||1.271|EBFMI not computed because it is undefined for posterior chains of length less than 3.|
@@ -816,8 +816,8 @@ gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19566.2869057548s|9ef5b03992486a66|1444|file|local|vector|||1.01||
 granier_without_traits_sp_pool_file|stem|10348a847473358b|412028bb683cf85e|d08213f484b3e9b9|-440545925|stan/granier_without_traits_sp_pool.stan|t19566.3666320214s|813a0d7697333517|548|file|local|vector|||5.348||
 granier_without_traits_sp_segments_file|stem|8f5492aab38f6528|72f7f1f49f42d65d|d08213f484b3e9b9|-760769710|stan/granier_without_traits_sp_segments.stan|t19625.6125910487s|3a1b6f7b11cba393|916|file|local|vector|||11.997||
-impute_mapped|object|e6006f658aab58e5|||||||||||||||
-impute_rest_mapped|object|d020cdf8f72322a1|||||||||||||||
+impute_mapped|object|a9f14858b3eeaf11|||||||||||||||
+impute_rest_mapped|object|4ca0655d49b2f42f|||||||||||||||
 impute_rubber|function|a712d7cca38bf757|||||||||||||||
 imputed_data_2015_1|stem|25f314942645ed19|4dc36c511846de84|e6643d0e9f14debf|1405614786||t19514.8512090938s|827f13cd3f56d089|1052519|rds|local|vector|||26863.356||
 imputed_data_2015_10|stem|7f938f5e7b8b68c8|a4aef430544eb862|e6643d0e9f14debf|946154481||t19513.3985843741s|e09dcc0e0290c9b6|1214803|rds|local|vector|||2928.334||
@@ -912,7 +912,7 @@ logistic|function|85b2eccc2fdb02b5|||||||||||||||
 logistic_sp_plot|stem|c33efc7ee04f1e9e|7353ad10814892c0|a4fb8cdb18d9bbb2|-707568403|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19398.2719318817s|c16b4f88683dfcf4|268908|file|local|vector|||1.72||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|59a0cdb1ff0a1d18|bfa54e212d880986|adef9168d191777d|1440272382||t19297.4278851966s|b2da3daf84b349b0|8342|rds|local|vector|||1.236|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|8bf21f83c4fbcd56|||||||||||||||
+main_list|object|cd74d44f3bdd3326|||||||||||||||
 make_long_nonimputed_df|function|1b237a5ecf4f299b|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1655,7 +1655,7 @@ quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|
 quad_logistic_mcmc_hierarchical_logistic|stem|146bba31473e039b|6b25f2f80d63dbad|582217e2b51f7d0c|1505615404||t19243.2862712881s|4f4d987795184b56|26280270|qs|local|vector|||81.771||
 quad_logistic_summary_hierarchical_logistic|stem|f87edcf94b386457|ce41f99b7031f54f|d88943f9fe678348|1770241141||t19243.2863514283s|f5ff4503604d4799|57842|fst_tbl|local|vector|||6.011||
 quiet|function|7a0df942450ddbd2|||||||||||||||
-raw_data_list|object|d6cd7088dff51156|||||||||||||||
+raw_data_list|object|c5d5edf317170c88|||||||||||||||
 rubber_impute|function|a712d7cca38bf757|||||||||||||||
 rubber_raw_data_csv|stem|710c81835d2dc441|d278a607e2846a03|ef46db3751d8e999|1532992201|data-raw/rubber_raw_data.csv|t19566.2869064493s|2f94788ee24636ab|30518306|file|local|vector|||0.456||
 sap_all_clean_0.02|stem|4354c8c0458138bb|25b1a969628acb02|c4cdf6a0a64dfd2e|1441946753||t19311.5619618967s|cd54ca760fc0a4bc|5408|rds|local|vector|||0.332||
@@ -1719,7 +1719,7 @@ sap_trait_clean_vaf|stem|ad6a00c2ac599929|2ffe4a05947418a1|5029cf70e1f0a976|1626
 sap_trait_clean_vf|stem|d94aef076a495c1d|45c05655ec9affe3|5029cf70e1f0a976|-1588369659||t19311.5619642579s|ac69904de6184df2|10588|rds|local|vector|||0.346||
 sap_trait_clean_wd|stem|ae5622d13e9a60be|2af687c7214b83df|5029cf70e1f0a976|-1496744351||t19311.5619640264s|19d62a0a6e649a53|10190|rds|local|vector|||0.36||
 sapwood_depth_csv|stem|e94d547ae146209c|0e367d6c80cbbba1|ef46db3751d8e999|-430861753|data-raw/sapwood_depth.csv|t19566.2869070975s|01d717670daa253d|1008|file|local|vector|||1.24||
-sapwood_list|object|47d8e2d66915a68f|||||||||||||||
+sapwood_list|object|cc7a2a240bd913d9|||||||||||||||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19242.1496813974s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19243.2858748467s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|27ca53b1660a164b|-1956970355||t19243.2858775319s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.162||
@@ -1745,8 +1745,8 @@ stan_data_no_xylem_sap_trait_clean_nowd|stem|9eafdde68100b01d|88012865041c9de3|8
 stan_data_no_xylem_sap_trait_clean_vaf|stem|9eafdde68100b01d|88012865041c9de3|8b40b84cea8512af|-1495406474||t19626.0903054426s|95782059be65815a|14160|rds|local|vector|||0.119||
 stan_data_no_xylem_sap_trait_clean_vf|stem|9eafdde68100b01d|88012865041c9de3|8b40b84cea8512af|-1498940845||t19626.0906592924s|95782059be65815a|14160|rds|local|vector|||0.109||
 stan_data_no_xylem_sap_trait_clean_wd|stem|9eafdde68100b01d|88012865041c9de3|8b40b84cea8512af|289305783||t19626.0906622092s|95782059be65815a|14160|rds|local|vector|||0.103||
-tar_dir_dep|object|2750d2693ea3acb7|||||||||||||||
-tar_impute|object|bf1216498a57864f|||||||||||||||
+tar_dir_dep|object|957223a2a0a50d4b|||||||||||||||
+tar_impute|object|bd7e17ee3cf22774|||||||||||||||
 test|stem|0181bbeeb0b3572a|729552a304506858|1f2a6a978a288023|1064684737|data/ab_without_traits.csv|t19397.3951851084s|3cf32e70b8fb6243|8349|file|local|vector|||1.917||
 test_fun|function|69b720b1555714c4|||||||||||||||
 tidy_predictions|function|4de722f36d67b4f5|||||||||||||||
@@ -1762,14 +1762,14 @@ traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vaf|stem|bb3be0ca9ad
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_vf|stem|9f097f7557104298|346b04bb9f4d6e9c|6c1f4c78fd7537af|635445995||t19300.2697417442s|8b5b3474a5c6c2ca|30967|rds|local|vector|||2.121|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_loo_fit_abt_mcmc_granier_with_traits_sap_trait_clean_wd|stem|b8f81c5f759ea948|e085941f510144a3|c6524eabff814d7e|-709414829||t19300.2352290738s|a5ee140afc020428|30956|rds|local|vector|||2.179|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
-traits_points_each|function|cac708f1ad2607b7|||||||||||||||
-traits_points_main|function|ecbc17cdb6066570|||||||||||||||
-traits_points_main_plot|stem|49d2115274266b62|4af4c7e3ef57dd45|1c30ae50494e439d|221887310|figs/traits_points_main.png*figs/traits_points_main.pdf|t19625.1322924891s|93850859192889b3|366104|file|local|vector|||1.979||
-traits_points_si|function|142c91c108fd7121|||||||||||||||
-traits_points_si_plot|stem|b519f9db9eb90c10|0b9c7a054a002dd3|ac4514b4d98964c2|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19396.2880639321s|2c16d99c5fbfc86d|529009|file|local|vector|||1.553||
-uncertainty_granier_mapped|object|d087b8c3ae9f718b|||||||||||||||
-uncertainty_list|object|4c9723edbad7b746|||||||||||||||
-uncertainty_mapped|object|32a7c14c0b258db1|||||||||||||||
+traits_points_each|function|a3894eeccd9559d3|||||||||||||||
+traits_points_main|function|dcfba7f88bd2ede2|||||||||||||||
+traits_points_main_plot|stem|5c6b99e221a65586|61193d2971f2a712|8d137696ae89dc8d|221887310|figs/traits_points_main.png*figs/traits_points_main.pdf|t19626.695527063s|97f67cdfba147e4a|718779|file|local|vector|||2.703||
+traits_points_si|function|701ff8c7608a325c|||||||||||||||
+traits_points_si_plot|stem|3b43b03896d8af6f|1898f0fb3aa73a2f|ba34d521e6c0a9c0|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19626.6635852066s|b4b1df37ec94f715|472389|file|local|vector|||2.32||
+uncertainty_granier_mapped|object|aceed363766d29d9|||||||||||||||
+uncertainty_list|object|855c07d242bb05ba|||||||||||||||
+uncertainty_mapped|object|b039529182f68539|||||||||||||||
 vaf_pred_data|stem|bbb966f6c1b4d418|58ebe1207b1d482d|a29bd76ebf130ed8|585601239||t19396.2829997252s|7873bbcfed8e7586|20418|rds|local|vector|||2.351||
 vaf_seg_table|stem|16312d80b987aa03|9829becbcab59fb8|976a7db13a3a3118|-23406847||t19396.353278743s|c92536422f06f877|6314|rds|local|vector|||0.16||
 values|object|d9af27a27ad26844|||||||||||||||

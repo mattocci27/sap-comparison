@@ -1426,9 +1426,15 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
         ylab(expression(Coefficient~italic(a))) +
         coord_cartesian(ylim = c(5, 20000)) +
         scale_x_log10() +
-        scale_y_log10() +
+        # scale_y_log10() +
+        scale_y_log10(
+          breaks = c(10, 100, 1000, 10000),
+          labels = c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))) +
         my_theme() +
-        theme(legend.position = "none")
+        theme(
+          legend.position = "none",
+          axis.title.x = element_text(size = 9),
+          axis.title.y = element_text(size = 9))
   } else {
      p <- p +
         geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
@@ -1438,29 +1444,84 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
         scale_x_log10() +
         coord_cartesian(ylim = c(0, 4)) +
         my_theme() +
-        theme(legend.position = "none")
+        theme(
+          legend.position = "none",
+          axis.title.x = element_text(size = 9),
+          axis.title.y = element_text(size = 9))
     }
   p
 }
 
-traits_points_main <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks) {
+traits_points_main <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
+    wd_pred_data, wood_density,
+    dh_pred_data, log_dh,
+    vf_pred_data, log_vf
+) {
   p1 <- traits_points_each(vaf_pred_data, log_vaf, with_ribbon = FALSE) +
     xlab("VAF (%)")
-  p2 <- traits_points_each(ks_pred_data, log_ks) +
-    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
-    labs(col = "") +
-    theme(
-      legend.position = c(0.35, 0.8),
-      legend.background = element_blank()
-    )
-  p3 <- traits_points_each(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
+  p2 <- traits_points_each(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = FALSE) +
     xlab("VAF (%)")
+  p3 <- traits_points_each(ks_pred_data, log_ks) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
   p4 <- traits_points_each(ks_pred_data, log_ks, coef_a = FALSE, with_ribbon = FALSE) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+  p5 <- traits_points_each(wd_pred_data, wood_density, with_ribbon = FALSE, wd = TRUE) +
+     scale_x_continuous() +
+    xlab(expression(rho~(g~cm^{-3})))
+  p6 <- traits_points_each(wd_pred_data, wood_density, coef_a = FALSE, with_ribbon = FALSE, wd = TRUE) +
+    scale_x_continuous() +
+    xlab(expression(rho~(g~cm^{-3})))
+  p7 <- traits_points_each(dh_pred_data, log_dh, with_ribbon = FALSE) +
+    xlab(expression(D[h]~(mu*{m})))
+  p8 <- traits_points_each(dh_pred_data, log_dh, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab(expression(D[h]~(mu*{m})))
+  p9 <- traits_points_each(vf_pred_data, log_vf, with_ribbon = FALSE) +
+    xlab(expression(VF~(no.~mm^{-2})))
+  p10 <- traits_points_each(vf_pred_data, log_vf, coef_a = FALSE, with_ribbon = FALSE) +
+    xlab(expression(VF~(no.~mm^{-2})))
+    # labs(color = "") +
+    # guides(color = guide_legend(ncol = 2)) +
+    # theme(
+    #   legend.text = element_text(size = 8),
+    #   legend.position = "bottom",
+    #   legend.justification = "left",
+    #   legend.background = element_blank()
+    # )
 
-  p1 + p2 + p3 + p4 +
-    plot_annotation(tag_levels = "A") #3
+  # p1 + p2 + p3 + p4 + p5 +
+  #   p6 + p7 + p8 + p9 + p10  +
+  #   plot_layout(nrow = 5, guides = "collect") +
+  #   plot_annotation(tag_levels = "A") +
+  #   guides(color = guide_legend(ncol = 2, title = "")) +
+  #   theme(
+  #     legend.text = element_text(size = 8),
+  #     legend.position = "bottom",
+  #     legend.justification = "center",
+  #     legend.background = element_blank(),
+  #     plot.tag = element_text(size = 9)
+  #   )
+
+# Use one of the plots to extract the legend
+  extracted_legend <- cowplot::get_legend(
+    p1 + guides(color = guide_legend(ncol = 2, title = "")) +
+      theme(legend.text = element_text(size = 8),
+            legend.position = "bottom",
+            legend.background = element_blank()))
+
+  labels <- LETTERS[1:10]  # "A", "B", "C", ...
+
+# Remove legends from all plots
+  plots <- list(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
+  plots <- lapply(plots, function(p) p + theme(legend.position = "none"))
+
+# Combine the plots using plot_grid
+  combined_plots <- cowplot::plot_grid(plotlist = plots, ncol = 2, labels = labels, label_size = 9)
+
+# Combine the plots and the extracted legend
+  cowplot::plot_grid(combined_plots, extracted_legend, ncol = 1, rel_heights = c(1, 0.05))
+
 }
+
 
 traits_points_si <- function(
     wd_pred_data, wood_density,

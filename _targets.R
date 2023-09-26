@@ -22,6 +22,7 @@ set.seed(123)
 tar_option_set(packages = c(
   "tidyverse",
   "patchwork",
+  "cowplot",
   "bayesplot",
   "httpgd",
   "smatr",
@@ -998,13 +999,18 @@ main_list <- list(
     traits_points_main_plot, {
       p <- traits_points_main(
               vaf_pred_data, log_vaf,
-              ks_pred_data, log_ks)
+              ks_pred_data, log_ks,
+              wd_pred_data, wood_density,
+              dh_pred_data, log_dh,
+              vf_pred_data, log_vf)
       my_ggsave(
         "figs/traits_points_main",
         p,
         dpi = 300,
-        width = 6.8,
-        height = 6.8
+        # width = 6.8,
+        # height = 10
+        width = 4.33,
+        height = 10
       )
     },
     format = "file"
@@ -1019,8 +1025,8 @@ main_list <- list(
         "figs/traits_points_si",
         p,
         dpi = 300,
-        width = 6.8,
-        height = 10
+        width = 4.33,
+        height = 10.9
       )
     },
     format = "file"
