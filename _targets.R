@@ -725,6 +725,41 @@ main_list <- list(
    ),
 
 
+  tar_map(
+    values = list(trait_name = rlang::syms(c(
+      "log_dh", "log_vf", "wood_density",
+      "log_ks", "log_vaf"))),
+    tar_target(
+      stan_data_no_xylem,
+      generate_sap_each_trait_no_xylem_stan_data(
+        fd_k_traits_csv,
+        trait_name = trait_name,
+        remove_abnormal_values = TRUE)
+    ),
+    tar_stan_mcmc(
+     fit_abt2,
+     "stan/granier_with_traits_no_xylem.stan",
+     data = stan_data_no_xylem,
+     refresh = 0,
+     chains = 4,
+     parallel_chains = getOption("mc.cores", 4),
+     iter_warmup = 1000,
+     iter_sampling = 1000,
+     adapt_delta = 0.9,
+     max_treedepth = 15,
+     seed = 123,
+     return_draws = TRUE,
+     return_diagnostics = TRUE,
+     return_summary = TRUE,
+     summaries = list(
+       mean = ~mean(.x),
+       sd = ~sd(.x),
+       mad = ~mad(.x),
+       ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+       posterior::default_convergence_measures()
+       )
+     )
+  ),
 
   # tar_target(
   #   traits_loo,
@@ -981,6 +1016,61 @@ main_list <- list(
       "log_vf"
     )
   ),
+  tar_target(
+    vaf_pred_data_no_xylem,
+    generate_trait_fig_data(
+      fit_abt2_summary_granier_with_traits_no_xylem,
+      fit_abt2_draws_granier_with_traits_no_xylem,
+      fd_k_traits_csv,
+      xylem_lab,
+      "log_vaf",
+      no_xylem = TRUE
+    )
+  ),
+  tar_target(
+    ks_pred_data_no_xylem,
+    generate_trait_fig_data(
+      fit_abt2_summary_granier_with_traits_no_xylem,
+      fit_abt2_draws_granier_with_traits_no_xylem,
+      fd_k_traits_csv,
+      xylem_lab,
+      "log_ks",
+      no_xylem = TRUE
+    )
+  ),
+  tar_target(
+    dh_pred_data_no_xylem,
+    generate_trait_fig_data(
+      fit_abt2_summary_granier_with_traits_no_xylem,
+      fit_abt2_draws_granier_with_traits_no_xylem,
+      fd_k_traits_csv,
+      xylem_lab,
+      "log_dh",
+      no_xylem = TRUE
+    )
+  ),
+  tar_target(
+    wd_pred_data_no_xylem,
+    generate_trait_fig_data(
+      fit_abt2_summary_granier_with_traits_no_xylem,
+      fit_abt2_draws_granier_with_traits_no_xylem,
+      fd_k_traits_csv,
+      xylem_lab,
+      "wood_density",
+      no_xylem = TRUE
+    )
+  ),
+  tar_target(
+    vf_pred_data_no_xylem,
+    generate_trait_fig_data(
+      fit_abt2_summary_granier_with_traits_no_xylem,
+      fit_abt2_draws_granier_with_traits_no_xylem,
+      fd_k_traits_csv,
+      xylem_lab,
+      "log_vf",
+      no_xylem = TRUE
+    )
+  ),
 
   # tar_target(
   #   traits_points_plot, {
@@ -995,6 +1085,7 @@ main_list <- list(
   #   },
   #   format = "file"
   # ),
+
   tar_target(
     traits_points_main_plot, {
       p <- traits_points_main(
@@ -1018,19 +1109,25 @@ main_list <- list(
   tar_target(
     traits_points_si_plot, {
       p <- traits_points_si(
-              wd_pred_data, wood_density,
-              dh_pred_data, log_dh,
-              vf_pred_data, log_vf)
+        vaf_pred_data_no_xylem, log_vaf,
+        ks_pred_data_no_xylem, log_ks,
+        wd_pred_data_no_xylem, wood_density,
+        dh_pred_data_no_xylem, log_dh,
+        vf_pred_data_no_xylem, log_vf,
+        use_color = FALSE)
       my_ggsave(
         "figs/traits_points_si",
         p,
         dpi = 300,
+        # width = 6.8,
+        # height = 10
         width = 4.33,
-        height = 10.9
+        height = 10
       )
     },
     format = "file"
   ),
+
 
   tar_target(
     coef_density_plot, {

@@ -522,6 +522,35 @@ targets::tar_read(all_seg_table)) |>
 
 # Scaling
 
+## Method
+
+
+- we want to scale measurements to annual stand transpiration
+- we setup device to measure K values, we applied Fd-K model to estimate sap flux density
+- There are a lot of missing K values, we used missForest to impute missing K values
+- We explain how to scale K values to annual stand transpiration
+
+<We need a summary paragraph to describe what we wanted to do here>
+
+We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
+This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
+It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
+The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
+As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
+Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
+The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+
+We have K values for three depths (0-2cm, 2-4cm, and 4-6cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
+We used the K values measured at a 0-2 cm depth and from the southern direction as reference values, and estimated the effects of depth and direction on K using a Bayesian linear mixed model.
+When there are observed K values for the focal depeth and direction, we used the observed values for the subsequent analysis.
+When there are no observed K values for the focal depeth and direction, we used the predicted median K values from the linear mixed model for the subsequent analysis.
+K values were completely missing for tree ID 16 in 2015. We assigned the mean K values from the other trees to this tree.
+
+Over two years, we conducted 15 measurements of DBH.
+We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
+We then modeled sapwood length as a function of DBH using a Bayesian linear model.
+We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
+
 ## Imputation for missing K value
 
 We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
@@ -531,6 +560,7 @@ The missForest algorithm has been proven to perform robustly, providing reliable
 As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
 Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
 The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+
 
 ```{r, echo=FALSE, message=FALSE}
 library(patchwork)
@@ -1585,10 +1615,19 @@ targets::tar_read(ks_trees_csv) |>
   read_csv() |>
   write_csv("ks_trees.csv")
 
+tmp <- tmp0 |>
+  dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+library(tidyverse)
+
 targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem)  |>
   janitor::clean_names() |>
   filter(str_detect(variable, "beta"))  |>
   filter(q2_5 * q97_5 > 0)
+
+targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem)  |>
+  janitor::clean_names() |>
+  filter(str_detect(variable, "beta"))
 
 targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem_sp)  |>
   janitor::clean_names() |>
@@ -1597,4 +1636,70 @@ targets::tar_read(fit_abt2_summary_granier_with_traits_no_xylem_sp)  |>
 
 tar_load(fd_k_traits_csv)
 d <- read_csv(fd_k_traits_csv)
+
+xj <- tar_read(stan_data_no_xylem)$xj
+tar_read(stan_data_no_xylem) |> str()
+pca <- prcomp(xj[,-1])
+
+d2 <- d |>
+  filter(is.na(removed_k)) |>
+  dplyr::select(wood_density, dh, vaf, vf, k) |>
+  mutate(dh = log(dh), vaf = log(vaf), vf = log(vf), k = log(k)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(k)) |>
+  unique()
+
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_ks)
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_vaf)
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_vf)
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_dh)
+
+ggplot(d2, aes(vaf, vf)) +
+  geom_point()
+
+ggplot(d2, aes(vaf, k)) +
+  geom_point()
+
+pca2 <- prcomp(d2, scale = TRUE)
+summary(pca2)
+
+tar_read(vaf_pred_data_no_xylem)
+
+tar_read(ks_pred_data_no_xylem)
+
+  d <- read_csv(fd_k_traits_csv)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  d <- d |>
+    filter(is.na(removed_k)) #|>
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id, xylem_type, species) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    ungroup() |>
+    dplyr::select(sample_id, xylem_type, species,
+     wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_dh, log_vaf, log_vf, log_ks)
+
+pca3 <- prcomp(tmp, scale = TRUE)
+
+library(targets)
+library(tidyverse)
+tar_read(stan_data_no_xylem_test_log_ks)
+
 ```
