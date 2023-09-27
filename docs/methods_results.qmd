@@ -1655,13 +1655,16 @@ tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_ks)
 tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_vaf)
 tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_vf)
 tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_dh)
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_wood_density)
+
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem_log_vaf)
+tar_read(fit_abt2_summary_granier_with_traits_no_xylem)
 
 ggplot(d2, aes(vaf, vf)) +
   geom_point()
 
 ggplot(d2, aes(vaf, k)) +
   geom_point()
-
 pca2 <- prcomp(d2, scale = TRUE)
 summary(pca2)
 
