@@ -725,11 +725,19 @@ main_list <- list(
      )
    ),
 
+    # tar_target(
+    #   stan_data_no_xylem_test,
+    #   generate_sap_each_trait_no_xylem_stan_data(
+    #     fd_k_traits_csv,
+    #     # trait_name = rlang::syms(c("int")),
+    #     trait_name = int,
+    #     remove_abnormal_values = TRUE)
+    # ),
 
   tar_map(
     values = list(trait_name = rlang::syms(c(
       "log_dh", "log_vf", "wood_density",
-      "log_ks", "log_vaf"))),
+      "log_ks", "log_vaf", "int"))),
     tar_target(
       stan_data_no_xylem,
       generate_sap_each_trait_no_xylem_stan_data(
@@ -744,8 +752,8 @@ main_list <- list(
      refresh = 0,
      chains = 4,
      parallel_chains = getOption("mc.cores", 4),
-     iter_warmup = 1000,
-     iter_sampling = 1000,
+     iter_warmup = 2000,
+     iter_sampling = 2000,
      adapt_delta = 0.9,
      max_treedepth = 15,
      seed = 123,
@@ -761,7 +769,6 @@ main_list <- list(
        )
      )
   ),
-
   # tar_target(
   #   traits_loo,
   #   lapply(
@@ -772,7 +779,6 @@ main_list <- list(
   #   \(x)x$loo(cores = parallel::detectCores())
   #   )
   # ),
-
   tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
     tar_target(sap_all_raw,
@@ -1200,8 +1206,10 @@ main_list <- list(
         "figs/traits_points_si",
         p,
         dpi = 300,
-        width = 4.33,
-        height = 10
+        width = 6.8,
+        height = 2.7
+        # width = 4.33,
+        # height = 10
       )
     },
     format = "file"

@@ -34,9 +34,17 @@ parameters {
 
 transformed parameters {
   matrix[T, K] alpha_a = beta_a * uk + diag_pre_multiply(tau_k_a, L_Omega_k_a) * zk_a;
-  vector[J] a_hat = diagonal(xj * (alpha_a * uj + diag_pre_multiply(tau_j_a, L_Omega_j_a) * zj_a));
   matrix[T, K] alpha_b = beta_b * uk + diag_pre_multiply(tau_k_b, L_Omega_k_b) * zk_b;
-  vector[J] b_hat = diagonal(xj * (alpha_b * uj + diag_pre_multiply(tau_j_b, L_Omega_j_b) * zj_b));
+  matrix[T, J] species_adjusted_alpha_a = alpha_a * uj;
+  matrix[T, J] random_effects_a = diag_pre_multiply(tau_j_a, L_Omega_j_a) * zj_a;
+  matrix[T, J] species_adjusted_alpha_b = alpha_b * uj;
+  matrix[T, J] random_effects_b = diag_pre_multiply(tau_j_b, L_Omega_j_b) * zj_b;
+  vector[J] a_hat;
+  vector[J] b_hat;
+    for (j in 1:J) {
+        a_hat[j] = dot_product(xj[j], species_adjusted_alpha_a[, j] + random_effects_a[, j]);
+        b_hat[j] = dot_product(xj[j], species_adjusted_alpha_b[, j] + random_effects_b[, j]);
+    }
   matrix[2, J] A_hat = append_row(to_row_vector(a_hat), to_row_vector(b_hat));
   matrix[2, J] A = A_hat + diag_pre_multiply(tau_A, L_Omega_A) * zj_A;
   vector[N] mu;

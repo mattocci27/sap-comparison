@@ -577,6 +577,7 @@ generate_sap_each_trait_no_xylem_stan_data <- function(data, trait_name, remove_
   uj[apply(uj, 1, sum) == 2, 1] <- 0
 
   tmp0 <- d |>
+    mutate(int = 1) |>
     mutate(log_swc = log(swc)) |>
     mutate(log_dh = log(dh)) |>
     mutate(log_vaf = log(vaf)) |>
@@ -592,10 +593,19 @@ generate_sap_each_trait_no_xylem_stan_data <- function(data, trait_name, remove_
   xj <- cbind(1, tmp2)
 
   tmp_sp <- d_sp |>
+    mutate(int = 1) |>
     dplyr::select({{trait_name}})
 
   tmp2_sp <- apply(tmp_sp, 2, scale)
   xk <- cbind(1, tmp2_sp)
+
+  # intercept only model
+  if (is.nan(xj[1, 2])) {
+    xj <- xj[, 1]
+    xk <- xk[, 1]
+    xj <- as.matrix(xj, ncol = 1)
+    xk <- as.matrix(xk, ncol = 1)
+  }
 
   tmp <- d |>
     group_by(species, xylem_type) |>
@@ -1518,14 +1528,14 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
 
   if (coef_a & with_ribbon) {
      p <- ggplot() +
-        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m))) +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.2, fill = "black") +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_l), ymax = exp(pred_a_h)), alpha = 0.4, fill = "black")
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "blue") +
+        # geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_l), ymax = exp(pred_a_h)), alpha = 0.6, fill = "blue") +
+        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "blue")
   } else if (with_ribbon) {
      p <- ggplot() +
-        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m)) +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.2, fill = "black") +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.4, fill = "black")
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "blue") +
+        # geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.6, fill = "red") +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "blue")
    } else {
     p <- ggplot()
   }
@@ -1537,8 +1547,8 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
         geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.6)
     } else {
      p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}})), alpha = 0.6) +
-        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}})), alpha = 0.4)
+        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}})), alpha = 0.5) +
+        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}})), alpha = 0.4, size = 1)
     }
      p <- p +
         ylab(expression(Coefficient~italic(a))) +
@@ -1551,11 +1561,11 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
     if (use_color)  {
      p <- p +
         geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.6)
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.4)
     } else {
      p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}})), alpha = 0.6) +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}})), alpha = 0.4)
+        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}})), alpha = 0.4) +
+        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}})), alpha = 0.4, size = 1)
     }
       p <- p +
         ylab(expression(Coefficient~italic(b))) +
@@ -1566,9 +1576,7 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
   p +
     my_theme() +
     theme(
-      legend.position = "none",
-      axis.title.x = element_text(size = 9),
-      axis.title.y = element_text(size = 9))
+      legend.position = "none")
 }
 
 traits_points_main <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
@@ -1627,14 +1635,29 @@ traits_points_si <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
     vf_pred_data, log_vf,
     use_color = FALSE
 ) {
+
+  label_func <- function(breaks) {
+  sapply(breaks, function(b) {
+    if (grepl("\\.0$", b)) {
+      return(sub("\\.0$", "", b))
+    } else {
+      return(b)
+    }
+  })
+}
+
   p1 <- traits_points_each(vaf_pred_data, log_vaf, with_ribbon = TRUE, use_color = use_color) +
     xlab("VAF (%)")
   p2 <- traits_points_each(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
     xlab("VAF (%)")
+
   p3 <- traits_points_each(ks_pred_data, log_ks, with_ribbon = TRUE, use_color = use_color) +
-    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    scale_x_log10(label = label_func)
   p4 <- traits_points_each(ks_pred_data, log_ks, coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
-    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1})))
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    scale_x_log10(label = label_func)
+
   p5 <- traits_points_each(wd_pred_data, wood_density, with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
      scale_x_continuous() +
     xlab(expression(rho~(g~cm^{-3})))
@@ -1650,14 +1673,22 @@ traits_points_si <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
   p10 <- traits_points_each(vf_pred_data, log_vf, coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
     xlab(expression(VF~(no.~mm^{-2})))
 
-  p1 + p2 + p3 + p4 + p5 +
-    p6 + p7 + p8 + p9 + p10  +
-    plot_layout(nrow = 5, guides = "collect") +
+  # p1 + p2 + p3 + p4 + p5 +
+  #   p6 + p7 + p8 + p9 + p10  +
+  p1 + p3 + p5 + p7 + p9 +
+    p2 + p4 + p6 + p8 + p10  +
+    plot_layout(nrow = 2, guides = "collect") +
     plot_annotation(tag_levels = "A") &
     theme(
       # panel.spacing = unit(-1, "lines"),
+      axis.ticks.length = unit(-0.1, "cm"),
+      axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+      axis.text.y = element_text(size = 7, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+      axis.title.x = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      axis.title.y = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      axis.text = element_text(size = 6),
       plot.margin=unit(c(0.1, 0.1, 0.1, 0.1), "lines"),
-      plot.tag = element_text(size = 10)
+      plot.tag = element_text(size = 8)
     )
 }
 
