@@ -946,6 +946,42 @@ main_list <- list(
     },
     format = "file"
   ),
+  tar_target(
+    ab_points_four_models_plot_all, {
+      p <- ab_comp_four_models_points(
+        fit_ab_each_sap_sp_clean_0.08,
+        fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+        fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+        xylem_lab, rm_dip = FALSE)
+      my_ggsave(
+        "figs/ab_points_four_models_all",
+        p,
+        dpi = 300,
+        width = 110,
+        height = 165,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ab_points_four_models_plot, {
+      p <- ab_comp_four_models_points(
+        fit_ab_each_sap_sp_clean_0.08,
+        fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+        fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+        xylem_lab, rm_dip = TRUE)
+      my_ggsave(
+        "figs/ab_points_four_models",
+        p,
+        dpi = 300,
+        width = 110,
+        height = 165,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
 
   tar_target(
     pg_multi_plot, {

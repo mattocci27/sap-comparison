@@ -1257,6 +1257,136 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
       plot_annotation(tag_levels = "A")
 }
 
+ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab, rm_dip = TRUE) {
+
+# Extract percentiles for model 1 and 2
+  extract_percentiles <- function(fits, var_name) {
+    sapply(fits, function(x) {
+      x$summary %>%
+        janitor::clean_names() %>%
+        filter(variable == var_name) %>%
+        dplyr::select(q2_5, q50, q97_5) %>%
+        unlist()
+    }) |> t() |> as_tibble()
+  }
+
+# Extract percentiles for model 3 and 4
+  extract_alpha_percentiles <- function(data, index) {
+    data %>%
+      janitor::clean_names() %>%
+      filter(str_detect(variable, paste0("alpha\\[", index))) %>%
+      dplyr::select(q2_5, q50, q97_5)
+  }
+
+# Model 1 and 2
+  # d <- targets::tar_read(fit_ab_each_sap_sp_clean_0.08)
+  d <- summary12
+  log_a <- extract_percentiles(d$fit_pool, "log_a") |> exp()
+  b <- extract_percentiles(d$fit_pool, "b")
+  log_a2 <- extract_percentiles(d$fit_segments, "log_a") |> exp()
+  b2 <- extract_percentiles(d$fit_segments, "b")
+
+# Model 3
+  # d3 <- targets::tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
+  d3 <- summary3
+  log_a3 <- extract_alpha_percentiles(d3, 1) |> exp()
+  b3 <- extract_alpha_percentiles(d3, 2)
+
+# Model 4
+  # d4 <- targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
+  d4 <- summary4
+  log_a4 <- extract_alpha_percentiles(d4, 1) |> exp()
+  b4 <- extract_alpha_percentiles(d4, 2)
+
+  d1 <- tibble(species = d$species) |>
+    bind_cols(
+      log_a |> rename(a1_q2_5 = q2_5, a1_q50 = q50, a1_q97_5 = q97_5),
+      b |> rename(b1_q2_5 = q2_5, b1_q50 = q50, b1_q97_5 = q97_5)
+    ) |> full_join(xylem_lab)
+  d2 <- bind_cols(
+      d1,
+      log_a2 |> rename(a2_q2_5 = q2_5, a2_q50 = q50, a2_q97_5 = q97_5),
+      b2 |> rename(b2_q2_5 = q2_5, b2_q50 = q50, b2_q97_5 = q97_5)
+  )
+  d3 <- bind_cols(
+      d1,
+      log_a3 |> rename(a3_q2_5 = q2_5, a3_q50 = q50, a3_q97_5 = q97_5),
+      b3 |> rename(b3_q2_5 = q2_5, b3_q50 = q50, b3_q97_5 = q97_5)
+  )
+  d4 <- bind_cols(
+      d1,
+      log_a4 |> rename(a4_q2_5 = q2_5, a4_q50 = q50, a4_q97_5 = q97_5),
+      b4 |> rename(b4_q2_5 = q2_5, b4_q50 = q50, b4_q97_5 = q97_5)
+  )
+
+
+# Common plotting function
+  ab_each_tmp <- function(data, x_var, y_var, x_label, y_label, use_log_scale = TRUE, rm_dip = TRUE) {
+
+    x_q50 <- sym(paste0(x_var, "_q50"))
+    y_q50 <- sym(paste0(y_var, "_q50"))
+    x_q2_5 <- sym(paste0(x_var, "_q2_5"))
+    y_q2_5 <- sym(paste0(y_var, "_q2_5"))
+    x_q97_5 <- sym(paste0(x_var, "_q97_5"))
+    y_q97_5 <- sym(paste0(y_var, "_q97_5"))
+
+    if (rm_dip) {
+    data <- data |>
+      filter(species != "Dipterocarpus tonkinensis")
+    }
+
+    p <- data |>
+      ggplot(aes(!!x_q50, !!y_q50, col = xylem_long_fct)) +
+      geom_abline(slope = 1, intercept = 0, lty = 2) +
+      geom_point() +
+      geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.5) +
+      geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.5) +
+      xlab(x_label) +
+      ylab(y_label) +
+      my_theme() +
+      labs(col = "") +
+      theme(legend.position = "none")
+
+    if (use_log_scale) {
+      p <- p + scale_x_log10() + scale_y_log10()
+    } else {
+      if (rm_dip) {
+        p <- p + coord_cartesian(xlim = c(0.25, 1.8), ylim = c(0.25, 1.8))
+      } else {
+        p <- p + coord_cartesian(xlim = c(0.25, 3), ylim = c(0.25, 3))
+      }
+    }
+    return(p)
+  }
+
+# Individual plots
+  p_a2 <- ab_each_tmp(d2, "a1", "a2", "a - traditional fitting", "a - model 2", rm_dip = rm_dip)
+  p_b2 <- ab_each_tmp(d2, "b1", "b2", "b - traditional fitting", "b - model 2", use_log_scale = FALSE, rm_dip = rm_dip)
+  p_a3 <- ab_each_tmp(d3, "a1", "a3", "a - traditional fitting", "a - model 3", rm_dip = rm_dip)
+  p_b3 <- ab_each_tmp(d3, "b1", "b3", "b - traditional fitting", "b - model 3", use_log_scale = FALSE, rm_dip = rm_dip)
+  p_a4 <- ab_each_tmp(d4, "a1", "a4", "a - traditional fitting", "a - model 4", rm_dip = rm_dip)
+  p_b4 <- ab_each_tmp(d4, "b1", "b4", "b - traditional fitting", "b - model 4", use_log_scale = FALSE, rm_dip = rm_dip)
+
+# Combined plot
+  combined_plot <- p_a2 + p_b2 +
+    p_a3 + p_b3 +
+    p_a4 + p_b4 +
+    plot_layout(ncol = 2) +
+    plot_annotation(tag_levels = "A") &
+      theme(
+        axis.ticks.length = unit(-0.1, "cm"),
+        axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+        axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+        # axis.title.x = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+        # axis.title.y = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+        # axis.text = element_text(size = 6),
+        plot.margin=unit(c(0.1, 0.1, 0.1, 0.1), "lines")
+        # plot.tag = element_text(size = 8)
+    )
+
+  combined_plot
+}
+# targets::tar_make(ab_points_four_models_plot)
 # 800m2
 tr_scaled_bars <- function(ab_uncertainty_full_df) {
   d <- ab_uncertainty_full_df |>
