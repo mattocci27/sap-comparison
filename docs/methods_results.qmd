@@ -2042,5 +2042,17 @@ tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
 tar_make(ab_points_four_models_plot_all)
 tar_make(ab_points_four_models_plot)
 
+tar_make(test)
+
+tar_read(test2_summary_granier_without_traits_full_segments_no_xylem)
+tar_read(test4_summary_granier_without_traits_full_segments2) |>
+  filter(str_detect(variable, "tau"))
+
+tar_read(test4_summary_granier_without_traits_full_segments3)
+
+loo1 <- tar_read(test2_mcmc_granier_without_traits_full_segments_no_xylem)$loo(cores = parallel::detectCores())
+loo2 <- tar_read(test4_mcmc_granier_without_traits_full_segments2)$loo(cores = parallel::detectCores())
+loo3 <- tar_read(test4_mcmc_granier_without_traits_full_segments3)$loo(cores = parallel::detectCores())
+
 
 ```

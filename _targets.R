@@ -851,6 +851,64 @@ main_list <- list(
     )
   ),
 
+  # without xylem
+  tar_target(test,
+    generate_sap_no_xylem_stan_data(fd_k_traits_csv,
+      remove_abnormal_values = TRUE,
+      upper_pressure = 0.08)),
+  tar_stan_mcmc(
+    test2,
+   "stan/granier_without_traits_full_segments_no_xylem.stan",
+    data = test,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 1000,
+    iter_sampling = 1000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+  # without xylem
+  tar_target(test3,
+    generate_sap_stan_data(fd_k_traits_csv,
+      remove_abnormal_values = TRUE,
+      upper_pressure = 0.08)),
+  tar_stan_mcmc(
+    test4,
+   c("stan/granier_without_traits_full_segments2.stan",
+   "stan/granier_without_traits_full_segments3.stan"),
+    data = test3,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 1000,
+    iter_sampling = 1000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+    )
+  ),
+
   tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
     tar_target(sap_sp_raw,
@@ -1426,17 +1484,17 @@ main_list <- list(
   #   data_exp_html,
   #   "docs/data_exp.qmd"
   # ),
-  tar_target(
-    test,
-    write_ab_csv(
-      fd_k_traits_csv,
-      fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
-      fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-      fit_ab_each_sap_sp_clean_0.08,
-      "data/ab_without_traits.csv"
-      ),
-    format = "file"
-  ),
+  # tar_target(
+  #   test,
+  #   write_ab_csv(
+  #     fd_k_traits_csv,
+  #     fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
+  #     fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
+  #     fit_ab_each_sap_sp_clean_0.08,
+  #     "data/ab_without_traits.csv"
+  #     ),
+  #   format = "file"
+  # ),
   tar_target(
     ks_seg_table,
     generate_summary_trait_table(
