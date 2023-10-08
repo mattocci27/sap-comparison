@@ -1513,3 +1513,162 @@ dbh_points <- function(dbh_imp_df, girth_increment_csv) {
     theme_bw() +
     theme(axis.text.x = element_text(angle = 30, vjust = 0.8))
 }
+
+#fit_dbh_sapwood_draws_normal
+sap_dbh_points <- function(sapwood_depth_csv, post_slen) {
+  d <- read_csv(sapwood_depth_csv)
+
+  calc_quantiles <- function(x, na.rm = TRUE) {
+    q <- quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975), na.rm = na.rm)
+    return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
+  }
+
+  pred_sap <- function(x, para) {
+    log_mu <- para$alpha + para$beta * log(x)
+    exp(log_mu)
+  }
+
+  xx <- seq(10, 40, length = 80)
+
+  tmp <- tibble(xx) |>
+    mutate(post = list(post_slen)) |>
+    mutate(pred = map2(xx, post, pred_sap)) |>
+    mutate(dbh = map(pred, calc_quantiles)) |>
+    unnest_wider(dbh)
+
+  ggplot(tmp) +
+    geom_point(data = d, aes(x = dbh, y = sapwood_depth)) +
+    geom_hline(yintercept = 4, lty = 2) +
+    geom_hline(yintercept = 6, lty = 2) +
+    geom_line(aes(x = xx, y = m)) +
+    geom_ribbon(aes(x = xx, ymin = ll, ymax = hh), alpha = 0.4) +
+    scale_y_continuous(breaks = c(2, 4, 6, 8, 10, 12)) +
+    xlab("DBH (cm)") +
+    ylab("Sapwood length (cm)")  +
+  theme_bw()
+
+}
+
+missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month %in% {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, yday, date, time,
+      vpd, par, t01_0_0:t15_0_0) |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    filter(year == {{year}}) |>
+    as.data.frame()
+}
+
+  clean_imputed_df <- function(imputed_df, tree_id, month) {
+    imputed_df <- imputed_df |>
+      mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
+      mutate(hour = time %/% 60) |>
+      mutate(mins = time %% 60)  |>
+      mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S")) |>
+      filter(yday >= 30 * (month - 1) + 9) |>
+      filter(yday <  30 * (month - 1) + 14) |>
+      filter(tree == tree_id) |>
+      dplyr::select(date_time, ks, dep, dir) |>
+      mutate(model = "Imputed")
+  }
+
+  clean_raw_df <- function(rubber_raw_data_csv, year, month, tree_id) {
+    missForest_clean_keep_date(
+      csv = rubber_raw_data_csv,
+      year = year,
+      month = month) |>
+      as_tibble() |>
+      filter(yday >= 30 * (month - 1) + 9) |>
+      filter(yday <  30 * (month - 1) + 14) |>
+      filter(tree == tree_id) |>
+      dplyr::select(date, ks, dep, dir) |>
+      mutate(date_time = as.POSIXct(date)) |>
+      mutate(model = "Raw")
+  }
+
+imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1,
+                       imputed_df_2, rubber_raw_data_csv_2, year_2, month_2) {
+
+  # if (depth) tree_id <- "t11" else tree_id <- "t04"
+  tree_id <- "t11"
+
+  tmp <- clean_raw_df(rubber_raw_data_csv_1, year = year_1, month = month_1, tree_id)
+  tmp2 <- clean_imputed_df(imputed_df_1, tree_id, month_1)
+  tmp3 <- clean_raw_df(rubber_raw_data_csv_2, year = year_2, month = month_2, tree_id)
+  tmp4 <- clean_imputed_df(imputed_df_2, tree_id, month_2)
+
+
+  df1 <- bind_rows(tmp, tmp2) |>
+    mutate(model = factor(model, levels = c("Raw", "Imputed")))
+  df2 <- bind_rows(tmp3, tmp4) |>
+    mutate(model = factor(model, levels = c("Raw", "Imputed")))
+
+  dep_fun <- function(data) {
+     ggplot(data, aes(x = date_time, y = ks, col = as.factor(dep))) +
+      geom_line() +
+      geom_point(size = 1) +
+      theme_bw() +
+      facet_grid(~ model) +
+      guides(col = guide_legend(title="Depth (cm)")) +
+      theme(legend.position = "bottom") +
+      labs(x = "Date", y = "K")
+  }
+
+  p <- dep_fun(df1) +
+    theme(
+      legend.position = "none"
+    )
+  p2 <- dep_fun(df2)
+
+  p / p2 +
+    plot_annotation(tag_levels = "A")
+
+  # if (depth) {
+  #   p <- ggplot(tmp3, aes(x = date_time, y = ks, col = as.factor(dep))) +
+  #     geom_line() +
+  #     geom_point(size = 1) +
+  #     theme_bw() +
+  #     facet_grid(~ model) +
+  #     guides(col = guide_legend(title="Depth (cm)")) +
+  #     theme(legend.position = "bottom") +
+  #     labs(x = "Date", y = "K")
+  # } else {
+  #   p <- ggplot(tmp3, aes(x = date_time, y = ks, col = as.factor(dir))) +
+  #     geom_line() +
+  #     geom_point(size = 1) +
+  #     theme_bw() +
+  #     facet_grid(~ model) +
+  #     guides(col = guide_legend(title="Direction")) +
+  #     theme(legend.position = "bottom") +
+  #     labs(x = "Date", y = "K")
+  # }
+  # p
+}

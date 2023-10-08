@@ -426,9 +426,10 @@ calibration_raw_data_csv|stem|43ac9d4294b1b66d|01d8057ed06171fc|ef46db3751d8e999
 cl|object|bfd2ca4835bfbdf3|||||||||||||||
 clean_all|function|38cb1bdda4c5a19b|||||||||||||||
 clean_cond_count|function|ad65270eb5a1e852|||||||||||||||
-clean_imputed_df|function|69b720b1555714c4|||||||||||||||
+clean_imputed_df|function|074b1b8f1d7ae25b|||||||||||||||
 clean_ks_trees|function|0a5292c7fab07c9a|||||||||||||||
 clean_ks_trees_err|function|ddfa099a2febad99|||||||||||||||
+clean_raw_df|function|696fa586a1a86ca0|||||||||||||||
 clean_sap_data|function|da4f3213beb5e365|||||||||||||||
 clean_sep|function|69d6dd9823883831|||||||||||||||
 coef_ab_vpart|function|94ec929333b84747|||||||||||||||
@@ -898,6 +899,9 @@ gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19566.2869057548s|9ef5b03992486a66|1444|file|local|vector|||1.01||
 granier_without_traits_sp_pool_file|stem|10348a847473358b|412028bb683cf85e|d08213f484b3e9b9|-440545925|stan/granier_without_traits_sp_pool.stan|t19566.3666320214s|813a0d7697333517|548|file|local|vector|||5.348||
 granier_without_traits_sp_segments_file|stem|8f5492aab38f6528|72f7f1f49f42d65d|d08213f484b3e9b9|-760769710|stan/granier_without_traits_sp_segments.stan|t19625.6125910487s|3a1b6f7b11cba393|916|file|local|vector|||11.997||
+imp_points|function|5092c784f26d09e5|||||||||||||||
+imp_points_plot|stem|17e9d58cfb673a76|024d4678a9075e25|2c5f84e4d8f833c2|-1461674706|figs/imp_points.png*figs/imp_points.pdf|t19638.6541160084s|7f3f44401e5ec359|828814|file|local|vector|||5.31|Removed 233 rows containing missing values geom_point.. Removed 1845 rows containing missing values geom_point.. Removed 233 rows containing missing values geom_point.. Removed 1845 rows containing missing values geom_point.|
+imp_points_plot2|stem|d24b979769c6fbb8|cab850971e673ad2|8247b2db7ed704f4|1571479949|figs/imp_points2.png*figs/imp_points2.pdf|t19638.5398580776s|3564d635c973928c|323795|file|local|vector|||4.099|Removed 1845 rows containing missing values geom_line.. Removed 1845 rows containing missing values geom_point.. Removed 1845 rows containing missing values geom_line.. Removed 1845 rows containing missing values geom_point.|
 impute_mapped|object|0e9b5d305ea45dbd|||||||||||||||
 impute_rest_mapped|object|df1283dd4575215d|||||||||||||||
 impute_rubber|function|a712d7cca38bf757|||||||||||||||
@@ -1001,6 +1005,7 @@ make_long_nonimputed_df|function|1b237a5ecf4f299b|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
 missForest_clean|function|950d0c0dbbcd280e|||||||||||||||
+missForest_clean_keep_date|function|33bb9e02afdae78a|||||||||||||||
 missForest_comb|function|09f743d2b153c64e|||||||||||||||
 missForest_each|function|c74abc68c2399c54|||||||||||||||
 missForest_long|function|88c67f5a90fd6524|||||||||||||||
@@ -1762,6 +1767,8 @@ sap_all_raw_0.05|stem|ea3596aadf3f5c04|4e35a2169759a1d0|c4cdf6a0a64dfd2e|2059589
 sap_all_raw_0.06|stem|e8bea0541ce2374e|125770946e1e641a|c4cdf6a0a64dfd2e|-754271051||t19311.5620067588s|ecd9a80d5c030ea1|13209|rds|local|vector|||0.093||
 sap_all_raw_0.07|stem|c4adff2c115dc832|c89046b43b0fb5bd|c4cdf6a0a64dfd2e|-1127968727||t19311.5620081477s|68b9c30e218a1a8a|13252|rds|local|vector|||0.087||
 sap_all_raw_0.08|stem|ea0ae16495369aea|e4caa84944c36298|c4cdf6a0a64dfd2e|741437177||t19311.5620082403s|c988e60ce3f6f5dc|13262|rds|local|vector|||0.093||
+sap_dbh_points|function|a792b028214bb28a|||||||||||||||
+sap_dbh_points_plot|stem|f0dceff4211be4bf|f1674e087779a011|8f802d26137b5097|-648875638|figs/sap_dbh_points.png*figs/sap_dbh_points.pdf|t19638.4513016288s|5825b58ebd5a978a|90852|file|local|vector|||1.747||
 sap_segment_clean_0.02|stem|b2830f5458f8ff8b|5f4743342c676c4f|86936724aa7971bc|833936017||t19294.3861712434s|a38df276d32c3ecc|24218|rds|local|vector|||0.255||
 sap_segment_clean_0.03|stem|f397394ee78a5677|ed6ef45d286fc870|86936724aa7971bc|1073346331||t19294.3861714749s|f5a7a893802f1a46|36768|rds|local|vector|||0.269||
 sap_segment_clean_0.04|stem|46276239a5732aa4|4ff9fbf02c9d9bcb|86936724aa7971bc|77725804||t19294.3861717064s|7cb3642cb1f37a01|44418|rds|local|vector|||0.284||
@@ -1874,7 +1881,7 @@ traits_points_si|function|a617bbe4b71e7094|||||||||||||||
 traits_points_si_plot|stem|f00adfb61c8ae725|09d94c0daf5bf1a6|9dece4cea672de87|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19628.3999907756s|d6ab7ca1e2e34ab3|507734|file|local|vector|||2.115||
 uncertainty_each_mapped|object|0a18dc1353522af8|||||||||||||||
 uncertainty_granier_mapped|object|924ac06911e9d00b|||||||||||||||
-uncertainty_list|object|bbc7e4551cbda339|||||||||||||||
+uncertainty_list|object|e09c2aefbc43f4a7|||||||||||||||
 uncertainty_mapped|object|c772bc545553f4c6|||||||||||||||
 vaf_pred_data|stem|bbb966f6c1b4d418|58ebe1207b1d482d|b96319f187de51f4|585601239||t19628.4391983259s|7873bbcfed8e7586|20418|rds|local|vector|||3.672||
 vaf_pred_data_each|stem|d86ed3114cba5cb4|546458c93e923110|ea52458907641cb8|-1166837143||t19628.3999662384s|b47e41d050ff1f9c|20367|rds|local|vector|||2.073||

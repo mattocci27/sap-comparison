@@ -1881,6 +1881,46 @@ uncertainty_list <- list(
     format = "file"
   ),
   tar_target(
+    sap_dbh_points_plot, {
+      p <- sap_dbh_points(sapwood_depth_csv, fit_dbh_sapwood_draws_normal)
+      my_ggsave(
+        "figs/sap_dbh_points",
+        p,
+        dpi = 300,
+        width = 4.33,
+        height = 4.33
+      )
+    },
+    format = "file"
+  ),
+  # tar_target(
+  #   imp_points_plot2, {
+  #     p <- imp_points(imputed_df_btrans_2016_6, rubber_raw_data_csv, year = 2016, month = 6)
+  #     my_ggsave(
+  #       "figs/imp_points2",
+  #       p,
+  #       dpi = 300,
+  #       width = 6.81,
+  #       height = 3.4
+  #     )
+  #   },
+  #   format = "file"
+  # ),
+  tar_target(
+    imp_points_plot, {
+      p <- imp_points(imputed_df_btrans_2015_6, rubber_raw_data_csv, year_1 = 2015, month_1 = 6,
+                      imputed_df_btrans_2016_6, rubber_raw_data_csv, year_2 = 2016, month_2 = 6)
+      my_ggsave(
+        "figs/imp_points",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 6.81
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
    scaled_sapflow_csv, {
       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
         mutate(model = paste("full", model, sep = "_"))
@@ -1888,7 +1928,7 @@ uncertainty_list <- list(
         mutate(model = paste("sep", model, sep = "_"))
       tmp3 <- bind_rows(tmp1, tmp2) |>
         arrange(pg)
-      my_write_csv(tmp3, "data/scaled_sapflow.csv")
+      my_write_csv(tmp3, "data/scaled_spflow.csv")
    },
    format = "file"
   ),
