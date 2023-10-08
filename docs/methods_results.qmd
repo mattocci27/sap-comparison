@@ -524,13 +524,11 @@ targets::tar_read(all_seg_table)) |>
 
 ## Method
 
-
+First, we need a summary paragraph to describe what we wanted to do here:
 - we want to scale measurements to annual stand transpiration
 - we setup device to measure K values, we applied Fd-K model to estimate sap flux density
 - There are a lot of missing K values, we used missForest to impute missing K values
 - We explain how to scale K values to annual stand transpiration
-
-<We need a summary paragraph to describe what we wanted to do here>
 
 We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
 This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
@@ -550,17 +548,6 @@ Over two years, we conducted 15 measurements of DBH.
 We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
 We then modeled sapwood length as a function of DBH using a Bayesian linear model.
 We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
-
-## Imputation for missing K value
-
-We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
-This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
-It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
-The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
-As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
-Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
-The estimated out-of-bag (OOB) error rates were < xxx for all the months.
-
 
 ```{r, echo=FALSE, message=FALSE}
 library(patchwork)
@@ -668,30 +655,8 @@ We employed interpolation techniques to estimate the corresponding values for th
 We modeled sapwood length as a function of DBH using a Bayesian linear model.
 We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
 
-```{r, echo=FALSE, fig.height=7}
-# library(tidyverse)
-# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#    targets::tar_read(sapwood_depth_csv)) |> read_csv()
-d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(dbh_imp_df))
+![dbh_points](`r here::here("figs/dbh_points.png")`)
 
-girth <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(girth_increment_csv)) |> here() |> read_csv() |>
-    janitor::clean_names() |>
-    mutate(date = lubridate::dmy(date))
-
-d2 <- d |>
-  filter(date %in% girth$date)
-
-ggplot(d, aes(date, dbh)) +
-  geom_line() +
-  geom_point(data = d2) +
-  ylab("DBH (cm)") +
-  xlab("Date")  +
-  facet_wrap(~tree) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 30))
-```
 ```{r, echo=FALSE}
 d <- withr::with_dir(rprojroot::find_root('_targets.R'),
    targets::tar_read(sapwood_depth_csv)) |> here() |> read_csv()

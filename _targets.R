@@ -39,13 +39,14 @@ tar_option_set(packages = c(
   "doParallel",
   "missForest",
   "data.table",
-  "gtable"
+  "gtable",
+  "ggrepel"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1865,6 +1866,21 @@ uncertainty_list <- list(
     format = "file"
   ),
   tar_target(
+    dbh_points_plot, {
+      p <- dbh_points(dbh_imp_df2, girth_increment_csv)
+      my_ggsave(
+        "figs/dbh_points",
+        p,
+        dpi = 300,
+        # width = 6.81,
+        # height = 6.81
+        width = 4.33,
+        height = 4.33
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
    scaled_sapflow_csv, {
       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
         mutate(model = paste("full", model, sep = "_"))
@@ -1940,6 +1956,12 @@ sapwood_list <- list(
   tar_target(
     dbh_imp_df,
     generate_dbh_imp_data(
+      girth_increment_csv,
+      initial_dbh_csv)
+  ),
+  tar_target(
+    dbh_imp_df2,
+    generate_dbh_imp_data2(
       girth_increment_csv,
       initial_dbh_csv)
   ),

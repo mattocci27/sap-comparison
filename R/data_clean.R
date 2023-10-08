@@ -507,6 +507,61 @@ calc_s_cut <- function(dbh, sap, bark = 0.77) {
   pi * (r1^2 - r2^2)
 }
 
+generate_dbh_imp_data2 <- function(girth_increment_csv, initial_dbh_csv) {
+  d1 <- read_csv(girth_increment_csv)  |>
+    janitor::clean_names() |>
+    mutate(across(where(is.numeric), \(x) x * 0.1)) # mm to cm
+  d2 <- read_csv(initial_dbh_csv) |>
+    rename(tree = tree_id) |>
+    mutate(tree = sprintf("t%02d", tree))
+  d1[is.na(d1)] <- 0
+
+  d1_re <- data.frame(date = c("24/12/2014"), matrix(rep(0, 16), nrow = 1, ncol = 16))  |>
+    janitor::clean_names() |>
+    bind_rows(d1)
+
+  names(d1_re)[-1] <- 1:16
+
+# transform the girth increment data frame to a long format of dbh increment
+  d1_long <- d1_re |>
+    rename_with(~ paste0("tree_", .x), -date) |>
+    pivot_longer(-date, names_to = "tree", values_to = "girth_increment") |>
+    mutate(
+      date = lubridate::dmy(date),
+      tree = as.numeric(str_replace(tree, "tree_", ""))) |>
+    mutate(tree = sprintf("t%02d", tree))
+
+# Join the transformed data frames by tree
+  dbh_data <- d1_long |>
+    left_join(d2, by = "tree") |>
+    group_by(tree) |>
+    arrange(date) |>
+    mutate(girth = pi * initial_dbh + girth_increment) |>
+    mutate(dbh = girth / pi) |>
+    ungroup() |>
+    arrange(tree, date)  # Arrange data by tree and date
+
+  # dbh_data |>
+  #   mutate(initial_dbh = round(initial_dbh, 2)) |>
+  #   mutate(dbh = round(dbh, 2)) |>
+  #   mutate(girth = round(girth, 2))  |>
+  #   DT::datatable)
+
+# Now create a new data frame where each tree has a row for each date
+  all_dates <- seq(min(dbh_data$date), max(dbh_data$date), by = "day")
+
+  dbh_data_interpolated <- dbh_data %>%
+    group_by(tree) %>%
+    do(data.frame(date = all_dates,
+                  dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
+                  stringsAsFactors = FALSE)) %>%
+    ungroup() |>
+    filter(date < "2017-01-01")
+
+  dbh_data_interpolated
+}
+
+
 generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
   d1 <- read_csv(girth_increment_csv)  |>
     janitor::clean_names() |>

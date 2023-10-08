@@ -1483,3 +1483,33 @@ tr_scaled_bars2 <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
    xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
    theme_bw()
 }
+
+dbh_points <- function(dbh_imp_df, girth_increment_csv) {
+  girth <- read_csv(girth_increment_csv) |>
+    janitor::clean_names() |>
+    mutate(date = lubridate::dmy(date))
+
+  tmp <- dbh_imp_df |>
+    filter(date %in% c(as.Date("2014-12-24"), girth$date))
+
+  tmp2 <- tmp |> filter(date == max(tmp$date))
+
+  ggplot(dbh_imp_df, aes(date, dbh, group = tree)) +
+    geom_line(lty = 2, width = 1) +
+    geom_point(data = tmp) +
+    geom_text_repel(data = tmp2,
+      aes(label = tree),
+      size = 3.5,
+      nudge_y = 1, nudge_x = 110,
+      arrow = grid::arrow(type = "open",
+      length = unit(0.075, "inches"))) +
+    ylab("DBH (cm)") +
+    xlab("Date")  +
+    # facet_wrap(~tree) +
+    scale_x_date(
+      breaks = seq(as.Date("2014-12-01"), as.Date("2017-01-01"), by="3 months"),
+      date_labels = "%Y-%m",  # Format as "YYYY-MM"
+      limits = c(min(dbh_imp_df$date), as.Date("2017-04-01"))) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.8))
+}
