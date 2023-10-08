@@ -42,10 +42,10 @@ tar_option_set(packages = c(
   "gtable"
 ))
 
-# tar_option_set(
-#   garbage_collection = TRUE,
-#   memory = "transient"
-# )
+tar_option_set(
+  garbage_collection = TRUE,
+  memory = "transient"
+)
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1789,6 +1789,20 @@ uncertainty_granier_mapped <- tar_map(
     )
   )
 
+uncertainty_each_mapped <- tar_map(
+    values = tibble(folds = 1:60),
+    tar_target(
+      ab_uncertainty_df_each,
+      generate_ab_uncertainty(
+        dir_dep_imp_full_df,
+        dbh_imp_df,
+        post_ab_pool_mc = post_ab_pool_mc4,
+        post_ab_segments_mc = post_ab_segments_mc4,
+        post_slen, post_dir_dep, k = 60, i = folds) |>
+        mutate(pg = 0.08)
+    )
+ )
+
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_full_df,
   uncertainty_mapped[["ab_uncertainty_df"]],
@@ -1799,12 +1813,31 @@ tar_combined_ab_uncertainty_granier <- tar_combine(
   uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
   command = dplyr::bind_rows(!!!.x)
 )
+tar_combined_ab_uncertainty_each <- tar_combine(
+  ab_uncertainty_full_each_df,
+  uncertainty_each_mapped[["ab_uncertainty_df_each"]],
+  command = dplyr::bind_rows(!!!.x)
+)
 
 uncertainty_list <- list(
+    tar_target(
+      post_ab_pool_mc4, {
+        set.seed(123)
+        generate_post_ab_each(fit_ab_each_sap_sp_clean_0.08) |> sample_n(1000)
+      }
+    ),
+    tar_target(
+      post_ab_segments_mc4, {
+        set.seed(123)
+        generate_post_ab_each(fit_ab_each_sap_sp_clean_0.08) |> sample_n(1000)
+      }
+    ),
   uncertainty_mapped,
   uncertainty_granier_mapped,
+  uncertainty_each_mapped,
   tar_combined_ab_uncertainty,
   tar_combined_ab_uncertainty_granier,
+  tar_combined_ab_uncertainty_each,
   tar_target(
     tr_scaled_bars_plot, {
       p <- tr_scaled_bars(ab_uncertainty_full_df)
@@ -1817,6 +1850,31 @@ uncertainty_list <- list(
       )
     },
     format = "file"
+  ),
+  tar_target(
+    tr_scaled_bars_plot2, {
+      p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
+      my_ggsave(
+        "figs/tr_scaled_bars2",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+   scaled_sapflow_csv, {
+      tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
+        mutate(model = paste("full", model, sep = "_"))
+      tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
+        mutate(model = paste("sep", model, sep = "_"))
+      tmp3 <- bind_rows(tmp1, tmp2) |>
+        arrange(pg)
+      my_write_csv(tmp3, "data/scaled_sapflow.csv")
+   },
+   format = "file"
   ),
   NULL
 )

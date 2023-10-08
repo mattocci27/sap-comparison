@@ -1431,3 +1431,55 @@ tr_scaled_bars <- function(ab_uncertainty_full_df) {
     theme_bw()
 }
 
+
+generate_tr_scaled_bars_data <- function(ab_uncertainty_full_df, each = FALSE) {
+  d <- ab_uncertainty_full_df |>
+    filter(!is.na(tree)) |>
+    mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+    rename(s_total_granier_m = s_total_granier) |>
+    group_by(tree, pg) |>
+    summarize(
+      across(
+        .cols = where(is.numeric),
+        .fns = sum
+      ), .groups = "drop")
+
+  if (each) tmp <- 12 else tmp <- 13
+  d2 <- d |>
+    pivot_longer(3:tmp,
+      names_to = "variable",
+      values_to = "value") |>
+    mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
+    mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
+
+  d3 <- d2 |>
+    group_by(pg, model, quantile) |>
+    summarize(tr = sum(value) / 800 * 1000) |>
+    ungroup() |>
+    mutate(pg = ifelse(model == "granier", "NA", pg)) |>
+    mutate(pg = factor(pg, levels = c(
+      "NA",
+      "0.02", "0.025", "0.03", "0.035", "0.04", "0.05", "0.06", "0.07", "0.08"
+    ))) |>
+    filter(!is.na(tr))
+
+  d3 |>
+    pivot_wider(names_from = quantile, values_from = tr) #|>
+}
+
+tr_scaled_bars2 <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df) {
+  tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
+    mutate(model = paste("full", model, sep = "_"))
+  tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
+  mutate(model = paste("sep", model, sep = "_"))
+  tmp3 <- bind_rows(tmp1, tmp2)
+  ggplot(tmp3, aes(x = pg, y = m, fill = model, group = model)) +
+   geom_bar(stat = "identity", position = "dodge") +
+   geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
+   scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +  # This line sets the y-axis breaks
+   scale_fill_viridis_d() +
+   geom_hline(yintercept = 750, lty = 2) +
+   ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+   xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+   theme_bw()
+}

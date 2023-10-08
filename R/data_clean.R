@@ -437,6 +437,19 @@ generate_post_ab <- function(draws) {
     rename(log_a = alpha_1_15, b = alpha_2_15)
 }
 
+generate_post_ab_each <- function(draws, pool = TRUE) {
+  s1 <- draws |>
+    filter(species == "Hevea brasiliensis")
+  if (pool) {
+    s1 <- s1$fit_pool[[1]]$draws
+  } else {
+    s1 <- s1$fit_segments[[1]]$draws
+  }
+   s1 |>
+    posterior::as_draws_df() |>
+    dplyr::select(log_a, b)
+}
+
 generate_dir_dep_imp_data <- function(imputed_full_df) {
 
   date_vec <- imputed_full_df |>

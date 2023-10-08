@@ -763,11 +763,38 @@ Columns are:
  - x_m: 50% quantile (median)
  - x_h: 75% quantile
  - x_hh: 97.5% quantile
- - s_total_granier: estimated by Fd = 119*K^1.23 (this values are assgined for pg = 0.02 for a coding purpose)
+ - s_total_granier: estimated by Fd = 119*K^1.23 (this values are assgined for pg = 0.02 for a codijng purpose)
 
 ```{r, echo=FALSE}
-# d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(ab_uncertainty_full_df))
+library(targets)
+library(tidyverse)
+
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_df))
+
+# tar_read(ab_uncertainty_full_each_df)
+# tar_read(ab_uncertainty_full_df)
+# tar_read(uncertainty_each_mapped)
+
+# tar_read(ab_uncertainty_df_each_1)
+# tar_read(ab_uncertainty_df_1_0.08_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
+
+# hoge <- tar_manifest()
+
+# hoge |>
+#   filter(str_detect(name, "uncertainty_df_1_"))
+
+d_each <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(ab_uncertainty_full_each_df)) |>
+  filter(!is.na(tree)) |>
+  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
+  rename(s_total_granier_m = s_total_granier) |>
+  group_by(tree, pg) |>
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = sum
+    ), .groups = "drop")
 
 d <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(ab_uncertainty_full_df)) |>
@@ -807,25 +834,30 @@ d |>
 ```
 
 
-The figure below shows the sum of all trees divided by 600 m^2^.
+The figure below shows the sum of all trees divided by 800 m^2^.
 Thick bars indicate medians, and error bars indicate 95% quantiles based on the uncertainty of a-b coefficients.
 The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
 Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
 Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
 
 
-![tr_sacled_bars](`r here::here("figs/tr_scaled_bars.png")`)
+![tr_sacled_bars](`r here::here("figs/tr_scaled_bars2.png")`)
 
-```{r, eval = FALSE, echo=FALSE}
-# Sum numeric columns
-d |>
-  mutate(pg = as.character(pg)) |>
-  # summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 * 16  else NA) |>
-  summarise_all(~if(is.numeric(.)) sum(., na.rm = TRUE) / 600 * 1000 else NA) |>
-  dplyr::rename_all(~str_replace(., "s_total", "s_ground")) |>
-  dplyr::select(-tree) |>
-  kbl() |>
-  kable_classic()
+- values:
+  - hh: 97.5% CI
+  - h: 75% CI
+  - m: meidan
+  - l: 25% CI
+  - ll: 2.5% CI
+- model:
+  - sep_grainer: model 1 with Granier's coefficients
+  - sep_pool: model 1
+  - sep_segments: model 2
+ - full_pool: model 3
+  - full_segments: model 4
+
+```{r, echo=FALSE}
+read_csv(here("data/scaled_sapflow.csv")) |> DT::datatable()
 ```
 
 
@@ -2042,7 +2074,16 @@ tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
 tar_make(ab_points_four_models_plot_all)
 tar_make(ab_points_four_models_plot)
 
-tar_make(test)
+s1 <- tar_read(fit_ab_each_sap_sp_clean_0.08) |>
+  filter(species == "Hevea brasiliensis")
+
+s1$fit_pool[[1]]$draws |>
+  posterior::as_draws_df() |>
+  dplyr::select(log_a, b)
+
+s1$fit_segments[[1]]$draws |>
+  posterior::as_draws_df() |>
+  dplyr::select(log_a, b)
 
 tar_read(test2_summary_granier_without_traits_full_segments_no_xylem)
 tar_read(test4_summary_granier_without_traits_full_segments2) |>
@@ -2054,5 +2095,136 @@ loo1 <- tar_read(test2_mcmc_granier_without_traits_full_segments_no_xylem)$loo(c
 loo2 <- tar_read(test4_mcmc_granier_without_traits_full_segments2)$loo(cores = parallel::detectCores())
 loo3 <- tar_read(test4_mcmc_granier_without_traits_full_segments3)$loo(cores = parallel::detectCores())
 
+tar_load(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
+generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
+
+library(tidyverse)
+library(targets)
+library(data.table)
+tar_load(dir_dep_imp_full_df)
+tar_load(dbh_imp_df)
+tar_load(post_ab_pool_mc4)
+post_ab_pool_mc <- tar_read(post_ab_pool_mc4)
+tar_load(post_ab_segments_mc4)
+tar_load(post_slen)
+tar_load(post_dir_dep)
+source("R/data_clean.R")
+source("R/stan.R")
+source("R/figs.R")
+source("R/tables.R")
+source("R/scale.R")
+
+
+library(tictoc)
+tic()
+tmp1 <- generate_ab_uncertainty(
+        dir_dep_imp_full_df |> sample_n(200000),
+        dbh_imp_df,
+        post_ab_pool_mc = post_ab_pool_mc4,
+        post_ab_segments_mc = post_ab_segments_mc4,
+        post_slen, post_dir_dep, k = 2000, i = 1 ) |>
+        mutate(pg = 0.08)
+toc()
+
+tic()
+tmp2 <- generate_ab_uncertainty(
+        dir_dep_imp_full_df |> sample_n(200000),
+        dbh_imp_df,
+        post_ab_pool_mc = tar_read(post_ab_pool_mc2_1_0.08_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08),
+        post_ab_segments_mc = tar_read(post_ab_segments_mc2_1_0.08_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08),
+        post_slen, post_dir_dep, k = 2000, i = 1 ) |>
+        mutate(pg = 0.08)
+toc()
+
+data.frame(a = colnames(tmp1), b = colnames(tmp2))
+
+hoge |>
+   filter(str_detect(name, "uncertainty_df_1_0.08")) |> pull(command)
+
+ab_scaling(tmp1) |> str()
+ab_scaling(tmp2) |> str()
+
+ab_scaling(tmp1) |> dim()
+ab_scaling(tmp2) |> dim()
+
+tar_read(ab_uncertainty_full_df) |> str()
+tar_read(ab_uncertainty_full_each_df) |> str()
+
+dir_dep_imp_df <- tar_read(dir_dep_imp_full_df)
+
+generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
+  post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep,
+  k = 50, i = 1) {
+
+  post_slen_m  <- post_slen |>
+    summarize(across(everything(), median))
+
+  post_dir_dep_m <- post_dir_dep |>
+    mutate(dep_dir_mid = map_dbl(beta, median)) |>
+    dplyr::select(-beta) |>
+    unnest(cols = c()) |>
+    ungroup()
+
+  # add folds here
+  dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, k, i)
+  tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
+    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+
+  dbh_df <- dbh_imp_df |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+
+  tmp2 <- full_join(tmp, dbh_df, by = c("date", "tree"))
+
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+
+  # deeper than 6cm
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+
+  s_df <- bind_rows(s_df, s6_df)
+
+  rm(tmp)
+  rm(tmp2)
+  rm(dbh_df)
+  rm(dir_dep_imp_df)
+  rm(dbh_imp_df)
+  rm(s6_df)
+
+  tmp <- s_df |>
+    setDT() |>
+    mutate(post_ab_pool = list(post_ab_pool_mc)) |>
+    # mutate(post_ab_segments = list(post_ab_segments_mc)) |>
+    mutate(fd_10min_pool_a = map2(log_ks, post_ab_pool, calc_fd_granier_a)) |>
+    # mutate(fd_10min_segments_a = map2(log_ks, post_ab_segments, calc_fd_granier_a)) |>
+    # mutate(fd_10min_pool_b = map2(log_ks, post_ab_pool, calc_fd_granier_b)) |>
+    # mutate(fd_10min_segments_b = map2(log_ks, post_ab_segments, calc_fd_granier_b)) |>
+    mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
+    # mutate(fd_segments_a = map(fd_10min_segments_a, calc_quantiles)) |>
+    # mutate(fd_pool_b = map(fd_10min_pool_b, calc_quantiles)) |>
+    # mutate(fd_segments_b = map(fd_10min_segments_b, calc_quantiles)) |>
+    # dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool_a, -fd_10min_segments_a, -fd_10min_pool_b, -fd_10min_segments_b) |>
+    unnest_wider(fd_pool_a, names_sep = "_") #|>
+
+    # unnest_wider(fd_segments_a, names_sep = "_") |>
+    # unnest_wider(fd_pool_b, names_sep = "_") |>
+    # unnest_wider(fd_segments_b, names_sep = "_") #|>
+    # # ab_scaling()
+}
 
 ```

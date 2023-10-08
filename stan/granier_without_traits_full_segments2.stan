@@ -1,5 +1,3 @@
-Can you check the following stan code? Are there any improvent?
-
 data {
   int<lower=0> N; // number of data
   int<lower=0> J; // number of tree samples
