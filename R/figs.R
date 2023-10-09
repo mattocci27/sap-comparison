@@ -1509,7 +1509,7 @@ dbh_points <- function(dbh_imp_df, girth_increment_csv) {
     scale_x_date(
       breaks = seq(as.Date("2014-12-01"), as.Date("2017-01-01"), by="3 months"),
       date_labels = "%Y-%m",  # Format as "YYYY-MM"
-      limits = c(min(dbh_imp_df$date), as.Date("2017-04-01"))) +
+      limits = c(min(dbh_imp_df$date), as.Date("2017-05-01"))) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 30, vjust = 0.8))
 }
@@ -1587,7 +1587,7 @@ missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
     as.data.frame()
 }
 
-  clean_imputed_df <- function(imputed_df, tree_id, month, day) {
+  clean_imputed_df_tmp <- function(imputed_df, tree_id, month, day) {
     imputed_df |>
       mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
       mutate(hour = time %/% 60) |>
@@ -1600,7 +1600,7 @@ missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
       mutate(model = "Imputed")
   }
 
-  clean_raw_df <- function(rubber_raw_data_csv, year, month, day, tree_id) {
+  clean_raw_df_tmp <- function(rubber_raw_data_csv, year, month, day, tree_id) {
     missForest_clean_keep_date(
       csv = rubber_raw_data_csv,
       year = year,
@@ -1620,10 +1620,10 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
   # if (depth) tree_id <- "t11" else tree_id <- "t04"
   tree_id <- "t11"
 
-  tmp <- clean_raw_df(rubber_raw_data_csv_1, year = year_1, month = month_1, day = day_1, tree_id = tree_id)
-  tmp2 <- clean_imputed_df(imputed_df_1, tree_id, month_1, day_1)
-  tmp3 <- clean_raw_df(rubber_raw_data_csv_2, year = year_2, month = month_2, day = day_2, tree_id = tree_id)
-  tmp4 <- clean_imputed_df(imputed_df_2, tree_id, month_2, day_2)
+  tmp <- clean_raw_df_tmp(rubber_raw_data_csv_1, year = year_1, month = month_1, day = day_1, tree_id = tree_id)
+  tmp2 <- clean_imputed_df_tmp(imputed_df_1, tree_id, month_1, day_1)
+  tmp3 <- clean_raw_df_tmp(rubber_raw_data_csv_2, year = year_2, month = month_2, day = day_2, tree_id = tree_id)
+  tmp4 <- clean_imputed_df_tmp(imputed_df_2, tree_id, month_2, day_2)
 
   df1 <- bind_rows(tmp, tmp2) |>
     mutate(model = factor(model, levels = c("Raw", "Imputed")))
@@ -1638,7 +1638,7 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
       facet_grid(~ model) +
       guides(col = guide_legend(title="Depth (cm)")) +
       theme(legend.position = "bottom") +
-      labs(x = "Date", y = "K")
+      labs(x = "Date", y = expression(italic(K)))
   }
 
   p <- dep_fun(df1) +

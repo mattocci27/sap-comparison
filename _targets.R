@@ -1419,11 +1419,16 @@ main_list <- list(
         str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
         pg,
         "_data.without_traits_segments_",
-        pg, ".csv")
-    )),
+        pg, ".csv")),
+        pg = pg),
     tar_target(
       without_traits_table,
       generate_summary_non_trait_table(path)
+    ),
+    tar_target(
+      full_segments_csv,
+      my_write_csv(without_traits_table, paste0("data/full_segments_", pg, ".csv")),
+      format = "file"
     )
   ),
 
@@ -1931,6 +1936,18 @@ uncertainty_list <- list(
       my_write_csv(tmp3, "data/scaled_spflow.csv")
    },
    format = "file"
+  ),
+  tar_target(
+    dir_dep_table,
+    write_dir_dep_table(fit_dir_dep_summary_no_temporal_hourly_dir,
+      fit_dir_dep_summary_no_temporal_hourly_dep, "data/dir_dep_post.csv"),
+    format = "file"
+  ),
+  tar_target(
+    sap_table,
+    write_sap_table(fit_dbh_sapwood_summary_normal,
+       "data/dbh_sapwood_post.csv"),
+    format = "file"
   ),
   NULL
 )

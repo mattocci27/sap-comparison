@@ -111,3 +111,52 @@ write_varpart_notrait_table <- function(para, out) {
     rename(Levels = variable) |>
     my_write_csv(out)
 }
+
+write_dir_dep_table <- function(dir_summary, dep_summary, out) {
+  tmp1 <- dir_summary
+  tmp1 <- tmp1 |>
+    janitor::clean_names() |>
+    filter(str_detect(variable, "beta")) |>
+    mutate(variable = case_when(
+      variable == "beta[1]" ~ "N",
+      variable == "beta[2]" ~ "E",
+      variable == "beta[3]" ~ "W",
+    ))
+
+  tmp2 <- dep_summary
+  tmp2 <- tmp2 |>
+    janitor::clean_names() |>
+    filter(str_detect(variable, "beta")) |>
+    mutate(variable = case_when(
+      variable == "beta[1]" ~ "2-4 cm",
+      variable == "beta[2]" ~ "4-6 cm",
+    ))
+
+  tmp3 <- bind_rows(tmp1, tmp2) |>
+    dplyr::select(variable, q2_5, q50, q97_5) |>
+    mutate(across(where(is.numeric), exp))
+
+  tmp3 |>
+    mutate(across(where(is.numeric), round, 2)) |>
+    rename(Factor = variable) |>
+    mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
+    dplyr::select(Factor, Posterior) |>
+    my_write_csv(out)
+    # kbl(escape = FALSE) |>
+    # kable_classic()
+}
+
+write_sap_table <- function(sap_summary, out) {
+  sap_summary |>
+    janitor::clean_names() |>
+    filter(variable %in% c("alpha", "beta")) |>
+    mutate(variable = case_when(
+      variable == "alpha" ~ "Intercept",
+      variable == "beta" ~ "Slope",
+    )) |>
+    mutate(across(where(is.numeric), round, 2)) |>
+    rename(Factor = variable) |>
+    mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
+    dplyr::select(Factor, Posterior) |>
+    my_write_csv(out)
+}

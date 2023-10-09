@@ -494,7 +494,7 @@ Light and dark shaded regions indicate 95% and 50% CIs, respectively.
 Relationships between coefficients *a* and *b* and wood density ($\rho$, A, B), hydraulic-weighted diameter (D~h~, C, D), and vessel frequency per unit area (VF, E, F).
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
 None of the traits showed significant correlations with coefficients *a* or *b*.
-](`r here::here("figs/traits_points_si.png")`)
+](`r here::here("data-raw/traits_points_si_re.jpg")`)
 
 ### `r s_table("all_seg_table")`
 
@@ -524,294 +524,133 @@ targets::tar_read(all_seg_table)) |>
 
 ## Method
 
-First, we need a summary paragraph to describe what we wanted to do here:
-- we want to scale measurements to annual stand transpiration
-- we setup device to measure K values, we applied Fd-K model to estimate sap flux density
-- There are a lot of missing K values, we used missForest to impute missing K values
-- We explain how to scale K values to annual stand transpiration
+(**First, we need a summary paragraph to describe what we wanted to do here.
+We might also need a conceptual diagram to explain the analtical framework.**)
 
-We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset.
+We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset (`r s_fig("imp_points")`).
 This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
 It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
 The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
 As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
-Because our dataset is huge (> 4M rows), we applied missForest to each month separately.
-The estimated out-of-bag (OOB) error rates were < xxx for all the months.
+Given the large size of our dataset (> 4M rows), we applied missForest to each month separately.
+The normalized root mean squared error (NRMSE) was < 0.0001 for all the months, suggesting that the imputed values were close to the observed values.
 
-We have K values for three depths (0-2cm, 2-4cm, and 4-6cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
-We used the K values measured at a 0-2 cm depth and from the southern direction as reference values, and estimated the effects of depth and direction on K using a Bayesian linear mixed model.
-When there are observed K values for the focal depeth and direction, we used the observed values for the subsequent analysis.
-When there are no observed K values for the focal depeth and direction, we used the predicted median K values from the linear mixed model for the subsequent analysis.
-K values were completely missing for tree ID 16 in 2015. We assigned the mean K values from the other trees to this tree.
+We have *K* values for three depths (0-2 cm, 2-4 cm, and 4-6 cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
+We used the *K* values measured at a 0-2 cm depth and from the southern direction as reference values and estimated the effects of depth and direction on *K* by using a Bayesian linear mixed model.
+When there are observed *K* values for the focal depth and direction, we used the observed values for the subsequent analysis.
+When there are no observed *K* values for the focal depth and direction, we used the predicted median *K* values from the linear mixed model for the subsequent analysis (`r s_table("dir_dep_post")`).
+*K* values were completely missing for tree ID 16 in 2015.
+We assigned the mean *K* values from the other trees to this tree.
 
 Over two years, we conducted 15 measurements of DBH.
-We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured.
-We then modeled sapwood length as a function of DBH using a Bayesian linear model.
-We used the posterior median of the model and interpolated DBH to estimate daily sapwood length.
+We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured (`r s_fig("dbh_points")`).
+We then modeled sapwood length as a function of DBH using a Bayesian linear model (`r s_fig("sap_dbh_points")`).
+We used the posterior median of the model and interpolated DBH to estimate daily sapwood length (`r s_table("dbh_sawpwood_post")`).
 
-```{r, echo=FALSE, message=FALSE}
-library(patchwork)
-missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
-  d <- read_csv(csv) |>
-    janitor::clean_names() |>
-    mutate(date = mdy_hm(date)) |>
-    mutate(year = year(date)) |>
-    mutate(month = month(date)) |>
-    filter(month %in% {{month}}) |>
-    mutate(day = day(date)) |>
-    mutate(yday = yday(date)) |>
-    mutate(time = hour(date) * 60 + minute(date)) |>
-    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
-    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
-    dplyr::select(year, yday, date, time,
-      vpd, par, t01_0_0:t15_0_0) |>
-    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
-    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
-    mutate(dir = case_when(
-      dir == "0" ~ "S",
-      dir == "1" ~ "E",
-      dir == "2" ~ "N",
-      dir == "3" ~ "W"
-    )) |>
-    mutate(dep = case_when(
-      dep == "0" ~ 2,
-      dep == "1" ~ 4,
-      dep == "2" ~ 6,
-    )) |>
-    mutate(tree = as.factor(tree)) |>
-    mutate(dir = as.factor(dir)) |>
-    dplyr::select(-id)
-
-   d |>
-    filter(year == {{year}}) |>
-    as.data.frame()
-}
-
-# tar_read(imputed_df_btrans_2015_6)
-imputed_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(imputed_df_btrans_2015_6)) |>
-    mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
-    mutate(hour = time %/% 60) |>
-    mutate(mins = time %% 60)  |>
-    mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S"))
-
-rubber_df <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(rubber_raw_data_csv))
-
-tmp <- missForest_clean_keep_date(
-  csv = here(rubber_df),
-  year = 2015,
-  month = 6) |>
-  as_tibble() |>
-  filter(yday >= 151 + 9) |>
-  filter(yday <  151 + 14) |>
-  filter(tree == "t11")
-# tmp |>
-#   filter(is.na(ks))
-tmp2 <- imputed_df |>
-  filter(yday >= 151 + 9) |>
-  filter(yday <  151 + 14) |>
-  filter(tree == "t11")
-# tmp |>
-#   filter(is.na(ks))
-
-p1 <- ggplot(tmp, aes(x = date, y = ks, col = as.factor(dep))) +
-  geom_point() +
-  geom_line() +
-  theme_bw() +
-  theme(legend.position = "bottom") +
-  labs(x = "Date", y = "K") +
-  ggtitle("Raw data")
-
-p2 <- ggplot(tmp2, aes(x = date_time, y = ks, col = as.factor(dep))) +
-  geom_point() +
-  geom_line() +
-  theme_bw() +
-  theme(legend.position = "bottom") +
-  labs(x = "Date", y = "K") +
-  ggtitle("Imputed data")
-
-p1 + p2
-```
-
-Example: Missing value imputations for tree ID 11 in June 2015
-
-![`r s_fig("dbh_points")`
-dbh
-](`r here::here("figs/dbh_points.png")`)
-
-![`r s_fig("sap_dbh_points")`
-sap-dbh
-](`r here::here("figs/sap_dbh_points.png")`)
-
-
-## Uncertainty from a-b coefficients
-
-Sup flux per 10 min is calculated as:
+Sup flux over every 10-minute intervals ($S_{10min}$) was calculated as:
 $$
 S_{10min} = a \times K^b \times A_{sap} \times 600
 $$
 
 where $K$ is the estimated value from directions and depths when sensors are not available and the observed value when sensors are available,
 $A_{sap}$ is sapwood area estimated from DBH and sapwood length,
-and 600 is the number of seconds in 10 min.
+and the factor 600 is the number of seconds in 10-minute intervals.
+We incorporated the uncertainty from *a*-*b* coefficients by employing their 95% credible intervals.
+For other sources of uncertainty, such as estimates of *K* from directions and depths (table), and the estimated sapwood length (`r s_fig("sap_dbh_points")`), we used their median values.
+Finally, we scaled $S_{10min}$ to compute annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
 
-These are 4 components that contribute to the uncertainty in sap flux per 10 min:
+![`r s_fig("imp_points")`
+Examples of *K* value imputations for tree ID 11,  measured at three depths (2, 4, 6 cm) from the south direction.
+(A) February 2016: Imputed values at 4 cm depth between February 14th and 15th are accurately tracking the observed patterns.
+(B) May 2016: In an extreme case, observations are absent across all depths for several days, yet the imputed values align closely with the observed patterns.
+](`r here::here("figs/imp_points.png")`)
 
-- a, b
-- K (estimated from directions)
-- K (estimated from depths)
-- sapwood length (estimated from DBH)
-
-Only the uncertainty from a-b coefficients is included in the final estimates.
-Medians were used for other components.
-To obtain an annual value, this two-year total was divided by 2.
-The annual sap flux (Mg year^-1^ per tree) was then converted to Mega units by multiplying it by 10^-6.
-
-Values are the annual sap flux for each tree and for each applied Pg (Mg year^-1^ per tree).
-
-Columns are:
-
- - pg: pressure gradients
- - x_pool: pooled (traditional) fitting
- - x_segments: segments (multilevel) fitting
- - x_ll: 2.5% quantile
- - x_l: 25% quantile
- - x_m: 50% quantile (median)
- - x_h: 75% quantile
- - x_hh: 97.5% quantile
- - s_total_granier: estimated by Fd = 119*K^1.23 (this values are assgined for pg = 0.02 for a codijng purpose)
-
-```{r, echo=FALSE}
-library(targets)
-library(tidyverse)
-
-d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(ab_uncertainty_full_df))
-
-# tar_read(ab_uncertainty_full_each_df)
-# tar_read(ab_uncertainty_full_df)
-# tar_read(uncertainty_each_mapped)
-
-# tar_read(ab_uncertainty_df_each_1)
-# tar_read(ab_uncertainty_df_1_0.08_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
-
-# hoge <- tar_manifest()
-
-# hoge |>
-#   filter(str_detect(name, "uncertainty_df_1_"))
-
-d_each <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(ab_uncertainty_full_each_df)) |>
-  filter(!is.na(tree)) |>
-  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
-  rename(s_total_granier_m = s_total_granier) |>
-  group_by(tree, pg) |>
-  summarize(
-    across(
-      .cols = where(is.numeric),
-      .fns = sum
-    ), .groups = "drop")
-
-d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(ab_uncertainty_full_df)) |>
-  filter(!is.na(tree)) |>
-  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
-  rename(s_total_granier_m = s_total_granier) |>
-  group_by(tree, pg) |>
-  summarize(
-    across(
-      .cols = where(is.numeric),
-      .fns = sum
-    ), .groups = "drop")
-
-d_ab <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(ab_uncertainty_full_granier_df)) |>
-  filter(!is.na(tree)) |>
-  mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
-  rename(s_total_granier_m = s_total_granier) |>
-  group_by(tree, pg) |>
-  summarize(
-    across(
-      .cols = where(is.numeric),
-      .fns = sum
-    ), .groups = "drop")
+![`r s_fig("dbh_points")`
+DBH increments for each tree (t01-t16) over two years.
+Each point indicates the actual measurement, and dashed lines indicate interpolated values.
+](`r here::here("figs/dbh_points.png")`)
 
 
-# write_csv(d, here("data/ab_scaling_df.csv"))
-
-d |>
-  mutate(
-    across(
-      where(is.numeric),
-      \(x)round(x, 2))) |>
-  DT::datatable()
-  # kbl() |>
-  # kable_classic()
-```
+![`r s_fig("sap_dbh_points")`
+Relationship between sapwood length and DBH.
+The solid line indicates the posterior medians of the linear model, and the shaded areas represent the 95% credible intervals.
+](`r here::here("figs/sap_dbh_points.png")`)
 
 
-The figure below shows the sum of all trees divided by 800 m^2^.
-Thick bars indicate medians, and error bars indicate 95% quantiles based on the uncertainty of a-b coefficients.
-The estimates from Granier's equation look more reasonable and estimates from our model are higher than that.
-Granier's b is 1.23, which makes Fd values very small for K < 1 (e.g., 0.01 ^ 1.23 is much smaller than 0.01), but our estimate for b is about 1.
-Given that K < 1 in our data, the b value (b = 1) is one of the reasons why our estimates are very high.
+![`r fig("scaled_ec")`
+This figure is not finalized.
+](`r here::here("figs/tr_scaled_bars2.png")`)
 
-
-![tr_sacled_bars](`r here::here("figs/tr_scaled_bars2.png")`)
-
-- values:
-  - hh: 97.5% CI
-  - h: 75% CI
-  - m: meidan
-  - l: 25% CI
-  - ll: 2.5% CI
-- model:
-  - sep_grainer: model 1 with Granier's coefficients
-  - sep_pool: model 1
-  - sep_segments: model 2
- - full_pool: model 3
-  - full_segments: model 4
+`r s_table("dir_dep_post")`:
+Bayesian estimates of posterior medians and 95% credible intervals of the effects of diretions and depths on *K*.
+The south direction and 0-2 cm depth were used as reference values.
+As an illustration, the posterior median effect of 4-6 cm depth on *K* is 0.66, suggesting that *K*  at this depth is 66% of its value at the 0-2 cm depth
+The effects of directions were not signifincant.
 
 ```{r, echo=FALSE}
-read_csv(here("data/scaled_sapflow.csv")) |> DT::datatable()
+read_csv(here("data/dir_dep_post.csv")) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
 ```
 
+`r s_table("dbh_sapwood_post")`:
+Bayesian estimates of posterior medians and 95% credible intervals of the intercept and slope for the relationship between sapwood length and DBH on a log-scale.
+
+```{r, echo=FALSE}
+read_csv(here("data/dbh_sapwood_post.csv")) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
 
 ```{r, echo=FALSE, eval=FALSE}
-library(tidyverse)
-library(targets)
+library(kableExtra)
+tmp1 <- tar_read(fit_dir_dep_summary_no_temporal_hourly_dir)
+tmp1 <- tmp1 |>
+  janitor::clean_names() |>
+  filter(str_detect(variable, "beta")) |>
+  mutate(variable = case_when(
+    variable == "beta[1]" ~ "N",
+    variable == "beta[2]" ~ "E",
+    variable == "beta[3]" ~ "W",
+  ))
 
-source("R/figs.R")
-tree_id <- "t04"
+tmp2 <- tar_read(fit_dir_dep_summary_no_temporal_hourly_dep)
+tmp2 <- tmp2 |>
+  janitor::clean_names() |>
+  filter(str_detect(variable, "beta")) |>
+  mutate(variable = case_when(
+    variable == "beta[1]" ~ "2-4 cm",
+    variable == "beta[2]" ~ "4-6 cm",
+  ))
+
+tmp3 <- bind_rows(tmp1, tmp2) |>
+  dplyr::select(variable, q2_5, q50, q97_5) |>
+  mutate(across(where(is.numeric), exp))
+
+tmp3 |>
+  mutate(across(where(is.numeric), round, 2)) |>
+  rename(Factor = variable) |>
+  mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
+  dplyr::select(Factor, Posterior) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+
+tar_read(fit_dbh_sapwood_summary_normal) |>
+  janitor::clean_names() |>
+  filter(variable %in% c("alpha", "beta")) |>
+  mutate(variable = case_when(
+    variable == "alpha" ~ "Intercept",
+    variable == "beta" ~ "Slope",
+  )) |>
+  mutate(across(where(is.numeric), round, 2)) |>
+  rename(Factor = variable) |>
+  mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
+  dplyr::select(Factor, Posterior)
+
+targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)
 
 
-source("R/figs.R")
-clean_raw_df(tar_read(rubber_raw_data_csv), year = 2016, month = 5, day = 20, tree_id = "t11")
-clean_imputed_df(tar_read(imputed_df_btrans_2016_6), tree_id = "t11", month = 6, day = 2)
 
-tar_read(imputed_df_btrans_2015_6) |> pull(dir) |> unique()
-
-source("R/figs.R")
-p <- imp_points(tar_read(imputed_df_btrans_2015_6), tar_read(rubber_raw_data_csv), year = 2015, month = 6, depth = FALSE)
-p
-
-d <- tar_read(rubber_raw_data_csv) |> missForest_clean_keep_date(year = 2016, month = 5)  |>
-  filter(tree == "t11") |> as_tibble() |>
-  mutate(na_check = ifelse(is.na(ks), "NA", "OK")) |>
-  mutate(day = day(date))
-table(d$na_check, d$day, d$dep)
-
-summary(d)
-
-
-source("R/figs.R")
-p <- imp_points(
-  tar_read(imputed_df_btrans_2015_6), tar_read(rubber_raw_data_csv), year_1 = 2015, month_1 = 6, day_1 = 2,
-  tar_read(imputed_df_btrans_2016_6), tar_read(rubber_raw_data_csv), year_2 = 2016, month_2 = 6, day_2 = 4)
-p
 
 knitr::knit_exit()
 ```

@@ -556,7 +556,7 @@ generate_dbh_imp_data2 <- function(girth_increment_csv, initial_dbh_csv) {
                   dbh = approx(x = .$date, y = .$dbh, xout = all_dates)$y,
                   stringsAsFactors = FALSE)) %>%
     ungroup() |>
-    filter(date < "2017-01-01")
+    filter(date < "2017-03-01")
 
   dbh_data_interpolated
 }

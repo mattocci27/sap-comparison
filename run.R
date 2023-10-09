@@ -9,7 +9,8 @@
 #For HPC
 arg = commandArgs(T)
 targets::tar_make_clustermq(
-                            c(imp_points_plot, imp_points_plot2),
+                            # c(imp_points_plot, imp_points_plot2),
+                            # dbh_points_plot,
   workers = as.numeric(arg[1])
 )
 
