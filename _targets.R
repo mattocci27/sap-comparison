@@ -1908,8 +1908,8 @@ uncertainty_list <- list(
   # ),
   tar_target(
     imp_points_plot, {
-      p <- imp_points(imputed_df_btrans_2015_6, rubber_raw_data_csv, year_1 = 2015, month_1 = 6,
-                      imputed_df_btrans_2016_6, rubber_raw_data_csv, year_2 = 2016, month_2 = 6)
+      p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
+                      imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
       my_ggsave(
         "figs/imp_points",
         p,

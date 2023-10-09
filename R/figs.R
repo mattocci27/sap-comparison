@@ -1587,44 +1587,43 @@ missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
     as.data.frame()
 }
 
-  clean_imputed_df <- function(imputed_df, tree_id, month) {
-    imputed_df <- imputed_df |>
+  clean_imputed_df <- function(imputed_df, tree_id, month, day) {
+    imputed_df |>
       mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
       mutate(hour = time %/% 60) |>
       mutate(mins = time %% 60)  |>
       mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S")) |>
-      filter(yday >= 30 * (month - 1) + 9) |>
-      filter(yday <  30 * (month - 1) + 14) |>
+      filter(yday >= 30 * (month - 1) + day) |>
+      filter(yday <  30 * (month - 1) + day + 5) |>
       filter(tree == tree_id) |>
       dplyr::select(date_time, ks, dep, dir) |>
       mutate(model = "Imputed")
   }
 
-  clean_raw_df <- function(rubber_raw_data_csv, year, month, tree_id) {
+  clean_raw_df <- function(rubber_raw_data_csv, year, month, day, tree_id) {
     missForest_clean_keep_date(
       csv = rubber_raw_data_csv,
       year = year,
       month = month) |>
       as_tibble() |>
-      filter(yday >= 30 * (month - 1) + 9) |>
-      filter(yday <  30 * (month - 1) + 14) |>
+      filter(yday >= 30 * (month - 1) + day) |>
+      filter(yday <  30 * (month - 1) + day + 5) |>
       filter(tree == tree_id) |>
       dplyr::select(date, ks, dep, dir) |>
       mutate(date_time = as.POSIXct(date)) |>
       mutate(model = "Raw")
   }
 
-imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1,
-                       imputed_df_2, rubber_raw_data_csv_2, year_2, month_2) {
+imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day_1,
+                       imputed_df_2, rubber_raw_data_csv_2, year_2, month_2, day_2) {
 
   # if (depth) tree_id <- "t11" else tree_id <- "t04"
   tree_id <- "t11"
 
-  tmp <- clean_raw_df(rubber_raw_data_csv_1, year = year_1, month = month_1, tree_id)
-  tmp2 <- clean_imputed_df(imputed_df_1, tree_id, month_1)
-  tmp3 <- clean_raw_df(rubber_raw_data_csv_2, year = year_2, month = month_2, tree_id)
-  tmp4 <- clean_imputed_df(imputed_df_2, tree_id, month_2)
-
+  tmp <- clean_raw_df(rubber_raw_data_csv_1, year = year_1, month = month_1, day = day_1, tree_id = tree_id)
+  tmp2 <- clean_imputed_df(imputed_df_1, tree_id, month_1, day_1)
+  tmp3 <- clean_raw_df(rubber_raw_data_csv_2, year = year_2, month = month_2, day = day_2, tree_id = tree_id)
+  tmp4 <- clean_imputed_df(imputed_df_2, tree_id, month_2, day_2)
 
   df1 <- bind_rows(tmp, tmp2) |>
     mutate(model = factor(model, levels = c("Raw", "Imputed")))

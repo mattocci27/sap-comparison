@@ -781,10 +781,16 @@ read_csv(here("data/scaled_sapflow.csv")) |> DT::datatable()
 
 
 ```{r, echo=FALSE, eval=FALSE}
+library(tidyverse)
+library(targets)
 
 source("R/figs.R")
 tree_id <- "t04"
-clean_raw_df(tar_read(rubber_raw_data_csv), year = 2016, month = 5)
+
+
+source("R/figs.R")
+clean_raw_df(tar_read(rubber_raw_data_csv), year = 2016, month = 5, day = 20, tree_id = "t11")
+clean_imputed_df(tar_read(imputed_df_btrans_2016_6), tree_id = "t11", month = 6, day = 2)
 
 tar_read(imputed_df_btrans_2015_6) |> pull(dir) |> unique()
 
@@ -792,11 +798,19 @@ source("R/figs.R")
 p <- imp_points(tar_read(imputed_df_btrans_2015_6), tar_read(rubber_raw_data_csv), year = 2015, month = 6, depth = FALSE)
 p
 
+d <- tar_read(rubber_raw_data_csv) |> missForest_clean_keep_date(year = 2016, month = 5)  |>
+  filter(tree == "t11") |> as_tibble() |>
+  mutate(na_check = ifelse(is.na(ks), "NA", "OK")) |>
+  mutate(day = day(date))
+table(d$na_check, d$day, d$dep)
+
+summary(d)
+
+
 source("R/figs.R")
 p <- imp_points(
-  tar_read(imputed_df_btrans_2015_6), tar_read(rubber_raw_data_csv), year = 2015, month = 6,
-  tar_read(imputed_df_btrans_2016_6), tar_read(rubber_raw_data_csv), year = 2016, month = 6,
-  depth = FALSE)
+  tar_read(imputed_df_btrans_2015_6), tar_read(rubber_raw_data_csv), year_1 = 2015, month_1 = 6, day_1 = 2,
+  tar_read(imputed_df_btrans_2016_6), tar_read(rubber_raw_data_csv), year_2 = 2016, month_2 = 6, day_2 = 4)
 p
 
 knitr::knit_exit()
