@@ -1772,9 +1772,10 @@ traits_points_si <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
 
 
 # without_traits_0.08
-generate_summary_non_trait_table <- function(path) {
+generate_summary_non_trait_table <- function(path, pg) {
   path |>
   read_csv() |>
+    mutate(max_pg = pg) |>
     mutate(variable_meaning =
       case_when(
         str_detect(variable, "\\[1") ~ "coefficient a",
@@ -1796,7 +1797,7 @@ generate_summary_non_trait_table <- function(path) {
       str_detect(variable, "A") ~ "segments",
     )) |>
     dplyr::select(variable_name = variable, level, target, variable_meaning,
-       q50, q2.5, q97.5, effective_sample_size = ess_tail) |>
+       max_pg, q50, q2.5, q97.5, effective_sample_size = ess_tail) |>
       mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
       mutate(effective_sample_size = round(effective_sample_size, digits = 0)) |>
       mutate(effective_sample_size = format(effective_sample_size, nsmall = 0)) |>

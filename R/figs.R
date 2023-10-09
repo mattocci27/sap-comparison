@@ -1484,6 +1484,14 @@ tr_scaled_bars2 <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
    theme_bw()
 }
 
+generate_tr_scaled_df <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df) {
+  tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
+    mutate(model = paste("full", model, sep = "_"))
+  tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
+  mutate(model = paste("sep", model, sep = "_"))
+  bind_rows(tmp1, tmp2)
+}
+
 dbh_points <- function(dbh_imp_df, girth_increment_csv) {
   girth <- read_csv(girth_increment_csv) |>
     janitor::clean_names() |>

@@ -1414,24 +1414,6 @@ main_list <- list(
      format = "file")
   ),
 
-  tar_map(
-    list(path = rlang::syms(
-        str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
-        pg,
-        "_data.without_traits_segments_",
-        pg, ".csv")),
-        pg = pg),
-    tar_target(
-      without_traits_table,
-      generate_summary_non_trait_table(path)
-    ),
-    tar_target(
-      full_segments_csv,
-      my_write_csv(without_traits_table, paste0("data/full_segments_", pg, ".csv")),
-      format = "file"
-    )
-  ),
-
   tar_target(
     without_traits_pool_0.08_csv,
     write_without_traits_csv(
@@ -1439,15 +1421,6 @@ main_list <- list(
       "data/without_traits_pool_0.08.csv"),
     format = "file"
   ),
-  tar_target(
-    without_traits_segments_table_0.08,
-    generate_summary_non_trait_table(
-      without_traits_pool_0.08_csv)
-  ),
-  # tar_target(
-  #   without_traits_0.08_table,
-  #   generate_summary_non_trait_table(without_traits_0.08)
-  # ),
 
   tar_target(
     ab_csv,
@@ -1871,6 +1844,12 @@ uncertainty_list <- list(
     format = "file"
   ),
   tar_target(
+    tr_scaled_bars_csv,
+      generate_tr_scaled_df(ab_uncertainty_full_df, ab_uncertainty_full_each_df) |>
+        my_write_csv("data/ec_scaled.csv"),
+    format = "file"
+  ),
+  tar_target(
     dbh_points_plot, {
       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
       my_ggsave(
@@ -2025,9 +2004,42 @@ sapwood_list <- list(
   NULL
 )
 
+ full_segments_csv_mapped <- tar_map(
+    list(path = rlang::syms(
+        str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
+        pg,
+        "_data.without_traits_segments_",
+        pg, ".csv")),
+        pg = pg),
+    tar_target(
+      without_traits_table,
+      generate_summary_non_trait_table(path, pg = pg)
+    )
+  )
+ tar_combined_full_segments_data <- tar_combine(
+    full_segments_csv_combined,
+    full_segments_csv_mapped[["without_traits_table"]],
+    command = dplyr::bind_rows(!!!.x)
+  )
+ post_csv_list <- list(
+   full_segments_csv_mapped,
+   tar_combined_full_segments_data,
+   tar_target(
+     full_segments_csv,
+     my_write_csv(full_segments_csv_combined, "data/full_segments_post.csv"),
+     format = "file"
+   ),
+   tar_target(
+     full_segments_traits_csv,
+     my_write_csv(all_seg_table, "data/full_segments_traits_post.csv"),
+     format = "file"
+   )
+ )
+
 append(raw_data_list, main_list) |>
   append(tar_impute) |>
   append(sapwood_list) |>
   append(tar_dir_dep) |>
-  append(uncertainty_list)
+  append(uncertainty_list) |>
+  append(post_csv_list)
 # append(raw_data_list, main_list)

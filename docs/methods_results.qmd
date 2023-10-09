@@ -408,18 +408,15 @@ Relationships between the coefficient *b* and the maximum applied pressure gradi
 Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 ](`r here::here("figs/pg_ribbon_b.png")`)
 
-### `r s_table("without_traits_table_0.02")`
 
-Note: This table is too large and should be put in a separate file.
-We have this table for each maximum applied *P~g~* (0.02 - 0.08).
-
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.02 MPa.
-The column definitions are:
+`r s_table("full_segments_without_traits_table")`:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits, evaluated across different maximum applied pressure gradients.
 
 - variable_name: name of the variable in the stan model
 - level: overall, xylem type, species, or segment
 - targets: name of xylem type, species, or segment
 - variable_meaning: meaning of the variable
+- max_pg: maximum pressure gradient
 - q50: posterior median
 - q2.5: 2.5% posterior quantiles
 - q97.5: 97.5% posterior quantiles
@@ -427,20 +424,14 @@ The column definitions are:
 
 For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees.
 
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)) |>
-  DT::datatable()
-```
+(showing only the first 20 rows here)
 
-### `r s_table("without_traits_table_0.08")`
-
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model without traits when we limited the maximum applied pressure gradients below 0.08 MPa.
-
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08_data.without_traits_segments_0.08.csv)) |>
-  DT::datatable()
+```{r, echo=FALSE}
+read_csv(here::here("data/full_segments_post.csv")) |>
+  head(20) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+  # data.table::as.data.table()
 ```
 
 ![`r fig("coef_density")`
@@ -496,11 +487,8 @@ Points and bars indicate posterior medians and 95% credible intervals (CIs) of c
 None of the traits showed significant correlations with coefficients *a* or *b*.
 ](`r here::here("data-raw/traits_points_si_re.jpg")`)
 
-### `r s_table("all_seg_table")`
+`r s_table("all_seg_table")`: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model with all traits.
 
-Note: This table is too large and should be put in a separate file.
-
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model with all traits.
 The column definitions are:
 
 - variable_name: name of the variable in the stan model
@@ -514,10 +502,14 @@ The column definitions are:
 
 For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
 
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-targets::tar_read(all_seg_table)) |>
-  DT::datatable()
+(showing only the first 20 rows)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/full_segments_traits_post.csv")) |>
+  head(20) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+  # data.table::as.data.table()
 ```
 
 # Scaling
@@ -650,6 +642,8 @@ tar_read(fit_dbh_sapwood_summary_normal) |>
 targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)
 
 
+hoge |>
+  filter(str_detect(name, ""))
 
 
 knitr::knit_exit()
