@@ -293,46 +293,6 @@ main_list <- list(
   ),
 
 
-  # tar_stan_mcmc(
-  #    fit_mvn,
-  #    "stan/anova_mvn.stan",
-  #    data = anova_mvn_data,
-  #    refresh = 0,
-  #    chains = 4,
-  #    parallel_chains = getOption("mc.cores", 4),
-  #    iter_warmup = 1000,
-  #    iter_sampling = 1000,
-  #    adapt_delta = 0.9,
-  #    max_treedepth = 15,
-  #    seed = 123
-  # ),
-  # tar_stan_mcmc(
-  #    fit_lmvn,
-  #    "stan/anova_mvn.stan",
-  #    data = anova_lmvn_data,
-  #    refresh = 0,
-  #    chains = 4,
-  #    parallel_chains = getOption("mc.cores", 4),
-  #    iter_warmup = 1000,
-  #    iter_sampling = 1000,
-  #    adapt_delta = 0.9,
-  #    max_treedepth = 15,
-  #    seed = 123
-  # ),
-  # tar_stan_mcmc(
-  #    fit_gmvn,
-  #    "stan/anova_mvn.stan",
-  #    data = anova_gmvn_data,
-  #    refresh = 0,
-  #    chains = 4,
-  #    parallel_chains = getOption("mc.cores", 4),
-  #    iter_warmup = 1000,
-  #    iter_sampling = 1000,
-  #    adapt_delta = 0.9,
-  #    max_treedepth = 15,
-  #    seed = 123
-  # ),
-
   tar_target(
     loo_,
     lapply(
@@ -405,9 +365,12 @@ main_list <- list(
 
   tar_target(
     coef_intervals_pres_tens_plot, {
-      p1 <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
-      p2 <- coef_intervals_mean(fit_anova_draws_anova_noint_err)
-      p3 <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
+      p1 <- coef_intervals_sd(fit_anova_log_draws_anova_noint)
+      p2 <- coef_intervals_mean(fit_anova_log_draws_anova_noint)
+      p3 <- coef_intervals_diff(fit_anova_log_draws_anova_noint)
+      # p1 <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
+      # p2 <- coef_intervals_mean(fit_anova_draws_anova_noint_err)
+      # p3 <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
       p <- p1 + p2 + p3 + plot_spacer() +
         plot_layout(ncol = 2) +
         plot_annotation(tag_levels = "A")
@@ -457,7 +420,7 @@ main_list <- list(
     anova_yml,
     write_anova_yml(
       "yml/anova.yml",
-      fit_anova_draws_anova_noint_err,
+      fit_anova_log_draws_anova_noint,
       ll = 0.25, hh = 0.75),
     format = "file"
   ),

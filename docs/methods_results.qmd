@@ -11,7 +11,8 @@ crossref:
 prefer-html: true
 format:
   html:
-    theme: spacelab
+    # theme: spacelab
+    theme: coderpro
     toc: true
     toc-depth: 2
     toc-title: Contents
@@ -292,6 +293,8 @@ AP, *Acacia pennata*.
 
 ## Methods
 
+(we need to update here)
+
 Using a power-law function as the foundational model form, we applied two different Bayesian model approaches to analyze the relationship between *F*~d~ and K.
 Our first approach treated segments as the unit of analysis, considering inter-segment, interspecific, and xylem-type variations.
 We call this approach the "multilevel approach."
@@ -549,7 +552,7 @@ $A_{sap}$ is sapwood area estimated from DBH and sapwood length,
 and the factor 600 is the number of seconds in 10-minute intervals.
 We incorporated the uncertainty from *a*-*b* coefficients by employing their 95% credible intervals.
 For other sources of uncertainty, such as estimates of *K* from directions and depths (table), and the estimated sapwood length (`r s_fig("sap_dbh_points")`), we used their median values.
-Finally, we scaled $S_{10min}$ to compute annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
+Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
 
 ![`r s_fig("imp_points")`
 Examples of *K* value imputations for tree ID 11,  measured at three depths (2, 4, 6 cm) from the south direction.
@@ -573,6 +576,12 @@ The solid line indicates the posterior medians of the linear model, and the shad
 This figure is not finalized.
 ](`r here::here("figs/tr_scaled_bars2.png")`)
 
+- sep_pool: model 1 (in the slide)
+- sep_segments: model 2
+- full_pool: model 3
+- full_segments: model 4
+- sep_granier: model 1 with Granier's coefficients
+
 `r s_table("dir_dep_post")`:
 Bayesian estimates of posterior medians and 95% credible intervals of the effects of diretions and depths on *K*.
 The south direction and 0-2 cm depth were used as reference values.
@@ -588,10 +597,40 @@ read_csv(here("data/dir_dep_post.csv")) |>
 `r s_table("dbh_sapwood_post")`:
 Bayesian estimates of posterior medians and 95% credible intervals of the intercept and slope for the relationship between sapwood length and DBH on a log-scale.
 
+
 ```{r, echo=FALSE}
 read_csv(here("data/dbh_sapwood_post.csv")) |>
   kbl(escape = FALSE) |>
   kable_classic()
+```
+
+# Stan codes
+
+## Pressure- vs. tensin-inducded flow
+
+## Pressure vs. number of active vessels
+
+```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge1"}
+```
+
+## model 1: pooled fitting for separte species
+
+```{stan, file=here::here('stan/granier_without_traits_sp_pool.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```
+
+## model 2: multilevel fitting for separte species
+
+```{stan, file=here::here('stan/granier_without_traits_sp_segments.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```
+
+## model 3: pooled fitting for pooled species
+
+```{stan, file=here::here('stan/granier_without_traits_full_pool.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
+```
+
+## model 4: multilevel fitting for pooled species
+
+```{stan, file=here::here('stan/granier_without_traits_full_segments.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -645,6 +684,13 @@ targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_wit
 hoge |>
   filter(str_detect(name, ""))
 
+loo <- tar_read(loo_)
+loo::loo_compare(loo[[1]], loo[[2]], loo[[3]], loo[[4]])
+
+str(loo)
+
+tar_read(fit_anova_log_summary_anova_noint) |> summary()
+tar_read(fit_anova_summary_anova_noint_err) |> summary()
 
 knitr::knit_exit()
 ```
