@@ -93,6 +93,15 @@ sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
 
 ## Methods
 
+A bivariate relationship between pressure- and tension-induced flow rates (*K~s~*) was evaluated a standardized major axis (SMA) regression (Warton et al., 2006).
+We also examined the effect of pressure types and species on *K~s~* using a Bayesian ANOVA model.
+We quantified the proportion of total variance attributed to each component in our model.
+Specifically, the explained variance for a component (i.e., species and pressure) was computed as the ratio of its variance (i.e., $\sigma^2_{sp}$ and $\sigma^2_{pres}$) to the total variance, expressed as a percentage.
+For instance, the percentage of variance explained by factor species was calculated as:
+
+$$
+\frac{\sigma^2_{sp}}{\sigma^2_{sp} + \sigma^2_{pres} + \sigma^2} \times 100\;(\%).
+$$
 
 
 ## Results
@@ -175,84 +184,6 @@ p_5, 0.05 MPa;
 p_8, 0.08 MPa.
 ](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
 
-## Methods
-
-**This is just a note for now.**
-
-### Analysis (ANOVA-like hierarchical model)
-
-We can make the hierarchical model like the previous model, but we can include measurement errors from the raw data too.
-We don't want to waste the data!
-
-$$
-y^{meas}_{1ijk} \sim N(y_{1ijk}, \sigma_{y1ijk})
-$$
-
-$$
-y^{meas}_{2ijk} \sim N(y_{2ijk}, \sigma_{y2ijk})
-$$
-
-$$
-\alpha_j \sim N(0, \sigma_{\alpha})
-$$
-$$
-\beta_j \sim N(0, \sigma_{\beta})
-$$
-
-$$
-\mathrm{ln}\; y_{1ijk} \sim N(\mu + \alpha_j + \beta_k + \mathrm{ln}\; y_{2ijk}, \sigma)
-$$
-
-- *i*: Observation
-
-- *j*: Species
-
-- *k*: Pressure level
-
-- $y^{meas}_{1ijk}$: Measured mean pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (data).
-$y^{meas}_{2ijk}$ is for tension calibration.
-
-- $y_{1ijk}$: True pressure induced flow rates for *i*th observation from *j*th species, under *k*th pressure level (parameter).
-$y_{2ijk}$ is for tension calibration.
-
-- $\sigma_{y1jk}$: Standard deviation of pressure induced flow rates for *i*th obervation from *j*th species, under *k*th pressure level (data).
-This data can be estimated from the raw data with multiple measurements.
-$\sigma_{y2jk}$ is for tension calibration.
-
-- $\mu$: Overall (species and pressure-level independent) effects.
-
-- $\alpha_j$: Species effect
-
-- $\beta_k$: Pressure-level effect
-
-- $\sigma_{\alpha}$: Standard deviation of the species effect
-
-- $\sigma_{\beta}$: Standard deviation of the pressure-level effect
-
-- $\sigma$: Standard deviation of the model (i.e., residuals)
-
-
-I will show several figures from this single analysis.
-
-We can translate the posterior distribution of standard deviations into an ANOVA like statement.
-
-For example, we can calculate the species effect like:
-
-$$
-\frac{\sigma^2_{\alpha}}{\sigma^2_{\alpha} + \sigma^2_{\beta} + \sigma^2} \times 100\;(\%)
-$$
-
-The effect of interactions was not selected after model selections.
-
-note:
-
-- median and 50% CIs
-
-- Species: `r anova_yml$species`
-
-- Pressure: `r anova_yml$pressure`
-
-- Residuals: `r anova_yml$residuals`
 
 # Pressure vs. number of active vessels
 
@@ -284,10 +215,6 @@ TG, *Tectona grandis*;
 AP, *Acacia pennata*.
 ](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
 
-## Stan code
-
-```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge"}
-```
 
 # Coefficients *a* and *b*
 
@@ -607,6 +534,9 @@ read_csv(here("data/dbh_sapwood_post.csv")) |>
 # Stan codes
 
 ## Pressure- vs. tensin-inducded flow
+
+```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
+```
 
 ## Pressure vs. number of active vessels
 
