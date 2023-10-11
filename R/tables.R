@@ -160,3 +160,50 @@ write_sap_table <- function(sap_summary, out) {
     dplyr::select(Factor, Posterior) |>
     my_write_csv(out)
 }
+
+generate_pool_ab_table <- function(summary_sep) {
+  map_dfr(summary_sep$fit_pool,
+    \(x)x$summary |> filter(variable %in% c("log_a", "b")))  |>
+    mutate(species = rep(summary_sep$species, each = 2)) |>
+    mutate(across(c(q50, q2.5, q97.5),
+                  ~ ifelse(str_detect(variable, "log_a"), exp(.x), .x))) |>
+    mutate(level = "species", target = species) |>
+    mutate(variable = ifelse(variable == "log_a", "a", "b")) |>
+    mutate(variable_meaning = case_when(
+      variable == "a" ~ "coefficient a",
+      variable == "b" ~ "coefficient b",
+    )) |>
+    dplyr::select(
+      variable, level, target, variable_meaning, q50, q2.5, q97.5,
+      effective_sample_size = ess_bulk
+    )
+}
+
+generate_segments_ab_table <- function(summary_sep) {
+  summary_sep |>
+    dplyr::select(species, fit_segments) |>
+    unnest(cols = c(fit_segments)) |>
+    filter(names(fit_segments) == "summary") |>
+    unnest(cols = c(fit_segments)) |>
+    filter(str_detect(variable, "log_a$|b$|A")) |>
+    mutate(tmp = str_extract(variable, "(?<=,)[0-9]+(?=\\])")) |>
+    mutate(across(c(q50, q2.5, q97.5),
+                  ~ ifelse(str_detect(variable, "log_a|A\\[1"), exp(.x), .x))) |>
+    mutate(level = ifelse(str_detect(variable, "A"),
+      "segment",
+      "species")) |>
+    mutate(target = ifelse(str_detect(variable, "A"),
+      paste("segment", tmp, "of", species),
+      species)) |>
+    mutate(variable = ifelse(variable == "log_a", "a", variable)) |>
+    mutate(variable_meaning = case_when(
+      variable == "a" ~ "coefficient a",
+      variable == "b" ~ "coefficient b",
+      str_detect(variable, "A\\[1") ~ "coefficients a",
+      str_detect(variable, "A\\[2") ~ "coefficients b",
+    )) |>
+    dplyr::select(
+      variable, level, target, variable_meaning, q50, q2.5, q97.5,
+      effective_sample_size = ess_bulk
+    )
+}

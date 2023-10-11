@@ -888,6 +888,7 @@ generate_imputed_df|function|0f789a491d45cc73|||||||||||||||
 generate_k_range|function|4ef822ee3defd670|||||||||||||||
 generate_logistic_stan_data|function|3fc36a50ea29a681|||||||||||||||
 generate_piecewise_logistic_stan_data|function|2978e927557631bf|||||||||||||||
+generate_pool_ab_table|function|9b86e83f1b5f4828|||||||||||||||
 generate_post_ab|function|8d17ff7686dc836c|||||||||||||||
 generate_post_ab_each|function|4dfb2075875087fc|||||||||||||||
 generate_post_dir_dep|function|8e152fa07e08c6e6|||||||||||||||
@@ -901,6 +902,7 @@ generate_sap_stan_data_segment|function|c19a8c68914c4e27|||||||||||||||
 generate_sap_stan_data_sp|function|4809e4543a18619a|||||||||||||||
 generate_sap_traits_no_xylem_stan_data|function|1684261e5df52bbf|||||||||||||||
 generate_sap_traits_stan_data|function|72e843bcc6365aab|||||||||||||||
+generate_segments_ab_table|function|74e53aa83d2cf0af|||||||||||||||
 generate_summary_non_trait_table|function|5df586937452970b|||||||||||||||
 generate_summary_trait_table|function|7df3f08b7795dc53|||||||||||||||
 generate_tr_scaled_bars_data|function|fb0020e94d83d617|||||||||||||||
@@ -1016,7 +1018,7 @@ logistic|function|85b2eccc2fdb02b5|||||||||||||||
 logistic_sp_plot|stem|c33efc7ee04f1e9e|7353ad10814892c0|a4fb8cdb18d9bbb2|-707568403|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19398.2719318817s|c16b4f88683dfcf4|268908|file|local|vector|||1.72||
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_|stem|59a0cdb1ff0a1d18|bfa54e212d880986|adef9168d191777d|1440272382||t19297.4278851966s|b2da3daf84b349b0|8342|rds|local|vector|||1.236|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|0ee5a444afd44c9a|||||||||||||||
+main_list|object|9e601870ca538af1|||||||||||||||
 make_long_nonimputed_df|function|1b237a5ecf4f299b|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1069,6 +1071,22 @@ piecewise_logistic_mcmc_piecewise_logistic|stem|6316862787800eef|13f6a7fe6e5c4c1
 piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f71598|998900439||t19242.1381859688s|05dddead137fffcf|1715|rds|local|vector|||0.208||
 piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19242.1398174331s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
 plot_logistic_sp|function|b1e72171f9d1e5e5|||||||||||||||
+pool_ab_table_sap_sp_clean_0.02|stem|bf1fd9b2113e6342|921443c24ebb67ef|a8e9a778fabca4f4|-647545252||t19641.1253116828s|08c3ead243ac6a78|2803|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_clean_0.025|stem|229f0ab3f0904322|f7ea0934d6e8f08d|abcb49a82e292962|-826293235||t19641.1247936745s|f04db6b8cb9acf68|2808|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_clean_0.03|stem|795d8911c1b5e3f4|08eec3aaf21eabe5|11fa207f3a9b31e6|667835177||t19641.1253209884s|0bc14aed554b56da|2804|rds|local|vector|||0.035||
+pool_ab_table_sap_sp_clean_0.035|stem|c4aeb93fa30076fa|26b3336cbfe02a49|374105a5f3b5aea7|-409013077||t19641.1247622857s||2793|rds|local|vector|||0.937||ℹ In argument tmp  sap_sp_clean_0.035.Caused by error tmp must be size 62 or 1, not 31.
+pool_ab_table_sap_sp_clean_0.04|stem|9cd3bba0f530c5be|b8adb0e602fb7c0d|b267dfed4a3652c2|-164169733||t19641.1253315439s|cdbe451a6b064237|2805|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_clean_0.05|stem|1eda48129f750bc7|4cfcb1d4d446b8e6|4bb9facf57a656e0|-999287698||t19641.1253433032s|6cf975604dc1102f|2796|rds|local|vector|||0.033||
+pool_ab_table_sap_sp_clean_0.06|stem|b490d61a7469cac4|81eb4a47713364a3|da6b6a265be61e57|1967814152||t19641.125352655s|2018e1854463aeab|2799|rds|local|vector|||0.033||
+pool_ab_table_sap_sp_clean_0.07|stem|8108762c9768ddce|c7b5c4be9d1c4352|75f8fffcf54a34a2|1327704506||t19641.1253630254s|0296590fdecf4135|2800|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_clean_0.08|stem|f128bc1ef71db63a|0ab0d3450445d2cf|f2eae8293019253b|413875399||t19641.1253652013s|2018e1854463aeab|2799|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_raw_0.02|stem|c12a7acfdf6a85c2|dd844cb3bdddbe5d|6b5a49bc69b0e023|1289242623||t19641.1246802026s||2808|rds|local|vector|||1.125||ℹ In argument tmp  stan_each.Caused by error object stan_each not found
+pool_ab_table_sap_sp_raw_0.03|stem|dfc70c606f26103f|77e0a5e4e8be3055|6f2de94e20c9ffc1|1996069949||t19641.1246943229s|0296590fdecf4135|2800|rds|local|vector|||0.841||
+pool_ab_table_sap_sp_raw_0.04|stem|c93998eb16179e3d|2d0813efe876988e|abdf7798a744e60f|-2127253325||t19641.1247064988s|cdbe451a6b064237|2805|rds|local|vector|||0.034||
+pool_ab_table_sap_sp_raw_0.05|stem|52c3c3389ccd409e|cc5b0e931a497bb2|a62d308833180581|-1806805274||t19641.1247180265s|2018e1854463aeab|2799|rds|local|vector|||0.035||
+pool_ab_table_sap_sp_raw_0.06|stem|517ec2774ee33526|2e61bfadde7ddf25|1e240766ddbb7562|-1649251922||t19641.1247275635s|e0a9b23a4e839fdc|2798|rds|local|vector|||0.035||
+pool_ab_table_sap_sp_raw_0.07|stem|09098a00da309e49|9bb46a39dc1cb14f|04724c7e81d4d230|-1868378221||t19641.1247394617s|e0a9b23a4e839fdc|2798|rds|local|vector|||0.035||
+pool_ab_table_sap_sp_raw_0.08|stem|17cdbd9220d92d83|7c1b893192918a2b|3377ba6f5f62aa98|-1712856547||t19641.1247468228s|2018e1854463aeab|2799|rds|local|vector|||0.035||
 pool_multi_plot|stem|ccba2aa0b664bbe8|7c08bcb0c2fb3ec7|d9d2d45965a5315c|980054747|figs/pool_multi.png*figs/pool_multi.pdf|t19394.4258664875s|ec0874ac0ef0b62e|1016949|file|local|vector|||2.788||
 post_ab_pool_mc_0.02_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.02_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.02|stem|3681f45f49ff8b70|60d87c27c793d217|fe0fec0d2938daf2|2000326907||t19570.3778858342s|c78bc16883426a25|20575|rds|local|vector|||0.275||
 post_ab_pool_mc_0.025_fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.025_fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.025|stem|2e33b9d9c37960aa|ee3997b17aabc2e4|2d89bf5e6658695b|703639314||t19570.3805908058s|9d8d85413c3f9274|20546|rds|local|vector|||0.067||

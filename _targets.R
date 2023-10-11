@@ -919,7 +919,17 @@ main_list <- list(
             granier_without_traits_sp_segments_file,
             iter_warmup = 2000,
             iter_sampling = 2000))
-      })
+      }),
+    tar_target(
+      pool_ab_table,
+      generate_pool_ab_table(fit_ab_each) |>
+        mutate(tmp = pg)
+    ),
+    tar_target(
+      segments_ab_table,
+      generate_segments_ab_table(fit_ab_each) |>
+        mutate(tmp = pg)
+    )
   ),
 
   tar_target(
@@ -1980,9 +1990,9 @@ sapwood_list <- list(
     )
   )
  tar_combined_full_segments_data <- tar_combine(
-    full_segments_csv_combined,
-    full_segments_csv_mapped[["without_traits_table"]],
-    command = dplyr::bind_rows(!!!.x)
+   full_segments_csv_combined,
+   full_segments_csv_mapped[["without_traits_table"]],
+   command = dplyr::bind_rows(!!!.x)
   )
  post_csv_list <- list(
    full_segments_csv_mapped,
