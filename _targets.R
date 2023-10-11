@@ -1170,6 +1170,50 @@ granier_without_traits_mapped <- tar_map(
     )
   )
 
+segments_xylem_df_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit_summary_segments_xylem_",
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
+    pg = pg),
+  tar_target(
+    table,
+    generates_segments_xylem_table(stan_summary)
+  ),
+  tar_target(
+    table_re,
+    generate_summary_non_trait_table(table, pg = pg)
+  )
+)
+species_xylem_df_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit_summary_species_xylem_",
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
+    pg = pg),
+  tar_target(
+    table,
+    generates_segments_xylem_table(stan_summary)
+  ),
+  tar_target(
+    table_re,
+    generate_summary_non_trait_table(table, pg = pg)
+  )
+)
+
+tar_combined_segments_xylem_df <- tar_combine(
+  segments_xylem_df_combined,
+  segments_xylem_df_mapped[["table_re"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+tar_combined_species_xylem_df <- tar_combine(
+  species_xylem_df_combined,
+  species_xylem_df_mapped[["table_re"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+
+
 # with single traits -----------------------------------------
   granier_with_traits_mapped <- tar_map(
     values = list(trait_name = rlang::syms(c(
@@ -1263,131 +1307,150 @@ granier_list <- list(
     generate_species_segments_ab_csv(species_ab_table_combined, "data/species_only_ab.csv"),
     format = "file"
   ),
+  segments_xylem_df_mapped,
+  species_xylem_df_mapped,
+  tar_combined_segments_xylem_df,
+  tar_combined_species_xylem_df,
+  tar_target(
+    segments_xylem_csv,
+    my_write_csv(segments_xylem_df_combined, "data/segments_xylem_post.csv"),
+    format = "file"
+  ),
+  tar_target(
+    species_xylem_csv,
+    my_write_csv(species_xylem_df_combined, "data/species_xylem_post.csv"),
+    format = "file"
+  ),
+  # tar_target(
+  #   full_segments_traits_csv,
+  #   my_write_csv(all_seg_table, "data/full_segments_traits_post.csv"),
+  #   format = "file"
+  # ),
   NULL
 )
-# #------------------------------------------------------------
-# # values <- tibble(tree = c(str_c("t0", 1:9), str_c("t1", 0:1)))
 
-# values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
-#   filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
+#------------------------------------------------------------
 
-# values2 <- expand_grid(year = 2016, month = c(9, 10, 12)) |>
-#   mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
+values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
+  filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
 
-# impute_mapped <- tar_map(
-#   values = values,
-#   tar_target(
-#     imputed_data,
-#       missForest_long(
-#         csv = rubber_raw_data_csv,
-#         year = year,
-#         month = month
-#       )
-#   ),
-#   tar_target(
-#     imputed_df, {
-#       imputed_data$ximp |>
-#         as_tibble()
-#     }
-#     ),
-#   tar_target(
-#     nramse,
-#     imputed_data$OOBerror[1]
-#     ),
-#   tar_target(
-#     imputed_df_btrans,
-#     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
-#   )
-#   )
+values2 <- expand_grid(year = 2016, month = c(9, 10, 12)) |>
+  mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
 
-# tar_combined_imputed_data <- tar_combine(
-#   combined_imputed_mapped,
-#   impute_mapped[["imputed_df_btrans"]],
-#   command = dplyr::bind_rows(!!!.x)
-# )
+impute_mapped <- tar_map(
+  values = values,
+  tar_target(
+    imputed_data,
+      missForest_long(
+        csv = rubber_raw_data_csv,
+        year = year,
+        month = month
+      )
+  ),
+  tar_target(
+    imputed_df, {
+      imputed_data$ximp |>
+        as_tibble()
+    }
+    ),
+  tar_target(
+    nramse,
+    imputed_data$OOBerror[1]
+    ),
+  tar_target(
+    imputed_df_btrans,
+    backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
+  )
+  )
 
-# tar_combined_nrmse <- tar_combine(
-#   combined_nrmse,
-#   impute_mapped[["nramse"]],
-#   command = dplyr::bind_rows(!!!.x, .id = "id")
-# )
+tar_combined_imputed_data <- tar_combine(
+  combined_imputed_mapped,
+  impute_mapped[["imputed_df_btrans"]],
+  command = dplyr::bind_rows(!!!.x)
+)
 
-# impute_rest_mapped <- tar_map(
-#   values = values2,
-#   tar_target(
-#     imputed_rest,
-#     {
-#       tmp <- missForest_clean(
-#         csv = rubber_raw_data_csv,
-#         year = year,
-#         month = month)
-#       bind_rows(tmp, df_name) |>
-#         missForest(parallelize = "forests")
-#     }
-#    ),
-#   tar_target(
-#     imputed_df2,
-#     clean_imputed_df(imputed_rest)
-#    ),
-#   tar_target(
-#     nramse2,
-#     imputed_rest$OOBerror[1]
-#     ),
-#    tar_target(
-#      imputed_df_btrans2,
-#      backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
-#    )
-# )
+tar_combined_nrmse <- tar_combine(
+  combined_nrmse,
+  impute_mapped[["nramse"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
 
-# tar_combined_nrmse_rest <- tar_combine(
-#   combined_nrmse_rest,
-#   impute_rest_mapped[["nramse2"]],
-#   command = dplyr::bind_rows(!!!.x, .id = "id")
-# )
+impute_rest_mapped <- tar_map(
+  values = values2,
+  tar_target(
+    imputed_rest,
+    {
+      tmp <- missForest_clean(
+        csv = rubber_raw_data_csv,
+        year = year,
+        month = month)
+      bind_rows(tmp, df_name) |>
+        missForest(parallelize = "forests")
+    }
+   ),
+  tar_target(
+    imputed_df2,
+    clean_imputed_df(imputed_rest)
+   ),
+  tar_target(
+    nramse2,
+    imputed_rest$OOBerror[1]
+    ),
+   tar_target(
+     imputed_df_btrans2,
+     backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
+   )
+)
 
-# tar_combined_imputed_rest_data <- tar_combine(
-#   combined_imputed_rest_mapped,
-#   impute_rest_mapped[["imputed_df_btrans2"]],
-#   command = dplyr::bind_rows(!!!.x)
-# )
+tar_combined_nrmse_rest <- tar_combine(
+  combined_nrmse_rest,
+  impute_rest_mapped[["nramse2"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
 
-# tar_impute <- list(
-#   impute_mapped,
-#   tar_combined_imputed_data,
-#   tar_combined_nrmse,
-#   impute_rest_mapped,
-#   tar_combined_imputed_rest_data,
-#   tar_combined_nrmse_rest,
-#   tar_target(
-#     nrmse_df, {
-#       tmp1 <- combined_nrmse |>
-#         mutate(id = str_extract(id, "(?<=nramse_).*$"))
-#       tmp2 <- combined_nrmse_rest |>
-#         mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
-#       bind_rows(tmp1, tmp2) |>
-#         arrange(id)
-#     }
-#   ),
-#   tar_target(
-#     imputed_full_df, {
-#       bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
-#       mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
-#       arrange(date) |>
-#       arrange(dir) |>
-#       arrange(dep) |>
-#       arrange(tree) |>
-#       mutate(h = time %/% 60) |>
-#       mutate(m = time %% 60) |>
-#       mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
-#       dplyr::select(year, date, time, vpd, par, ks, tree, dir, dep)
-#     }
-#   ),
-#   tar_target(
-#     nonimputed_full_df,
-#     make_long_nonimputed_df(rubber_raw_data_csv)
-#   ),
-#   NULL
-#   )
+tar_combined_imputed_rest_data <- tar_combine(
+  combined_imputed_rest_mapped,
+  impute_rest_mapped[["imputed_df_btrans2"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_impute <- list(
+  impute_mapped,
+  tar_combined_imputed_data,
+  tar_combined_nrmse,
+  impute_rest_mapped,
+  tar_combined_imputed_rest_data,
+  tar_combined_nrmse_rest,
+  tar_target(
+    nrmse_df, {
+      tmp1 <- combined_nrmse |>
+        mutate(id = str_extract(id, "(?<=nramse_).*$"))
+      tmp2 <- combined_nrmse_rest |>
+        mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
+      bind_rows(tmp1, tmp2) |>
+        arrange(id)
+    }
+  ),
+  tar_target(
+    imputed_full_df, {
+      bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
+      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+      arrange(date) |>
+      arrange(dir) |>
+      arrange(dep) |>
+      arrange(tree) |>
+      mutate(h = time %/% 60) |>
+      mutate(m = time %% 60) |>
+      mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+      dplyr::select(year, date, time, vpd, par, ks, tree, dir, dep)
+    }
+  ),
+  tar_target(
+    nonimputed_full_df,
+    make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
+  NULL
+  )
 
 # tar_dir_dep <- list(
 #   tar_target(
@@ -1615,19 +1678,6 @@ uncertainty_list <- list(
     },
     format = "file"
   ),
-  # tar_target(
-  #   imp_points_plot2, {
-  #     p <- imp_points(imputed_df_btrans_2016_6, rubber_raw_data_csv, year = 2016, month = 6)
-  #     my_ggsave(
-  #       "figs/imp_points2",
-  #       p,
-  #       dpi = 300,
-  #       width = 6.81,
-  #       height = 3.4
-  #     )
-  #   },
-  #   format = "file"
-  # ),
   tar_target(
     imp_points_plot, {
       p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
@@ -1813,4 +1863,6 @@ species_xylem_df_mapped <- tar_map(
 #   append(uncertainty_list) |>
 #   append(post_csv_list)
 append(raw_data_list, main_list) |>
-  append(granier_list)
+  append(granier_list) |>
+  append(tar_impute) |>
+  append(sapwood_list)
