@@ -1324,6 +1324,7 @@ generate_segments_ab_table|function|b58dcd12acbc5bd9|||||||||||||||
 generate_segments_ab_table_csv|function|7c9f44daed19a314|||||||||||||||
 generate_species_ab_table|function|adf027aa5890b665|||||||||||||||
 generate_species_ab_table_csv|function|5fada2a28c759e12|||||||||||||||
+generate_species_segments_ab_csv|function|b1559f1836b19bc3|||||||||||||||
 generate_summary_non_trait_table|function|76b9370b309d25ef|||||||||||||||
 generate_summary_non_trait_table2|function|965c5bc5af707f59|||||||||||||||
 generate_summary_trait_table|function|7df3f08b7795dc53|||||||||||||||
@@ -1339,7 +1340,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|bc4feb982496b373|||||||||||||||
+granier_list|object|39a3c3777e084b4b|||||||||||||||
 granier_with_traits_mapped|object|dd73f1a29ca009cb|||||||||||||||
 granier_without_traits_mapped|object|efe7f472e7675e28|||||||||||||||
 granier_without_traits_sp_pool_file|stem|10348a847473358b|412028bb683cf85e|d08213f484b3e9b9|-440545925|stan/granier_without_traits_sp_pool.stan|t19641.4161579639s|813a0d7697333517|548|file|local|vector|||5.348||
@@ -2314,7 +2315,7 @@ segments_ab_table_sap_sp_raw_0.05|stem|db0c7d053119658e|64808f29854ec9d7|e70306b
 segments_ab_table_sap_sp_raw_0.06|stem|6a2f7e979adc0272|dddbf7a8e76594c0|24c8da815b61c36d|-832750786||t19641.4240611593s|2225ac146d68e7de|18446|rds|local|vector|||1.05||
 segments_ab_table_sap_sp_raw_0.07|stem|5543a6ae1c8c1cd2|a462e8140521bdd2|298c81fca91822e2|-1063280701||t19641.4240627334s|49b67a7ba69290c9|18441|rds|local|vector|||0.964||
 segments_ab_table_sap_sp_raw_0.08|stem|572331d2adf06a42|3581336e13942a31|6a2ab9516669b575|-523247581||t19641.4240642149s|ffc8c7dc9c577915|18444|rds|local|vector|||0.926||
-segments_inclusive_ab_csv|stem|348fe8fda30d764b|19e7edc9422b7c51|27682870dca6df5e|-1895450230|data/segments_inclusive_ab.csv|t19641.4240938452s|e9273f3bffe8a848|403211|file|local|vector|||0.247||
+segments_inclusive_ab_csv|stem|de8f9e96a2116683|11a2f8241a95b62d|8f749d366f7c8220|-1895450230|data/segments_inclusive_ab.csv|t19641.6644904443s|e9273f3bffe8a848|403211|file|local|vector|||1.227||
 segments_inclusive_file|stem|8f5492aab38f6528|f386f251afc56586|d08213f484b3e9b9|-524257893|stan/segments_inclusive.stan|t19641.4161577324s|3a1b6f7b11cba393|916|file|local|vector|||15.607||
 segments_xylem_csv|stem|63038ae61b6a5c0e|a0104dda031bf2bc|19db16d805cbbd6f|2057322204|data/segments_xylem_post.csv|t19641.3994029619s|0a39f9c5e8e20504|378801|file|local|vector|||0.194||
 segments_xylem_df_combined|stem|cc210d0816a9e8e3|2e8612fe2d856055|cbd4264d22cd7788|1654485||t19641.399400647s|de016b5b73da5e47|51730|rds|local|vector|||0.001||
@@ -2353,7 +2354,7 @@ species_ab_table_0.06|stem|91740d68c5438f40|0d8810a8e5c98d7c|5135d2a8e3df864e|63
 species_ab_table_0.07|stem|85d2ee4e1e5ad310|fdb75c8bc2338489|92ea7cffcc4e982c|988410322||t19641.6609237408s|f5e1f4092017a214|3266|rds|local|vector|||1.164||
 species_ab_table_0.08|stem|ddd35dba7a149996|a5fbc9eb237ffe6a|8188930ff385c886|673631308||t19641.6609294354s|2857611c40523085|3267|rds|local|vector|||1.133||
 species_ab_table_combined|stem|7c31e6d6352f7c4e|52e54b14a222ff1c|d0ed1d7457c2dca5|948259650||t19641.6609295742s|163c5349288cd8a0|15963|rds|local|vector|||0.002||
-species_only_ab_csv|stem|bcbed7d4645c0dda|22577aa115661dbf|32cbc5b7a4ddc53d|937166601|data/species_only_ab.csv|t19641.4240922711s|8c2caaedbc8ad3db|48495|file|local|vector|||0.141||
+species_only_ab_csv|stem|31517877da3826e1|af590620934806c6|efb13ccd0065e52c|937166601|data/species_only_ab.csv|t19641.6671857473s|8c2caaedbc8ad3db|48495|file|local|vector|||1.16||
 species_only_file|stem|10348a847473358b|97f0da56e0a7f6c1|d08213f484b3e9b9|1284331987|stan/species_only.stan|t19641.4161579639s|813a0d7697333517|548|file|local|vector|||11.912||
 species_xylem_csv|stem|09ef58c0e0f39f78|19d9cc6b59617ffb|e7fd4b865314ef31|-1628790711|data/species_xylem_post.csv|t19641.3994651851s|bffabbc686894c3a|62481|file|local|vector|||0.106||
 species_xylem_df_combined|stem|825065c04cf09db3|8176ecda2d1469df|976da2a614503dd2|1479365987||t19641.3994638888s|c56f44e9208e0f59|9423|rds|local|vector|||0.001||

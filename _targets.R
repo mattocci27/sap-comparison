@@ -1253,6 +1253,16 @@ granier_list <- list(
   granier_without_traits_mapped,
   tar_combined_species_ab_table,
   tar_combined_segments_ab_table,
+  tar_target(
+    segments_inclusive_ab_csv,
+    generate_species_segments_ab_csv(segments_ab_table_combined, "data/segments_inclusive_ab.csv"),
+    format = "file"
+  ),
+  tar_target(
+    species_only_ab_csv,
+    generate_species_segments_ab_csv(species_ab_table_combined, "data/species_only_ab.csv"),
+    format = "file"
+  ),
   NULL
 )
 # #------------------------------------------------------------
