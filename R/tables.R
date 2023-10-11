@@ -207,3 +207,29 @@ generate_segments_ab_table <- function(summary_sep) {
       effective_sample_size = ess_bulk
     )
 }
+
+generate_species_ab_table_csv <- function(segments_ab_table_full, out) {
+  df <- segments_ab_table_full |>
+    mutate(tmp = ifelse(variable == "a" & target == "Acacia pennata", "yes", "no")) %>%
+    mutate(id = 1:nrow(.))
+  tmp <- df |>
+    filter(tmp == "yes") |>
+    pull(id)
+
+  rep_n <- diff(c(tmp, nrow(df) + 1))
+  tmp2 <- c(seq(0.02, 0.04, by = 0.005), seq(0.05, 0.08, by = 0.01))
+  tmp3 <- rep(tmp2, rep_n)
+
+  df |>
+    mutate(max_pg = tmp3) |>
+    dplyr::select(
+      variable_name = variable,
+      level, target,
+      variable_meaning,
+      max_pg,
+      q50, q2.5, q97.5,
+      effective_sample_size) |>
+    my_write_csv(out)
+}
+
+

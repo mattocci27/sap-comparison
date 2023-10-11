@@ -1196,6 +1196,92 @@ div_check <- function(diags) {
 
 
 
+generates_segments_xylem_table <- function(stan_summary) {
+  d <- read_csv(here("data/fd_k_traits.csv")) |>
+  filter(is.na(removed_k))
+
+  # s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  #   targets::tar_read(stan_summary))
+  s <- stan_summary
+
+  sample_id <- tibble(sample_id = unique(d$sample_id) |> as.factor()) |>
+    arrange(sample_id) |>
+    mutate(sample_id_num = as.numeric(sample_id)) |>
+    mutate(sample_id = as.character(sample_id))
+
+  species <- tibble(species = unique(d$species) |> as.factor()) |>
+    arrange(species) |>
+    mutate(species_num = as.numeric(species)) |>
+    mutate(species = as.character(species))
+
+  xylem <- tibble(xylem = unique(d$xylem_type) |> as.factor()) |>
+    arrange(xylem) |>
+    mutate(xylem_num = as.numeric(xylem)) |>
+    mutate(xylem = as.character(xylem))
+
+  para_name <- c("a", "b")
+  gamma <- s |>
+    filter(str_detect(variable, "gamma")) |>
+    mutate(para = variable)
+
+  beta <- s |>
+    filter(str_detect(variable, "beta")) |>
+    mutate(para = variable) #|>
+
+  for (i in 1:nrow(beta)) {
+    beta <- beta |>
+      mutate(para = case_when(
+        str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+          str_c("_", as.character(para_name[i]))),
+      TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(xylem[i, 1]))),
+      TRUE ~ para))
+  }
+
+
+  alpha <- s |>
+    filter(str_detect(variable, "alpha")) |>
+    mutate(para = variable) #|>
+    # mutate(para = str_replace_all(para, "alpha", "trait"))
+  for (i in 1:nrow(alpha)) {
+    alpha <- alpha |>
+      mutate(para = case_when(
+        str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+          str_c("_", as.character(para_name[i]))),
+      TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(species[i, 1]))),
+      TRUE ~ para))
+  }
+
+  A <- s |>
+    filter(str_detect(variable, "A")) |>
+    mutate(para = variable) #|>
+
+  for (i in 1:nrow(A)) {
+    A <- A |>
+      # mutate(para = case_when(
+      #   str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
+      #     str_c("_", as.character(para_name[i]))),
+      # TRUE ~ para)) |>
+      mutate(para = case_when(
+        str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
+          str_c("_", as.character(sample_id[i, 1]))),
+      TRUE ~ para)) |>
+      mutate(para =case_when(
+        str_detect(para, "A\\[1") ~ str_replace(para, "A\\[1", "a"),
+        str_detect(para, "A\\[2") ~ str_replace(para, "A\\[2", "b"),
+        TRUE ~ para
+      ))
+  }
+
+  bind_rows(gamma, beta, alpha, A)
+
+}
+
 #' @title with trait csv
 write_without_traits_csv <- function(stan_summary, output) {
 
@@ -1770,11 +1856,9 @@ traits_points_si <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
     )
 }
 
-
 # without_traits_0.08
-generate_summary_non_trait_table <- function(path, pg) {
-  path |>
-  read_csv() |>
+generate_summary_non_trait_table <- function(summary_df, pg) {
+  summary_df |>
     mutate(max_pg = pg) |>
     mutate(variable_meaning =
       case_when(

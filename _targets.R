@@ -922,16 +922,56 @@ main_list <- list(
       }),
     tar_target(
       pool_ab_table,
-      generate_pool_ab_table(fit_ab_each) |>
-        mutate(tmp = pg)
+      generate_pool_ab_table(fit_ab_each) #|>
+        # mutate(tmp = as.character(stan_data_each))
     ),
     tar_target(
       segments_ab_table,
-      generate_segments_ab_table(fit_ab_each) |>
-        mutate(tmp = pg)
+      generate_segments_ab_table(fit_ab_each) #|>
+        # mutate(tmp = as.character(stan_data_each))
     )
   ),
 
+  tar_target(
+    segments_ab_table_full, {
+      bind_rows(
+        segments_ab_table_sap_sp_clean_0.02,
+        segments_ab_table_sap_sp_clean_0.025,
+        segments_ab_table_sap_sp_clean_0.03,
+        segments_ab_table_sap_sp_clean_0.035,
+        segments_ab_table_sap_sp_clean_0.04,
+        segments_ab_table_sap_sp_clean_0.05,
+        segments_ab_table_sap_sp_clean_0.06,
+        segments_ab_table_sap_sp_clean_0.07,
+        segments_ab_table_sap_sp_clean_0.08
+      )
+    }
+  ),
+  tar_target(
+    pool_ab_table_full, {
+      bind_rows(
+        pool_ab_table_sap_sp_clean_0.02,
+        pool_ab_table_sap_sp_clean_0.025,
+        pool_ab_table_sap_sp_clean_0.03,
+        pool_ab_table_sap_sp_clean_0.035,
+        pool_ab_table_sap_sp_clean_0.04,
+        pool_ab_table_sap_sp_clean_0.05,
+        pool_ab_table_sap_sp_clean_0.06,
+        pool_ab_table_sap_sp_clean_0.07,
+        pool_ab_table_sap_sp_clean_0.08
+      )
+    }
+  ),
+  tar_target(
+    segments_inclusive_ab_csv,
+    generate_species_ab_table_csv(segments_ab_table_full, "data/segments_inclusive_ab.csv"),
+    format = "file"
+  ),
+  tar_target(
+    species_only_ab_csv,
+    generate_species_ab_table_csv(pool_ab_table_full, "data/species_only_ab.csv"),
+    format = "file"
+  ),
   tar_target(
     granier_without_traits_sp_pool_file,
     compile_model("stan/granier_without_traits_sp_pool.stan"),
@@ -1977,29 +2017,74 @@ sapwood_list <- list(
   NULL
 )
 
- full_segments_csv_mapped <- tar_map(
-    list(path = rlang::syms(
-        str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
-        pg,
-        "_data.without_traits_segments_",
-        pg, ".csv")),
-        pg = pg),
-    tar_target(
-      without_traits_table,
-      generate_summary_non_trait_table(path, pg = pg)
-    )
+#  full_segments_csv_mapped <- tar_map(
+#     list(path = rlang::syms(
+#         str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
+#         pg,
+#         "_data.without_traits_segments_",
+#         pg, ".csv")),
+#         pg = pg),
+#     tar_target(
+#       without_traits_table,
+#       generate_summary_non_trait_table(path, pg = pg)
+#     )
+#   )
+
+segments_xylem_df_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
+    pg = pg),
+  tar_target(
+    segments_xylem_table,
+    generates_segments_xylem_table(stan_summary)
+  ),
+  tar_target(
+    without_traits_table,
+    generate_summary_non_trait_table(segments_xylem_table, pg = pg)
   )
- tar_combined_full_segments_data <- tar_combine(
-   full_segments_csv_combined,
-   full_segments_csv_mapped[["without_traits_table"]],
+)
+species_xylem_df_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_",
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
+    pg = pg),
+  tar_target(
+    species_xylem_table,
+    generates_segments_xylem_table(stan_summary)
+  ),
+  tar_target(
+    without_traits_table,
+    generate_summary_non_trait_table(species_xylem_table, pg = pg)
+  )
+)
+
+ tar_combined_segments_xylem_df <- tar_combine(
+   segments_xylem_df_combined,
+   segments_xylem_df_mapped[["without_traits_table"]],
    command = dplyr::bind_rows(!!!.x)
   )
+ tar_combined_species_xylem_df <- tar_combine(
+   species_xylem_df_combined,
+   species_xylem_df_mapped[["without_traits_table"]],
+   command = dplyr::bind_rows(!!!.x)
+  )
+
  post_csv_list <- list(
-   full_segments_csv_mapped,
-   tar_combined_full_segments_data,
+   segments_xylem_df_mapped,
+   species_xylem_df_mapped,
+   tar_combined_segments_xylem_df,
+   tar_combined_species_xylem_df,
    tar_target(
-     full_segments_csv,
-     my_write_csv(full_segments_csv_combined, "data/full_segments_post.csv"),
+     segments_xylem_csv,
+     my_write_csv(segments_xylem_df_combined, "data/segments_xylem_post.csv"),
+     format = "file"
+   ),
+   tar_target(
+     species_xylem_csv,
+     my_write_csv(species_xylem_df_combined, "data/species_xylem_post.csv"),
      format = "file"
    ),
    tar_target(
