@@ -632,6 +632,14 @@ read_csv("data/species_xylem_post.csv") |>
 
 read_csv("data/segments_xylem_post.csv") |>
   filter(effective_sample_size < 400)
+
+tar_read(sap_sp_clean_0.08)
+tar_read(sap_all_clean_0.08)
+
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "sap_sp_clean"))
 ```
 
 # References

@@ -161,8 +161,8 @@ write_sap_table <- function(sap_summary, out) {
     my_write_csv(out)
 }
 
-generate_pool_ab_table <- function(summary_sep) {
-  map_dfr(summary_sep$fit_pool,
+generate_species_ab_table <- function(summary_sep) {
+  map_dfr(summary_sep$fit_species,
     \(x)x$summary |> filter(variable %in% c("log_a", "b")))  |>
     mutate(species = rep(summary_sep$species, each = 2)) |>
     mutate(across(c(q50, q2.5, q97.5),
