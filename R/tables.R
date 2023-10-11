@@ -174,8 +174,8 @@ generate_pool_ab_table <- function(summary_sep) {
       variable == "b" ~ "coefficient b",
     )) |>
     dplyr::select(
-      variable, level, target, variable_meaning, q50, q2.5, q97.5,
-      effective_sample_size = ess_bulk
+      variable, level, target, variable_meaning, q50, q2.5, q97.5, rhat,
+      effective_sample_size = ess_tail
     )
 }
 
@@ -203,8 +203,8 @@ generate_segments_ab_table <- function(summary_sep) {
       str_detect(variable, "A\\[2") ~ "coefficients b",
     )) |>
     dplyr::select(
-      variable, level, target, variable_meaning, q50, q2.5, q97.5,
-      effective_sample_size = ess_bulk
+      variable, level, target, variable_meaning, q50, q2.5, q97.5, rhat,
+      effective_sample_size = ess_tail
     )
 }
 
@@ -228,8 +228,11 @@ generate_species_ab_table_csv <- function(segments_ab_table_full, out) {
       variable_meaning,
       max_pg,
       q50, q2.5, q97.5,
+      rhat,
       effective_sample_size) |>
+    mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
+    mutate(effective_sample_size = round(effective_sample_size, digits = 0)) |>
+    mutate_if(is.numeric, \(x) format(x, nsmall = 2)) |>
+    mutate(effective_sample_size = format(effective_sample_size, nsmall = 0)) |>
     my_write_csv(out)
 }
-
-

@@ -197,19 +197,19 @@ read_csv(here("data/dbh_sapwood_post.csv")) |>
   kable_classic()
 ```
 
-![`r s_fig("imp_points")`
+![`r s_fig("imp_points")`:
 Examples of *K* value imputations for tree ID 11,  measured at three depths (2, 4, 6 cm) from the south direction.
 (A) February 2016: Imputed values at 4 cm depth between February 14th and 15th are accurately tracking the observed patterns.
 (B) May 2016: In an extreme case, observations are absent across all depths for several days, yet the imputed values align closely with the observed patterns.
 ](`r here::here("figs/imp_points.png")`)
 
-![`r s_fig("dbh_points")`
+![`r s_fig("dbh_points")`:
 DBH increments for each tree (t01-t16) over two years.
 Each point indicates the actual measurement, and dashed lines indicate interpolated values.
 ](`r here::here("figs/dbh_points.png")`)
 
 
-![`r s_fig("sap_dbh_points")`
+![`r s_fig("sap_dbh_points")`:
 Relationship between sapwood length and DBH.
 The solid line indicates the posterior medians of the linear model, and the shaded areas represent the 95% credible intervals.
 ](`r here::here("figs/sap_dbh_points.png")`)
@@ -296,7 +296,7 @@ tibble(Factor = names(anova_yml) |> str_to_title(),
   kable_classic(full_width = F)
 ```
 
-![`r s_fig("coef_intervals_pres_tens")`
+![`r s_fig("coef_intervals_pres_tens")`:
 Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
 (A) Estimates for standard deviations.
 (B) Estimates for the effect of each predictor.
@@ -359,20 +359,18 @@ b_seg <- d |>
 
 There are:
 
-- Pool vs multi
+- Species-xylem vs. segments-xylem
 - Pressure gradients
 - Variance partitioning
 - Model with traits
 
-The power-law fittings without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
+The power-law fittings without (i.e., species-xylem model) and with (i.e., segments-xylem) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
 Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Figs. `r s_fig_num("pg_multi")`-`r s_fig_num("pg_ribbon_b")`).
 Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
-Our multilevel model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
+Our segments-xylem model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
 Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
 In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
-
-The 95% CI and 50% CI of the relationships between K~s~ and coefficient *a* and between K~s~ and coefficient *b* did not overlap with zero, respectively (Figs. `r fig_num("traits_points_main")`B, D).
-VAF did not show significant correlation either with coefficient *a* or coefficient *b* (Figs. `r fig_num("traits_points_main")`A, C).
+The 95% CI of the relationships between both K~s~ and VAF with coefficient *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`B, D; ), when xylem-level variation was not included in the model.
 
 **`r s_table("ab_comparison")`**:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
@@ -448,6 +446,7 @@ Bayesian estimates of posterior median, upper and lower credible intervals and e
 - q50: posterior median
 - q2.5: 2.5% posterior quantiles
 - q97.5: 97.5% posterior quantiles
+- rhat: R-hat diagnostics for convergence. rhat < 1.1 indicates good convergence [@Gelman2013]
 - effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
 
 (showing only the first 20 rows here)
@@ -527,8 +526,11 @@ Points and bars indicate posterior medians and 95% credible intervals (CIs) of c
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
 ](`r here::here("figs/traits_points_main.png")`)
 
+**`r s_table("traits_no_xylem")`**:
 
-**`r s_table("all_seg_table")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for multilevel model with all traits.
+traits with no xylem
+
+**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.
 
 The column definitions are:
 
@@ -545,12 +547,12 @@ For example, variable `beta_a[2,1]` indicates the xylem type variable and precis
 
 (showing only the first 20 rows)
 
+**this table is wrong. I need to update this**
 ```{r, echo=FALSE}
 read_csv(here::here("data/full_segments_traits_post.csv")) |>
   head(20) |>
   kbl(escape = FALSE) |>
   kable_classic()
-  # data.table::as.data.table()
 ```
 
 ## Scaling
@@ -618,169 +620,22 @@ This figure is not finalized.
 ```{stan, file=here::here('stan/normal.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
 ```
 
-# References
+```{r, eval=FALSE}
+read_csv("data/species_only_ab.csv") |>
+  filter(effective_sample_size < 400)
 
-```{r, echo=FALSE, eval=FALSE}
-library(kableExtra)
-tmp1 <- tar_read(fit_dir_dep_summary_no_temporal_hourly_dir)
-tmp1 <- tmp1 |>
-  janitor::clean_names() |>
-  filter(str_detect(variable, "beta")) |>
-  mutate(variable = case_when(
-    variable == "beta[1]" ~ "N",
-    variable == "beta[2]" ~ "E",
-    variable == "beta[3]" ~ "W",
-  ))
+read_csv("data/segments_inclusive_ab.csv") |>
+  filter(effective_sample_size < 400)
 
-tmp2 <- tar_read(fit_dir_dep_summary_no_temporal_hourly_dep)
-tmp2 <- tmp2 |>
-  janitor::clean_names() |>
-  filter(str_detect(variable, "beta")) |>
-  mutate(variable = case_when(
-    variable == "beta[1]" ~ "2-4 cm",
-    variable == "beta[2]" ~ "4-6 cm",
-  ))
+read_csv("data/species_xylem_post.csv") |>
+  filter(effective_sample_size < 400)
 
-tmp3 <- bind_rows(tmp1, tmp2) |>
-  dplyr::select(variable, q2_5, q50, q97_5) |>
-  mutate(across(where(is.numeric), exp))
-
-tmp3 |>
-  mutate(across(where(is.numeric), round, 2)) |>
-  rename(Factor = variable) |>
-  mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
-  dplyr::select(Factor, Posterior) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-
-tar_read(fit_dbh_sapwood_summary_normal) |>
-  janitor::clean_names() |>
-  filter(variable %in% c("alpha", "beta")) |>
-  mutate(variable = case_when(
-    variable == "alpha" ~ "Intercept",
-    variable == "beta" ~ "Slope",
-  )) |>
-  mutate(across(where(is.numeric), round, 2)) |>
-  rename(Factor = variable) |>
-  mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
-  dplyr::select(Factor, Posterior)
-
-targets::tar_read(without_traits_table_without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02_data.without_traits_segments_0.02.csv)
-
-
-hoge |>
-  filter(str_detect(name, ""))
-
-loo <- tar_read(loo_)
-loo::loo_compare(loo[[1]], loo[[2]], loo[[3]], loo[[4]])
-
-str(loo)
-
-tar_read(fit_anova_log_summary_anova_noint) |> summary()
-tar_read(fit_anova_summary_anova_noint_err) |> summary()
+read_csv("data/segments_xylem_post.csv") |>
+  filter(effective_sample_size < 400)
 ```
 
-- pool
-  - log_a
-  - b
-  - level
-  - target
-  - variable_meaning
-  - max_pg
-  - q50
-  - q2.5
-  - q97.5
-  - effective_sample_size
+# References
 
-- seg
-  - log_a
-  - b
-  - A
-
-```{r, eval=F}
-library(tidyverse)
-library(targets)
-summary_sep <- tar_read(fit_ab_each_sap_sp_clean_0.08)
-
-summary_sep$fit_segments[[1]]$summary |> pull(variable)
-summary_sep$fit_pool[[1]]$summary |> pull(variable)
-
-tar_read(pool_ab_table_sap_sp_clean_0.08)
-
-pg <- 0.08
-       tmp <-  str_c("without_traits_fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_",
-        pg,
-        "_data.without_traits_pool_",
-        pg, ".csv")
-
-tar_read(tmp)
-
-
-
-pg = c(
-  seq(0.02, 0.08, by = 0.01),
-  seq(0.02, 0.04, by = 0.005),
-  seq(0.05, 0.08, by = 0.01)
-)
-
-tar_read(segments_ab_table_sap_sp_clean_0.08)
-
-rlang::syms("hoge")+)
-rlang::syms("hoge") |> str()
-
-rlang::syms("hoge") |>
-as.character() |>
-str()
-
-
-
-hoge <- tar_read(segments_ab_table_full) |>
-  mutate(tmp = ifelse(variable == "a" & target == "Acacia pennata", "yes", "no")) %>%
-  mutate(id = 1:nrow(.))
-
-tmp <- hoge |>
-  filter(tmp == "yes") |>
-  pull(id)
-
-rep_n <- diff(c(tmp, nrow(hoge) + 1))
-
-
-tmp2 <- c(seq(0.02, 0.04, by = 0.005), seq(0.05, 0.08, by = 0.01))
-
-tmp3 <- rep(tmp2, rep_n)
-
-hoge |>
-  mutate(pg = tmp3) |>
-  write_csv("hoge.csv")
-
-
-d1 <- read_csv("data/species_only_post.csv")
-d2 <- read_csv("data/segments_inclusive_post.csv")
-
-
-tar_read(without_traits_table_fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.035_0.035)
-
-d1 |>
-  filter(effective_sample_size < 400)
-
-hoge <- tar_manifest()
-hoge |>
-  filter(str_detect(name, "segments_xylem_table"))
-
-  filter(str_detect(name, "without_traits_table"))
-
-
-
-
-tar_read(species_xylem_table_fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.02_0.02)
-
-tar_read(segments_xylem_table_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025)
-
-tar_read(species_xylem_table_fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.025) |> as.data.frame()
-
-d2 |>
-  filter(effective_sample_size < 400)
-
+```{r, eval=FALSE}
 knitr::knit_exit()
-
 ```

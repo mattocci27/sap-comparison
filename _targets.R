@@ -2017,19 +2017,6 @@ sapwood_list <- list(
   NULL
 )
 
-#  full_segments_csv_mapped <- tar_map(
-#     list(path = rlang::syms(
-#         str_c("without_traits_fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
-#         pg,
-#         "_data.without_traits_segments_",
-#         pg, ".csv")),
-#         pg = pg),
-#     tar_target(
-#       without_traits_table,
-#       generate_summary_non_trait_table(path, pg = pg)
-#     )
-#   )
-
 segments_xylem_df_mapped <- tar_map(
   list(stan_summary =
     rlang::syms(

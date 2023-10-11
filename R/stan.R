@@ -1263,10 +1263,6 @@ generates_segments_xylem_table <- function(stan_summary) {
 
   for (i in 1:nrow(A)) {
     A <- A |>
-      # mutate(para = case_when(
-      #   str_detect(para, str_c("\\[", i)) ~ str_replace(para, str_c("\\[",i),
-      #     str_c("_", as.character(para_name[i]))),
-      # TRUE ~ para)) |>
       mutate(para = case_when(
         str_detect(para, str_c(",", i, "\\]")) ~ str_replace(para, str_c("," ,i, "\\]"),
           str_c("_", as.character(sample_id[i, 1]))),
@@ -1881,11 +1877,14 @@ generate_summary_non_trait_table <- function(summary_df, pg) {
       str_detect(variable, "A") ~ "segments",
     )) |>
     dplyr::select(variable_name = variable, level, target, variable_meaning,
-       max_pg, q50, q2.5, q97.5, effective_sample_size = ess_tail) |>
+       max_pg, q50, q2.5, q97.5, rhat, effective_sample_size = ess_tail) |>
+      mutate(q50 = ifelse(variable_meaning == "coefficient a", exp(q50), q50)) |>
+      mutate(q2.5 = ifelse(variable_meaning == "coefficient a", exp(q2.5), q2.5)) |>
+      mutate(q97.5 = ifelse(variable_meaning == "coefficient a", exp(q97.5), q97.5)) |>
       mutate_if(is.numeric, \(x) round(x, digits = 2)) |>
       mutate(effective_sample_size = round(effective_sample_size, digits = 0)) |>
-      mutate(effective_sample_size = format(effective_sample_size, nsmall = 0)) |>
-      mutate_if(is.numeric, \(x) format(x, nsmall = 2))
+      mutate_if(is.numeric, \(x) format(x, nsmall = 2)) |>
+      mutate(effective_sample_size = format(effective_sample_size, nsmall = 0))
 }
 
 # fit_summary <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
