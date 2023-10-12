@@ -754,6 +754,22 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
+    test2,
+    generate_summary_trait_table(
+      fit2_summary_segments_xylem_traits_log_ks, fd_k_traits_csv, xylem = TRUE)
+  ),
+  tar_target(
+    test,
+    generate_summary_trait_table(
+      fit_summary_segments_noxylem_traits_log_ks, fd_k_traits_csv, xylem = FALSE)
+  ),
+  # tar_target(
+  # all_seg_table,
+  # generate_summary_trait_table(
+  #   fit_abt_summary_granier_with_traits_sap_trait_clean_all,
+  #   fd_k_traits_csv)
+  # ),
+  tar_target(
     ab_csv,
     write_ab_csv(
       fit_summary_segments_xylem_0.08,
