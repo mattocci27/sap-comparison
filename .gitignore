@@ -75,3 +75,4 @@ rsconnect/
 #!ms/manuscript.pdf
 
 # !data-raw/*.csv
+test.R

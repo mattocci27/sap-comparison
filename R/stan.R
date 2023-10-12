@@ -2151,198 +2151,6 @@ generate_summary_non_trait_table <- function(summary_df, pg) {
       mutate(effective_sample_size = format(effective_sample_size, nsmall = 0))
 }
 
-# fit_summary <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_ks)
-# d <- read_csv("data/fd_k_traits.csv")
-
-generate_summary_trait_xylem_table <- function(fit_summary, data) {
-  d <- read_csv(data)
-  d <- d |>
-    filter(!is.na(wood_density)) |>
-    filter(!is.na(swc)) |>
-    filter(!is.na(dh)) |>
-    filter(!is.na(vaf)) |>
-    filter(!is.na(vf)) |>
-    filter(!is.na(ks)) |>
-    filter(is.na(removed_k))
-
-  parse_variable <- function(var_col){
-    str_split_fixed(var_col, "\\[|\\]|,", 4)
-  }
-
-  predictor_extractor <- function(para, var){
-    para2 <- case_when(
-      para == "1" ~ "intercept for ",
-      para == "2" ~ "effect of traits on "
-    )
-
-    para3 <- ifelse(str_detect(var, "_a"), " for coefficient a", " for coefficient b")
-
-    str_c(para2, para3)
-  }
-
-  tmp <- d |>
-    group_by(sample_id, species) |>
-    nest() |>
-    ungroup() |>
-    arrange(sample_id)
-
-  d_samp <- d |>
-    dplyr::select(species, xylem_type, sample_id) |>
-    arrange(xylem_type) |>
-    arrange(sample_id) |>
-    mutate(j = as.factor(sample_id) |> as.numeric()) |>
-    mutate(k = as.factor(species) |> as.numeric()) |>
-    mutate(l = as.factor(xylem_type) |> as.numeric()) |>
-    unique() |>
-    mutate(level = "segments") |>
-    mutate(target = sample_id)
-
-  d_sp <- d_samp |>
-    dplyr::select(species, xylem_type, k, l) |>
-    unique() |>
-    mutate(level = "species") |>
-    mutate(target = species)
-
-  d_xylem <- d_sp |>
-    dplyr::select(xylem_type, l) |>
-    unique() |>
-    mutate(level = "xylem types") |>
-    mutate(target = xylem_type)# |>
-
-  d_sp2 <- fit_summary |>
-    filter(str_detect(variable, "^alpha")) |>
-    dplyr::select(variable, q2.5, q97.5, q50, ess_tail) |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(predictor = predictor_extractor(para, variable)) |>
-    mutate(k = parse_variable(variable)[, 3] |> as.numeric()) |>
-    full_join(d_sp) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-
-  d_xylem2 <- fit_summary |>
-    filter(str_detect(variable, "beta")) |>
-    dplyr::select(variable, q2.5, q97.5, q50, ess_tail) |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(predictor = predictor_extractor(para, variable)) |>
-    mutate(l = parse_variable(variable)[, 3] |> as.numeric()) |>
-    full_join(d_xylem) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail) |>
-    mutate(target = case_when(
-      target == "DP"  ~ "Diffuse-porous tree",
-      target == "RP"  ~ "Ring-porous tree",
-      target == "Pa"  ~ "Palm",
-      target == "L"  ~ "Liana"
-    ))
-
-  d_samp2 <- fit_summary |>
-    filter(str_detect(variable, "^A\\[")) |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(j = parse_variable(variable)[, 3] |> as.numeric()) |>
-    full_join(d_samp) |>
-    mutate(predictor = ifelse(para == "1", "coefficient a", "coefficient b")) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-  d_all <- fit_summary |>
-    filter(str_detect(variable, "gamma")) |>
-    mutate(level = "overall") |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(predictor = predictor_extractor(para, variable)) |>
-    mutate(target = "overall") |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-  bind_rows(d_all, d_xylem2, d_sp2, d_samp2) %>%
-    mutate(across(where(is.numeric), round, digits = 2),
-           ess_tail = format(round(ess_tail, digits = 0), nsmall = 0),
-           across(where(is.numeric), format, nsmall = 2)) %>%
-    rename(variable_name = variable,
-           variable_meaning = predictor,
-           effecive_sample_size = ess_tail)
-  }
-
-
-generate_summary_trait_noxylem_table <- function(fit_summary, data) {
-  d <- read_csv(data)
-  d <- d |>
-    filter(!is.na(wood_density)) |>
-    filter(!is.na(swc)) |>
-    filter(!is.na(dh)) |>
-    filter(!is.na(vaf)) |>
-    filter(!is.na(vf)) |>
-    filter(!is.na(ks)) |>
-    filter(is.na(removed_k))
-
-  parse_variable <- function(var_col){
-    str_split_fixed(var_col, "\\[|\\]|,", 4)
-  }
-
-  predictor_extractor <- function(para, var){
-    para2 <- case_when(
-      para == "1" ~ "intercept for ",
-      para == "2" ~ "effect of traits on "
-    )
-
-    para3 <- ifelse(str_detect(var, "_a"), " for coefficient a", " for coefficient b")
-
-    str_c(para2, para3)
-  }
-
-  tmp <- d |>
-    group_by(sample_id, species) |>
-    nest() |>
-    ungroup() |>
-    arrange(sample_id)
-
-  d_samp <- d |>
-    dplyr::select(species, xylem_type, sample_id) |>
-    arrange(xylem_type) |>
-    arrange(sample_id) |>
-    mutate(j = as.factor(sample_id) |> as.numeric()) |>
-    mutate(k = as.factor(species) |> as.numeric()) |>
-    mutate(l = as.factor(xylem_type) |> as.numeric()) |>
-    unique() |>
-    mutate(level = "segments") |>
-    mutate(target = sample_id)
-
-  d_sp <- d_samp |>
-    dplyr::select(species, xylem_type, k, l) |>
-    unique() |>
-    mutate(level = "species") |>
-    mutate(target = species)
-
-  d_sp2 <- fit_summary |>
-    filter(str_detect(variable, "^alpha")) |>
-    dplyr::select(variable, q2.5, q97.5, q50, ess_tail) |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(predictor = predictor_extractor(para, variable)) |>
-    mutate(k = parse_variable(variable)[, 3] |> as.numeric()) |>
-    full_join(d_sp) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-  d_samp2 <- fit_summary |>
-    filter(str_detect(variable, "^A\\[")) |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(j = parse_variable(variable)[, 3] |> as.numeric()) |>
-    full_join(d_samp) |>
-    mutate(predictor = ifelse(para == "1", "coefficient a", "coefficient b")) |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-  d_all <- fit_summary |>
-    filter(str_detect(variable, "beta")) |>
-    mutate(level = "overall") |>
-    mutate(para = parse_variable(variable)[, 2]) |>
-    mutate(predictor = predictor_extractor(para, variable)) |>
-    mutate(target = "overall") |>
-    dplyr::select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
-
-  bind_rows(d_all, d_sp2, d_samp2) %>%
-    mutate(across(where(is.numeric), round, digits = 2),
-           ess_tail = format(round(ess_tail, digits = 0), nsmall = 0),
-           across(where(is.numeric), format, nsmall = 2)) %>%
-    rename(variable_name = variable,
-           variable_meaning = predictor,
-           effecive_sample_size = ess_tail)
-  }
-
 
 # Helper Functions
 parse_variable <- function(var_col) {
@@ -2351,10 +2159,10 @@ parse_variable <- function(var_col) {
 
 predictor_extractor <- function(para, var) {
   para2 <- case_when(
-    para == "1" ~ "intercept for ",
-    para == "2" ~ "effect of traits on "
+    para == "1" ~ "intercept for",
+    para == "2" ~ "effect of traits on"
   )
-  para3 <- ifelse(str_detect(var, "_a"), " for coefficient a", " for coefficient b")
+  para3 <- ifelse(str_detect(var, "_a"), " coefficient a", "coefficient b")
   str_c(para2, para3)
 }
 
@@ -2383,12 +2191,11 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
 
   d_sp2 <- fit_summary %>%
     filter(str_detect(variable, "^alpha")) %>%
-    select(variable, q2.5, q97.5, q50, ess_tail) %>%
     mutate(para = parse_variable(variable)[, 2]) %>%
     mutate(predictor = predictor_extractor(para, variable)) %>%
     mutate(k = parse_variable(variable)[, 3] |> as.numeric()) %>%
     full_join(d_sp) %>%
-    select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
+    select(variable, level, target, predictor, q50, q2.5, q97.5, rhat, ess_tail)
 
   d_samp2 <- fit_summary %>%
     filter(str_detect(variable, "^A\\[")) %>%
@@ -2396,7 +2203,7 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
     mutate(j = parse_variable(variable)[, 3] |> as.numeric()) %>%
     full_join(d_samp) %>%
     mutate(predictor = ifelse(para == "1", "coefficient a", "coefficient b")) %>%
-    select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
+    select(variable, level, target, predictor, q50, q2.5, q97.5, rhat, ess_tail)
 
   d_all <- fit_summary %>%
     filter(str_detect(variable, ifelse(xylem, "gamma", "beta"))) %>%
@@ -2404,7 +2211,7 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
     mutate(para = parse_variable(variable)[, 2]) %>%
     mutate(predictor = predictor_extractor(para, variable)) %>%
     mutate(target = "overall") %>%
-    select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail)
+    select(variable, level, target, predictor, q50, q2.5, q97.5, rhat, ess_tail)
 
   result_data <- list(d_all, d_sp2, d_samp2)
 
@@ -2417,12 +2224,12 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
 
     d_xylem2 <- fit_summary %>%
       filter(str_detect(variable, "beta")) %>%
-      select(variable, q2.5, q97.5, q50, ess_tail) %>%
+      select(variable, q2.5, q97.5, q50, rhat, ess_tail) %>%
       mutate(para = parse_variable(variable)[, 2]) %>%
       mutate(predictor = predictor_extractor(para, variable)) %>%
       mutate(l = parse_variable(variable)[, 3] |> as.numeric()) %>%
       full_join(d_xylem) %>%
-      select(variable, level, target, predictor, q50, q2.5, q97.5, ess_tail) %>%
+      select(variable, level, target, predictor, q50, q2.5, q97.5, rhat, ess_tail) %>%
       mutate(target = case_when(
         target == "DP" ~ "Diffuse-porous tree",
         target == "RP" ~ "Ring-porous tree",
@@ -2443,7 +2250,3 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
            variable_meaning = predictor,
            effecive_sample_size = ess_tail)
 }
-
-# Now you can use:
-# generate_summary_trait_table(fit_summary, data, TRUE) for xylem
-# generate_summary_trait_table(fit_summary, data, FALSE) for noxylem

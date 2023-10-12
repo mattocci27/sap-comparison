@@ -721,6 +721,47 @@ tar_combined_segments_ab_table <- tar_combine(
   command = dplyr::bind_rows(!!!.x)
 )
 
+segments_noxylem_traits_post_ab_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit_summary_segments_noxylem_traits_",
+      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
+    tar_target(
+      post,
+      generate_summary_trait_table(
+        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    )
+)
+segments_xylem_traits_post_ab_mapped <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit2_summary_segments_xylem_traits_",
+      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
+    tar_target(
+      post,
+      generate_summary_trait_table(
+        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    )
+)
+
+tar_combined_segments_noxylem_traits_table <- tar_combine(
+  segments_noxylem_traits_table_combined,
+  segments_noxylem_traits_post_ab_mapped[["post"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+tar_combined_segments_xylem_traits_table <- tar_combine(
+  segments_xylem_traits_table_combined,
+  segments_xylem_traits_post_ab_mapped[["post"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+
 # granier analysis -----------------------------------
 granier_list <- list(
   granier_with_traits_mapped,
@@ -729,6 +770,10 @@ granier_list <- list(
   tar_combined_segments_ab_table,
   species_xylem_post_ab_mapped,
   segments_xylem_post_ab_mapped,
+  segments_xylem_traits_post_ab_mapped,
+  segments_noxylem_traits_post_ab_mapped,
+  tar_combined_segments_noxylem_traits_table,
+  tar_combined_segments_xylem_traits_table,
   tar_target(
     segments_inclusive_ab_csv,
     generate_species_segments_ab_csv(segments_ab_table_combined, "data/segments_inclusive_ab.csv"),
