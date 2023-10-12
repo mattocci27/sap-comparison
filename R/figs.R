@@ -470,26 +470,7 @@ coef_intervals_logistic <- function(draws) {
       my_theme()
 }
 
-line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) {
-
-# s_0025 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025))
-# s_0035 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035))
-# s_002 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02))
-# s_003 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03))
-# s_004 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04))
-# s_005 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05))
-# s_006 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06))
-# s_007 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07))
-# s_008 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-#   targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08))
+line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
 
   # data <- tar_read(fd_k_traits_csv)
   xylem_lab2 <- xylem_lab |>
@@ -499,18 +480,18 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
     rename(sp_short_chr = sp_short) |>
     left_join(xylem_lab2, by = "sp_short_chr")
 
-  s_002 <- s_002 |> mutate(p_g_lim = "0.02")
-  s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
-  s_003 <- s_003 |> mutate(p_g_lim = "0.03")
-  s_0035 <- s_0035 |> mutate(p_g_lim = "0.035")
-  s_004 <- s_004 |> mutate(p_g_lim = "0.04")
-  s_005 <- s_005 |> mutate(p_g_lim = "0.05")
-  s_006 <- s_006 |> mutate(p_g_lim = "0.06")
-  s_007 <- s_007 |> mutate(p_g_lim = "0.07")
-  s_008 <- s_008 |> mutate(p_g_lim = "0.08")
+  # s_002 <- s_002 |> mutate(max_pg = "0.02")
+  # s_0025 <- s_0025 |> mutate(max_pg = "0.025")
+  # s_003 <- s_003 |> mutate(max_pg = "0.03")
+  # s_0035 <- s_0035 |> mutate(max_pg = "0.035")
+  # s_004 <- s_004 |> mutate(max_pg = "0.04")
+  # s_005 <- s_005 |> mutate(max_pg = "0.05")
+  # s_006 <- s_006 |> mutate(max_pg = "0.06")
+  # s_007 <- s_007 |> mutate(max_pg = "0.07")
+  # s_008 <- s_008 |> mutate(max_pg = "0.08")
 
-  data <- bind_rows(s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) |>
-    janitor::clean_names()
+  data <- fit_summary_combined |>
+    mutate(max_pg = as.character(max_pg))
 
   # tar_load(k_range)
   # tar_load(xylem_lab)
@@ -523,22 +504,22 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
 
   log_a <- data |>
     filter(str_detect(variable, "alpha\\[1")) |>
-    dplyr::select(variable, log_a = q50, p_g_lim)
+    dplyr::select(variable, log_a = q50, max_pg)
 
   b <- data |>
     filter(str_detect(variable, "alpha\\[2")) |>
-    dplyr::select(variable, b = q50, p_g_lim)
+    dplyr::select(variable, b = q50, max_pg)
   sig <- data |>
     filter(variable == "sigma") |>
-    dplyr::select(sigma = q50, p_g_lim)
+    dplyr::select(sigma = q50, max_pg)
 
   log_a2 <- log_a |>
     mutate(b = b$b)
 
   log_a3 <- full_join(log_a2, sig)
 
-  nd <- left_join(k_range2, log_a3, by = c("a_chr" = "variable", "p_g_lim" = "p_g_lim")) |>
-    group_by(p_g_lim, species) |>
+  nd <- left_join(k_range2, log_a3, by = c("a_chr" = "variable", "max_pg" = "max_pg")) |>
+    group_by(max_pg, species) |>
     nest() |>
     ungroup()
 
@@ -561,8 +542,8 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
     geom_point(data = d |>
       filter(xylem_type == "L"), aes(x = k, y = fd), col = my_cols[4]) +
     # geom_point(data = d, aes(x = k, y = fd, col = xylem_long_fct)) +
-    # geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), group = p_g_lim)) +
-    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = as.numeric(p_g_lim), group = p_g_lim)) +
+    # geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), group = max_pg)) +
+    geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = as.numeric(max_pg), group = max_pg)) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
     xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
@@ -579,20 +560,20 @@ line_pg_multi <- function(data, xylem_lab, k_range, s_002, s_0025, s_003, s_0035
 generate_k_range <- function(data) {
   d <- read_csv(data) |>
     filter(is.na(removed_k))
-  # d_0015 <- d |> filter(p_g <= 0.015) |> mutate(p_g_lim = "0.015")
-  d_002 <- d |> filter(p_g <= 0.02) |> mutate(p_g_lim = "0.02")
-  d_0025 <- d |> filter(p_g <= 0.025) |> mutate(p_g_lim = "0.025")
-  d_003 <- d |> filter(p_g <= 0.03) |> mutate(p_g_lim = "0.03")
-  d_0035 <- d |> filter(p_g <= 0.035) |> mutate(p_g_lim = "0.035")
-  d_004 <- d |> filter(p_g <= 0.04) |> mutate(p_g_lim = "0.04")
-  d_005 <- d |> filter(p_g <= 0.05) |> mutate(p_g_lim = "0.05")
-  d_006 <- d |> filter(p_g <= 0.06) |> mutate(p_g_lim = "0.06")
-  d_007 <- d |> filter(p_g <= 0.07) |> mutate(p_g_lim = "0.07")
-  d_008 <- d |> filter(p_g <= 0.08) |> mutate(p_g_lim = "0.08")
+  # d_0015 <- d |> filter(p_g <= 0.015) |> mutate(max_pg = "0.015")
+  d_002 <- d |> filter(p_g <= 0.02) |> mutate(max_pg = "0.02")
+  d_0025 <- d |> filter(p_g <= 0.025) |> mutate(max_pg = "0.025")
+  d_003 <- d |> filter(p_g <= 0.03) |> mutate(max_pg = "0.03")
+  d_0035 <- d |> filter(p_g <= 0.035) |> mutate(max_pg = "0.035")
+  d_004 <- d |> filter(p_g <= 0.04) |> mutate(max_pg = "0.04")
+  d_005 <- d |> filter(p_g <= 0.05) |> mutate(max_pg = "0.05")
+  d_006 <- d |> filter(p_g <= 0.06) |> mutate(max_pg = "0.06")
+  d_007 <- d |> filter(p_g <= 0.07) |> mutate(max_pg = "0.07")
+  d_008 <- d |> filter(p_g <= 0.08) |> mutate(max_pg = "0.08")
 
   k_data <- bind_rows(d_002, d_0025, d_003, d_0035, d_004, d_005, d_006, d_007, d_008)
   k_data2 <- k_data |>
-    group_by(species, p_g_lim) |>
+    group_by(species, max_pg) |>
     nest() |>
     ungroup() |>
     mutate(k_lwr = map_dbl(data, \(x) min(x$k))) |>
@@ -607,9 +588,9 @@ generate_k_range <- function(data) {
   # k_range |>
   #   filter(str_detect(species, "assa"))
   # k_range |>
-  #   filter(p_g_lim == "0.02")
+  #   filter(max_pg == "0.02")
   # k_range |>
-  #   filter(p_g_lim == "0.025")
+  #   filter(max_pg == "0.025")
 
   tmp <- k_data2$n
   tmp2 <- as.numeric(tmp)
@@ -815,6 +796,10 @@ line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
   #    targets::tar_read(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)) |>
   #    janitor::clean_names()
   # tar_load(xylem_lab)
+
+draws <- tar_read(fit_draws_segments_xylem_0.08)
+tar_load(xylem_lab)
+
 coef_density <- function(xylem_lab, draws) {
   draws <- draws |>
     janitor::clean_names()
@@ -904,46 +889,22 @@ coef_density <- function(xylem_lab, draws) {
   data_b <- data_b |>
     mutate(sp_short2 = factor(sp_short, levels = c(tmp2, tmp3)))
 
-  y_lab_raw <- data_a$sp_short2  |> levels()
-  y_lab <- as.expression(y_lab_raw)
+  y_lab_raw <- data_a$sp_short2 |> levels()
+  y_lab <- y_lab_raw
+  names(y_lab) <- y_lab_raw
 
-  names(y_lab) <- y_lab_raw
-  # R 4.2.2 can handle comparisons of expressions
-  y_lab <- case_when(
-    y_lab == "A. fraxinifolius" ~ expression(italic("A. fraxinifolius")),
-    y_lab == "D. alatus" ~ expression(italic("D. alatus")),
-    y_lab == "D. tonkinensis" ~ expression(italic("D. tonkinensis")),
-    y_lab == "D. turbinatus" ~ expression(italic("D. turbinatus")),
-    y_lab == "H. cordifolia" ~ expression(italic("H. cordifolia")),
-    y_lab == "H. brasiliensis" ~ expression(italic("H. brasiliensis")),
-    y_lab == "H. hongaychsis" ~ expression(italic("H. hongaychsis")),
-    y_lab == "J. mimosifolia" ~ expression(italic("J. mimosifolia")),
-    y_lab == "L. coromandelica" ~ expression(italic("L. coromandelica")),
-    y_lab == "L. leucocephala" ~ expression(italic("L. leucocephala")),
-    y_lab == "M. ferrea" ~ expression(italic("M. ferrea")),
-    y_lab == "P. chinensis" ~ expression(italic("P. chinensis")),
-    y_lab == "P. cerasoides" ~ expression(italic("P. cerasoides")),
-    y_lab == "P. tomentosa" ~ expression(italic("P. tomentosa")),
-    y_lab == "S. assamica" ~ expression(italic("S. assamica")),
-    y_lab == "T. franchetii" ~ expression(italic("T. franchetii")),
-    y_lab == "V. mangachapoi" ~ expression(italic("V. mangachapoi")),
-    y_lab == "V. xishuangbannaensis" ~ expression(italic("V. xishuangbannaensis")),
-    y_lab == "A. pennata" ~ expression(italic("A. pennata")),
-    y_lab == "B. tenuiflor" ~ expression(italic("B. tenuiflor")),
-    y_lab == "G. montanum" ~ expression(italic("G. montanum")),
-    y_lab == "M. pachycarpa" ~ expression(italic("M. pachycarpa")),
-    y_lab == "V. calyculata" ~ expression(italic("V. calyculata")),
-    y_lab == "A. alexandrae" ~ expression(italic("A. alexandrae")),
-    y_lab == "A. catechu" ~ expression(italic("A. catechu")),
-    y_lab == "A. triandra" ~ expression(italic("A. triandra")),
-    y_lab == "C. mitis" ~ expression(italic("C. mitis")),
-    y_lab == "C. lutescens" ~ expression(italic("C. lutescens")),
-    y_lab == "D. lutescen" ~ expression(italic("D. lutescen")),
-    y_lab == "M. toosendan" ~ expression(italic("M. toosendan")),
-    y_lab == "T. grandis" ~ expression(italic("T. grandis")),
-    TRUE ~ y_lab
-  )
-  names(y_lab) <- y_lab_raw
+  species_list <- y_lab[-1:-4]
+
+  replace_with_italic <- function(label) {
+    for (species in species_list) {
+      if (label == species) {
+        return(substitute(italic(SPECIES), list(SPECIES = as.name(species))))
+      }
+    }
+    return(label) # If not replaced, return original label
+  }
+
+  y_lab <- sapply(y_lab, replace_with_italic)
 
   p1 <- ggplot(data_a, aes(x = exp(value), y = sp_short2, fill = xylem))  +
     facet_grid(group ~ ., scales = "free", space = "free") +
@@ -1027,19 +988,10 @@ generate_xylem_lab <- function(data, removed_k = TRUE) {
 # s_008 <- tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
 # tar_load(xylem_lab)
 # tar_load(k_range)
-ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008, coef_a = TRUE) {
+ab_pg_ribbon <- function(xylem_lab, k_range, fit_summary_combined, coef_a = TRUE) {
 
-  s_002 <- s_002 |> mutate(p_g_lim = "0.02")
-  s_0025 <- s_0025 |> mutate(p_g_lim = "0.025")
-  s_003 <- s_003 |> mutate(p_g_lim = "0.03")
-  s_0035 <- s_0035 |> mutate(p_g_lim = "0.035")
-  s_004 <- s_004 |> mutate(p_g_lim = "0.04")
-  s_005 <- s_005 |> mutate(p_g_lim = "0.05")
-  s_006 <- s_006 |> mutate(p_g_lim = "0.06")
-  s_007 <- s_007 |> mutate(p_g_lim = "0.07")
-  s_008 <- s_008 |> mutate(p_g_lim = "0.08")
-  data <- bind_rows(s_002, s_0025, s_003, s_0035, s_004, s_005, s_006, s_007, s_008) |>
-    janitor::clean_names()
+  data <- fit_summary_combined |>
+    mutate(max_pg = as.character(max_pg))
 
   # xylem_lab$species |> unique()
   if (coef_a) {
@@ -1063,10 +1015,10 @@ ab_pg_ribbon <- function(xylem_lab, k_range, s_002, s_0025, s_003, s_0035, s_004
       full_join(data, by = "variable")
   }
 
-  fig_data <- right_join(fig_data, k_range, by = c("species", "p_g_lim")) |>
-    mutate(p_g_lim = as.numeric(p_g_lim))
+  fig_data <- right_join(fig_data, k_range, by = c("species", "max_pg")) |>
+    mutate(max_pg = as.numeric(max_pg))
 
-  p <- ggplot(fig_data, aes(x = p_g_lim, y = q50, group = sp_short,
+  p <- ggplot(fig_data, aes(x = max_pg, y = q50, group = sp_short,
     fill = xylem_long_fct)) +
       facet_wrap(~sp_short, ncol = 4, scale = "free_y") +
       geom_ribbon(aes(ymin = q2_5, ymax = q97_5), alpha = 0.4) +
@@ -1279,21 +1231,18 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
   }
 
 # Model 1 and 2
-  # d <- targets::tar_read(fit_ab_each_sap_sp_clean_0.08)
   d <- summary12
-  log_a <- extract_percentiles(d$fit_pool, "log_a") |> exp()
-  b <- extract_percentiles(d$fit_pool, "b")
+  log_a <- extract_percentiles(d$fit_species, "log_a") |> exp()
+  b <- extract_percentiles(d$fit_species, "b")
   log_a2 <- extract_percentiles(d$fit_segments, "log_a") |> exp()
   b2 <- extract_percentiles(d$fit_segments, "b")
 
 # Model 3
-  # d3 <- targets::tar_read(fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
   d3 <- summary3
   log_a3 <- extract_alpha_percentiles(d3, 1) |> exp()
   b3 <- extract_alpha_percentiles(d3, 2)
 
 # Model 4
-  # d4 <- targets::tar_read(fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
   d4 <- summary4
   log_a4 <- extract_alpha_percentiles(d4, 1) |> exp()
   b4 <- extract_alpha_percentiles(d4, 2)
@@ -1678,4 +1627,21 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
   #     labs(x = "Date", y = "K")
   # }
   # p
+}
+
+combine_fit_summary <- function(s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
+  s_0.05, s_0.06, s_0.07, s_0.08) {
+  s_0.02 <- s_0.02 |> mutate(max_pg = 0.02)
+  s_0.025 <- s_0.02 |> mutate(max_pg = 0.025)
+  s_0.03 <- s_0.03 |> mutate(max_pg = 0.03)
+  s_0.035 <- s_0.03 |> mutate(max_pg = 0.035)
+  s_0.04 <- s_0.04 |> mutate(max_pg = 0.04)
+  s_0.05 <- s_0.05 |> mutate(max_pg = 0.05)
+  s_0.06 <- s_0.06 |> mutate(max_pg = 0.06)
+  s_0.07 <- s_0.07 |> mutate(max_pg = 0.07)
+  s_0.08 <- s_0.08 |> mutate(max_pg = 0.08)
+  bind_rows(
+    s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
+    s_0.05, s_0.06, s_0.07, s_0.08
+  ) |> janitor::clean_names()
 }

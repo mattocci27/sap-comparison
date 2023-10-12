@@ -43,16 +43,16 @@ clean_all <- function(data, names_data, var, name) {
 # summary_sep <- tar_read(fit_ab_each_sap_sp_clean_0.08)
 # tar_load(xylem_lab)
 
-write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab, out) {
-  segments_sep <- map_dfr(summary_sep$fit_segments,
+write_ab_csv <- function(summary_segments, summary_species, summary_fit_each, xylem_lab, out) {
+  seg_inc <- map_dfr(summary_fit_each$fit_segments,
     \(x)x$summary |> filter(variable %in% c("log_a", "b", "a")))  |>
-    mutate(species = rep(summary_sep$species, each = 3)) |>
+    mutate(species = rep(summary_fit_each$species, each = 3)) |>
     mutate(across(c(q50, q2.5, q97.5),
                   ~ ifelse(str_detect(variable, "log_a"), exp(.x), .x)))
 
-  pool_sep <- map_dfr(summary_sep$fit_pool,
+  sp_only <- map_dfr(summary_fit_each$fit_species,
     \(x)x$summary |> filter(variable %in% c("log_a", "b", "a")))  |>
-    mutate(species = rep(summary_sep$species, each = 3)) |>
+    mutate(species = rep(summary_fit_each$species, each = 3)) |>
     mutate(across(c(q50, q2.5, q97.5),
                   ~ ifelse(str_detect(variable, "log_a"), exp(.x), .x)))
 
@@ -66,15 +66,15 @@ write_ab_csv2 <- function(summary_segments, summary_pool, summary_sep, xylem_lab
   clean_all(summary_segments, names_data, "a", "multi_full_a") |>
     full_join(clean_all(summary_segments, names_data, "ln_a", "multi_full_ln_a")) |>
     full_join(clean_all(summary_segments, names_data, "b", "multi_full_b")) |>
-    full_join(clean_all(summary_pool, names_data, "a", "pool_full_a")) |>
-    full_join(clean_all(summary_pool, names_data, "ln_a", "pool_full_ln_a")) |>
-    full_join(clean_all(summary_pool, names_data, "b", "pool_full_b")) |>
-    full_join(clean_sep(segments_sep, names_data, "a", "multi_sep_a")) |>
-    full_join(clean_sep(segments_sep, names_data, "log_a", "multi_sep_ln_a")) |>
-    full_join(clean_sep(segments_sep, names_data, "b", "multi_sep_b")) |>
-    full_join(clean_sep(pool_sep, names_data, "a", "pool_sep_a")) |>
-    full_join(clean_sep(pool_sep, names_data, "log_a", "pool_sep_ln_a")) |>
-    full_join(clean_sep(pool_sep, names_data, "b", "pool_sep_b")) |>
+    full_join(clean_all(summary_species, names_data, "a", "pool_full_a")) |>
+    full_join(clean_all(summary_species, names_data, "ln_a", "pool_full_ln_a")) |>
+    full_join(clean_all(summary_species, names_data, "b", "pool_full_b")) |>
+    full_join(clean_sep(seg_inc, names_data, "a", "multi_sep_a")) |>
+    full_join(clean_sep(seg_inc, names_data, "log_a", "multi_sep_ln_a")) |>
+    full_join(clean_sep(seg_inc, names_data, "b", "multi_sep_b")) |>
+    full_join(clean_sep(sp_only, names_data, "a", "pool_sep_a")) |>
+    full_join(clean_sep(sp_only, names_data, "log_a", "pool_sep_ln_a")) |>
+    full_join(clean_sep(sp_only, names_data, "b", "pool_sep_b")) |>
     my_write_csv(out)
 }
 

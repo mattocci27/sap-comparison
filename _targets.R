@@ -562,63 +562,6 @@ main_list <- list(
 
 
 #   tar_target(
-#     segments_ab_table_full, {
-#       bind_rows(
-#         segments_ab_table_sap_sp_clean_0.02,
-#         segments_ab_table_sap_sp_clean_0.025,
-#         segments_ab_table_sap_sp_clean_0.03,
-#         segments_ab_table_sap_sp_clean_0.035,
-#         segments_ab_table_sap_sp_clean_0.04,
-#         segments_ab_table_sap_sp_clean_0.05,
-#         segments_ab_table_sap_sp_clean_0.06,
-#         segments_ab_table_sap_sp_clean_0.07,
-#         segments_ab_table_sap_sp_clean_0.08
-#       )
-#     }
-#   ),
-#   tar_target(
-#     pool_ab_table_full, {
-#       bind_rows(
-#         pool_ab_table_sap_sp_clean_0.02,
-#         pool_ab_table_sap_sp_clean_0.025,
-#         pool_ab_table_sap_sp_clean_0.03,
-#         pool_ab_table_sap_sp_clean_0.035,
-#         pool_ab_table_sap_sp_clean_0.04,
-#         pool_ab_table_sap_sp_clean_0.05,
-#         pool_ab_table_sap_sp_clean_0.06,
-#         pool_ab_table_sap_sp_clean_0.07,
-#         pool_ab_table_sap_sp_clean_0.08
-#       )
-#     }
-#   ),
-#   tar_target(
-#     segments_inclusive_ab_csv,
-#     generate_species_ab_table_csv(segments_ab_table_full, "data/segments_inclusive_ab.csv"),
-#     format = "file"
-#   ),
-#   tar_target(
-#     species_only_ab_csv,
-#     generate_species_ab_table_csv(pool_ab_table_full, "data/species_only_ab.csv"),
-#     format = "file"
-#   ),
-
-#   tar_target(
-#     pool_multi_plot, {
-#       p <- line_pool_multi(fd_k_traits_csv,
-#        xylem_lab,
-#        fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-#        fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08)
-#       my_ggsave(
-#         "figs/pool_multi",
-#         p,
-#         dpi = 300,
-#         width = 8,
-#         height = 12
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
 #     ab_points_plot, {
 #       p <- ab_comp_points(
 #         pool_csv = without_traits_pool_0.08_csv,
@@ -631,42 +574,6 @@ main_list <- list(
 #         dpi = 300,
 #         width = 173,
 #         height = 86,
-#         units = "mm"
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
-#     ab_points_four_models_plot_all, {
-#       p <- ab_comp_four_models_points(
-#         fit_ab_each_sap_sp_clean_0.08,
-#         fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-#         xylem_lab, rm_dip = FALSE)
-#       my_ggsave(
-#         "figs/ab_points_four_models_all",
-#         p,
-#         dpi = 300,
-#         width = 110,
-#         height = 165,
-#         units = "mm"
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
-#     ab_points_four_models_plot, {
-#       p <- ab_comp_four_models_points(
-#         fit_ab_each_sap_sp_clean_0.08,
-#         fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-#         xylem_lab, rm_dip = TRUE)
-#       my_ggsave(
-#         "figs/ab_points_four_models",
-#         p,
-#         dpi = 300,
-#         width = 110,
-#         height = 165,
 #         units = "mm"
 #       )
 #     },
@@ -881,26 +788,6 @@ main_list <- list(
 #   # ),
 
 #   tar_target(
-#     traits_points_main_plot, {
-#       p <- traits_points_main(
-#               vaf_pred_data, log_vaf,
-#               ks_pred_data, log_ks,
-#               wd_pred_data, wood_density,
-#               dh_pred_data, log_dh,
-#               vf_pred_data, log_vf)
-#       my_ggsave(
-#         "figs/traits_points_main",
-#         p,
-#         dpi = 300,
-#         # width = 6.8,
-#         # height = 10
-#         width = 4.33,
-#         height = 10
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
 #     traits_points_all_si_plot, {
 #       p <- traits_points_si(
 #         vaf_pred_data_no_xylem, log_vaf,
@@ -960,58 +847,7 @@ main_list <- list(
 #     generate_xylem_lab(fd_k_traits_csv)
 #   ),
 
-#   tar_target(
-#     pg_ribbon_a, {
-#       p <- ab_pg_ribbon(xylem_lab,
-#                         k_range,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08)
-#       my_ggsave(
-#         "figs/pg_ribbon_a",
-#         p,
-#         dpi = 300,
-#         width = 8,
-#         height = 12
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
-#     pg_ribbon_b, {
-#       p <- ab_pg_ribbon(xylem_lab,
-#                         k_range,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.02,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.025,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.03,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.035,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.04,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.05,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.06,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.07,
-#         fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-#         coef_a = FALSE)
-#       my_ggsave(
-#         "figs/pg_ribbon_b",
-#         p,
-#         dpi = 300,
-#         width = 8,
-#         height = 12
-#       )
-#     },
-#     format = "file"
-#   ),
 
-#   tar_target(
-#     k_range,
-#     generate_k_range(fd_k_traits_csv)
-#   ),
 
 #   tar_target(
 #     ab_var_clean_008,
@@ -1053,16 +889,6 @@ main_list <- list(
 #     format = "file"
 #   ),
 
-#   tar_target(
-#     ab_csv,
-#     write_ab_csv2(
-#       fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_0.08,
-#       fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_0.08,
-#       fit_ab_each_sap_sp_clean_0.08,
-#       xylem_lab,
-#       "data/all_ab.csv"),
-#     format = "file"
-#   ),
 #   tar_target(
 #     ks_seg_table,
 #     generate_summary_trait_table(
@@ -1109,9 +935,6 @@ main_list <- list(
 # without traits -------------------------------------------------------
 granier_without_traits_mapped <- tar_map(
     list(p = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)),
-    # tar_target(sap_all_raw,
-    #   generate_sap_stan_data(fd_k_traits_csv,
-    #     upper_pressure = p)),
     tar_target(sap_all_clean,
       generate_sap_stan_data(fd_k_traits_csv,
         remove_abnormal_values = TRUE,
@@ -1292,6 +1115,7 @@ tar_combined_segments_ab_table <- tar_combine(
   command = dplyr::bind_rows(!!!.x)
 )
 
+# granier analysis -----------------------------------
 granier_list <- list(
   granier_with_traits_mapped,
   granier_without_traits_mapped,
@@ -1321,15 +1145,192 @@ granier_list <- list(
     my_write_csv(species_xylem_df_combined, "data/species_xylem_post.csv"),
     format = "file"
   ),
+  tar_target(
+    ab_csv,
+    write_ab_csv(
+      fit_summary_segments_xylem_0.08,
+      fit_summary_species_xylem_0.08,
+      fit_each_0.08,
+      xylem_lab,
+      "data/all_ab.csv"),
+    format = "file"
+  ),
+  tar_target(
+    xylem_lab,
+    generate_xylem_lab(fd_k_traits_csv)
+  ),
   # tar_target(
   #   full_segments_traits_csv,
   #   my_write_csv(all_seg_table, "data/full_segments_traits_post.csv"),
   #   format = "file"
   # ),
+
+  tar_target(
+    pool_multi_plot, {
+      p <- line_pool_multi(fd_k_traits_csv,
+       xylem_lab,
+       fit_summary_segments_xylem_0.08,
+       fit_summary_species_xylem_0.08)
+      my_ggsave(
+        "figs/pool_multi",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ab_points_four_models_plot_all, {
+      p <- ab_comp_four_models_points(
+        fit_each_0.08,
+        fit_summary_species_xylem_0.08,
+        fit_summary_segments_xylem_0.08,
+        xylem_lab, rm_dip = FALSE)
+      my_ggsave(
+        "figs/ab_points_four_models_all",
+        p,
+        dpi = 300,
+        width = 110,
+        height = 165,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ab_points_four_models_plot, {
+      p <- ab_comp_four_models_points(
+        fit_each_0.08,
+        fit_summary_species_xylem_0.08,
+        fit_summary_segments_xylem_0.08,
+        xylem_lab, rm_dip = TRUE)
+      my_ggsave(
+        "figs/ab_points_four_models",
+        p,
+        dpi = 300,
+        width = 110,
+        height = 165,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    k_range,
+    generate_k_range(fd_k_traits_csv)
+  ),
+  tar_target(
+    fit_summary_segments_xylem_combined,
+    combine_fit_summary(
+      fit_summary_segments_xylem_0.02,
+      fit_summary_segments_xylem_0.025,
+      fit_summary_segments_xylem_0.03,
+      fit_summary_segments_xylem_0.035,
+      fit_summary_segments_xylem_0.04,
+      fit_summary_segments_xylem_0.05,
+      fit_summary_segments_xylem_0.06,
+      fit_summary_segments_xylem_0.07,
+      fit_summary_segments_xylem_0.08
+    )
+  ),
+  tar_target(
+    pg_multi_plot, {
+      p <- line_pg_multi(
+        fd_k_traits_csv,
+        xylem_lab,
+        k_range,
+        fit_summary_segments_xylem_combined)
+      my_ggsave(
+        "figs/pg_multi",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    pg_ribbon_a, {
+      p <- ab_pg_ribbon(xylem_lab, k_range, fit_summary_segments_xylem_combined)
+      my_ggsave(
+        "figs/pg_ribbon_a",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    pg_ribbon_b, {
+      p <- ab_pg_ribbon(xylem_lab, k_range, fit_summary_segments_xylem_combined,
+        coef_a = FALSE)
+      my_ggsave(
+        "figs/pg_ribbon_b",
+        p,
+        dpi = 300,
+        width = 8,
+        height = 12
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    coef_density_plot, {
+      p <- coef_density(xylem_lab,
+        fit_draws_segments_xylem_0.08)
+      my_ggsave(
+        "figs/coef_density",
+        p,
+        dpi = 300,
+        width = 6.8,
+        height = 5
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    # tar_read(trait_fig_data_combined)
+    trait_pred_data_noxylem_combined,
+    generate_combined_trait_fig_data(
+      summary = list(
+        fit_summary_segments_noxylem_traits_log_vaf,
+        fit_summary_segments_noxylem_traits_log_ks,
+        fit_summary_segments_noxylem_traits_wood_density,
+        fit_summary_segments_noxylem_traits_log_dh,
+        fit_summary_segments_noxylem_traits_log_vf),
+      draws = list(
+        fit_draws_segments_noxylem_traits_log_vaf,
+        fit_draws_segments_noxylem_traits_log_ks,
+        fit_draws_segments_noxylem_traits_wood_density,
+        fit_draws_segments_noxylem_traits_log_dh,
+        fit_draws_segments_noxylem_traits_log_vf),
+      fd_k_traits_csv,
+      xylem_lab,
+      no_xylem = TRUE,
+      single_trait = TRUE)
+  ),
+  tar_target(
+    traits_points_main_plot, {
+      p <- traits_points_main(trait_pred_data_noxylem_combined)
+      my_ggsave(
+        "figs/traits_points_main",
+        p,
+        dpi = 300,
+        width = 6.8,
+        height = 2.7
+      )
+    },
+    format = "file"
+  ),
   NULL
 )
 
-#------------------------------------------------------------
+# imputation ------------------------------------------------------------
 
 values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
   filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
@@ -1452,54 +1453,38 @@ tar_impute <- list(
   NULL
   )
 
-# tar_dir_dep <- list(
-#   tar_target(
-#     dir_dep_imp_df,
-#     generate_dir_dep_imp_data(
-#       imputed_full_df)
-#   ),
-#   # tar_target(
-#   #   post_ab_pool,
-#   #   generate_post_ab(fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_0.08)
-#   # ),
-#   # tar_target(
-#   #   post_ab_segments,
-#   #   generate_post_ab(fit_ab_draws_granier_without_traits_full_segments_sap_all_clean_0.08)
-#   # ),
-#   tar_target(
-#     post_dir_dep,
-#     generate_post_dir_dep(
-#       fit_dir_dep_draws_no_temporal_hourly_dir,
-#       fit_dir_dep_draws_no_temporal_hourly_dep)
-#   ),
-#   tar_target(
-#     post_slen, {
-#       fit_dbh_sapwood_draws_normal |>
-#         dplyr::select(alpha, beta, sigma)
-#     }
-#   ),
-#   # tar_target(
-#   #   post_ab_pool_mc,
-#   #   post_ab_pool |> sample_n(1000)
-#   # ),
-#   # tar_target(
-#   #   post_ab_segments_mc,
-#   #   post_ab_segments |> sample_n(1000)
-#   # ),
-#   tar_target(
-#     post_dir_dep_mc,
-#     post_dir_dep |> mutate(beta = map(beta, sample, 1000))
-#   ),
-#   tar_target(
-#     post_slen_mc,
-#     post_slen |> sample_n(1000)
-#   ),
-#   tar_target(
-#     dir_dep_imp_full_df,
-#     add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
-#   ),
-#   NULL
-# )
+tar_dir_dep <- list(
+  tar_target(
+    dir_dep_imp_df,
+    generate_dir_dep_imp_data(
+      imputed_full_df)
+  ),
+  tar_target(
+    post_dir_dep,
+    generate_post_dir_dep(
+      fit_dir_dep_draws_no_temporal_hourly_dir,
+      fit_dir_dep_draws_no_temporal_hourly_dep)
+  ),
+  tar_target(
+    post_slen, {
+      fit_dbh_sapwood_draws_normal |>
+        dplyr::select(alpha, beta, sigma)
+    }
+  ),
+  tar_target(
+    post_dir_dep_mc,
+    post_dir_dep |> mutate(beta = map(beta, sample, 1000))
+  ),
+  tar_target(
+    post_slen_mc,
+    post_slen |> sample_n(1000)
+  ),
+  tar_target(
+    dir_dep_imp_full_df,
+    add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
+  ),
+  NULL
+)
 
 uncertainty_mapped <- tar_map(
     values = expand_grid(folds = 1:30,
@@ -1792,69 +1777,6 @@ sapwood_list <- list(
   NULL
 )
 
-segments_xylem_df_mapped <- tar_map(
-  list(stan_summary =
-    rlang::syms(
-    str_c("fit_ab_summary_granier_without_traits_full_segments_sap_all_clean_",
-      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
-    pg = pg),
-  tar_target(
-    segments_xylem_table,
-    generates_segments_xylem_table(stan_summary)
-  ),
-  tar_target(
-    without_traits_table,
-    generate_summary_non_trait_table(segments_xylem_table, pg = pg)
-  )
-)
-species_xylem_df_mapped <- tar_map(
-  list(stan_summary =
-    rlang::syms(
-    str_c("fit_ab_summary_granier_without_traits_full_pool_sap_all_clean_",
-      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
-    pg = pg),
-  tar_target(
-    species_xylem_table,
-    generates_segments_xylem_table(stan_summary)
-  ),
-  tar_target(
-    without_traits_table,
-    generate_summary_non_trait_table(species_xylem_table, pg = pg)
-  )
-)
-
- tar_combined_segments_xylem_df <- tar_combine(
-   segments_xylem_df_combined,
-   segments_xylem_df_mapped[["without_traits_table"]],
-   command = dplyr::bind_rows(!!!.x)
-  )
- tar_combined_species_xylem_df <- tar_combine(
-   species_xylem_df_combined,
-   species_xylem_df_mapped[["without_traits_table"]],
-   command = dplyr::bind_rows(!!!.x)
-  )
-
- post_csv_list <- list(
-   segments_xylem_df_mapped,
-   species_xylem_df_mapped,
-   tar_combined_segments_xylem_df,
-   tar_combined_species_xylem_df,
-   tar_target(
-     segments_xylem_csv,
-     my_write_csv(segments_xylem_df_combined, "data/segments_xylem_post.csv"),
-     format = "file"
-   ),
-   tar_target(
-     species_xylem_csv,
-     my_write_csv(species_xylem_df_combined, "data/species_xylem_post.csv"),
-     format = "file"
-   ),
-   tar_target(
-     full_segments_traits_csv,
-     my_write_csv(all_seg_table, "data/full_segments_traits_post.csv"),
-     format = "file"
-   )
- )
 
 # append(raw_data_list, main_list) |>
 #   append(tar_impute) |>
@@ -1865,4 +1787,5 @@ species_xylem_df_mapped <- tar_map(
 append(raw_data_list, main_list) |>
   append(granier_list) |>
   append(tar_impute) |>
-  append(sapwood_list)
+  append(sapwood_list) |>
+  append(tar_dir_dep)
