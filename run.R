@@ -10,8 +10,6 @@
 arg = commandArgs(T)
 targets::tar_make_clustermq(
                             # c(imp_points_plot, imp_points_plot2),
-                c(traits_points_main_plot,
-                traits_points_si_plot),
   workers = as.numeric(arg[1])
 )
 
