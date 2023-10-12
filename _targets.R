@@ -1327,6 +1327,19 @@ granier_list <- list(
     },
     format = "file"
   ),
+  tar_target(
+    traits_points_si_plot, {
+      p <- traits_points_si(trait_pred_data_noxylem_combined)
+      my_ggsave(
+        "figs/traits_points_si",
+        p,
+        dpi = 300,
+        width = 6.8,
+        height = 2.9
+      )
+    },
+    format = "file"
+  ),
   NULL
 )
 

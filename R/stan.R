@@ -1833,15 +1833,25 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
   }
 
   if (coef_a & with_ribbon) {
+    if (use_color) {
+     p <- ggplot() +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "black") +
+        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "black")
+    } else {
      p <- ggplot() +
         geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "blue") +
-        # geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_l), ymax = exp(pred_a_h)), alpha = 0.6, fill = "blue") +
         geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "blue")
+    }
   } else if (with_ribbon) {
+    if (use_color) {
+     p <- ggplot() +
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "black") +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "black")
+    } else {
      p <- ggplot() +
         geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "blue") +
-        # geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_l, ymax = pred_b_h), alpha = 0.6, fill = "red") +
         geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "blue")
+    }
    } else {
     p <- ggplot()
   }
@@ -1898,124 +1908,213 @@ label_func <- function(breaks) {
 traits_points_main <- function(pred_data, use_color = FALSE) {
   p1 <- traits_points_each(pred_data[[1]], log_vaf,
     with_ribbon = TRUE, use_color = use_color) +
-    xlab("VAF (%)")
+    xlab("") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+     axis.text.x = element_blank()
+    )
   p2 <- traits_points_each(pred_data[[1]], log_vaf,
      coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
-    xlab("VAF (%)")
+    xlab("VAF (%)") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
+    )
 
   p3 <- traits_points_each(pred_data[[2]], log_ks,
     with_ribbon = TRUE, use_color = use_color) +
-    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    xlab("") +
     scale_x_log10(label = label_func) +
-    ylab("")
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
   p4 <- traits_points_each(pred_data[[2]], log_ks,
     coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
     scale_x_log10(label = label_func) +
-    ylab("")
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
   p5 <- traits_points_each(pred_data[[3]], wood_density,
     with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
     scale_x_continuous() +
-    xlab(expression(rho~(g~cm^{-3})))
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
   p6 <- traits_points_each(pred_data[[3]], wood_density,
     coef_a = FALSE, with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
     scale_x_continuous() +
-    xlab(expression(rho~(g~cm^{-3})))
+    xlab(expression(rho~(g~cm^{-3}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
   p7 <- traits_points_each(pred_data[[4]], log_dh,
     with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(D[h]~(mu*{m})))
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
   p8 <- traits_points_each(pred_data[[4]], log_dh,
     coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(D[h]~(mu*{m})))
+    xlab(expression(D[h]~(mu*{m}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
   p9 <- traits_points_each(pred_data[[5]], log_vf,
     with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(VF~(no.~mm^{-2})))
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
   p10 <- traits_points_each(pred_data[[5]], log_vf,
     coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(VF~(no.~mm^{-2})))
+    xlab(expression(VF~(no.~mm^{-2}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
   p1 + p3 + p5 + p7 + p9 +
     p2 + p4 + p6 + p8 + p10  +
-    plot_layout(nrow = 2, guides = "collect") +
-    plot_annotation(tag_levels = "A") &
+    plot_layout(nrow = 2, guides = "collect") &
+    # plot_annotation(tag_levels = "A") &
     theme(
       # panel.spacing = unit(-1, "lines"),
       axis.ticks.length = unit(-0.1, "cm"),
-      axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
-      axis.text.y = element_text(size = 7, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
-      axis.title.x = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
-      axis.text = element_text(size = 6),
+      # axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+      axis.title.x = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      axis.title.y = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      # axis.text = element_text(size = 6),
+      # plot.margin=unit(c(0.1, 0.05, 0.1, 0.05), "lines"),
       plot.margin=unit(c(0.1, 0.1, 0.1, 0.1), "lines"),
       plot.tag = element_text(size = 8)
     )
 
 }
 
-traits_points_si <- function(vaf_pred_data, log_vaf, ks_pred_data, log_ks,
-    wd_pred_data, wood_density,
-    dh_pred_data, log_dh,
-    vf_pred_data, log_vf,
-    use_color = FALSE
-) {
+traits_points_si <- function(pred_data, use_color = TRUE) {
+  p1 <- traits_points_each(pred_data[[1]], log_vaf,
+    with_ribbon = FALSE, use_color = use_color) +
+    xlab("") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+     axis.text.x = element_blank()
+    )
+  p2 <- traits_points_each(pred_data[[1]], log_vaf,
+     coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
+    xlab("VAF (%)") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
+    )
 
-  label_func <- function(breaks) {
-  sapply(breaks, function(b) {
-    if (grepl("\\.0$", b)) {
-      return(sub("\\.0$", "", b))
-    } else {
-      return(b)
-    }
-  })
-}
-
-  p1 <- traits_points_each(vaf_pred_data, log_vaf, with_ribbon = TRUE, use_color = use_color) +
-    xlab("VAF (%)")
-  p2 <- traits_points_each(vaf_pred_data, log_vaf, coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
-    xlab("VAF (%)")
-
-  p3 <- traits_points_each(ks_pred_data, log_ks, with_ribbon = TRUE, use_color = use_color) +
+  p3 <- traits_points_each(pred_data[[2]], log_ks,
+    with_ribbon = TRUE, use_color = use_color) +
+    xlab("") +
+    scale_x_log10(label = label_func) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
+  p4 <- traits_points_each(pred_data[[2]], log_ks,
+    coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
     xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
-    scale_x_log10(label = label_func)
-  p4 <- traits_points_each(ks_pred_data, log_ks, coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
-    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
-    scale_x_log10(label = label_func)
+    scale_x_log10(label = label_func) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
-  p5 <- traits_points_each(wd_pred_data, wood_density, with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
-     scale_x_continuous() +
-    xlab(expression(rho~(g~cm^{-3})))
-  p6 <- traits_points_each(wd_pred_data, wood_density, coef_a = FALSE, with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
+  p5 <- traits_points_each(pred_data[[3]], wood_density,
+    with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
     scale_x_continuous() +
-    xlab(expression(rho~(g~cm^{-3})))
-  p7 <- traits_points_each(dh_pred_data, log_dh, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(D[h]~(mu*{m})))
-  p8 <- traits_points_each(dh_pred_data, log_dh, coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(D[h]~(mu*{m})))
-  p9 <- traits_points_each(vf_pred_data, log_vf, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(VF~(no.~mm^{-2})))
-  p10 <- traits_points_each(vf_pred_data, log_vf, coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
-    xlab(expression(VF~(no.~mm^{-2})))
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
+  p6 <- traits_points_each(pred_data[[3]], wood_density,
+    coef_a = FALSE, with_ribbon = FALSE, wd = TRUE, use_color = use_color) +
+    scale_x_continuous() +
+    xlab(expression(rho~(g~cm^{-3}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
 
-  # p1 + p2 + p3 + p4 + p5 +
-  #   p6 + p7 + p8 + p9 + p10  +
-  p1 + p3 + p5 + p7 + p9 +
+  p7 <- traits_points_each(pred_data[[4]], log_dh,
+    with_ribbon = FALSE, use_color = use_color) +
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
+  p8 <- traits_points_each(pred_data[[4]], log_dh,
+    coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
+    xlab(expression(D[h]~(mu*{m}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
+
+  p9 <- traits_points_each(pred_data[[5]], log_vf,
+    with_ribbon = FALSE, use_color = use_color) +
+    xlab("") +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
+  p10 <- traits_points_each(pred_data[[5]], log_vf,
+    coef_a = FALSE, with_ribbon = FALSE, use_color = use_color) +
+    xlab(expression(VF~(no.~mm^{-2}))) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
+
+# Use one of the plots to extract the legend
+  extracted_legend <- cowplot::get_legend(
+    p1 + guides(color = guide_legend(ncol = 4, title = "")) +
+      theme(legend.text = element_text(size = 8),
+            legend.position = "bottom",
+            legend.background = element_blank()))
+
+  labels <- LETTERS[1:10]  # "A", "B", "C", ...
+
+# Combine the plots and the extracted legend
+  p <- p1 + p3 + p5 + p7 + p9 +
     p2 + p4 + p6 + p8 + p10  +
-    plot_layout(nrow = 2, guides = "collect") +
-    plot_annotation(tag_levels = "A") &
+    plot_layout(nrow = 2, guides = "collect") &
+    # plot_annotation(tag_levels = "A") &
     theme(
       # panel.spacing = unit(-1, "lines"),
       axis.ticks.length = unit(-0.1, "cm"),
-      axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
-      axis.text.y = element_text(size = 7, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
-      axis.title.x = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(size = 7.5, margin = margin(t = 0, r = 0, b = 0, l = 0)),
-      axis.text = element_text(size = 6),
+      # axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+      axis.title.x = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      axis.title.y = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      # axis.text = element_text(size = 6),
       plot.margin=unit(c(0.1, 0.1, 0.1, 0.1), "lines"),
       plot.tag = element_text(size = 8)
     )
+
+  cowplot::plot_grid(p, extracted_legend, ncol = 1, rel_heights = c(1, 0.1))
 }
 
 # without_traits_0.08
