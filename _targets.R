@@ -1135,6 +1135,7 @@ tar_impute <- list(
   NULL
   )
 
+# scaling ---------------------------------------------------------
 tar_dir_dep <- list(
   tar_target(
     dir_dep_imp_df,
@@ -1144,12 +1145,12 @@ tar_dir_dep <- list(
   tar_target(
     post_dir_dep,
     generate_post_dir_dep(
-      fit_dir_dep_draws_no_temporal_hourly_dir,
-      fit_dir_dep_draws_no_temporal_hourly_dep)
+      fit_draws_dir_dep_dir,
+      fit_draws_dir_dep_dep)
   ),
   tar_target(
     post_slen, {
-      fit_dbh_sapwood_draws_normal |>
+      fit_draws_sap_dbh |>
         dplyr::select(alpha, beta, sigma)
     }
   ),
@@ -1392,8 +1393,8 @@ sapwood_list <- list(
     generate_dbh_sap_stan_data(sapwood_depth_csv)
   ),
   tar_stan_mcmc(
-     fit_dbh_sapwood,
-     "stan/normal.stan",
+     fit,
+     "stan/sap_dbh.stan",
      data = dbh_sap_stan_data,
      refresh = 0,
      chains = 4,
@@ -1415,21 +1416,21 @@ sapwood_list <- list(
     )
   ),
   tar_map(
-    values = expand_grid(time_res = c("daily", "hourly"), fct = c("dir", "dep")),
+    values = expand_grid(fct = c("dir", "dep")),
     tar_target(
-      dir_dep_stan_data,
-      generate_dir_dep_stan_data(imputed_full_df, time_res = time_res, fct = fct)
+      stan_data,
+      generate_dir_dep_stan_data(imputed_full_df, time_res = "hourly", fct = fct)
     ),
     tar_stan_mcmc(
-      fit_dir_dep,
-      "stan/no_temporal.stan",
-      data = dir_dep_stan_data,
-      refresh = 1,
+      fit,
+      "stan/dir_dep.stan",
+      data = stan_data,
+      refresh = 0,
       chains = 4,
       parallel_chains = getOption("mc.cores", 4),
       iter_warmup = 2000,
       iter_sampling = 2000,
-      adapt_delta = 0.9,
+      adapt_delta = 0.95,
       max_treedepth = 15,
       seed = 123,
       return_draws = TRUE,
