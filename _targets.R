@@ -1136,17 +1136,28 @@ tar_impute <- list(
   )
 
 # scaling ---------------------------------------------------------
+
 tar_dir_dep <- list(
+  # put NA values for unmesaured direction and depth combinations
   tar_target(
     dir_dep_imp_df,
     generate_dir_dep_imp_data(
       imputed_full_df)
   ),
+  tar_map(
+    values = list(data_type = c("dir_only", "dep_only", "dir_dep")),
+    tar_target(
+      post,
+      generate_post_dir_dep(fit2_draws_dir_dep, data_type)
+    ),
+    tar_target(
+      post_1000,
+      generate_post_dir_dep(fit2_draws_dir_dep, data_type) |> sample_n(1000)
+    )
+  ),
   tar_target(
-    post_dir_dep,
-    generate_post_dir_dep(
-      fit_draws_dir_dep_dir,
-      fit_draws_dir_dep_dep)
+    post_dir_dep_mid,
+    apply(post_dir_dep, 2, median)
   ),
   tar_target(
     post_slen, {
@@ -1155,17 +1166,37 @@ tar_dir_dep <- list(
     }
   ),
   tar_target(
-    post_dir_dep_mc,
-    post_dir_dep |> mutate(beta = map(beta, sample, 1000))
+    post_slen_mid,
+    apply(post_slen, 2, median)
   ),
   tar_target(
-    post_slen_mc,
-    post_slen |> sample_n(1000)
+    post_slen_1000, {
+      post_slen |> sample_n(1000)
+    },
   ),
   tar_target(
-    dir_dep_imp_full_df,
-    add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
+    sarea_df,
+    generate_sarea_df(dbh_imp_df,
+      post_slen_mid |> as.data.frame() |> t() |> as_tibble())
   ),
+  tar_target(
+    t16_df,
+    generate_t16_df(rubber_raw_data_csv)
+  ),
+  # ks with median dir, dep, and sapwood area
+  # ks with median dir, dep, and sapwood area
+  # tar_target(
+  #   dir_dep_imp_full_df,
+  #   add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
+  # ),
+  # tar_target(
+  #   test_imputation,
+  #     test_fun(
+  #       csv = rubber_raw_data_csv,
+  #       year = 2016,
+  #       month = 11
+  #     )
+  # ),
   NULL
 )
 
@@ -1415,35 +1446,62 @@ sapwood_list <- list(
        posterior::default_convergence_measures()
     )
   ),
-  tar_map(
-    values = expand_grid(fct = c("dir", "dep")),
-    tar_target(
-      stan_data,
-      generate_dir_dep_stan_data(imputed_full_df, time_res = "hourly", fct = fct)
-    ),
-    tar_stan_mcmc(
-      fit,
-      "stan/dir_dep.stan",
-      data = stan_data,
-      refresh = 0,
-      chains = 4,
-      parallel_chains = getOption("mc.cores", 4),
-      iter_warmup = 2000,
-      iter_sampling = 2000,
-      adapt_delta = 0.95,
-      max_treedepth = 15,
-      seed = 123,
-      return_draws = TRUE,
-      return_diagnostics = TRUE,
-      return_summary = TRUE,
-      summaries = list(
-        mean = ~mean(.x),
-        sd = ~sd(.x),
-        mad = ~mad(.x),
-      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-        posterior::default_convergence_measures()
-     )
-    )
+  # tar_map(
+  #   values = expand_grid(fct = c("dir", "dep")),
+  #   tar_target(
+  #     stan_data,
+  #     generate_dir_dep_stan_data(imputed_full_df, time_res = "hourly", fct = fct)
+  #   ),
+  #   tar_stan_mcmc(
+  #     fit,
+  #     "stan/dir_dep.stan",
+  #     data = stan_data,
+  #     refresh = 0,
+  #     chains = 4,
+  #     parallel_chains = getOption("mc.cores", 4),
+  #     iter_warmup = 2000,
+  #     iter_sampling = 2000,
+  #     adapt_delta = 0.95,
+  #     max_treedepth = 15,
+  #     seed = 123,
+  #     return_draws = TRUE,
+  #     return_diagnostics = TRUE,
+  #     return_summary = TRUE,
+  #     summaries = list(
+  #       mean = ~mean(.x),
+  #       sd = ~sd(.x),
+  #       mad = ~mad(.x),
+  #     ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+  #       posterior::default_convergence_measures()
+  #    )
+  #   )
+  # ),
+  tar_target(
+    stan_data_dir_dep,
+    generate_dir_dep_stan_data2(imputed_full_df)
+  ),
+  tar_stan_mcmc(
+    fit2,
+    "stan/dir_dep.stan",
+    data = stan_data_dir_dep,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+    ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+   )
   ),
   tar_target(
     dbh_imp_df,
