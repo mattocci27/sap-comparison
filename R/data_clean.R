@@ -289,6 +289,44 @@ generate_full_date_dbh <- function(girth_increment_csv, initial_dbh_csv) {
 
 }
 
+generate_dir_dep_stan_data2 <- function(imputed_full_df){
+  # Create a reference data frame
+  ref_df <- imputed_full_df |>
+    filter(dir == "S" & dep == 2) |>
+    select(year, date, time, tree, ks) |>
+    filter(ks > 1e-6) |>
+    rename(ks_ref = ks)
+
+  imp_df <- imputed_full_df |>
+    left_join(ref_df, by = c("year", "date", "time", "tree")) |>
+    mutate(hour = as.integer(substr(time, 1, 2))) |>
+    group_by(year, date, hour, tree, dir, dep) |>
+    summarise(ks = mean(ks, na.rm = TRUE),
+              ks_ref = mean(ks_ref, na.rm = TRUE),
+              .groups = "drop") |>
+    filter(dir != "S" | dep != 2) |>
+    mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
+    mutate(dep_fct = as.factor(dep)) |>
+    mutate(time2 = paste(date, hour) |> as.factor() |> as.numeric()) |>
+    filter(ks > 1e-6) |>
+    filter(!is.na(ks_ref))
+
+  xd <- model.matrix(log(ks) ~  dep_fct + dir_fct, data = imp_df)
+
+  # no intercept
+  xd <- xd[, -1]
+
+  list(
+    N = nrow(imp_df),
+    K = ncol(xd),
+    M = imp_df |> pull(tree) |> unique() |> length(),
+    log_ks = log(imp_df$ks),
+    log_ks_ref = log(imp_df$ks_ref),
+    tree = imp_df |> pull(tree) |> as.character() |> as.factor() |> as.numeric(),
+    x = xd
+  )
+}
+
 generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")) {
   # Create a reference data frame
   ref_df <- imputed_full_df |>
@@ -359,41 +397,76 @@ generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "h
   )
 }
 
-generate_post_dir_dep <- function(post_dir, post_dep) {
-  post_dir <- post_dir |>
-    janitor::clean_names()
-  post_dep <- post_dep |>
+generate_post_dir <- function(draws_dir) {
+  # post_dir <- tar_read(fit_draws_dir_dep_dir)
+  post_dir <- draws_dir |>
     janitor::clean_names()
 
   beta_dir_post <- post_dir |>
     dplyr::select(starts_with("beta"))
   beta_dir_post_2 <- bind_cols(0, beta_dir_post)
   colnames(beta_dir_post_2) <- c("S", "N", "E", "W")
+  beta_dir_post_2
+}
+
+generate_post_dep <- function(draws_dep) {
+  # post_dep <- tar_read(fit_draws_dir_dep_dep)
+  post_dep <- draws_dep |>
+    janitor::clean_names()
 
   beta_dep_post <- post_dep |>
     dplyr::select(starts_with("beta"))
-  beta_dep_post2 <- bind_cols(1, beta_dep_post)
-  colnames(beta_dep_post2) <- c(2, 4, 6)
+  beta_dep_post_2 <- bind_cols(0, beta_dep_post)
+  colnames(beta_dep_post_2) <- c("2", "4", "6")
+  beta_dep_post_2
+}
 
-  beta_dir_post_4 <- beta_dir_post_2 + beta_dep_post2 |> pull(`4`)
-  beta_dir_post_4 <- as_tibble(beta_dir_post_4)
-  beta_dir_post_6 <- beta_dir_post_2 + beta_dep_post2 |> pull(`6`)
-  beta_dir_post_6 <- as_tibble(beta_dir_post_6)
 
-  beta_df <- bind_rows(
-      beta_dir_post_2 |>
-        mutate(dep = 2),
-      beta_dir_post_4 |>
-        mutate(dep = 4),
-      beta_dir_post_6 |>
-        mutate(dep = 6)) |>
-    pivot_longer(-dep, names_to = "dir") |>
-    mutate(dir = factor(dir, levels = c("S", "N", "E", "W"))) |>
-    group_by(dep, dir) |>
-    nest() |>
-    rename(beta = data) |>
-    mutate(beta = map(beta, `[[`, 1))
-  beta_df
+# tar_load(fit2_draws_dir_dep)
+# generate_post_dir_dep(fit2_draws_dir_dep, "dir_only")
+# generate_post_dir_dep(fit2_draws_dir_dep, "dep_only")
+# generate_post_dir_dep(fit2_draws_dir_dep, "dir_dep")
+
+generate_post_dir_dep <- function(draws_dir_dep, data_type = c("dir_only", "dep_only", "dir_dep")) {
+  post <- draws_dir_dep |>
+    janitor::clean_names()
+
+  beta_post <- post |>
+    dplyr::select(starts_with("beta")) |>
+    mutate(s_2 = 0) |>
+    rename(
+      "4" = beta_1,
+      "6" = beta_2,
+      "n" = beta_3,
+      "e" = beta_4,
+      "w" = beta_5)
+
+  if (data_type == "dir_only") {
+    beta_post <- beta_post |>
+      mutate(across(c(`4`, `6`), ~ median(.))) |>
+      mutate(s_4 = `4`) |>
+      mutate(s_6 = `6`)
+  } else if (data_type == "dep_only") {
+    beta_post <- beta_post |>
+      mutate(across(c(n, e, w), ~ median(.))) |>
+      mutate(s_4 = `4`) |>
+      mutate(s_6 = `6`)
+  }
+
+   beta_post <- beta_post |>
+    mutate(s_4 = `4`,
+           s_6 = `6`,
+           n_2 = n,
+           n_4 = `4` + n,
+           n_6 = `6` + n,
+           e_2 = e,
+           e_4 = `4` + e,
+           e_6 = `6` + e,
+           w_2 = w,
+           w_4 = `4` + w,
+           w_6 = `6` + w) |>
+    select(s_2, s_4, s_6, n_2, n_4, n_6, e_2, e_4, e_6, w_2, w_4, w_6)
+  beta_post
 }
 
 # 15: Hevea brasiliensis
@@ -613,6 +686,16 @@ calc_quantiles <- function(x, na.rm = TRUE) {
   return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
 }
 
+generate_sarea_df <- function(dbh_imp_df, post_slen_m) {
+  dbh_df <- dbh_imp_df |>
+    mutate(slen = pred_sap(dbh, post_slen_m))  |>
+    mutate(s_0_2 = calc_s(dbh, 2)) |>
+    mutate(s_2_4 = calc_s(dbh, 4)) |>
+    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
+    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
+  dbh_df
+}
+
 generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
   post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep,
   k = 50, i = 1) {
@@ -780,6 +863,23 @@ ab_scaling <- function(ab_uncertainty_full_df) {
 }
 
 
+generate_t16_df <- function(rubber_raw_data_csv) {
+  t16_df <- read_csv(rubber_raw_data_csv) |>
+    janitor::clean_names() |>
+    dplyr::select(date, t16_0_0)
+
+  t16_df_re <- t16_df |>
+    rename(ks = t16_0_0) |>
+    mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
+    mutate(dep = 2) |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(time = format(date, "%H:%M:%S")) |>
+    mutate(date = as_date(date))
+  t16_df_re
+}
+
+
 add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
   t16_df <- read_csv(rubber_raw_data_csv) |>
     janitor::clean_names() |>
@@ -818,3 +918,68 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
 
 }
 
+
+generate_k_data <- function(dir_dep_imp_full_df, post_dir_dep_mid, sarea_df){
+  tmp <- full_join(dir_dep_imp_full_df, post_dir_dep_mid, by = c("dir", "dep")) |>
+      mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
+      mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+  tmp2 <- full_join(tmp, sarea_df, by = c("date", "tree"))
+  s_df <- tmp2 |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+
+# deeper than 6cm
+  s6_df <- tmp2 |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_ks = log_ks - log(2))
+
+  s_df <- bind_rows(s_df, s6_df)
+}
+
+test_fun <- function(csv, year = 2015, month = 1) {
+  d <- read_csv(csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(month == {{month}}) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
+    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
+    dplyr::select(year, cos_transformed_day, cos_transformed_time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "ks") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+   d |>
+    filter(year == {{year}}) |>
+    as.data.frame() |>
+    # as_tibble()
+    missForest::missForest(parallelize = "forests")
+}
