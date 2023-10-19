@@ -119,47 +119,15 @@ missForest_all <- function(csv) {
 # library(tidyverse)
 # tar_read(imputed_long_2015)
 
-missForest_long <- function(csv, year = 2015, month = 1) {
-  d <- read_csv(csv) |>
-    janitor::clean_names() |>
-    mutate(date = mdy_hm(date)) |>
-    mutate(year = year(date)) |>
-    mutate(month = month(date)) |>
-    filter(month == {{month}}) |>
-    mutate(day = day(date)) |>
-    mutate(yday = yday(date)) |>
-    mutate(time = hour(date) * 60 + minute(date)) |>
-    mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
-    mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
-    dplyr::select(year, cos_transformed_day, cos_transformed_time,
-      vpd, par, t01_0_0:t15_0_0) |>
-    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
-    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
-    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
-    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
-    mutate(dir = case_when(
-      dir == "0" ~ "S",
-      dir == "1" ~ "E",
-      dir == "2" ~ "N",
-      dir == "3" ~ "W"
-    )) |>
-    mutate(dep = case_when(
-      dep == "0" ~ 2,
-      dep == "1" ~ 4,
-      dep == "2" ~ 6,
-    )) |>
-    mutate(tree = as.factor(tree)) |>
-    mutate(dir = as.factor(dir)) |>
-    dplyr::select(-id)
+# missForest_long <- function(clean_df, year = 2015, month = 1) {
+#    d |>
+#     filter(year == {{year}}) |>
+#     as.data.frame() |>
+#     # as_tibble()
+#     missForest::missForest(parallelize = "forests")
+# }
 
-   d |>
-    filter(year == {{year}}) |>
-    as.data.frame() |>
-    # as_tibble()
-    missForest::missForest(parallelize = "forests")
-}
-
-missForest_clean <- function(csv, year = 2015, month = 1) {
+clean_for_missForest <- function(csv, year = 2015, month = 1) {
   d <- read_csv(csv) |>
     janitor::clean_names() |>
     mutate(date = mdy_hm(date)) |>
@@ -171,9 +139,9 @@ missForest_clean <- function(csv, year = 2015, month = 1) {
     mutate(time = hour(date) * 60 + minute(date)) |>
     mutate(cos_transformed_day = cos((yday - 1) / 365 * 2 * pi)) |>
     mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
-    dplyr::select(year, yday, cos_transformed_day, cos_transformed_time,
-      vpd, par, t01_0_0:t15_0_0) |>
-    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    dplyr::select(year, cos_transformed_day, cos_transformed_time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "k") |>
     mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
     mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
     mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
@@ -207,8 +175,8 @@ backtransform_date <- function(csv, year = 2015, month = 1, imputed_df) {
     mutate(day = day(date)) |>
     mutate(yday = yday(date)) |>
     mutate(time = hour(date) * 60 + minute(date)) |>
-    dplyr::select(year, yday, time, t01_0_0:t15_0_0) |>
-    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    dplyr::select(year, yday, time, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "k") |>
     filter(year == {{year}})
 
   imputed_df |>
@@ -216,7 +184,6 @@ backtransform_date <- function(csv, year = 2015, month = 1, imputed_df) {
     rename(time = cos_transformed_time) |>
     mutate(yday = df_time$yday) |>
     mutate(time = df_time$time)
-
 }
 
 missForest_each <- function(csv, tree) {
@@ -251,7 +218,7 @@ make_long_nonimputed_df <- function(csv) {
   mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
   dplyr::select(year, date, time,
     vpd, par, t01_0_0:t15_0_0) |>
-  pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+  pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "k") |>
   mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
   mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
   mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
@@ -326,37 +293,37 @@ generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "h
   # Create a reference data frame
   ref_df <- imputed_full_df |>
     filter(dir == "S" & dep == 2) |>
-    select(year, date, time, tree, ks) |>
-    filter(ks > 1e-6) |>
-    rename(ks_ref = ks)
+    select(year, date, time, tree, k) |>
+    filter(k > 1e-6) |>
+    rename(k_ref = k)
 
   if (time_res == "daily") {
     imp_df <- imputed_full_df |>
       left_join(ref_df, by = c("year", "date", "time", "tree")) |>
       group_by(date, tree, dir, dep) |>
-      summarise(ks = mean(ks, na.rm = TRUE),
-                ks_ref = mean(ks_ref, na.rm = TRUE),
+      summarise(k = mean(k, na.rm = TRUE),
+                k_ref = mean(k_ref, na.rm = TRUE),
                 .groups = "drop") |>
       filter(dir != "S" | dep != 2) |>
       mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
       mutate(dep_fct = as.factor(dep)) |>
       mutate(time2 = date |> as.factor() |> as.numeric()) |>
-      filter(ks > 1e-6) |>
-      filter(!is.na(ks_ref))
+      filter(k > 1e-6) |>
+      filter(!is.na(k_ref))
   } else if (time_res == "hourly") {
     imp_df <- imputed_full_df |>
       left_join(ref_df, by = c("year", "date", "time", "tree")) |>
       mutate(hour = as.integer(substr(time, 1, 2))) |>
       group_by(year, date, hour, tree, dir, dep) |>
-      summarise(ks = mean(ks, na.rm = TRUE),
-                ks_ref = mean(ks_ref, na.rm = TRUE),
+      summarise(k = mean(k, na.rm = TRUE),
+                k_ref = mean(k_ref, na.rm = TRUE),
                 .groups = "drop") |>
       filter(dir != "S" | dep != 2) |>
       mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
       mutate(dep_fct = as.factor(dep)) |>
       mutate(time2 = paste(date, hour) |> as.factor() |> as.numeric()) |>
-      filter(ks > 1e-6) |>
-      filter(!is.na(ks_ref))
+      filter(k > 1e-6) |>
+      filter(!is.na(k_ref))
   } else {
     imp_df <- imputed_full_df |>
       left_join(ref_df, by = c("year", "date", "time", "tree")) |>
@@ -364,18 +331,18 @@ generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "h
       mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
       mutate(dep_fct = as.factor(dep)) |>
       mutate(time2 = paste(date, time) |> as.factor() |> as.numeric()) |>
-      filter(ks > 1e-6) |>
-      filter(!is.na(ks_ref))
+      filter(k > 1e-6) |>
+      filter(!is.na(k_ref))
   }
 
   if (fct == "dep") {
     imp_df <- imp_df |>
       filter(dir == "S")
-    xd <- model.matrix(log(ks) ~  dep_fct, data = imp_df)
+    xd <- model.matrix(log(k) ~  dep_fct, data = imp_df)
   } else {
     imp_df <- imp_df |>
       filter(dep == 2)
-    xd <- model.matrix(log(ks) ~  dir_fct, data = imp_df)
+    xd <- model.matrix(log(k) ~  dir_fct, data = imp_df)
   }
 
   # no intercept
@@ -385,8 +352,8 @@ generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "h
     N = nrow(imp_df),
     K = ncol(xd),
     M = imp_df |> pull(tree) |> unique() |> length(),
-    log_ks = log(imp_df$ks),
-    log_ks_ref = log(imp_df$ks_ref),
+    log_k = log(imp_df$k),
+    log_k_ref = log(imp_df$k_ref),
     tree = imp_df |> pull(tree) |> as.character() |> as.factor() |> as.numeric(),
     x = xd
   )
@@ -469,8 +436,8 @@ generate_dir_dep_imp_data <- function(imputed_full_df) {
 
   ref_df <- imputed_full_df |>
     filter(dir == "S" & dep == 2) |>
-    select(year, date, time, tree, ks) |>
-    rename(ks_ref = ks)
+    select(year, date, time, tree, k) |>
+    rename(k_ref = k)
 
   imp_df <- imputed_full_df |>
     full_join(tmp, by = c("year", "date", "time", "tree", "dir", "dep")) |>
@@ -478,7 +445,7 @@ generate_dir_dep_imp_data <- function(imputed_full_df) {
     mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
     mutate(dep_fct = as.factor(dep)) |>
     mutate(time2 = paste(date, time) |> as.factor() |> as.numeric())  |>
-    dplyr::select(year, date, time, ks, ks_ref, tree, dir, dep) |>
+    dplyr::select(year, date, time, k, k_ref, tree, dir, dep) |>
     mutate(tree = as.character(tree))
 
   imp_df
@@ -617,18 +584,18 @@ generate_dbh_imp_data <- function(girth_increment_csv, initial_dbh_csv) {
   dbh_data_interpolated
 }
 
-calc_fd <- function(log_ks, post) {
-  mu <- post$log_a + post$b * log_ks
+calc_fd <- function(log_k, post) {
+  mu <- post$log_a + post$b * log_k
   exp(mu)
 }
 
-calc_fd_granier_a <- function(log_ks, post) {
-  mu <- log(119) + post$b * log_ks
+calc_fd_granier_a <- function(log_k, post) {
+  mu <- log(119) + post$b * log_k
   exp(mu)
 }
 
-calc_fd_granier_b <- function(log_ks, post) {
-  mu <- post$log_a + 1.23 * log_ks
+calc_fd_granier_b <- function(log_k, post) {
+  mu <- post$log_a + 1.23 * log_k
   exp(mu)
 }
 
@@ -662,8 +629,8 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
   # add folds here
   dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, k, i)
   tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
-    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
-    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+    mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
+    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
 
   dbh_df <- dbh_imp_df |>
     mutate(slen = pred_sap(dbh, post_slen_m))  |>
@@ -689,7 +656,7 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     mutate(dep = 7) |>
     mutate(s = s_6_c) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
-    mutate(log_ks = log_ks - log(2))
+    mutate(log_k = log_k - log(2))
 
   s_df <- bind_rows(s_df, s6_df)
 
@@ -704,11 +671,11 @@ generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
     setDT() |>
     mutate(post_ab_pool = list(post_ab_pool_mc)) |>
     mutate(post_ab_segments = list(post_ab_segments_mc)) |>
-    mutate(fd_10min_pool = map2(log_ks, post_ab_pool, calc_fd)) |>
-    mutate(fd_10min_segments = map2(log_ks, post_ab_segments, calc_fd)) |>
+    mutate(fd_10min_pool = map2(log_k, post_ab_pool, calc_fd)) |>
+    mutate(fd_10min_segments = map2(log_k, post_ab_segments, calc_fd)) |>
     mutate(fd_pool = map(fd_10min_pool, calc_quantiles)) |>
     mutate(fd_segments = map(fd_10min_segments, calc_quantiles)) |>
-    mutate(fd_granier = 119 * exp(log_ks)^1.23) |>
+    mutate(fd_granier = 119 * exp(log_k)^1.23) |>
     dplyr::select(-post_ab_pool, -post_ab_segments, -fd_10min_pool, -fd_10min_segments) |>
     unnest_wider(fd_pool, names_sep = "_") |>
     unnest_wider(fd_segments, names_sep = "_") |>
@@ -731,8 +698,8 @@ generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
   # add folds here
   dir_dep_imp_df <- create_single_fold(dir_dep_imp_df, k, i)
   tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
-    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
-    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+    mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
+    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
 
   dbh_df <- dbh_imp_df |>
     mutate(slen = pred_sap(dbh, post_slen_m))  |>
@@ -758,7 +725,7 @@ generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
     mutate(dep = 7) |>
     mutate(s = s_6_c) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
-    mutate(log_ks = log_ks - log(2))
+    mutate(log_k = log_k - log(2))
 
   s_df <- bind_rows(s_df, s6_df)
 
@@ -773,10 +740,10 @@ generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
     setDT() |>
     mutate(post_ab_pool = list(post_ab_pool_mc)) |>
     mutate(post_ab_segments = list(post_ab_segments_mc)) |>
-    mutate(fd_10min_pool_a = map2(log_ks, post_ab_pool, calc_fd_granier_a)) |>
-    mutate(fd_10min_segments_a = map2(log_ks, post_ab_segments, calc_fd_granier_a)) |>
-    mutate(fd_10min_pool_b = map2(log_ks, post_ab_pool, calc_fd_granier_b)) |>
-    mutate(fd_10min_segments_b = map2(log_ks, post_ab_segments, calc_fd_granier_b)) |>
+    mutate(fd_10min_pool_a = map2(log_k, post_ab_pool, calc_fd_granier_a)) |>
+    mutate(fd_10min_segments_a = map2(log_k, post_ab_segments, calc_fd_granier_a)) |>
+    mutate(fd_10min_pool_b = map2(log_k, post_ab_pool, calc_fd_granier_b)) |>
+    mutate(fd_10min_segments_b = map2(log_k, post_ab_segments, calc_fd_granier_b)) |>
     mutate(fd_pool_a = map(fd_10min_pool_a, calc_quantiles)) |>
     mutate(fd_segments_a = map(fd_10min_segments_a, calc_quantiles)) |>
     mutate(fd_pool_b = map(fd_10min_pool_b, calc_quantiles)) |>
@@ -819,7 +786,7 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
     dplyr::select(date, t16_0_0)
 
   t16_df_re <- t16_df |>
-    rename(ks_t16 = t16_0_0) |>
+    rename(k_t16 = t16_0_0) |>
     mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
     mutate(dep = 2) |>
     mutate(date = mdy_hm(date)) |>
@@ -834,20 +801,20 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
     ungroup()
 
   tmp <- full_join(dir_dep_imp_df, post_dir_dep_m, by = c("dir", "dep")) |>
-    mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
-    mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks)) |>
-    mutate(ks = exp(log_ks))
+    mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
+    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k)) |>
+    mutate(k = exp(log_k))
 
-  mean_ks_df <- tmp |>
+  mean_k_df <- tmp |>
     group_by(year, date, time, dir, dep) |>
-    summarize(ks = mean(ks, na.rm = TRUE), .groups = "drop")
+    summarize(k = mean(k, na.rm = TRUE), .groups = "drop")
 
-  t16_df_full <- full_join(mean_ks_df, t16_df_re, by = c("year", "date", "time", "dir", "dep")) |>
-    mutate(ks = ifelse(is.na(ks_t16), ks, ks_t16)) |>
-    dplyr::select(-ks_t16) |>
+  t16_df_full <- full_join(mean_k_df, t16_df_re, by = c("year", "date", "time", "dir", "dep")) |>
+    mutate(k = ifelse(is.na(k_t16), k, k_t16)) |>
+    dplyr::select(-k_t16) |>
     mutate(tree = "t16")
 
-  full_join(dir_dep_imp_df, t16_df_full, by = c("year", "date", "time", "ks", "tree", "dir", "dep"))
+  full_join(dir_dep_imp_df, t16_df_full, by = c("year", "date", "time", "k", "tree", "dir", "dep"))
 
 }
 

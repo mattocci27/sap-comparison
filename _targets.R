@@ -43,10 +43,10 @@ tar_option_set(packages = c(
   "ggrepel"
 ))
 
-# tar_option_set(
-#   garbage_collection = TRUE,
-#   memory = "transient"
-# )
+tar_option_set(
+  garbage_collection = TRUE,
+  memory = "transient"
+)
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1013,22 +1013,25 @@ granier_list <- list(
 )
 
 # imputation ------------------------------------------------------------
-
 values <- expand_grid(year = c(2015, 2016), month = 1:12) |>
   filter(!(year == 2016 & (month == 12 | month == 10 | month == 9)))
 
-values2 <- expand_grid(year = 2016, month = c(9, 10, 12)) |>
-  mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
-
+values2 <- expand_grid(year = 2016, month = c(9, 10, 12))
+  # mutate(df_name = rlang::syms(paste0("imputed_df_", year - 1, "_", month)))
 impute_mapped <- tar_map(
   values = values,
   tar_target(
-    imputed_data,
-      missForest_long(
+    cleaned_df_missforest,
+      clean_for_missForest(
         csv = rubber_raw_data_csv,
         year = year,
         month = month
       )
+  ),
+  tar_target(
+    imputed_data,
+      missForest::missForest(cleaned_df_missforest,
+        parallelize = "forests")
   ),
   tar_target(
     imputed_df, {
@@ -1043,7 +1046,7 @@ impute_mapped <- tar_map(
   tar_target(
     imputed_df_btrans,
     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
-  )
+    )
   )
 
 tar_combined_imputed_data <- tar_combine(
@@ -1061,9 +1064,10 @@ tar_combined_nrmse <- tar_combine(
 impute_rest_mapped <- tar_map(
   values = values2,
   tar_target(
-    imputed_rest,
+    imputed,
     {
-      tmp <- missForest_clean(
+      df_name <- rlang::syms(paste0("imputed_df_", year - 1, "_", month))
+      tmp <- clean_for_missForest(
         csv = rubber_raw_data_csv,
         year = year,
         month = month)
@@ -1072,28 +1076,27 @@ impute_rest_mapped <- tar_map(
     }
    ),
   tar_target(
-    imputed_df2,
-    clean_imputed_df(imputed_rest)
+    imputed_df,
+    clean_imputed_df(imputed)
    ),
   tar_target(
-    nramse2,
-    imputed_rest$OOBerror[1]
+    nramse,
+    imputed$OOBerror[1]
     ),
    tar_target(
-     imputed_df_btrans2,
-     backtransform_date(rubber_raw_data_csv, year, month, imputed_df2)
+     imputed_df_btrans,
+     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
    )
 )
 
 tar_combined_nrmse_rest <- tar_combine(
   combined_nrmse_rest,
-  impute_rest_mapped[["nramse2"]],
+  impute_rest_mapped[["nramse"]],
   command = dplyr::bind_rows(!!!.x, .id = "id")
 )
-
 tar_combined_imputed_rest_data <- tar_combine(
   combined_imputed_rest_mapped,
-  impute_rest_mapped[["imputed_df_btrans2"]],
+  impute_rest_mapped[["imputed_df_btrans"]],
   command = dplyr::bind_rows(!!!.x)
 )
 
@@ -1101,9 +1104,9 @@ tar_impute <- list(
   impute_mapped,
   tar_combined_imputed_data,
   tar_combined_nrmse,
-  impute_rest_mapped,
-  tar_combined_imputed_rest_data,
-  tar_combined_nrmse_rest,
+  # impute_rest_mapped,
+  # tar_combined_imputed_rest_data,
+  # tar_combined_nrmse_rest,
   tar_target(
     nrmse_df, {
       tmp1 <- combined_nrmse |>
@@ -1460,15 +1463,15 @@ sapwood_list <- list(
   NULL
 )
 
-
-# append(raw_data_list, main_list) |>
+append(raw_data_list, tar_impute)
 #   append(tar_impute) |>
 #   append(sapwood_list) |>
 #   append(tar_dir_dep) |>
 #   append(uncertainty_list) |>
 #   append(post_csv_list)
-append(raw_data_list, main_list) |>
-  append(granier_list) |>
-  append(tar_impute) |>
-  append(sapwood_list) |>
-  append(tar_dir_dep)
+
+# append(raw_data_list, main_list) |>
+#   append(granier_list) |>
+#   append(tar_impute) |>
+#   append(sapwood_list) |>
+#   append(tar_dir_dep)

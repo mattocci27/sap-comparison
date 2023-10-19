@@ -797,8 +797,8 @@ line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
   #    janitor::clean_names()
   # tar_load(xylem_lab)
 
-draws <- tar_read(fit_draws_segments_xylem_0.08)
-tar_load(xylem_lab)
+# draws <- tar_read(fit_draws_segments_xylem_0.08)
+# tar_load(xylem_lab)
 
 coef_density <- function(xylem_lab, draws) {
   draws <- draws |>
