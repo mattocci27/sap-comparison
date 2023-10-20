@@ -1419,7 +1419,7 @@ granier_without_traits_sp_segments_file|stem|8f5492aab38f6528|72f7f1f49f42d65d|d
 imp_points|function|c1960afe93b99c47|||||||||||||||
 imp_points_plot|stem|3a21ba2c80c66cb5|8dd986b3093f1b78|8fec0eec6b9f80fc|-1461674706|figs/imp_points.png*figs/imp_points.pdf|t19639.2951106489s|269e1b20b0106c87|907530|file|local|vector|||5.347|Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.|
 impute_mapped|object|4dfad0a06d5d9da2|||||||||||||||
-impute_rest_mapped|object|176950a4cbe90e80|||||||||||||||
+impute_rest_mapped|object|fd857b41cebaefab|||||||||||||||
 impute_rubber|function|a712d7cca38bf757|||||||||||||||
 imputed_2016_10|stem||dfc5c1c1a7eda57c|f2fb7401708f140e|-1842703880||t19647.7222943019s||0|rds|local|vector|||2.619||Argument 2 must be a data frame or a named atomic vector.
 imputed_data_2015_1|stem|4a3c853d9bbd467e|efa37b4b3e95a211|31a0d5028ed58520|1405614786||t19649.1433093083s|a51c02d4e99cb39d|1089861|rds|local|vector|||30833.256||
@@ -1435,9 +1435,9 @@ imputed_data_2015_7|stem|86d8208ed4778ef5|2f74b3bb1ca5d060|ac2f87f2c46902ad|-133
 imputed_data_2015_8|stem|3cc7b74fdbc77530|098509b680bcbb5f|235076ae15c435d0|-976920889||t19649.143429029s|ee20a2bac8c1f4c8|1151180|rds|local|vector|||20772.497||
 imputed_data_2015_9|stem|9a7b3c90531654ce|4bdf4bc3f105c65b|5ee20b1cc723e16b|-745080214||t19649.1434410659s|81c14875881dc988|1088973|rds|local|vector|||16750.953||
 imputed_data_2016_1|stem|870f0694d42d57fa|0ae06bb638bdd9e7|23579540cc7e55ee|-1113463759||t19649.1434525009s|a3b95d9e4d9be3f9|1186751|rds|local|vector|||13782.215||
-imputed_data_2016_10|stem|853448c6d5ecc477|8508171b251a9b2c|2eb5e0cff984dfce|1938425323||t19649.2514389946s|3284557dc98f4b9b|1315066|rds|local|vector|||2.232||
+imputed_data_2016_10|stem|ae9343d212e278be|ba16f00309b0acbc|427b13adc9fa91eb|1938425323||t19650.3335477318s||1311689|rds|local|vector|||2.582||The number of parallel cores should not exceed the number of variables p8
 imputed_data_2016_11|stem|540ef157c4eb7c7a|6dd5485788697124|df018b10e8b943fd|-542843361||t19649.1434639822s|d175281a45fb7a62|1143412|rds|local|vector|||10358.862||
-imputed_data_2016_12|stem|3fd879bc5f61578c|9f578a214259905a|2eb5e0cff984dfce|-498736287||t19649.2514670506s|e0249714c2190b93|1779825|rds|local|vector|||0.574||
+imputed_data_2016_12|stem|c8df1a2ea8530155|c13411b57a7b61bc|ae3c3e5eb38d925e|-498736287||t19650.3335545838s|35500fa691136950|1777230|rds|local|vector|||2.502||
 imputed_data_2016_2|stem|9e70a850d17f1d84|233266aea92a0596|55a6bf1ed0ce5a70|65401016||t19649.1434756487s|c04d2a014edd8f10|976729|rds|local|vector|||27741.472||
 imputed_data_2016_3|stem|90a57b3459a8420c|08f1e51eef9ffc15|419d3dd9c1ac7355|-1557254326||t19649.1434859726s|c9082926c6ae69b8|1064053|rds|local|vector|||19699.428||
 imputed_data_2016_4|stem|09d9558aad008506|1b2622558f66d978|4142c8f293ecd14b|-1396096392||t19649.1434972224s|03faa48cb48c9011|1041755|rds|local|vector|||16512.524||
@@ -1445,7 +1445,7 @@ imputed_data_2016_5|stem|7ac7d852bb2b983a|479572dc9a239273|0a140dbb38e3d4b2|-113
 imputed_data_2016_6|stem|1261a7f6a2a2234b|b9f2d509d1c47c9b|5a2b3c19b35d9d0b|-1848734589||t19649.1435209258s|4fcc2a8acee09500|1101565|rds|local|vector|||10021.431||
 imputed_data_2016_7|stem|a0d4dca37c404229|7b17017f2adcc060|e2549eb4fbadf870|-1616631762||t19649.1435313886s|2c4dc15d26661aac|1072119|rds|local|vector|||8512.647||
 imputed_data_2016_8|stem|ebf89ddf791bb782|39058d219703cd82|e3320debf50d9df1|1977472166||t19649.1435429624s|232608df713d1189|1191762|rds|local|vector|||11260.261||
-imputed_data_2016_9|stem|7dd65328710dbd54|32a7309ef8f4e1d5|2eb5e0cff984dfce|-2061995237||t19649.2514910325s|6c4f5b4b0ecc609d|1158297|rds|local|vector|||0.538||
+imputed_data_2016_9|stem|80814b738ae20078|456f5c8dec821517|ae3c3e5eb38d925e|-2061995237||t19650.3335581487s|016852d79c842c6f|1154661|rds|local|vector|||2.535||
 imputed_df_2015_1|stem|d7b38ee8bcd7bf12|b4675e521c9c3996|91576b3c7aa059af|1275476774||t19649.1435542585s|7dbeafaea04e6c6e|1089785|rds|local|vector|||0.002||
 imputed_df_2015_10|stem|b216c20a52bb24e9|a53a7bd23a6413d6|53922168e597732c|-1996314760||t19649.1435663417s|fdff4264d2190267|1249341|rds|local|vector|||0.002||
 imputed_df_2015_11|stem|7bb3f1b9d117163e|2a2c15c14f7a022f|7d6e565952f88836|-1202518476||t19649.1435775452s|d3077b3c832eab57|1050747|rds|local|vector|||0.003||
@@ -1467,6 +1467,7 @@ imputed_df_2016_5|stem|fc8da9cf93f9c138|40f05eeedcf9bf95|e5ab390cb8055aed|191343
 imputed_df_2016_6|stem|c3e778234da7d515|dff23223ee9e2792|d3991eb100000985|-1539102263||t19649.1437603194s|f0c3b3dbbe4f98e5|1101486|rds|local|vector|||0.002||
 imputed_df_2016_7|stem|29f4a5e7637b1472|118043d4656531a4|cbfd1a5c3258e0f5|-1786278830||t19649.1437715692s|3c64e9266673cfa8|1072045|rds|local|vector|||0.001||
 imputed_df_2016_8|stem|a78c9332fd297942|960d0c586d4692f1|468c9b2e9f8be5b8|-972395177||t19649.1437836522s|667cc6f9e8766af5|1191693|rds|local|vector|||0.001||
+imputed_df_2016_9|stem||22f76fe14d082773|7123e97b0dee0521|-1336720919||t19649.4085156965s||0|rds|local|vector|||0.022||Cant subset columns that dont exist. Column yday doesnt exist.
 imputed_df_btrans_2015_1|stem|5138cf0ecfb84b1b|ac7fe0be0ac42f9c|e897595164626937|-340197303||t19649.1437948094s|987a8b7ecfc80c0c|1078281|rds|local|vector|||1.433||
 imputed_df_btrans_2015_10|stem|6eb3d4caad8f2913|45469214045e6b99|b383c7dd0d25fb76|-32094973||t19649.1438067536s|0a9d1465b496f3e8|1239248|rds|local|vector|||1.147||
 imputed_df_btrans_2015_11|stem|df3c5304a8bb83bc|f2e18a8672204c65|c7d25e1476bcb6b0|-263640727||t19649.1438178182s|c78c90c3440b0dbd|1039094|rds|local|vector|||2.308||
@@ -2578,7 +2579,7 @@ table_re_fit_summary_species_xylem_0.06_0.06|stem|36806ede52786491|29ef8c8ea83c6
 table_re_fit_summary_species_xylem_0.07_0.07|stem|10bd402f3c258e75|33d0c148a1ac3b04|fe5d59926b7fbd32|4223906||t19641.6894379209s|5e14a6d44c7f8f72|2068|rds|local|vector|||0.028||
 table_re_fit_summary_species_xylem_0.08_0.08|stem|84ea41c24491f67d|0bdda83411be855c|01085c5fc5a5c9c3|-961881701||t19641.6895293545s|359567818caa267a|2062|rds|local|vector|||1.064||
 tar_dir_dep|object|8ed0e209020b323b|||||||||||||||
-tar_impute|object|f51a1f5dc84b51ee|||||||||||||||
+tar_impute|object|1b7c914519aae126|||||||||||||||
 test|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|1064684737||t19642.6409043385s|d713d5cc4ab85b07|6053|rds|local|vector|||1.958|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 test_fit_summary_segments_noxylem_traits_log_dh|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|1145351250||t19642.6409030885s|d713d5cc4ab85b07|6053|rds|local|vector|||1.852|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 test_fit_summary_segments_noxylem_traits_log_dh_log_dh|stem|07b04d319dd9b28b|3eeea1752de9b17b|0d3863b39234f88b|-1873951333||t19642.646802868s|46eac99cbc5d7e4f|6123|rds|local|vector|||1.279|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
@@ -2725,14 +2726,14 @@ ab_scaling|function|fc9b10e47dc46959
 write_anova_yml|function|b3368d15fad915cf
 tar_dir_dep|object|8ed0e209020b323b
 missForest_comb|function|09f743d2b153c64e
-impute_rest_mapped|object|529b961c1df43871
+impute_rest_mapped|object|fd857b41cebaefab
 calc_quantiles|function|d1a582365966b3d7
 rubber_impute|function|a712d7cca38bf757
 values|object|d9af27a27ad26844
 label_func|function|5053ea2f60a68238
 coef_density|function|ce3a32c84135ea5c
 get_tmp|function|ff4c423586b6b7b9
-cl|object|bfd2ca4835bfbdf3
+cl|object|9c2f39c6f5fe964c
 generate_summary_non_trait_table|function|76b9370b309d25ef
 segments_xylem_df_mapped|object|28be1cb73abcc687
 generate_dir_dep_imp_data|function|70dfd4fb4c6e5e24
@@ -2812,7 +2813,7 @@ granier_without_traits_mapped|object|a4a6d94bce59bb8f
 segments_noxylem_traits_post_ab_mapped|object|47f073b504482227
 div_check|function|beb567e61da4a283
 granier_with_traits_mapped|object|f4073b42777e83bd
-tar_impute|object|194b1da905339f6d
+tar_impute|object|1b7c914519aae126
 test_fun|function|b24f9793c07a785c
 generate_dir_dep_stan_data2|function|9f946cd688ecefc6
 generate_k_data|function|661b0449de4f1180

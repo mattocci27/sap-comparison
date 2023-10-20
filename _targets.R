@@ -60,7 +60,7 @@ pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # Register the parallel backend
 n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
 # cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
-cl <- 9
+cl <- 8
 doParallel::registerDoParallel(cl)  # Register the parallel backend
 
  # raw data ----------------------------------
@@ -1067,44 +1067,45 @@ impute_rest_mapped <- tar_map(
     imputed_data,
     {
       if (month == 9) {
-        df <- imputed_data_2015_9
+        df <- imputed_df_2015_9
       } else if (month == 10) {
-        df <- imputed_data_2015_10
+        df <- imputed_df_2015_10
       } else if (month == 12) {
-        df <- imputed_data_2015_12
+        df <- imputed_df_2015_12
       }
       tmp <- clean_for_missForest(
         csv = rubber_raw_data_csv,
         year = year,
         month = month)
-      bind_rows(df$ximp, tmp) |>
+      tmp2 <- bind_rows(df, tmp)
+      as.data.frame(tmp2[,-1]) |>
         missForest(parallelize = "forests")
     }
-  ),
-  tar_target(
-    imputed_df,
-    clean_imputed_df(imputed)
-   ),
-  tar_target(
-    nramse,
-    imputed$OOBerror[1]
-    ),
-   tar_target(
-     imputed_df_btrans,
-     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
-   )
+  )#,
+  # tar_target(
+  #   imputed_df,
+  #   clean_imputed_df(imputed_data)
+  #  ),
+  # tar_target(
+  #   nramse,
+  #   imputed_data$OOBerror[1]
+  #   ),
+  # tar_target(
+  #   imputed_df_btrans,
+  #   backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
+  # )
 )
 
-tar_combined_nrmse_rest <- tar_combine(
-  combined_nrmse_rest,
-  impute_rest_mapped[["nramse"]],
-  command = dplyr::bind_rows(!!!.x, .id = "id")
-)
-tar_combined_imputed_rest_data <- tar_combine(
-  combined_imputed_rest_mapped,
-  impute_rest_mapped[["imputed_df_btrans"]],
-  command = dplyr::bind_rows(!!!.x)
-)
+# tar_combined_nrmse_rest <- tar_combine(
+#   combined_nrmse_rest,
+#   impute_rest_mapped[["nramse"]],
+#   command = dplyr::bind_rows(!!!.x, .id = "id")
+# )
+# tar_combined_imputed_rest_data <- tar_combine(
+#   combined_imputed_rest_mapped,
+#   impute_rest_mapped[["imputed_df_btrans"]],
+#   command = dplyr::bind_rows(!!!.x)
+# )
 
 tar_impute <- list(
   impute_mapped,
