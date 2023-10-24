@@ -1081,67 +1081,67 @@ impute_rest_mapped <- tar_map(
       as.data.frame(tmp2[,-1]) |>
         missForest(parallelize = "forests")
     }
-  )#,
-  # tar_target(
-  #   imputed_df,
-  #   clean_imputed_df(imputed_data)
-  #  ),
-  # tar_target(
-  #   nramse,
-  #   imputed_data$OOBerror[1]
-  #   ),
-  # tar_target(
-  #   imputed_df_btrans,
-  #   backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
-  # )
+  ),
+  tar_target(
+    imputed_df,
+    clean_imputed_df(imputed_data)
+   ),
+  tar_target(
+    nramse,
+    imputed_data$OOBerror[1]
+    ),
+  tar_target(
+    imputed_df_btrans,
+    backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
+  )
 )
 
-# tar_combined_nrmse_rest <- tar_combine(
-#   combined_nrmse_rest,
-#   impute_rest_mapped[["nramse"]],
-#   command = dplyr::bind_rows(!!!.x, .id = "id")
-# )
-# tar_combined_imputed_rest_data <- tar_combine(
-#   combined_imputed_rest_mapped,
-#   impute_rest_mapped[["imputed_df_btrans"]],
-#   command = dplyr::bind_rows(!!!.x)
-# )
+tar_combined_nrmse_rest <- tar_combine(
+  combined_nrmse_rest,
+  impute_rest_mapped[["nramse"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+tar_combined_imputed_rest_data <- tar_combine(
+  combined_imputed_rest_mapped,
+  impute_rest_mapped[["imputed_df_btrans"]],
+  command = dplyr::bind_rows(!!!.x)
+)
 
 tar_impute <- list(
   impute_mapped,
   tar_combined_imputed_data,
   tar_combined_nrmse,
   impute_rest_mapped,
-  # tar_combined_imputed_rest_data,
-  # tar_combined_nrmse_rest,
-  # tar_target(
-  #   nrmse_df, {
-  #     tmp1 <- combined_nrmse |>
-  #       mutate(id = str_extract(id, "(?<=nramse_).*$"))
-  #     tmp2 <- combined_nrmse_rest |>
-  #       mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
-  #     bind_rows(tmp1, tmp2) |>
-  #       arrange(id)
-  #   }
-  # ),
-  # tar_target(
-  #   imputed_full_df, {
-  #     bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
-  #     mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
-  #     arrange(date) |>
-  #     arrange(dir) |>
-  #     arrange(dep) |>
-  #     arrange(tree) |>
-  #     mutate(h = time %/% 60) |>
-  #     mutate(m = time %% 60) |>
-  #     mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
-  #     dplyr::select(year, date, time, vpd, par, ks, tree, dir, dep)
-  #   }
-  # ),
-  # tar_target(
-  #   nonimputed_full_df,
-  #   make_long_nonimputed_df(rubber_raw_data_csv)
-  # ),
+  tar_combined_imputed_rest_data,
+  tar_combined_nrmse_rest,
+  tar_target(
+    nrmse_df, {
+      tmp1 <- combined_nrmse |>
+        mutate(id = str_extract(id, "(?<=nramse_).*$"))
+      tmp2 <- combined_nrmse_rest |>
+        mutate(id = str_extract(id, "(?<=imputed_df_).*$"))
+      bind_rows(tmp1, tmp2) |>
+        arrange(id)
+    }
+  ),
+  tar_target(
+    imputed_full_df, {
+      bind_rows(combined_imputed_mapped, combined_imputed_rest_mapped) |>
+      mutate(date = ymd(paste(year, "01", "01", sep= "-")) + days(yday - 1)) |>
+      arrange(date) |>
+      arrange(dir) |>
+      arrange(dep) |>
+      arrange(tree) |>
+      mutate(h = time %/% 60) |>
+      mutate(m = time %% 60) |>
+      mutate(time = sprintf("%02d:%02d:%02d", h, m, 0)) |>
+      dplyr::select(year, date, time, vpd, par, k, tree, dir, dep)
+    }
+  ),
+  tar_target(
+    nonimputed_full_df,
+    make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
   NULL
   )
 

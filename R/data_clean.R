@@ -199,10 +199,12 @@ missForest_each <- function(csv, tree) {
 }
 
 clean_imputed_df <- function(imputed_rest) {
-  imputed_rest$ximp |>
-    as_tibble() |>
-    dplyr::select(-yday) |>
-    filter(year == 2016)
+  tmp <- imputed_rest$ximp
+  start_row <- nrow(tmp) / 2
+  tmp2 <- tmp[(start_row + 1):nrow(tmp), ]
+  as_tibble(tmp2) |>
+  mutate(year = as.integer(2016)) |>
+  dplyr::select(year, everything())
 }
 
 make_long_nonimputed_df <- function(csv) {
