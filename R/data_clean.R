@@ -291,29 +291,29 @@ generate_full_date_dbh <- function(girth_increment_csv, initial_dbh_csv) {
 
 }
 
-generate_dir_dep_stan_data2 <- function(imputed_full_df){
+generate_dir_dep_stan_data <- function(imputed_full_df){
   # Create a reference data frame
   ref_df <- imputed_full_df |>
     filter(dir == "S" & dep == 2) |>
-    select(year, date, time, tree, ks) |>
-    filter(ks > 1e-6) |>
-    rename(ks_ref = ks)
+    select(year, date, time, tree, k) |>
+    filter(k > 1e-6) |>
+    rename(k_ref = k)
 
   imp_df <- imputed_full_df |>
     left_join(ref_df, by = c("year", "date", "time", "tree")) |>
     mutate(hour = as.integer(substr(time, 1, 2))) |>
     group_by(year, date, hour, tree, dir, dep) |>
-    summarise(ks = mean(ks, na.rm = TRUE),
-              ks_ref = mean(ks_ref, na.rm = TRUE),
+    summarise(k = mean(k, na.rm = TRUE),
+              k_ref = mean(k_ref, na.rm = TRUE),
               .groups = "drop") |>
     filter(dir != "S" | dep != 2) |>
     mutate(dir_fct = factor(dir, levels = c("S", "N", "E", "W"))) |>
     mutate(dep_fct = as.factor(dep)) |>
     mutate(time2 = paste(date, hour) |> as.factor() |> as.numeric()) |>
-    filter(ks > 1e-6) |>
-    filter(!is.na(ks_ref))
+    filter(k > 1e-6) |>
+    filter(!is.na(k_ref))
 
-  xd <- model.matrix(log(ks) ~  dep_fct + dir_fct, data = imp_df)
+  xd <- model.matrix(log(k) ~  dep_fct + dir_fct, data = imp_df)
 
   # no intercept
   xd <- xd[, -1]
@@ -322,14 +322,14 @@ generate_dir_dep_stan_data2 <- function(imputed_full_df){
     N = nrow(imp_df),
     K = ncol(xd),
     M = imp_df |> pull(tree) |> unique() |> length(),
-    log_ks = log(imp_df$ks),
-    log_ks_ref = log(imp_df$ks_ref),
+    log_k = log(imp_df$k),
+    log_k_ref = log(imp_df$k_ref),
     tree = imp_df |> pull(tree) |> as.character() |> as.factor() |> as.numeric(),
     x = xd
   )
 }
 
-generate_dir_dep_stan_data <- function(imputed_full_df, time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")) {
+generate_dir_dep_stan_data2 <- function(imputed_full_df, time_res = c("daily", "hourly", "10mins"), fct = c("dir", "dep")) {
   # Create a reference data frame
   ref_df <- imputed_full_df |>
     filter(dir == "S" & dep == 2) |>
@@ -871,7 +871,7 @@ generate_t16_df <- function(rubber_raw_data_csv) {
     dplyr::select(date, t16_0_0)
 
   t16_df_re <- t16_df |>
-    rename(ks = t16_0_0) |>
+    rename(k = t16_0_0) |>
     mutate(dir = factor("S", levels = c("S", "N", "E", "W"))) |>
     mutate(dep = 2) |>
     mutate(date = mdy_hm(date)) |>
@@ -923,8 +923,8 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
 
 generate_k_data <- function(dir_dep_imp_full_df, post_dir_dep_mid, sarea_df){
   tmp <- full_join(dir_dep_imp_full_df, post_dir_dep_mid, by = c("dir", "dep")) |>
-      mutate(log_ks = ifelse(is.na(ks), log(ks_ref) + dep_dir_mid, log(ks))) |>
-      mutate(log_ks = ifelse(is.infinite(log_ks), NA, log_ks))
+    mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
+    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
   tmp2 <- full_join(tmp, sarea_df, by = c("date", "tree"))
   s_df <- tmp2 |>
     mutate(s = case_when(
@@ -941,7 +941,7 @@ generate_k_data <- function(dir_dep_imp_full_df, post_dir_dep_mid, sarea_df){
     mutate(dep = 7) |>
     mutate(s = s_6_c) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
-    mutate(log_ks = log_ks - log(2))
+    mutate(log_k = log_k - log(2))
 
   s_df <- bind_rows(s_df, s6_df)
 }

@@ -1433,6 +1433,10 @@ sapwood_list <- list(
     dbh_sap_stan_data,
     generate_dbh_sap_stan_data(sapwood_depth_csv)
   ),
+  tar_target(
+    dir_dep_stan_data,
+    generate_dir_dep_stan_data(imputed_full_df)
+  ),
   tar_stan_mcmc(
      fit,
      "stan/sap_dbh.stan",
@@ -1456,44 +1460,10 @@ sapwood_list <- list(
        posterior::default_convergence_measures()
     )
   ),
-  # tar_map(
-  #   values = expand_grid(fct = c("dir", "dep")),
-  #   tar_target(
-  #     stan_data,
-  #     generate_dir_dep_stan_data(imputed_full_df, time_res = "hourly", fct = fct)
-  #   ),
-  #   tar_stan_mcmc(
-  #     fit,
-  #     "stan/dir_dep.stan",
-  #     data = stan_data,
-  #     refresh = 0,
-  #     chains = 4,
-  #     parallel_chains = getOption("mc.cores", 4),
-  #     iter_warmup = 2000,
-  #     iter_sampling = 2000,
-  #     adapt_delta = 0.95,
-  #     max_treedepth = 15,
-  #     seed = 123,
-  #     return_draws = TRUE,
-  #     return_diagnostics = TRUE,
-  #     return_summary = TRUE,
-  #     summaries = list(
-  #       mean = ~mean(.x),
-  #       sd = ~sd(.x),
-  #       mad = ~mad(.x),
-  #     ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-  #       posterior::default_convergence_measures()
-  #    )
-  #   )
-  # ),
-  tar_target(
-    stan_data_dir_dep,
-    generate_dir_dep_stan_data2(imputed_full_df)
-  ),
   tar_stan_mcmc(
     fit2,
     "stan/dir_dep.stan",
-    data = stan_data_dir_dep,
+    data = dir_dep_stan_data,
     refresh = 0,
     chains = 4,
     parallel_chains = getOption("mc.cores", 4),
@@ -1528,15 +1498,15 @@ sapwood_list <- list(
   NULL
 )
 
-append(raw_data_list, tar_impute)
-#   append(tar_impute) |>
-#   append(sapwood_list) |>
-#   append(tar_dir_dep) |>
-#   append(uncertainty_list) |>
-#   append(post_csv_list)
+# append(raw_data_list, tar_impute)
+# #   append(tar_impute) |>
+# #   append(sapwood_list) |>
+# #   append(tar_dir_dep) |>
+# #   append(uncertainty_list) |>
+# #   append(post_csv_list)
 
-# append(raw_data_list, main_list) |>
-#   append(granier_list) |>
-#   append(tar_impute) |>
-#   append(sapwood_list) |>
-#   append(tar_dir_dep)
+append(raw_data_list, main_list) |>
+  append(granier_list) |>
+  append(tar_impute) |>
+  append(sapwood_list) |>
+  append(tar_dir_dep)
