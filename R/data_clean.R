@@ -479,17 +479,17 @@ generate_post_ab <- function(draws) {
     rename(log_a = alpha_1_15, b = alpha_2_15)
 }
 
-generate_post_ab_each <- function(draws, pool = TRUE) {
+generate_post_ab_each <- function(draws, species = TRUE) {
   s1 <- draws |>
     filter(species == "Hevea brasiliensis")
-  if (pool) {
-    s1 <- s1$fit_pool[[1]]$draws
+  if (species) {
+    s1 <- s1$fit_species[[1]]$draws
   } else {
     s1 <- s1$fit_segments[[1]]$draws
   }
    s1 |>
     posterior::as_draws_df() |>
-    dplyr::select(log_a, b)
+    dplyr::select(log_a, b, sigma)
 }
 
 generate_dir_dep_imp_data <- function(imputed_full_df) {
@@ -853,7 +853,7 @@ generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
 
 # 600 is the number of seconds in 10 min
 # dividing by 10000 to convert from cm2 to m2
-ab_scaling <- function(ab_uncertainty_full_df) {
+ab_scaling2 <- function(ab_uncertainty_full_df) {
   ab_uncertainty_full_df |>
     mutate(
       across(
@@ -871,6 +871,26 @@ ab_scaling <- function(ab_uncertainty_full_df) {
     )
   ) |>
   rename_with(~ str_replace(., "s_total_s_10m_fd_", "s_total_"), starts_with("s_total_s_10m_fd_"))
+}
+
+# 600 is the number of seconds in 10 min
+# dividing by 10^4 (1e-4) to convert from cm2 to m2
+# dividing by 10^3 (1e-3) to convert from g to Kg
+ab_scaling <- function(ab_uncertainty_df) {
+  tmp <- ab_uncertainty_df |>
+    group_by(tree) |>
+    summarize(across(c(fd_m, fd_l, fd_h), mean)) |>
+    mutate(
+      across(
+        .cols = starts_with("fd"),
+        .fns = ~ .x * 600 * 1e-4 * 1e-3,
+        .names = "scaled_{.col}"
+      )
+    )
+  tmp |>
+    dplyr::select(starts_with("scaled")) |>
+    apply(2, sum) / 800 |> # per 800 m2
+    as.numeric()
 }
 
 
@@ -1018,7 +1038,7 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
     )) |>
     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
 
-# deeper than 6cm
+  # deeper than 6cm
   s6_df <- full_df |>
     filter(dep == 6) |>
     filter(s_6_c > 0) |>
@@ -1042,13 +1062,11 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
     return(s_df3)
   }
 
-# Convert post_ab to a list of lists
-  post_ab_list <- lapply(1:5, function(i) as.list(post_ab_fit_draws[i, ]))
+  # Convert post_ab to a list of lists
+  post_ab_list <- lapply(1:1000, function(i) as.list(post_ab_fit_draws[i, ]))
 
-# pmap
+  # pmap
   summary_stats <- pmap_dfr(list(post_ab_list, list(s_df)), calc_summary)
-
-  # return(summary_stats)
 
   summary_stats |>
     group_by(year, tree) |>

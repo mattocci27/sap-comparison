@@ -43,10 +43,10 @@ tar_option_set(packages = c(
   "ggrepel"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -575,8 +575,19 @@ granier_without_traits_mapped <- tar_map(
       segments_ab_table,
       generate_segments_ab_table(fit_each) |>
         mutate(max_pg = p)
+    ),
+    tar_target(
+      species_only_post_ab, {
+        generate_post_ab_each(fit_each) |> sample_n(1000)
+      }
+    ),
+    tar_target(
+      segments_inclusive_post_ab, {
+        generate_post_ab_each(fit_each) |> sample_n(1000)
+      }
     )
   )
+
 
 segments_xylem_df_mapped <- tar_map(
   list(stan_summary =
@@ -1210,209 +1221,210 @@ tar_dir_dep <- list(
   NULL
 )
 
-tmp <- c("species_xylem_post_ab_fit_draws_species_xylem_",
-"segments_xylem_post_ab_fit_draws_segments_xylem_")
-tmp2 <- c(0.08)
+tmp <- c("species_xylem_post_ab_fit_draws_species_xylem",
+         "segments_xylem_post_ab_fit_draws_segments_xylem",
+         "segments_inclusive_post_ab",
+         "species_only_post_ab")
+# pg <- c(0.02, 0.08)
+post_ab_names <- expand_grid(tmp, pg) |>
+  mutate(tmp3 = paste(tmp, pg, sep = "_")) |> pull(tmp3)
 
-post_ab_names <- expand_grid(tmp, tmp2) |>
-  mutate(tmp3 = paste0(tmp, tmp2)) |>
-  pull(tmp3)
+post_ab_names <- post_ab_names[
+  !grepl("^(species_only_post_ab_|segments_inclusive_post_ab_)", post_ab_names) |
+  grepl("0.08$", post_ab_names)]
 
 uncertainty_mapped <- tar_map(
-    values = list(post_ab_fit_draws = rlang::syms(post_ab_names)),
-    tar_target(
-      ab_uncertainty_df,
-      generate_ab_uncertainty(
-        post_ab_fit_draws,
-        post_dir_dep_mid,
-        sarea_df,
-        dir_dep_imp_df
-    )
-  ))
-
-uncertainty_granier_mapped <- tar_map(
-    values = expand_grid(folds = 1:60,
-      pg = c(0.08)) |>
-      mutate(post_ab_pool_mc =
-        paste0(
-          "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
-        )) |>
-      mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
-      mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
-      mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
-    tar_target(
-      post_ab_pool_mc3, {
-        set.seed(123)
-        generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
-      }
-    ),
-    tar_target(
-      post_ab_segments_mc3, {
-        set.seed(123)
-        generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
-      }
-    ),
-    tar_target(
-      ab_uncertainty_granier_df,
-      generate_ab_uncertainty_granier(
-        dir_dep_imp_full_df,
-        dbh_imp_df,
-        post_ab_pool_mc = post_ab_pool_mc3,
-        post_ab_segments_mc = post_ab_segments_mc3,
-        post_slen, post_dir_dep, k = 60, i = folds) |>
-        mutate(pg = pg)
-    )
+  values = tibble(
+    post_ab_fit_draws = rlang::syms(post_ab_names)),
+  tar_target(
+    ab_uncertainty_df,
+    generate_ab_uncertainty(
+      post_ab_fit_draws,
+      post_dir_dep_mid,
+      sarea_df,
+      dir_dep_imp_df
+  )),
+  tar_target(
+    ab_scaled_df,
+    ab_scaling(ab_uncertainty_df)
   )
-
-uncertainty_each_mapped <- tar_map(
-    values = tibble(folds = 1:60),
-    tar_target(
-      ab_uncertainty_df_each,
-      generate_ab_uncertainty(
-        dir_dep_imp_full_df,
-        dbh_imp_df,
-        post_ab_pool_mc = post_ab_pool_mc4,
-        post_ab_segments_mc = post_ab_segments_mc4,
-        post_slen, post_dir_dep, k = 60, i = folds) |>
-        mutate(pg = 0.08)
-    )
  )
 
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_full_df,
-  uncertainty_mapped[["ab_uncertainty_df"]],
-  command = dplyr::bind_rows(!!!.x)
-)
-tar_combined_ab_uncertainty_granier <- tar_combine(
-  ab_uncertainty_full_granier_df,
-  uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
-  command = dplyr::bind_rows(!!!.x)
-)
-tar_combined_ab_uncertainty_each <- tar_combine(
-  ab_uncertainty_full_each_df,
-  uncertainty_each_mapped[["ab_uncertainty_df_each"]],
-  command = dplyr::bind_rows(!!!.x)
+  uncertainty_mapped[["ab_scaled_df"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
 )
 
+
+# uncertainty_granier_mapped <- tar_map(
+#     values = expand_grid(folds = 1:60,
+#       pg = c(0.08)) |>
+#       mutate(post_ab_pool_mc =
+#         paste0(
+#           "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
+#         )) |>
+#       mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
+#       mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
+#       mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
+#     tar_target(
+#       post_ab_pool_mc3, {
+#         set.seed(123)
+#         generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
+#       }
+#     ),
+#     tar_target(
+#       post_ab_segments_mc3, {
+#         set.seed(123)
+#         generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
+#       }
+#     ),
+#     tar_target(
+#       ab_uncertainty_granier_df,
+#       generate_ab_uncertainty_granier(
+#         dir_dep_imp_full_df,
+#         dbh_imp_df,
+#         post_ab_pool_mc = post_ab_pool_mc3,
+#         post_ab_segments_mc = post_ab_segments_mc3,
+#         post_slen, post_dir_dep, k = 60, i = folds) |>
+#         mutate(pg = pg)
+#     )
+#   )
+
+
+
+# tar_combined_ab_uncertainty_granier <- tar_combine(
+#   ab_uncertainty_full_granier_df,
+#   uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
+#   command = dplyr::bind_rows(!!!.x)
+# )
+
+
 uncertainty_list <- list(
-    tar_target(
-      post_ab_pool_mc4, {
-        set.seed(123)
-        generate_post_ab_each(fit_ab_each_sap_sp_clean_0.08) |> sample_n(1000)
-      }
-    ),
-    tar_target(
-      post_ab_segments_mc4, {
-        set.seed(123)
-        generate_post_ab_each(fit_ab_each_sap_sp_clean_0.08) |> sample_n(1000)
-      }
-    ),
   uncertainty_mapped,
-  uncertainty_granier_mapped,
-  uncertainty_each_mapped,
   tar_combined_ab_uncertainty,
-  tar_combined_ab_uncertainty_granier,
-  tar_combined_ab_uncertainty_each,
-  tar_target(
-    tr_scaled_bars_plot, {
-      p <- tr_scaled_bars(ab_uncertainty_full_df)
-      my_ggsave(
-        "figs/tr_scaled_bars",
-        p,
-        dpi = 300,
-        width = 6.81,
-        height = 4.4
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-    tr_scaled_bars_plot2, {
-      p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
-      my_ggsave(
-        "figs/tr_scaled_bars2",
-        p,
-        dpi = 300,
-        width = 6.81,
-        height = 4.4
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-    tr_scaled_bars_csv,
-      generate_tr_scaled_df(ab_uncertainty_full_df, ab_uncertainty_full_each_df) |>
-        my_write_csv("data/ec_scaled.csv"),
-    format = "file"
-  ),
-  tar_target(
-    dbh_points_plot, {
-      p <- dbh_points(dbh_imp_df2, girth_increment_csv)
-      my_ggsave(
-        "figs/dbh_points",
-        p,
-        dpi = 300,
-        # width = 6.81,
-        # height = 6.81
-        width = 4.33,
-        height = 4.33
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-    sap_dbh_points_plot, {
-      p <- sap_dbh_points(sapwood_depth_csv, fit_dbh_sapwood_draws_normal)
-      my_ggsave(
-        "figs/sap_dbh_points",
-        p,
-        dpi = 300,
-        width = 4.33,
-        height = 4.33
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-    imp_points_plot, {
-      p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
-                      imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
-      my_ggsave(
-        "figs/imp_points",
-        p,
-        dpi = 300,
-        width = 6.81,
-        height = 6.81
-      )
-    },
-    format = "file"
-  ),
-  tar_target(
-   scaled_sapflow_csv, {
-      tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
-        mutate(model = paste("full", model, sep = "_"))
-      tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
-        mutate(model = paste("sep", model, sep = "_"))
-      tmp3 <- bind_rows(tmp1, tmp2) |>
-        arrange(pg)
-      my_write_csv(tmp3, "data/scaled_spflow.csv")
-   },
-   format = "file"
-  ),
-  tar_target(
-    dir_dep_table,
-    write_dir_dep_table(fit_dir_dep_summary_no_temporal_hourly_dir,
-      fit_dir_dep_summary_no_temporal_hourly_dep, "data/dir_dep_post.csv"),
-    format = "file"
-  ),
-  tar_target(
-    sap_table,
-    write_sap_table(fit_dbh_sapwood_summary_normal,
-       "data/dbh_sapwood_post.csv"),
-    format = "file"
-  ),
   NULL
 )
+
+# uncertainty_list2 <- list(
+#     tar_target(
+#       post_ab_species_only, {
+#         set.seed(123)
+#         generate_post_ab_each(fit_clean_0.08) |> sample_n(1000)
+#       }
+#     ),
+#     tar_target(
+#       post_ab_segments_inclusive, {
+#         set.seed(123)
+#         generate_post_ab_each(fit_clean_0.08) |> sample_n(1000)
+#       }
+#     ),
+#   uncertainty_mapped,
+#   # uncertainty_granier_mapped,
+#   uncertainty_each_mapped,
+#   tar_combined_ab_uncertainty,
+#   tar_combined_ab_uncertainty_granier,
+#   tar_combined_ab_uncertainty_each,
+#   tar_target(
+#     tr_scaled_bars_plot, {
+#       p <- tr_scaled_bars(ab_uncertainty_full_df)
+#       my_ggsave(
+#         "figs/tr_scaled_bars",
+#         p,
+#         dpi = 300,
+#         width = 6.81,
+#         height = 4.4
+#       )
+#     },
+#     format = "file"
+#   ),
+#   tar_target(
+#     tr_scaled_bars_plot2, {
+#       p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
+#       my_ggsave(
+#         "figs/tr_scaled_bars2",
+#         p,
+#         dpi = 300,
+#         width = 6.81,
+#         height = 4.4
+#       )
+#     },
+#     format = "file"
+#   ),
+#   tar_target(
+#     tr_scaled_bars_csv,
+#       generate_tr_scaled_df(ab_uncertainty_full_df, ab_uncertainty_full_each_df) |>
+#         my_write_csv("data/ec_scaled.csv"),
+#     format = "file"
+#   ),
+#   tar_target(
+#     dbh_points_plot, {
+#       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
+#       my_ggsave(
+#         "figs/dbh_points",
+#         p,
+#         dpi = 300,
+#         # width = 6.81,
+#         # height = 6.81
+#         width = 4.33,
+#         height = 4.33
+#       )
+#     },
+#     format = "file"
+#   ),
+#   tar_target(
+#     sap_dbh_points_plot, {
+#       p <- sap_dbh_points(sapwood_depth_csv, fit_dbh_sapwood_draws_normal)
+#       my_ggsave(
+#         "figs/sap_dbh_points",
+#         p,
+#         dpi = 300,
+#         width = 4.33,
+#         height = 4.33
+#       )
+#     },
+#     format = "file"
+#   ),
+#   tar_target(
+#     imp_points_plot, {
+#       p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
+#                       imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
+#       my_ggsave(
+#         "figs/imp_points",
+#         p,
+#         dpi = 300,
+#         width = 6.81,
+#         height = 6.81
+#       )
+#     },
+#     format = "file"
+#   ),
+#   tar_target(
+#    scaled_sapflow_csv, {
+#       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
+#         mutate(model = paste("full", model, sep = "_"))
+#       tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
+#         mutate(model = paste("sep", model, sep = "_"))
+#       tmp3 <- bind_rows(tmp1, tmp2) |>
+#         arrange(pg)
+#       my_write_csv(tmp3, "data/scaled_spflow.csv")
+#    },
+#    format = "file"
+#   ),
+#   tar_target(
+#     dir_dep_table,
+#     write_dir_dep_table(fit_dir_dep_summary_no_temporal_hourly_dir,
+#       fit_dir_dep_summary_no_temporal_hourly_dep, "data/dir_dep_post.csv"),
+#     format = "file"
+#   ),
+#   tar_target(
+#     sap_table,
+#     write_sap_table(fit_dbh_sapwood_summary_normal,
+#        "data/dbh_sapwood_post.csv"),
+#     format = "file"
+#   ),
+#   NULL
+# )
 
 sapwood_list <- list(
   tar_target(
@@ -1496,4 +1508,5 @@ append(raw_data_list, main_list) |>
   append(tar_impute) |>
   append(sapwood_list) |>
   append(tar_dir_dep) |>
-  append(uncertainty_mapped)
+  append(uncertainty_list)
+  # append(uncertainty_mapped) |>
