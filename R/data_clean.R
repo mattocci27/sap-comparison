@@ -506,7 +506,7 @@ generate_dir_dep_imp_data <- function(imputed_full_df) {
 
   tmp <- expand_grid(date = date_vec, time = time_vec,
     dir = factor(c("S", "N", "E", "W"), levels = c("S", "N", "E", "W")),
-    dep = c(2, 4, 6), tree = sprintf("t%02d", 1:15)) |>
+    dep = c(2, 4, 6), tree = sprintf("t%02d", 1:16)) |>
     mutate(year = str_sub(date, 1, 4) |> as.numeric())
 
   ref_df <- imputed_full_df |>
@@ -531,18 +531,28 @@ pred_sap <- function(x, para) {
   exp(log_mu)
 }
 
+# sap-area for 0-2, 2-4, and 4-6 cm depth
 calc_s <- function(dbh, depth, bark = 0.77) {
   r <- dbh / 2 - bark
-  b <- depth - 2
-  pi * (2 * r - b - depth) * 2
+  4 * pi * (r + 1 - depth)
 }
 
+calc_s_check <- function(dbh, depth, bark = 0.77) {
+  r <- dbh / 2 - bark
+  b <- depth - 2
+  pi * (r - b)^2 - pi * (r - depth)^2
+}
+
+# sap-area deeper than 6 cm
+# r1: outer
+# r2: inner
 calc_s_plus <- function(dbh, sap, bark = 0.77) {
   r1 <- dbh / 2 - 6 - bark
   r2 <- dbh / 2 - sap - bark
   pi * (r1^2 - r2^2)
 }
 
+# sap-area between 4 - x cm depth
 calc_s_cut <- function(dbh, sap, bark = 0.77) {
   r1 <- dbh / 2 - 4 - bark
   r2 <- dbh / 2 - sap - bark
@@ -698,7 +708,7 @@ generate_sarea_df <- function(dbh_imp_df, post_slen_m) {
   dbh_df
 }
 
-generate_ab_uncertainty <- function(dir_dep_imp_df, dbh_imp_df,
+generate_ab_uncertainty2 <- function(dir_dep_imp_df, dbh_imp_df,
   post_ab_pool_mc, post_ab_segments_mc, post_slen, post_dir_dep,
   k = 50, i = 1) {
 
@@ -841,7 +851,6 @@ generate_ab_uncertainty_granier <- function(dir_dep_imp_df, dbh_imp_df,
     ab_scaling()
 }
 
-# dividing by 4 is to get the quarter of the area (each direction)
 # 600 is the number of seconds in 10 min
 # dividing by 10000 to convert from cm2 to m2
 ab_scaling <- function(ab_uncertainty_full_df) {
@@ -849,7 +858,7 @@ ab_scaling <- function(ab_uncertainty_full_df) {
     mutate(
       across(
         .cols = starts_with("fd"),
-        .fns = ~ .x * s / 4 * 600 / 10000,
+        .fns = ~ .x * s * 600 / 10000,
         .names = "s_10m_{.col}"
       )
     ) |>
@@ -921,30 +930,30 @@ add_t16 <- function(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep) {
 }
 
 
-generate_k_data <- function(dir_dep_imp_full_df, post_dir_dep_mid, sarea_df){
-  tmp <- full_join(dir_dep_imp_full_df, post_dir_dep_mid, by = c("dir", "dep")) |>
-    mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
-    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
-  tmp2 <- full_join(tmp, sarea_df, by = c("date", "tree"))
-  s_df <- tmp2 |>
-    mutate(s = case_when(
-      dep == 2 ~ s_0_2,
-      dep == 4 ~ s_2_4,
-      dep == 6 ~ s_4_6
-    )) |>
-    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+# generate_k_data <- function(dir_dep_imp_full_df, post_dir_dep_mid, sarea_df){
+#   tmp <- full_join(dir_dep_imp_full_df, post_dir_dep_mid, by = c("dir", "dep")) |>
+#     mutate(log_k = ifelse(is.na(k), log(k_ref) + dep_dir_mid, log(k))) |>
+#     mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
+#   tmp2 <- full_join(tmp, sarea_df, by = c("date", "tree"))
+#   s_df <- tmp2 |>
+#     mutate(s = case_when(
+#       dep == 2 ~ s_0_2,
+#       dep == 4 ~ s_2_4,
+#       dep == 6 ~ s_4_6
+#     )) |>
+#     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
 
-# deeper than 6cm
-  s6_df <- tmp2 |>
-    filter(dep == 6) |>
-    filter(s_6_c > 0) |>
-    mutate(dep = 7) |>
-    mutate(s = s_6_c) |>
-    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
-    mutate(log_k = log_k - log(2))
+# # deeper than 6cm
+#   s6_df <- tmp2 |>
+#     filter(dep == 6) |>
+#     filter(s_6_c > 0) |>
+#     mutate(dep = 7) |>
+#     mutate(s = s_6_c) |>
+#     dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+#     mutate(log_k = log_k - log(2))
 
-  s_df <- bind_rows(s_df, s6_df)
-}
+#   s_df <- bind_rows(s_df, s6_df)
+# }
 
 test_fun <- function(csv, year = 2015, month = 1) {
   d <- read_csv(csv) |>
@@ -984,4 +993,68 @@ test_fun <- function(csv, year = 2015, month = 1) {
     as.data.frame() |>
     # as_tibble()
     missForest::missForest(parallelize = "forests")
+}
+
+generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_df, dir_dep_imp_df){
+  post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
+    dir_dep_effects = post_dir_dep_mid)
+
+  dir_dep_imp_df_re  <- dir_dep_imp_df |>
+    mutate(dir_dep = str_c(str_to_lower(dir), dep, sep = "_")) |>
+    full_join(post_dir_dep_mid_df) |>
+    mutate(log_k = ifelse(is.na(k), log(k_ref) + dir_dep_effects, log(k))) |>
+    mutate(log_k = ifelse(is.infinite(log_k), NA, log_k))
+
+  # dividing by 4 (*0.25) is to get the quarter of the area (each direction)
+  sarea_df2 <- sarea_df |>
+    mutate_at(vars(s_0_2, s_2_4, s_4_6, s_6_c), ~ . * 0.25)
+  full_df <- full_join(dir_dep_imp_df_re, sarea_df2, by = c("date", "tree"))
+
+  s_df <- full_df |>
+    mutate(s = case_when(
+      dep == 2 ~ s_0_2,
+      dep == 4 ~ s_2_4,
+      dep == 6 ~ s_4_6
+    )) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c)
+
+# deeper than 6cm
+  s6_df <- full_df |>
+    filter(dep == 6) |>
+    filter(s_6_c > 0) |>
+    mutate(dep = 7) |>
+    mutate(s = s_6_c) |>
+    dplyr::select(-s_0_2, -s_2_4, -s_4_6, -s_6_c) |>
+    mutate(log_k = log_k - log(2))
+
+  s_df <- bind_rows(s_df, s6_df)
+
+  calc_summary <- function(row, s_df) {
+    s_df2 <- s_df |>
+      mutate(log_fd = row$log_a + row$b * log_k) |>
+      mutate(fd = exp(log_fd) * s) # scale by sapwood area
+
+    # Summarizing to get the desired percentiles for log_fd
+    s_df3 <- s_df2 |>
+      group_by(year, tree) |>
+      summarise(fd = sum(fd, na.rm = TRUE), .groups = "drop")
+
+    return(s_df3)
+  }
+
+# Convert post_ab to a list of lists
+  post_ab_list <- lapply(1:5, function(i) as.list(post_ab_fit_draws[i, ]))
+
+# pmap
+  summary_stats <- pmap_dfr(list(post_ab_list, list(s_df)), calc_summary)
+
+  # return(summary_stats)
+
+  summary_stats |>
+    group_by(year, tree) |>
+    summarize(
+      fd_m = median(fd),
+      fd_l = quantile(fd, 0.025),
+      fd_h = quantile(fd, 0.975), .groups = "drop")
+
 }

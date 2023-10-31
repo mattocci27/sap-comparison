@@ -1210,40 +1210,26 @@ tar_dir_dep <- list(
   NULL
 )
 
+tmp <- c("species_xylem_post_ab_fit_draws_species_xylem_",
+"segments_xylem_post_ab_fit_draws_segments_xylem_")
+tmp2 <- c(0.08)
+
+post_ab_names <- expand_grid(tmp, tmp2) |>
+  mutate(tmp3 = paste0(tmp, tmp2)) |>
+  pull(tmp3)
+
 uncertainty_mapped <- tar_map(
-    values = expand_grid(folds = 1:30,
-      # pg = c(0.02, 0.03)) |>
-      pg = c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)) |>
-      mutate(post_ab_pool_mc =
-        paste0(
-          "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
-        )) |>
-      mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
-      mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
-      mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
-    tar_target(
-      post_ab_pool_mc2, {
-        set.seed(123)
-        generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
-      }
-    ),
-    tar_target(
-      post_ab_segments_mc2, {
-        set.seed(123)
-        generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
-      }
-    ),
+    values = list(post_ab_fit_draws = rlang::syms(post_ab_names)),
     tar_target(
       ab_uncertainty_df,
       generate_ab_uncertainty(
-        dir_dep_imp_full_df,
-        dbh_imp_df,
-        post_ab_pool_mc = post_ab_pool_mc2,
-        post_ab_segments_mc = post_ab_segments_mc2,
-        post_slen, post_dir_dep, k = 30, i = folds) |>
-        mutate(pg = pg)
+        post_ab_fit_draws,
+        post_dir_dep_mid,
+        sarea_df,
+        dir_dep_imp_df
     )
-  )
+  ))
+
 uncertainty_granier_mapped <- tar_map(
     values = expand_grid(folds = 1:60,
       pg = c(0.08)) |>
@@ -1509,4 +1495,5 @@ append(raw_data_list, main_list) |>
   append(granier_list) |>
   append(tar_impute) |>
   append(sapwood_list) |>
-  append(tar_dir_dep)
+  append(tar_dir_dep) |>
+  append(uncertainty_mapped)
