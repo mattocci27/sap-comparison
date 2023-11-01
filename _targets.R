@@ -1204,10 +1204,10 @@ tar_dir_dep <- list(
 )
 
 tmp <- c("species_xylem_post_ab_fit_draws_species_xylem",
-         "segments_xylem_post_ab_fit_draws_segments_xylem",
-         "segments_inclusive_post_ab",
+        #  "segments_xylem_post_ab_fit_draws_segments_xylem",
+        #  "segments_inclusive_post_ab",
          "species_only_post_ab")
-# pg <- c(0.02, 0.08)
+pg <- c(0.02, 0.08)
 post_ab_names <- expand_grid(tmp, pg) |>
   mutate(tmp3 = paste(tmp, pg, sep = "_")) |> pull(tmp3)
 
@@ -1224,7 +1224,8 @@ uncertainty_ab_mapped <- tar_map(
       post_ab_fit_draws,
       post_dir_dep_mid,
       sarea_df,
-      dir_dep_imp_df
+      dir_dep_imp_df,
+      n_draws = 3
   )),
   tar_target(
     ab_scaled_df,
@@ -1248,7 +1249,8 @@ uncertainty_dir_dep_mapped <- tar_map(
       post_ab_mid,
       post_dir_dep_fit_draws,
       sarea_df,
-      dir_dep_imp_df
+      dir_dep_imp_df,
+      n_draws = 3
   )),
   tar_target(
     dir_dep_scaled_df,
@@ -1282,28 +1284,25 @@ uncertainty_list <- list(
     map_dbl(segments_xylem_post_ab_fit_draws_segments_xylem_0.08, median)
   ),
   uncertainty_dir_dep_mapped,
+  tar_combined_dir_dep_uncertainty,
+  tar_target(
+    sarea_uncertainty_df,
+    generate_sarea_uncertainty(
+      post_ab_mid,
+      post_dir_dep_mid,
+      dbh_imp_df,
+      post_slen_1000,
+      dir_dep_imp_df,
+      n_draws = 3)
+  ),
+  tar_target(
+    sarea_uncertainty_combined_df,
+    fd_scaling(sarea_uncertainty_df)
+  ),
   NULL
 )
 
 # uncertainty_list2 <- list(
-#     tar_target(
-#       post_ab_species_only, {
-#         set.seed(123)
-#         generate_post_ab_each(fit_clean_0.08) |> sample_n(1000)
-#       }
-#     ),
-#     tar_target(
-#       post_ab_segments_inclusive, {
-#         set.seed(123)
-#         generate_post_ab_each(fit_clean_0.08) |> sample_n(1000)
-#       }
-#     ),
-#   uncertainty_mapped,
-#   # uncertainty_granier_mapped,
-#   uncertainty_each_mapped,
-#   tar_combined_ab_uncertainty,
-#   tar_combined_ab_uncertainty_granier,
-#   tar_combined_ab_uncertainty_each,
 #   tar_target(
 #     tr_scaled_bars_plot, {
 #       p <- tr_scaled_bars(ab_uncertainty_full_df)

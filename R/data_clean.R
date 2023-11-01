@@ -684,36 +684,28 @@ calc_fd_granier_b <- function(log_k, post) {
   exp(mu)
 }
 
-#' @title Modified createFolds function
-create_single_fold <- function(data, k, i) {
-  fold_sizes <- floor(nrow(data) / k)
-  folds <- split(data, rep(1:k, each = fold_sizes, length.out = nrow(data)))
-  tmp <- folds[[i]]
-  tmp |>
-    dplyr::select(colnames(data))
-}
-
 calc_quantiles <- function(x, na.rm = TRUE) {
   q <- quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975), na.rm = na.rm)
   return(list(ll = q[1], l = q[2], m = q[3], h = q[4], hh = q[5]))
 }
 
 generate_sarea_df <- function(dbh_imp_df, post_slen_m) {
-  dbh_df <- dbh_imp_df |>
-    mutate(slen = pred_sap(dbh, post_slen_m))  |>
-    mutate(s_0_2 = calc_s(dbh, 2)) |>
-    mutate(s_2_4 = calc_s(dbh, 4)) |>
-    mutate(s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6))) |>
-    mutate(s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0))
-  dbh_df
+  dbh_imp_df |>
+    mutate(
+      slen = pred_sap(dbh, post_slen_m),
+      s_0_2 = calc_s(dbh, 2),
+      s_2_4 = calc_s(dbh, 4),
+      s_4_6 = ifelse(slen < 6, calc_s_cut(dbh, slen), calc_s(dbh, 6)),
+      s_6_c = ifelse(slen >= 6, calc_s_plus(dbh, slen), 0)
+    ) |>
+    mutate(across(starts_with("s"), ~ .x * 0.25)) # quarter
 }
-
 
 # 600 is the number of seconds in 10 min
 # dividing by 10^4 (1e-4) to convert from cm2 to m2
 # dividing by 10^3 (1e-3) to convert from g to Kg
 fd_scaling <- function(ab_uncertainty_df) {
-  tmp <- ab_uncertainty_df |>
+  ab_uncertainty_df |>
     group_by(tree) |>
     summarize(across(c(fd_m, fd_l, fd_h), mean)) |>
     mutate(
@@ -722,27 +714,23 @@ fd_scaling <- function(ab_uncertainty_df) {
         .fns = ~ .x * 600 * 1e-4 * 1e-3,
         .names = "scaled_{.col}"
       )
-    )
-  tmp |>
-    dplyr::select(starts_with("scaled")) |>
-    apply(2, sum) / 800 |> # per 800 m2
-    as.numeric()
+    ) |>
+    summarize(across(starts_with("scaled"), sum)) |>
+    ungroup() |>
+    map_dbl(~ .x / 800) # divide each column by 800
 }
+
 
 # A common function to mutate and join the dir_dep_imp_df with post_dir_dep_mid_df
 prepare_dir_dep_imp_df <- function(dir_dep_imp_df, post_dir_dep_df) {
   dir_dep_imp_df |>
-    head(1000) |>
+    # head(1000) |>
     mutate(dir_dep = str_c(str_to_lower(dir), dep, sep = "_")) |>
     full_join(post_dir_dep_df, by = "dir_dep") |>
-    mutate(log_k = if_else(is.na(k), log(k_ref) + dir_dep_effects, log(k))) |>
-    mutate(log_k = if_else(is.infinite(log_k), NA, log_k))
-}
-
-# A common function to process sapwood area data
-process_sarea_df <- function(sarea_df) {
-  sarea_df |>
-    mutate(across(starts_with("s"), ~ .x * 0.25))
+    mutate(
+      log_k = if_else(is.na(k), log(k_ref) + dir_dep_effects, log(k)),
+      log_k = if_else(is.infinite(log_k), NA_real_, log_k)
+    )
 }
 
 # A common function to summarize data
@@ -791,12 +779,11 @@ calc_summary <- function(row, s_df) {
   return(s_df3)
 }
 
-generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_df, dir_dep_imp_df, n_draws = 3) {
+generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_df, dir_dep_imp_df, n_draws = 1000) {
   post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
     dir_dep_effects = as.numeric(post_dir_dep_mid))
   dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_mid_df)
-  sarea_df2 <- process_sarea_df(sarea_df)
-  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df2)
+  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df)
 
   if (is.null(post_ab_fit_draws)) {
     granier_df <- tibble(log_a = log(119), b = 1.23)
@@ -812,7 +799,7 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
 
 }
 
-process_dir_dep <- function(i, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid) {
+dir_dep_map <- function(i, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid) {
   post_dir_dep <- post_dir_dep_draws[i,]
   post_dir_dep_df <- tibble(
     dir_dep = names(post_dir_dep),
@@ -820,8 +807,7 @@ process_dir_dep <- function(i, post_dir_dep_draws, dir_dep_imp_df, sarea_df, pos
   )
 
   dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_df)
-  sarea_df2 <- process_sarea_df(sarea_df)
-  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df2) |>
+  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df) |>
     mutate(log_fd = post_ab_mid["log_a"] + post_ab_mid["b"] * log_k) |>
     mutate(fd = exp(log_fd) * s) |> # scale by sapwood area
     group_by(year, tree) |>
@@ -830,9 +816,31 @@ process_dir_dep <- function(i, post_dir_dep_draws, dir_dep_imp_df, sarea_df, pos
   return(full_df_processed)
 }
 
-generate_dir_dep_uncertainty <- function(post_ab_mid, post_dir_dep_draws, sarea_df, dir_dep_imp_df, n_draws = 3) {
+generate_dir_dep_uncertainty <- function(post_ab_mid, post_dir_dep_draws, sarea_df, dir_dep_imp_df, n_draws = 1000) {
 
-  summary_stats <- map_df(1:n_draws, process_dir_dep, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid)
+  summary_stats <- map_df(1:n_draws, dir_dep_map, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid)
 
   summarize_df_data(summary_stats)
+}
+
+sarea_map <- function(i, dbh_imp_df, post_slen_draws, dir_dep_imp_df_re, post_ab_mid) {
+  sarea_df <- generate_sarea_df(dbh_imp_df, post_slen_draws[i, ])
+  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df) |>
+    mutate(log_fd = post_ab_mid["log_a"] + post_ab_mid["b"] * log_k) |>
+    mutate(fd = exp(log_fd) * s) |> # scale by sapwood area
+    group_by(year, tree) |>
+    summarise(fd = sum(fd, na.rm = TRUE), .groups = "drop")
+  return(full_df_processed)
+}
+
+generate_sarea_uncertainty <- function(post_ab_mid, post_dir_dep_mid, dbh_imp_df, slen_draws, dir_dep_imp_df, n_draws = 1000) {
+  post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
+    dir_dep_effects = as.numeric(post_dir_dep_mid))
+
+  dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_mid_df)
+
+  summary_stats <- map_df(1:n_draws, sarea_map, dbh_imp_df, slen_draws, dir_dep_imp_df_re, post_ab_mid)
+
+  summarize_df_data(summary_stats)
+
 }
