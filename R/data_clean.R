@@ -1015,7 +1015,7 @@ test_fun <- function(csv, year = 2015, month = 1) {
     missForest::missForest(parallelize = "forests")
 }
 
-generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_df, dir_dep_imp_df){
+generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_df, dir_dep_imp_df) {
   post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
     dir_dep_effects = post_dir_dep_mid)
 
@@ -1062,11 +1062,15 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
     return(s_df3)
   }
 
-  # Convert post_ab to a list of lists
-  post_ab_list <- lapply(1:1000, function(i) as.list(post_ab_fit_draws[i, ]))
-
-  # pmap
-  summary_stats <- pmap_dfr(list(post_ab_list, list(s_df)), calc_summary)
+  if (is.null(post_ab_fit_draws)) {
+    granier_df <- tibble(log_a = log(119), b = 1.23)
+    summary_stats <- calc_summary(granier_df, s_df)
+  } else {
+    # Convert post_ab to a list of lists
+    post_ab_list <- lapply(1:1000, function(i) as.list(post_ab_fit_draws[i, ]))
+    # pmap
+    summary_stats <- pmap_dfr(list(post_ab_list, list(s_df)), calc_summary)
+  }
 
   summary_stats |>
     group_by(year, tree) |>
@@ -1074,5 +1078,4 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
       fd_m = median(fd),
       fd_l = quantile(fd, 0.025),
       fd_h = quantile(fd, 0.975), .groups = "drop")
-
 }

@@ -43,10 +43,10 @@ tar_option_set(packages = c(
   "ggrepel"
 ))
 
-# tar_option_set(
-#   garbage_collection = TRUE,
-#   memory = "transient"
-# )
+tar_option_set(
+  garbage_collection = TRUE,
+  memory = "transient"
+)
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1251,11 +1251,10 @@ uncertainty_mapped <- tar_map(
  )
 
 tar_combined_ab_uncertainty <- tar_combine(
-  ab_uncertainty_full_df,
+  ab_uncertainty_combined_df,
   uncertainty_mapped[["ab_scaled_df"]],
   command = dplyr::bind_rows(!!!.x, .id = "id")
 )
-
 
 # uncertainty_granier_mapped <- tar_map(
 #     values = expand_grid(folds = 1:60,
@@ -1292,17 +1291,27 @@ tar_combined_ab_uncertainty <- tar_combine(
 #   )
 
 
-
 # tar_combined_ab_uncertainty_granier <- tar_combine(
 #   ab_uncertainty_full_granier_df,
 #   uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
 #   command = dplyr::bind_rows(!!!.x)
 # )
 
-
 uncertainty_list <- list(
   uncertainty_mapped,
   tar_combined_ab_uncertainty,
+  tar_target(
+    ab_uncertainty_granier_df,
+    generate_ab_uncertainty(
+      post_ab_fit_draws = NULL,
+      post_dir_dep_mid,
+      sarea_df,
+      dir_dep_imp_df
+  )),
+  tar_target(
+    ab_scaled_granier_df,
+    ab_scaling(ab_uncertainty_granier_df)
+  ),
   NULL
 )
 
