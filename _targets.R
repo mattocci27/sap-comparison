@@ -43,10 +43,10 @@ tar_option_set(packages = c(
   "ggrepel"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 # check if it's inside a container
@@ -1200,24 +1200,6 @@ tar_dir_dep <- list(
     generate_sarea_df(dbh_imp_df,
       post_slen_mid |> as.data.frame() |> t() |> as_tibble())
   ),
-  tar_target(
-    t16_df,
-    generate_t16_df(rubber_raw_data_csv)
-  ),
-  # ks with median dir, dep, and sapwood area
-  # ks with median dir, dep, and sapwood area
-  # tar_target(
-  #   dir_dep_imp_full_df,
-  #   add_t16(rubber_raw_data_csv, dir_dep_imp_df, post_dir_dep)
-  # ),
-  # tar_target(
-  #   test_imputation,
-  #     test_fun(
-  #       csv = rubber_raw_data_csv,
-  #       year = 2016,
-  #       month = 11
-  #     )
-  # ),
   NULL
 )
 
@@ -1233,7 +1215,7 @@ post_ab_names <- post_ab_names[
   !grepl("^(species_only_post_ab_|segments_inclusive_post_ab_)", post_ab_names) |
   grepl("0.08$", post_ab_names)]
 
-uncertainty_mapped <- tar_map(
+uncertainty_ab_mapped <- tar_map(
   values = tibble(
     post_ab_fit_draws = rlang::syms(post_ab_names)),
   tar_target(
@@ -1246,59 +1228,42 @@ uncertainty_mapped <- tar_map(
   )),
   tar_target(
     ab_scaled_df,
-    ab_scaling(ab_uncertainty_df)
+    fd_scaling(ab_uncertainty_df)
   )
  )
 
 tar_combined_ab_uncertainty <- tar_combine(
   ab_uncertainty_combined_df,
-  uncertainty_mapped[["ab_scaled_df"]],
+  uncertainty_ab_mapped[["ab_scaled_df"]],
   command = dplyr::bind_rows(!!!.x, .id = "id")
 )
 
-# uncertainty_granier_mapped <- tar_map(
-#     values = expand_grid(folds = 1:60,
-#       pg = c(0.08)) |>
-#       mutate(post_ab_pool_mc =
-#         paste0(
-#           "fit_ab_draws_granier_without_traits_full_pool_sap_all_clean_", pg
-#         )) |>
-#       mutate(post_ab_segments_mc = str_replace_all(post_ab_pool_mc, "pool", "segments")) |>
-#       mutate(post_ab_pool_mc = rlang::syms(post_ab_pool_mc)) |>
-#       mutate(post_ab_segments_mc = rlang::syms(post_ab_segments_mc)),
-#     tar_target(
-#       post_ab_pool_mc3, {
-#         set.seed(123)
-#         generate_post_ab(post_ab_pool_mc) |> sample_n(1000)
-#       }
-#     ),
-#     tar_target(
-#       post_ab_segments_mc3, {
-#         set.seed(123)
-#         generate_post_ab(post_ab_segments_mc) |> sample_n(1000)
-#       }
-#     ),
-#     tar_target(
-#       ab_uncertainty_granier_df,
-#       generate_ab_uncertainty_granier(
-#         dir_dep_imp_full_df,
-#         dbh_imp_df,
-#         post_ab_pool_mc = post_ab_pool_mc3,
-#         post_ab_segments_mc = post_ab_segments_mc3,
-#         post_slen, post_dir_dep, k = 60, i = folds) |>
-#         mutate(pg = pg)
-#     )
-#   )
+uncertainty_dir_dep_mapped <- tar_map(
+  values = tibble(
+    post_dir_dep_fit_draws =
+      rlang::syms(paste0("post_1000_", c("dir_only", "dep_only", "dir_dep")))),
+  tar_target(
+    dir_dep_uncertainty_df,
+    generate_dir_dep_uncertainty(
+      post_ab_mid,
+      post_dir_dep_fit_draws,
+      sarea_df,
+      dir_dep_imp_df
+  )),
+  tar_target(
+    dir_dep_scaled_df,
+    fd_scaling(dir_dep_uncertainty_df)
+  )
+ )
 
-
-# tar_combined_ab_uncertainty_granier <- tar_combine(
-#   ab_uncertainty_full_granier_df,
-#   uncertainty_granier_mapped[["ab_uncertainty_granier_df"]],
-#   command = dplyr::bind_rows(!!!.x)
-# )
+tar_combined_dir_dep_uncertainty <- tar_combine(
+  dir_dep_uncertainty_combined_df,
+  uncertainty_dir_dep_mapped[["dir_dep_scaled_df"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
 
 uncertainty_list <- list(
-  uncertainty_mapped,
+  uncertainty_ab_mapped,
   tar_combined_ab_uncertainty,
   tar_target(
     ab_uncertainty_granier_df,
@@ -1310,8 +1275,13 @@ uncertainty_list <- list(
   )),
   tar_target(
     ab_scaled_granier_df,
-    ab_scaling(ab_uncertainty_granier_df)
+    fd_scaling(ab_uncertainty_granier_df)
   ),
+  tar_target(
+    post_ab_mid,
+    map_dbl(segments_xylem_post_ab_fit_draws_segments_xylem_0.08, median)
+  ),
+  uncertainty_dir_dep_mapped,
   NULL
 )
 
