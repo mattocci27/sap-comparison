@@ -707,7 +707,7 @@ generate_sarea_df <- function(dbh_imp_df, post_slen_m) {
 fd_scaling <- function(ab_uncertainty_df) {
   ab_uncertainty_df |>
     group_by(tree) |>
-    summarize(across(c(fd_m, fd_l, fd_h), mean)) |>
+    summarize(across(c(fd_m, fd_l, fd_h, fd_mean, fd_sd), mean)) |>
     mutate(
       across(
         .cols = starts_with("fd"),
@@ -719,7 +719,6 @@ fd_scaling <- function(ab_uncertainty_df) {
     ungroup() |>
     map_dbl(~ .x / 800) # divide each column by 800
 }
-
 
 # A common function to mutate and join the dir_dep_imp_df with post_dir_dep_mid_df
 prepare_dir_dep_imp_df <- function(dir_dep_imp_df, post_dir_dep_df) {
@@ -741,6 +740,8 @@ summarize_df_data <- function(data) {
       fd_m = median(fd),
       fd_l = quantile(fd, 0.025),
       fd_h = quantile(fd, 0.975),
+      fd_mean = mean(fd),
+      fd_sd = sd(fd),
       .groups = "drop"
     )
 }

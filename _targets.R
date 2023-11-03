@@ -1204,10 +1204,10 @@ tar_dir_dep <- list(
 )
 
 tmp <- c("species_xylem_post_ab_fit_draws_species_xylem",
-        #  "segments_xylem_post_ab_fit_draws_segments_xylem",
-        #  "segments_inclusive_post_ab",
+         "segments_xylem_post_ab_fit_draws_segments_xylem",
+         "segments_inclusive_post_ab",
          "species_only_post_ab")
-pg <- c(0.02, 0.08)
+# pg <- 0.08
 post_ab_names <- expand_grid(tmp, pg) |>
   mutate(tmp3 = paste(tmp, pg, sep = "_")) |> pull(tmp3)
 
@@ -1225,7 +1225,7 @@ uncertainty_ab_mapped <- tar_map(
       post_dir_dep_mid,
       sarea_df,
       dir_dep_imp_df,
-      n_draws = 3
+      n_draws = 1000
   )),
   tar_target(
     ab_scaled_df,
@@ -1250,7 +1250,7 @@ uncertainty_dir_dep_mapped <- tar_map(
       post_dir_dep_fit_draws,
       sarea_df,
       dir_dep_imp_df,
-      n_draws = 3
+      n_draws = 1000
   )),
   tar_target(
     dir_dep_scaled_df,
@@ -1293,7 +1293,7 @@ uncertainty_list <- list(
       dbh_imp_df,
       post_slen_1000,
       dir_dep_imp_df,
-      n_draws = 3)
+      n_draws = 1000)
   ),
   tar_target(
     sarea_uncertainty_combined_df,
