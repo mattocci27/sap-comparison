@@ -1353,14 +1353,43 @@ uncertainty_list <- list(
 
 uncertainty_figs_list <- list(
   tar_target(
-    tr_scaled_bars_plot2, {
-      p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
+    ec_bar_ab_plot, {
+      p <- ec_bar_ab(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df)
       my_ggsave(
-        "figs/tr_scaled_bars2",
+        "figs/ec_bar_ab",
         p,
         dpi = 300,
         width = 6.81,
         height = 4.4
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ec_bar_all_plot, {
+      p <- ec_bar_all(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
+      my_ggsave(
+        "figs/ec_bar_all",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    rel_bar_plot, {
+      p <- rel_bar(total_uncertainty_combined_df,
+        ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.08,
+        sarea_uncertainty_combined_df,
+        dir_dep_uncertainty_combined_df)
+      my_ggsave(
+        "figs/rel_bar",
+        p,
+        dpi = 300,
+        width = 4.33,
+        height = 4.33
       )
     },
     format = "file"
@@ -1371,48 +1400,48 @@ uncertainty_figs_list <- list(
 #         my_write_csv("data/ec_scaled.csv"),
 #     format = "file"
 #   ),
-#   tar_target(
-#     dbh_points_plot, {
-#       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
-#       my_ggsave(
-#         "figs/dbh_points",
-#         p,
-#         dpi = 300,
-#         # width = 6.81,
-#         # height = 6.81
-#         width = 4.33,
-#         height = 4.33
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
-#     sap_dbh_points_plot, {
-#       p <- sap_dbh_points(sapwood_depth_csv, fit_dbh_sapwood_draws_normal)
-#       my_ggsave(
-#         "figs/sap_dbh_points",
-#         p,
-#         dpi = 300,
-#         width = 4.33,
-#         height = 4.33
-#       )
-#     },
-#     format = "file"
-#   ),
-#   tar_target(
-#     imp_points_plot, {
-#       p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
-#                       imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
-#       my_ggsave(
-#         "figs/imp_points",
-#         p,
-#         dpi = 300,
-#         width = 6.81,
-#         height = 6.81
-#       )
-#     },
-#     format = "file"
-#   ),
+  tar_target(
+    dbh_points_plot, {
+      p <- dbh_points(dbh_imp_df2, girth_increment_csv)
+      my_ggsave(
+        "figs/dbh_points",
+        p,
+        dpi = 300,
+        # width = 6.81,
+        # height = 6.81
+        width = 4.33,
+        height = 4.33
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    sap_dbh_points_plot, {
+      p <- sap_dbh_points(sapwood_depth_csv, fit_draws_sap_dbh)
+      my_ggsave(
+        "figs/sap_dbh_points",
+        p,
+        dpi = 300,
+        width = 4.33,
+        height = 4.33
+      )
+    },
+    format = "file"
+  ),
+  # tar_target(
+  #   imp_points_plot, {
+  #     p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
+  #                     imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
+  #     my_ggsave(
+  #       "figs/imp_points",
+  #       p,
+  #       dpi = 300,
+  #       width = 6.81,
+  #       height = 6.81
+  #     )
+  #   },
+  #   format = "file"
+  # ),
 #   tar_target(
 #    scaled_sapflow_csv, {
 #       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
@@ -1437,8 +1466,8 @@ uncertainty_figs_list <- list(
 #        "data/dbh_sapwood_post.csv"),
 #     format = "file"
 #   ),
-#   NULL
-# )
+  NULL
+)
 
 sapwood_list <- list(
   tar_target(

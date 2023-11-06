@@ -1337,109 +1337,6 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
 }
 # targets::tar_make(ab_points_four_models_plot)
 # 800m2
-tr_scaled_bars <- function(ab_uncertainty_full_df) {
-  d <- ab_uncertainty_full_df |>
-    filter(!is.na(tree)) |>
-    mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
-    rename(s_total_granier_m = s_total_granier) |>
-    group_by(tree, pg) |>
-    summarize(
-      across(
-        .cols = where(is.numeric),
-        .fns = sum
-      ), .groups = "drop")
-
-  d2 <- d |>
-    pivot_longer(3:13,
-      names_to = "variable",
-      values_to = "value") |>
-    mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
-    mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
-
-  d3 <- d2 |>
-    group_by(pg, model, quantile) |>
-    summarize(tr = sum(value) / 800 * 1000) |>
-    ungroup() |>
-    mutate(pg = ifelse(model == "granier", "NA", pg)) |>
-    mutate(pg = factor(pg, levels = c(
-      "NA",
-      "0.02", "0.025", "0.03", "0.035", "0.04", "0.05", "0.06", "0.07", "0.08"
-    ))) |>
-    filter(!is.na(tr))
-
-  d4 <- d3 |>
-    pivot_wider(names_from = quantile, values_from = tr) #|>
-    # complete(pg, nesting(model), fill = list(tr = 0))
-
-  ggplot(d4, aes(x = pg, y = m, fill = model, group = model)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
-    scale_fill_viridis_d() +
-    ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
-    xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
-    theme_bw()
-}
-
-
-generate_tr_scaled_bars_data <- function(ab_uncertainty_full_df, each = FALSE) {
-  d <- ab_uncertainty_full_df |>
-    filter(!is.na(tree)) |>
-    mutate(s_total_granier = ifelse(pg == 0.02, s_total_granier, NA)) |>
-    rename(s_total_granier_m = s_total_granier) |>
-    group_by(tree, pg) |>
-    summarize(
-      across(
-        .cols = where(is.numeric),
-        .fns = sum
-      ), .groups = "drop")
-
-  if (each) tmp <- 12 else tmp <- 13
-  d2 <- d |>
-    pivot_longer(3:tmp,
-      names_to = "variable",
-      values_to = "value") |>
-    mutate(model = str_split_fixed(variable, "_", 4)[,3]) |>
-    mutate(quantile = str_split_fixed(variable, "_", 4)[,4])
-
-  d3 <- d2 |>
-    group_by(pg, model, quantile) |>
-    summarize(tr = sum(value) / 800 * 1000) |>
-    ungroup() |>
-    mutate(pg = ifelse(model == "granier", "NA", pg)) |>
-    mutate(pg = factor(pg, levels = c(
-      "NA",
-      "0.02", "0.025", "0.03", "0.035", "0.04", "0.05", "0.06", "0.07", "0.08"
-    ))) |>
-    filter(!is.na(tr))
-
-  d3 |>
-    pivot_wider(names_from = quantile, values_from = tr) #|>
-}
-
-tr_scaled_bars2 <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df) {
-  tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
-    mutate(model = paste("full", model, sep = "_"))
-  tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
-  mutate(model = paste("sep", model, sep = "_"))
-  tmp3 <- bind_rows(tmp1, tmp2)
-  ggplot(tmp3, aes(x = pg, y = m, fill = model, group = model)) +
-   geom_bar(stat = "identity", position = "dodge") +
-   geom_errorbar(aes(ymin = ll, ymax = hh), position = position_dodge(.9), width = 0.2) +
-   scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +  # This line sets the y-axis breaks
-   scale_fill_viridis_d() +
-   geom_hline(yintercept = 750, lty = 2) +
-   ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
-   xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
-   theme_bw()
-}
-
-generate_tr_scaled_df <- function(ab_uncertainty_full_df, ab_uncertainty_full_each_df) {
-  tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
-    mutate(model = paste("full", model, sep = "_"))
-  tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
-  mutate(model = paste("sep", model, sep = "_"))
-  bind_rows(tmp1, tmp2)
-}
 
 dbh_points <- function(dbh_imp_df, girth_increment_csv) {
   girth <- read_csv(girth_increment_csv) |>
@@ -1644,4 +1541,114 @@ combine_fit_summary <- function(s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
     s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
     s_0.05, s_0.06, s_0.07, s_0.08
   ) |> janitor::clean_names()
+}
+
+
+# Define a function for the repeated ggplot elements
+ec_bar <- function(data, x, y, fill, group) {
+  ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{ fill }}, group = {{ group }})) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_errorbar(aes(ymin = ec_l, ymax = ec_h), position = position_dodge(.9), width = 0.2) +
+    scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
+    scale_fill_viridis_d() +
+    geom_hline(yintercept = 750, lty = 2) +
+    ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+    xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+    theme_bw()
+}
+
+ec_bar_ab <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
+# Read and prepare granier_df
+  granier_df <- ab_granier_uncertainty_combined_df |>
+    mutate(
+      id = "granier",
+      across(c(ec_l, ec_h), ~ NA_real_) # if you have multiple such columns, use across
+    )
+
+# Read ab_uncertainty_combined_df and bind with granier_df
+  tmp <- ab_uncertainty_combined_df |>
+    bind_rows(granier_df) |>
+    mutate(
+      pg = as.factor(str_extract(id, "\\d+\\.\\d+")),
+      model = factor(str_extract(id, "species_xylem|segments_xylem|segments_inclusive|species_only|granier"),
+                     levels = c("species_only", "segments_inclusive", "species_xylem", "segments_xylem", "granier"))
+    )
+
+  ec_bar(tmp, pg, ec_m, model, model)
+
+}
+
+ec_bar_all <- function(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
+
+  total_df <- total_uncertainty_combined_df |>
+  mutate(id = "total")
+
+  sarea_df <- sarea_uncertainty_combined_df |>
+    mutate(id = "sapwood_aera")
+
+  dir_dep_df <- dir_dep_uncertainty_combined_df |>
+    mutate(id = str_extract(id, "dir_only|dep_only|dir_dep$"))
+
+  tmp_all <- bind_rows(total_df, sarea_df, dir_dep_df)
+  ec_bar(tmp_all, id, ec_m, id, id) +
+  scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
+}
+
+rel_bar <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
+  total_df <- total_uncertainty_combined_df |>
+    mutate(id = "total") |>
+    mutate(var = ec_sd^2) |>
+    dplyr::select(id, everything())
+  sarea_df <- sarea_uncertainty_combined_df |>
+    mutate(id = "sarea") |>
+    mutate(var = ec_sd^2) |>
+    dplyr::select(id, everything())
+  ab_df <- ab_uncertainty_df |>
+    mutate(id = "ab") |>
+    mutate(var = ec_sd^2) |>
+    dplyr::select(id, everything())
+
+# Read in your data frame
+  dir_dep_df <- dir_dep_uncertainty_combined_df |>
+    mutate(
+      id = str_extract(id, "dir_only|dep_only|dir_dep$"),
+      var = ec_sd^2
+    )
+
+# Compute the covariance directly
+  cov_dir_dep <- (dir_dep_df$var[dir_dep_df$id == "dir_dep"] -
+                  (dir_dep_df$var[dir_dep_df$id == "dir_only"] +
+                   dir_dep_df$var[dir_dep_df$id == "dep_only"]))
+
+# Add the covariance as a new row
+  dir_dep_df <- dir_dep_df %>%
+    add_row(id = "dir_dep_cov", ec_m = NA, ec_l = NA, ec_h = NA,
+            ec_mean = NA, ec_sd = NA, var = cov_dir_dep)
+
+  total_var <- total_df |>
+    pull(var)
+
+  tmp <- bind_rows(sarea_df, ab_df, dir_dep_df) |>
+    filter(id != "dir_dep") |>
+    mutate(rel = var / total_var * 100) |>
+    mutate(id = factor(id, levels = c("sarea", "ab", "dir_only",  "dir_dep_cov", "dep_only")))
+
+  new_labels <- c(
+    "sarea" = "Sapwood area",
+    "ab" = "Coefficient a-b",
+    "dir_only" = "Direction",
+    "dep_only" = "Depth",
+    "dir_dep_cov" = "Direction and depth")
+
+  ggplot(tmp, aes(x = factor(1), y = rel, fill = id)) +
+    geom_bar(stat = "identity") +
+    scale_fill_viridis_d(labels = new_labels) +
+    ylab("Relative contribution (%)") +
+    xlab("") +
+    labs(fill = "Source") +
+    my_theme() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
 }
