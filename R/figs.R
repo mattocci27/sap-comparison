@@ -1594,7 +1594,7 @@ ec_bar_all <- function(total_uncertainty_combined_df, sarea_uncertainty_combined
   scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
 }
 
-rel_bar <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
+generate_rel_cont_df <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
   total_df <- total_uncertainty_combined_df |>
     mutate(id = "total") |>
     mutate(var = ec_sd^2) |>
@@ -1628,11 +1628,15 @@ rel_bar <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_unce
   total_var <- total_df |>
     pull(var)
 
-  tmp <- bind_rows(sarea_df, ab_df, dir_dep_df) |>
+  bind_rows(sarea_df, ab_df, dir_dep_df) |>
     filter(id != "dir_dep") |>
     mutate(rel = var / total_var * 100) |>
+    mutate(rel_adj = (rel / sum(rel)) * 100) |>
     mutate(id = factor(id, levels = c("sarea", "ab", "dir_only",  "dir_dep_cov", "dep_only")))
+}
 
+
+rel_bar <- function(rel_bar_df) {
   new_labels <- c(
     "sarea" = "Sapwood area",
     "ab" = "Coefficient a-b",
@@ -1640,7 +1644,7 @@ rel_bar <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_unce
     "dep_only" = "Depth",
     "dir_dep_cov" = "Direction and depth")
 
-  ggplot(tmp, aes(x = factor(1), y = rel, fill = id)) +
+  ggplot(rel_bar_df, aes(x = factor(1), y = rel_adj, fill = id)) +
     geom_bar(stat = "identity") +
     scale_fill_viridis_d(labels = new_labels) +
     ylab("Relative contribution (%)") +

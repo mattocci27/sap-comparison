@@ -1379,11 +1379,20 @@ uncertainty_figs_list <- list(
     format = "file"
   ),
   tar_target(
+    rel_bar_df,
+    generate_rel_cont_df(total_uncertainty_combined_df,
+      ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.08,
+      sarea_uncertainty_combined_df,
+      dir_dep_uncertainty_combined_df)
+  ),
+  tar_target(
+    rel_bar_csv,
+    my_write_csv(rel_bar_df, "data/rel_bar.csv"),
+    format = "file"
+  ),
+  tar_target(
     rel_bar_plot, {
-      p <- rel_bar(total_uncertainty_combined_df,
-        ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.08,
-        sarea_uncertainty_combined_df,
-        dir_dep_uncertainty_combined_df)
+      p <- rel_bar(rel_bar_df)
       my_ggsave(
         "figs/rel_bar",
         p,
