@@ -732,19 +732,6 @@ prepare_dir_dep_imp_df <- function(dir_dep_imp_df, post_dir_dep_df) {
     )
 }
 
-# A common function to summarize data
-summarize_df_data <- function(data) {
-  data |>
-    group_by(year, tree) |>
-    summarize(
-      fd_m = median(fd),
-      fd_l = quantile(fd, 0.025),
-      fd_h = quantile(fd, 0.975),
-      fd_mean = mean(fd),
-      fd_sd = sd(fd),
-      .groups = "drop"
-    )
-}
 
 # A common function to process full_df with sapwood area calculations
 process_full_df <- function(dir_dep_imp_df_re, sarea_df2) {
@@ -788,15 +775,16 @@ generate_ab_uncertainty <- function(post_ab_fit_draws, post_dir_dep_mid, sarea_d
 
   if (is.null(post_ab_fit_draws)) {
     granier_df <- tibble(log_a = log(119), b = 1.23)
-    summary_stats <- calc_summary(granier_df, full_df_processed )
+    summary_stats <- calc_summary(granier_df, full_df_processed) |>
+      mutate(id = "1")
   } else {
     # Convert post_ab to a list of lists
     post_ab_list <- lapply(1:n_draws, function(i) as.list(post_ab_fit_draws[i, ]))
     # pmap
-    summary_stats <- pmap_dfr(list(post_ab_list, list(full_df_processed)), calc_summary)
+    summary_stats <- pmap_dfr(list(post_ab_list, list(full_df_processed)), calc_summary, .id = "id")
   }
 
-  summarize_df_data(summary_stats)
+  summary_stats
 
 }
 
@@ -819,9 +807,9 @@ dir_dep_map <- function(i, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab
 
 generate_dir_dep_uncertainty <- function(post_ab_mid, post_dir_dep_draws, sarea_df, dir_dep_imp_df, n_draws = 1000) {
 
-  summary_stats <- map_df(1:n_draws, dir_dep_map, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid)
+  summary_stats <- map_df(1:n_draws, dir_dep_map, post_dir_dep_draws, dir_dep_imp_df, sarea_df, post_ab_mid, .id = "id")
 
-  summarize_df_data(summary_stats)
+  summary_stats
 }
 
 sarea_map <- function(i, dbh_imp_df, post_slen_draws, dir_dep_imp_df_re, post_ab_mid) {
@@ -840,8 +828,53 @@ generate_sarea_uncertainty <- function(post_ab_mid, post_dir_dep_mid, dbh_imp_df
 
   dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_mid_df)
 
-  summary_stats <- map_df(1:n_draws, sarea_map, dbh_imp_df, slen_draws, dir_dep_imp_df_re, post_ab_mid)
+  summary_stats <- map_df(1:n_draws, sarea_map, dbh_imp_df, slen_draws, dir_dep_imp_df_re, post_ab_mid, .id = "id")
 
-  summarize_df_data(summary_stats)
+  summary_stats
 
+}
+
+total_map <- function(i, post_ab_fit_draws, post_dir_dep_draws, dbh_imp_df, post_slen_draws, dir_dep_imp_df) {
+  post_dir_dep <- post_dir_dep_draws[i,]
+  post_dir_dep_df <- tibble(
+    dir_dep = names(post_dir_dep),
+    dir_dep_effects = as.numeric(post_dir_dep)
+  )
+  dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_df)
+  sarea_df <- generate_sarea_df(dbh_imp_df, post_slen_draws[i, ])
+  post_ab <- post_ab_fit_draws[i, ] |> unlist()
+
+  process_full_df(dir_dep_imp_df_re, sarea_df) |>
+    mutate(log_fd = post_ab["log_a"] + post_ab["b"] * log_k) |>
+    mutate(fd = exp(log_fd) * s) |> # scale by sapwood area
+    group_by(year, tree) |>
+    summarise(fd = sum(fd, na.rm = TRUE), .groups = "drop")
+}
+
+generate_total_uncertainty <- function(post_ab_fit_draws, post_dir_dep_draws, dbh_imp_df, post_slen_draws, dir_dep_imp_df, n_draws = 1000) {
+  summary_stats <- future_map_dfr(1:n_draws, total_map, post_ab_fit_draws, post_dir_dep_draws, dbh_imp_df, post_slen_draws, dir_dep_imp_df, .id = "id")
+  summary_stats
+}
+
+# ec for each tree
+summarize_each_uncertainty <- function(uncertainty_df) {
+  uncertainty_df |>
+    group_by(id, year) |>
+    summarize(ec = sum(fd) * 600 * 1e-4 * 1e-3 / 800)  |>
+    group_by(id) |>
+    summarize(ec = mean(ec))
+}
+
+
+# ec for each posterior draw
+summarize_stats_uncertainty <- function(data) {
+  data |>
+    summarize(
+      ec_m = median(ec),
+      ec_l = quantile(ec, 0.025),
+      ec_h = quantile(ec, 0.975),
+      ec_mean = mean(ec),
+      ec_sd = sd(ec),
+      .groups = "drop"
+    )
 }

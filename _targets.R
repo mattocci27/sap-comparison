@@ -14,7 +14,7 @@ source("R/figs.R")
 source("R/tables.R")
 source("R/scale.R")
 
-plan(multicore)
+plan(multicore, workers = 2)
 options(clustermq.scheduler = "multicore")
 
 set.seed(123)
@@ -1228,9 +1228,14 @@ uncertainty_ab_mapped <- tar_map(
       n_draws = 1000
   )),
   tar_target(
+    ab_summarized_df,
+    summarize_each_uncertainty(ab_uncertainty_df)
+  ),
+  tar_target(
     ab_scaled_df,
-    fd_scaling(ab_uncertainty_df)
-  )
+    summarize_stats_uncertainty(ab_summarized_df)
+  ),
+  NULL
  )
 
 tar_combined_ab_uncertainty <- tar_combine(
@@ -1253,9 +1258,14 @@ uncertainty_dir_dep_mapped <- tar_map(
       n_draws = 1000
   )),
   tar_target(
+    dir_dep_summarized_df,
+    summarize_each_uncertainty(dir_dep_uncertainty_df)
+  ),
+  tar_target(
     dir_dep_scaled_df,
-    fd_scaling(dir_dep_uncertainty_df)
-  )
+    summarize_stats_uncertainty(dir_dep_summarized_df)
+  ),
+  NULL
  )
 
 tar_combined_dir_dep_uncertainty <- tar_combine(
@@ -1268,16 +1278,20 @@ uncertainty_list <- list(
   uncertainty_ab_mapped,
   tar_combined_ab_uncertainty,
   tar_target(
-    ab_uncertainty_granier_df,
+    ab_granier_uncertainty_df,
     generate_ab_uncertainty(
       post_ab_fit_draws = NULL,
       post_dir_dep_mid,
       sarea_df,
-      dir_dep_imp_df
-  )),
+      dir_dep_imp_df)
+  ),
   tar_target(
-    ab_scaled_granier_df,
-    fd_scaling(ab_uncertainty_granier_df)
+    ab_granier_summarized_df,
+    summarize_each_uncertainty(ab_granier_uncertainty_df)
+  ),
+  tar_target(
+    ab_granier_uncertainty_combined_df,
+    summarize_stats_uncertainty(ab_granier_summarized_df)
   ),
   tar_target(
     post_ab_mid,
@@ -1296,13 +1310,31 @@ uncertainty_list <- list(
       n_draws = 1000)
   ),
   tar_target(
-    sarea_uncertainty_combined_df,
-    fd_scaling(sarea_uncertainty_df)
+    sarea_summarized_df,
+    summarize_each_uncertainty(sarea_uncertainty_df)
   ),
-  NULL
-)
-
-# uncertainty_list2 <- list(
+  tar_target(
+    sarea_uncertainty_combined_df,
+    summarize_stats_uncertainty(sarea_summarized_df)
+  ),
+  tar_target(
+    total_uncertainty_df,
+    generate_total_uncertainty(
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08,
+      post_1000_dir_dep,
+      dbh_imp_df,
+      post_slen_1000,
+      dir_dep_imp_df,
+      n_draws = 1000)
+  ),
+  tar_target(
+    total_summarized_df,
+    summarize_each_uncertainty(total_uncertainty_df)
+  ),
+  tar_target(
+    total_uncertainty_combined_df,
+    summarize_stats_uncertainty(total_summarized_df)
+  ),
 #   tar_target(
 #     tr_scaled_bars_plot, {
 #       p <- tr_scaled_bars(ab_uncertainty_full_df)
@@ -1316,19 +1348,23 @@ uncertainty_list <- list(
 #     },
 #     format = "file"
 #   ),
-#   tar_target(
-#     tr_scaled_bars_plot2, {
-#       p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
-#       my_ggsave(
-#         "figs/tr_scaled_bars2",
-#         p,
-#         dpi = 300,
-#         width = 6.81,
-#         height = 4.4
-#       )
-#     },
-#     format = "file"
-#   ),
+  NULL
+)
+
+uncertainty_figs_list <- list(
+  tar_target(
+    tr_scaled_bars_plot2, {
+      p <- tr_scaled_bars2(ab_uncertainty_full_df, ab_uncertainty_full_each_df)
+      my_ggsave(
+        "figs/tr_scaled_bars2",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 4.4
+      )
+    },
+    format = "file"
+  ),
 #   tar_target(
 #     tr_scaled_bars_csv,
 #       generate_tr_scaled_df(ab_uncertainty_full_df, ab_uncertainty_full_each_df) |>
@@ -1486,5 +1522,6 @@ append(raw_data_list, main_list) |>
   append(tar_impute) |>
   append(sapwood_list) |>
   append(tar_dir_dep) |>
-  append(uncertainty_list)
+  append(uncertainty_list) |>
+  append(uncertainty_figs_list)
   # append(uncertainty_mapped) |>
