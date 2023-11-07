@@ -175,8 +175,18 @@ We incorporated the uncertainty from *a*-*b* coefficients by employing their 95%
 For other sources of uncertainty, such as estimates of *K* from directions and depths (table), and the estimated sapwood length (`r s_fig("sap_dbh_points")`), we used their median values.
 Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
 
+To evaluate the relative contribution of uncertainty in transpiration estimates, we calculate the variance contributed
+by the *a* and *b* coefficients ($\sigma^2_{ab}$),
+by the combined effects of direction and depth on *K* ($\sigma^2_{dir-dep}$),
+by direction ($\sigma^2_{dir}$),
+by depth ($\sigma^2_{dep}$), and
+by sapwood area ($\sigma^2_{sap}$),
+each time holding other variables at their median values.
+These individual variances are then compared to the total variance obtained when considering posterior samples for all variables (\sigma^2_{tol}$).
+The relative uncertainty due to *a* and *b* coefficients, for example, is quantified as the percentage of $\sigma^2_{ab}$ to $\sigma^2_{tol}$.
+
 **`r s_table("dir_dep_post")`**:
-Bayesian estimates of posterior medians and 95% credible intervals of the effects of diretions and depths on *K*.
+Bayesian estimates of posterior medians and 95% credible intervals of the effects of directions and depths on *K*.
 The south direction and 0-2 cm depth were used as reference values.
 As an illustration, the posterior median effect of 4-6 cm depth on *K* is 0.66, suggesting that *K*  at this depth is 66% of its value at the 0-2 cm depth
 The effects of directions were not significant.
