@@ -593,30 +593,32 @@ segments_xylem_df_mapped <- tar_map(
   list(stan_summary =
     rlang::syms(
     str_c("fit_summary_segments_xylem_",
-      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
-    pg = pg),
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)))),
+  tar_target(
+    fit_summary,
+    stan_summary
+  ),
   tar_target(
     table,
     generates_segments_xylem_table(stan_summary)
   ),
   tar_target(
     table_re,
-    generate_summary_non_trait_table(table, pg = pg)
+    generate_summary_non_trait_table(table)
   )
 )
 species_xylem_df_mapped <- tar_map(
   list(stan_summary =
     rlang::syms(
     str_c("fit_summary_species_xylem_",
-      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035))),
-    pg = pg),
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)))),
   tar_target(
     table,
     generates_segments_xylem_table(stan_summary)
   ),
   tar_target(
     table_re,
-    generate_summary_non_trait_table(table, pg = pg)
+    generate_summary_non_trait_table(table)
   )
 )
 
@@ -645,14 +647,19 @@ segments_xylem_post_ab_mapped <- tar_map(
 tar_combined_segments_xylem_df <- tar_combine(
   segments_xylem_df_combined,
   segments_xylem_df_mapped[["table_re"]],
-  command = dplyr::bind_rows(!!!.x)
+  command = dplyr::bind_rows(!!!.x, .id = "id")
 )
+tar_combined_segments_xylem_summary <- tar_combine(
+  segments_xylem_summary_combined,
+  segments_xylem_df_mapped[["fit_summary"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+
 tar_combined_species_xylem_df <- tar_combine(
   species_xylem_df_combined,
   species_xylem_df_mapped[["table_re"]],
-  command = dplyr::bind_rows(!!!.x)
+  command = dplyr::bind_rows(!!!.x, .id = "id")
 )
-
 
 # with single traits -----------------------------------------
   granier_with_traits_mapped <- tar_map(
@@ -779,6 +786,7 @@ granier_list <- list(
   granier_without_traits_mapped,
   tar_combined_species_ab_table,
   tar_combined_segments_ab_table,
+  tar_combined_segments_xylem_summary,
   species_xylem_post_ab_mapped,
   segments_xylem_post_ab_mapped,
   segments_xylem_traits_post_ab_mapped,
@@ -800,13 +808,19 @@ granier_list <- list(
   tar_combined_segments_xylem_df,
   tar_combined_species_xylem_df,
   tar_target(
-    segments_xylem_csv,
-    my_write_csv(segments_xylem_df_combined, "data/segments_xylem_post.csv"),
+    segments_xylem_csv, {
+       segments_xylem_df_combined |>
+       mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
+       my_write_csv("data/segments_xylem_post.csv")
+    },
     format = "file"
   ),
   tar_target(
-    species_xylem_csv,
-    my_write_csv(species_xylem_df_combined, "data/species_xylem_post.csv"),
+    species_xylem_csv, {
+       species_xylem_df_combined |>
+       mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
+       my_write_csv("data/species_xylem_post.csv")
+    },
     format = "file"
   ),
   tar_target(
@@ -902,18 +916,11 @@ granier_list <- list(
     generate_k_range(fd_k_traits_csv)
   ),
   tar_target(
-    fit_summary_segments_xylem_combined,
-    combine_fit_summary(
-      fit_summary_segments_xylem_0.02,
-      fit_summary_segments_xylem_0.025,
-      fit_summary_segments_xylem_0.03,
-      fit_summary_segments_xylem_0.035,
-      fit_summary_segments_xylem_0.04,
-      fit_summary_segments_xylem_0.05,
-      fit_summary_segments_xylem_0.06,
-      fit_summary_segments_xylem_0.07,
-      fit_summary_segments_xylem_0.08
-    )
+    fit_summary_segments_xylem_combined, {
+      segments_xylem_summary_combined |>
+      mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
+      janitor::clean_names()
+    }
   ),
   tar_target(
     pg_multi_plot, {

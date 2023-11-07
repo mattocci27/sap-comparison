@@ -561,20 +561,28 @@ read_csv(here::here("data/full_segments_traits_post.csv")) |>
 This figure is not finalized.
 ](`r here::here("figs/ec_bar_ab.png")`)
 
-- sep_pool: model 1 (in the slide)
-- sep_segments: model 2
-- full_pool: model 3
-- full_segments: model 4
-- sep_granier: model 1 with Granier's coefficients
+- species_only: model 1 (in the slide)
+- segments_inclusive: model 2
+- species_xylem: model 3
+- segments_xylem: model 4
+- granier: model 1 with Granier's coefficients
+
+Data for `r fig("scaled_ec_ab")`.
 
 ![`r s_fig("scaled_ec_all")`:
 This figure is not finalized.
 ](`r here::here("figs/ec_bar_all")`)
 
+Data for `r fig("scaled_ec_all")`.
+
 ![`r fig("rel_bar")`:
 This figure is not finalized.
 ](`r here::here("figs/rel_bar.png")`)
 
+Data for `r fig("rel_bar")`.
+```{r}
+read_csv(here("data/rel_bar.csv"))
+```
 
 
 # Stan codes
@@ -627,28 +635,6 @@ This figure is not finalized.
 ## sapwood length
 
 ```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
-```
-
-```{r, eval=FALSE}
-read_csv("data/species_only_ab.csv") |>
-  filter(effective_sample_size < 400)
-
-read_csv("data/segments_inclusive_ab.csv") |>
-  filter(effective_sample_size < 400)
-
-read_csv("data/species_xylem_post.csv") |>
-  filter(effective_sample_size < 400)
-
-read_csv("data/segments_xylem_post.csv") |>
-  filter(effective_sample_size < 400)
-
-tar_read(sap_sp_clean_0.08)
-tar_read(sap_all_clean_0.08)
-
-hoge <- tar_manifest()
-
-hoge |>
-  filter(str_detect(name, "sap_sp_clean"))
 ```
 
 # References

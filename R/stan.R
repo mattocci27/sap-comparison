@@ -2117,9 +2117,9 @@ traits_points_si <- function(pred_data, use_color = TRUE) {
 }
 
 # without_traits_0.08
-generate_summary_non_trait_table <- function(summary_df, pg) {
+generate_summary_non_trait_table <- function(summary_df) {
   summary_df |>
-    mutate(max_pg = pg) |>
+    # mutate(max_pg = pg) |>
     mutate(variable_meaning =
       case_when(
         str_detect(variable, "\\[1") ~ "coefficient a",
@@ -2141,7 +2141,7 @@ generate_summary_non_trait_table <- function(summary_df, pg) {
       str_detect(variable, "A") ~ "segments",
     )) |>
     dplyr::select(variable_name = variable, level, target, variable_meaning,
-       max_pg, q50, q2.5, q97.5, rhat, effective_sample_size = ess_tail) |>
+       q50, q2.5, q97.5, rhat, effective_sample_size = ess_tail) |>
       mutate(q50 = ifelse(variable_meaning == "coefficient a", exp(q50), q50)) |>
       mutate(q2.5 = ifelse(variable_meaning == "coefficient a", exp(q2.5), q2.5)) |>
       mutate(q97.5 = ifelse(variable_meaning == "coefficient a", exp(q97.5), q97.5)) |>

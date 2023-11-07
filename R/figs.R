@@ -1529,9 +1529,9 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
 combine_fit_summary <- function(s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
   s_0.05, s_0.06, s_0.07, s_0.08) {
   s_0.02 <- s_0.02 |> mutate(max_pg = 0.02)
-  s_0.025 <- s_0.02 |> mutate(max_pg = 0.025)
+  s_0.025 <- s_0.025 |> mutate(max_pg = 0.025)
   s_0.03 <- s_0.03 |> mutate(max_pg = 0.03)
-  s_0.035 <- s_0.03 |> mutate(max_pg = 0.035)
+  s_0.035 <- s_0.035 |> mutate(max_pg = 0.035)
   s_0.04 <- s_0.04 |> mutate(max_pg = 0.04)
   s_0.05 <- s_0.05 |> mutate(max_pg = 0.05)
   s_0.06 <- s_0.06 |> mutate(max_pg = 0.06)
