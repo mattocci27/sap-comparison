@@ -613,6 +613,10 @@ species_xylem_df_mapped <- tar_map(
     str_c("fit_summary_species_xylem_",
       c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)))),
   tar_target(
+    fit_summary,
+    stan_summary
+  ),
+  tar_target(
     table,
     generates_segments_xylem_table(stan_summary)
   ),
@@ -658,6 +662,11 @@ tar_combined_segments_xylem_summary <- tar_combine(
 tar_combined_species_xylem_df <- tar_combine(
   species_xylem_df_combined,
   species_xylem_df_mapped[["table_re"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+tar_combined_species_xylem_summary <- tar_combine(
+  species_xylem_summary_combined,
+  species_xylem_df_mapped[["fit_summary"]],
   command = dplyr::bind_rows(!!!.x, .id = "id")
 )
 
@@ -787,6 +796,7 @@ granier_list <- list(
   tar_combined_species_ab_table,
   tar_combined_segments_ab_table,
   tar_combined_segments_xylem_summary,
+  tar_combined_species_xylem_summary,
   species_xylem_post_ab_mapped,
   segments_xylem_post_ab_mapped,
   segments_xylem_traits_post_ab_mapped,
@@ -1406,12 +1416,6 @@ uncertainty_figs_list <- list(
     },
     format = "file"
   ),
-#   tar_target(
-#     tr_scaled_bars_csv,
-#       generate_tr_scaled_df(ab_uncertainty_full_df, ab_uncertainty_full_each_df) |>
-#         my_write_csv("data/ec_scaled.csv"),
-#     format = "file"
-#   ),
   tar_target(
     dbh_points_plot, {
       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
@@ -1454,30 +1458,17 @@ uncertainty_figs_list <- list(
     },
     format = "file"
   ),
-#   tar_target(
-#    scaled_sapflow_csv, {
-#       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
-#         mutate(model = paste("full", model, sep = "_"))
-#       tmp2 <- generate_tr_scaled_bars_data(ab_uncertainty_full_df) |>
-#         mutate(model = paste("sep", model, sep = "_"))
-#       tmp3 <- bind_rows(tmp1, tmp2) |>
-#         arrange(pg)
-#       my_write_csv(tmp3, "data/scaled_spflow.csv")
-#    },
-#    format = "file"
-#   ),
-#   tar_target(
-#     dir_dep_table,
-#     write_dir_dep_table(fit_dir_dep_summary_no_temporal_hourly_dir,
-#       fit_dir_dep_summary_no_temporal_hourly_dep, "data/dir_dep_post.csv"),
-#     format = "file"
-#   ),
-#   tar_target(
-#     sap_table,
-#     write_sap_table(fit_dbh_sapwood_summary_normal,
-#        "data/dbh_sapwood_post.csv"),
-#     format = "file"
-#   ),
+  tar_target(
+    dir_dep_table,
+    write_dir_dep_table(fit2_summary_dir_dep, "data/dir_dep_post.csv"),
+    format = "file"
+  ),
+  tar_target(
+    sap_table,
+    write_sap_table(fit_summary_sap_dbh,
+       "data/dbh_sapwood_post.csv"),
+    format = "file"
+  ),
   NULL
 )
 
@@ -1558,4 +1549,3 @@ append(raw_data_list, main_list) |>
   append(tar_dir_dep) |>
   append(uncertainty_list) |>
   append(uncertainty_figs_list)
-  # append(uncertainty_mapped) |>

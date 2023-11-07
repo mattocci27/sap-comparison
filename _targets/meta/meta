@@ -158,6 +158,7 @@ dir_dep_stan_data|stem|ec3cb6f4917e202b|4a55fa9448c107c1|b564bb45ad9367aa|-10589
 dir_dep_summarized_df_post_1000_dep_only|stem|d511c3633ad1bfe3|8d5a3f5f5fcd4d01|fb89451815120adc|1361041537||t19665.780832275s|72a233c1419bfc7c|10291|rds|local|vector|||0.021||
 dir_dep_summarized_df_post_1000_dir_dep|stem|3189f05b18b2c638|49b0410201631297|a1eda5d47c1859c0|1981625521||t19665.7668894664s|f4f358ba00c564d4|10308|rds|local|vector|||0.024||
 dir_dep_summarized_df_post_1000_dir_only|stem|97dc380b3d88bf02|de9e24c0c1ce2500|f2540d9fde40eb00|583527092||t19665.7640156156s|c26b13be642730de|10276|rds|local|vector|||0.028||
+dir_dep_table|stem|cecdc7ca750b0c55|e69896897d414fe6|5559b705d0270cfc|705293069|data/dir_dep_post.csv|t19668.5518318919s|70a0bb6673f8b3be|137|file|local|vector|||1.163|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, 2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 dir_dep_uncertainty_combined_df|stem|1b2e7c66b7269d87|9cfa494f46d5f597|d839b86849c61a09|-903265012||t19665.7808324602s|a28d2cbb8a8abbab|369|rds|local|vector|||0.001||
 dir_dep_uncertainty_df_post_1000_dep_only|stem|4f55d056a189c894|308f0df760f946f7|5b8d413782b6696b|-2059614306||t19665.7808316731s|e09a1a64a95ff1fd|248205|rds|local|vector|||19993.654||
 dir_dep_uncertainty_df_post_1000_dir_dep|stem|445233d9bf8eb571|c051f49d4c144a5b|8b703d750fd730e9|-666878985||t19665.7668888645s|c569434f754f2fb2|248362|rds|local|vector|||19977.326||
@@ -343,6 +344,15 @@ fit_summary_fit_summary_segments_xylem_0.05|stem|a7ee7f5894ec9965|cd6ab92d30d9e6
 fit_summary_fit_summary_segments_xylem_0.06|stem|bf925bbdf26d9875|6b8e0c2a3ce9dcbc|1336471d3acdb5e5|-1801970034||t19668.4034633928s|85dde7128eeb00d4|93747|rds|local|vector|||0||
 fit_summary_fit_summary_segments_xylem_0.07|stem|50b811f8a862fb73|476fc496171c6f36|c32259437c0e63ed|-1571636733||t19668.4034635316s|e77b0538a08a9aef|93985|rds|local|vector|||0.001||
 fit_summary_fit_summary_segments_xylem_0.08|stem|b490b23c1f69dee5|ab6b7ee8ccaa4a0d|46cf9afe0b7336f0|-452346004||t19668.4034636242s|2d20c6e5d184b8a2|93984|rds|local|vector|||0||
+fit_summary_fit_summary_species_xylem_0.02|stem|a88b25a9169ed9dc|7dc368eca0fe2249|042aa2fff0121080|-1549591218||t19668.4330533597s|60f7070de0293fed|19410|rds|local|vector|||0||
+fit_summary_fit_summary_species_xylem_0.025|stem|fa9459c51bb72631|c617ac7d8985986a|a726a40d052f1273|782356732||t19668.4331778066s|670477ae59d5ce97|19339|rds|local|vector|||0.001||
+fit_summary_fit_summary_species_xylem_0.03|stem|b768551420ba2f16|281bb6d34b361126|96ff7a5c5f58c8e6|-176963346||t19668.4330631284s|670477ae59d5ce97|19339|rds|local|vector|||0.001||
+fit_summary_fit_summary_species_xylem_0.035|stem|e8bc8e62f7d74854|bc30d841d1835faa|0e35926cf7098333|777245112||t19668.4330265074s|65080956fd2bac49|19265|rds|local|vector|||1.009||
+fit_summary_fit_summary_species_xylem_0.04|stem|3e65ce81120c541a|fcaaedc2d21f5ff6|2ef51fb5de5f7685|-1281606280||t19668.4330844714s|960b14d47adae0a4|19292|rds|local|vector|||1.005||
+fit_summary_fit_summary_species_xylem_0.05|stem|6ad08bfc6662f509|c7672a849a595a45|313aab86d3717e34|91414820||t19668.4330985458s|a095a3c358920593|19300|rds|local|vector|||0.986||
+fit_summary_fit_summary_species_xylem_0.06|stem|97eae3c1173555ef|89536e696d4efaf8|cd25cbca78ce28fb|-138590791||t19668.4330991476s|3192e79dc9a99dd0|19264|rds|local|vector|||0||
+fit_summary_fit_summary_species_xylem_0.07|stem|52d76ab2e1e5ec07|0d71035824018d0c|f6e5339e39669e0f|-402676162||t19668.4331109997s|5b3487da5abd279f|19256|rds|local|vector|||0.001||
+fit_summary_fit_summary_species_xylem_0.08|stem|26438698a351f066|0872513fc96b33bb|44e8d12ebb7e55f8|-599683390||t19668.4331254444s|960b14d47adae0a4|19292|rds|local|vector|||0||
 fit_summary_sap_dbh|stem|b0499906c1c34307|6463074db4d00b39|277f996e6891fee7|-1504719285||t19642.6679832161s|d4be1280d0d2bfa6|1596|fst_tbl|local|vector|||1.164||
 fit_summary_segments_noxylem_traits_int|stem|2b79cb32e8e93b99|0c9d0ad314a9c80c|5b1ec69fada5f2d8|1987648113||t19641.6153206743s|03ffe73c92af1c20|382784|fst_tbl|local|vector|||71.546||
 fit_summary_segments_noxylem_traits_log_dh|stem|e307b8d611794f0d|bcd4babef16cfad9|f342a77656b55426|-1320372070||t19641.6166810905s|3338d2f1ac4192ca|489847|fst_tbl|local|vector|||74.973||
@@ -487,7 +497,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|611e99f62051bda2|||||||||||||||
+granier_list|object|63eaf6ce72d40503|||||||||||||||
 granier_with_traits_mapped|object|dd73f1a29ca009cb|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -707,6 +717,7 @@ sap_sp_clean_0.06|stem|d03c95b4c4517f2c|0f7a7ef0544ca960|95c44b80c071635c|144499
 sap_sp_clean_0.07|stem|2f93a466b82ad6e1|a3f5caafb7a49255|95c44b80c071635c|1131527887||t19641.416255096s|ada05f852757bffa|41144|rds|local|vector|||0.279||
 sap_sp_clean_0.08|stem|2e938d32b227f7ce|610aba0474682fd4|95c44b80c071635c|831789844||t19641.416255096s|dd45d3a6c252bbb7|41181|rds|local|vector|||0.27||
 sap_stan_data|stem|4bcc6175e57363f4|c8127929c0ff9131|c4cdf6a0a64dfd2e|1738794204||t19641.4161689827s|55ef2a4487051c7f|8880|rds|local|vector|||0.092||
+sap_table|stem|719cb77e7a62713c|73a1309407c2ecaa|bc8d89a5470befa3|2059547469|data/dbh_sapwood_post.csv|t19668.5543890688s|ff026697d66e9a9f|75|file|local|vector|||1.197|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, 2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 sapwood_depth_csv|stem|e94d547ae146209c|0e367d6c80cbbba1|ef46db3751d8e999|-430861753|data-raw/sapwood_depth.csv|t19641.4162590313s|01d717670daa253d|1008|file|local|vector|||1.24||
 sapwood_list|object|a7d6165345237dde|||||||||||||||
 sarea_df|stem|8d5a235fe282bcfc|d14dbcac8f6f9693|e2866ddade201d4f|-1520877537||t19662.6237629456s|5749696207a3dfac|399014|rds|local|vector|||1.059||
@@ -791,7 +802,7 @@ species_only_post_ab_0.07|stem|632625c15924b1c4|29d355eb764d7998|6005bddf4d633d0
 species_only_post_ab_0.08|stem|1759cd90307babea|90c21d1ec0abf347|756008c199f24d19|-1251987727||t19661.376564703s|2243eaf7471bdeca|19905|rds|local|vector|||0.006|Dropping draws_df class as required metadata was removed.|
 species_xylem_csv|stem|c5a191103e5aad5e|a046dd1b8842ce2d|2c800b0509a74e2e|-1628790711|data/species_xylem_post.csv|t19668.401796876s|94116ad788488bd1|88692|file|local|vector|||1.098||
 species_xylem_df_combined|stem|1e0a8ec83c5daee9|c483e367198b3d77|7632cbb81780c693|1479365987||t19668.3998592415s|9cf94dfd47710fdb|9472|rds|local|vector|||0||
-species_xylem_df_mapped|object|472402bcb05db967|||||||||||||||
+species_xylem_df_mapped|object|b60e51353266c095|||||||||||||||
 species_xylem_post_ab_fit_draws_species_xylem_0.02|stem|cf36a425f441fd9a|ca366a60c1b75d82|4329cd01d2f663a1|-35927291||t19642.4298217402s|9f46b2ff8789a939|20618|rds|local|vector|||1.468||
 species_xylem_post_ab_fit_draws_species_xylem_0.025|stem|84a1ec77fc172524|860933f66d4f4f56|e3ee8f6032fd3960|974560415||t19642.4298466944s|d3935b8500c6bb7f|20567|rds|local|vector|||1.101||
 species_xylem_post_ab_fit_draws_species_xylem_0.03|stem|d1ff22de84c49c9c|91841cb06f4d70f3|97425c4d667dddf5|224094712||t19642.4298228977s|733b6c3ec061f605|20490|rds|local|vector|||1.468||
@@ -802,6 +813,7 @@ species_xylem_post_ab_fit_draws_species_xylem_0.06|stem|24a5d72438a191e6|7321013
 species_xylem_post_ab_fit_draws_species_xylem_0.07|stem|e8327280d41c42fa|d0845ff25ce57ea1|09a7e51a67133fe5|-970859630||t19642.4298265088s|56fe725640655608|20055|rds|local|vector|||1.313||
 species_xylem_post_ab_fit_draws_species_xylem_0.08|stem|c97c6ffade31a73b|339f6c32713d537c|053b05d51bfd14c2|-1429494554||t19642.4298270644s|924f5e56e5ccbb1a|20021|rds|local|vector|||1.282||
 species_xylem_post_ab_mapped|object|bba81b90c0411148|||||||||||||||
+species_xylem_summary_combined|stem|bd9aacb3189a3a69|1b0fd40e0fe9ffa9|d154dc5faca7a0a6|76798665||t19668.4331780843s|a0cfd152f2b4e3c6|160099|rds|local|vector|||0.002||
 stan_data_noxylem_int|stem|c6ba444efa2dc184|394a64c7ea06d427|99b6ab67a1c56ec9|-1255897511||t19641.5712211336s|53629c71c9abf0fe|9325|rds|local|vector|||0.109||
 stan_data_noxylem_log_dh|stem|758d003f67563a9a|bcd9eb2ca286b0df|017d3e0805e0978c|-1373999119||t19641.5712239115s|4a26097ba98ec1f6|10633|rds|local|vector|||0.111||
 stan_data_noxylem_log_ks|stem|cf0ca781bd3a801d|b1118a9c141b4704|f07cf9ebbafc007c|378354228||t19641.5712121056s|5f8a7b2969116aac|10648|rds|local|vector|||0.15||
@@ -881,7 +893,7 @@ traits_points_si_plot|stem|e56bce239ec72a28|488b9af50a2794fd|1122e9e50ab3f698|-8
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|b414b30675ddce72|||||||||||||||
+uncertainty_figs_list|object|b70c93bc1292dedc|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|65ea099f632d5c6f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
@@ -891,7 +903,7 @@ values2|object|e63b2d61962c1295|||||||||||||||
 write_ab_csv|function|4aecb1ce16c74b70|||||||||||||||
 write_ab_csv2|function|4aecb1ce16c74b70|||||||||||||||
 write_anova_yml|function|b3368d15fad915cf|||||||||||||||
-write_dir_dep_table|function|3b19f8787d034a66|||||||||||||||
+write_dir_dep_table|function|ef5a54f1d9725266|||||||||||||||
 write_sap_table|function|9fe9eb1f358d1cfb|||||||||||||||
 write_varpart_notrait_table|function|2742b537403e256c|||||||||||||||
 write_with_traits_csv|function|dce7ad15b2e5bdd7|||||||||||||||
