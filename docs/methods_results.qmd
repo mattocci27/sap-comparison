@@ -557,15 +557,24 @@ read_csv(here::here("data/full_segments_traits_post.csv")) |>
 
 ## Scaling
 
-![`r fig("scaled_ec")`:
+![`r fig("scaled_ec_ab")`:
 This figure is not finalized.
-](`r here::here("figs/tr_scaled_bars2.png")`)
+](`r here::here("figs/ec_bar_ab.png")`)
 
 - sep_pool: model 1 (in the slide)
 - sep_segments: model 2
 - full_pool: model 3
 - full_segments: model 4
 - sep_granier: model 1 with Granier's coefficients
+
+![`r s_fig("scaled_ec_all")`:
+This figure is not finalized.
+](`r here::here("figs/ec_bar_all")`)
+
+![`r fig("rel_bar")`:
+This figure is not finalized.
+](`r here::here("figs/rel_bar.png")`)
+
 
 
 # Stan codes
@@ -582,42 +591,42 @@ This figure is not finalized.
 
 ## species-only model: pooled fitting for separte species
 
-```{stan, file=here::here('stan/granier_without_traits_sp_pool.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```{stan, file=here::here('stan/species_only.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
 ```
 
 ## segment-inclusive model: multilevel fitting for separte species
 
-```{stan, file=here::here('stan/granier_without_traits_sp_segments.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```{stan, file=here::here('stan/segments_inclusive.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
 ```
 
 ## species-xylem model: pooled fitting for pooled species
 
-```{stan, file=here::here('stan/granier_without_traits_full_pool.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
+```{stan, file=here::here('stan/species_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
 ```
 
 ## segement-xylem model: multilevel fitting for pooled species
 
-```{stan, file=here::here('stan/granier_without_traits_full_segments.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
+```{stan, file=here::here('stan/segments_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
 ```
 
 ## segement-xylem model with traits
 
-```{stan, file=here::here('stan/granier_with_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
+```{stan, file=here::here('stan/segments_xylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
 ```
 
 ## segement-xylem model with traits wihout xylem-type variation
 
-```{stan, file=here::here('stan/granier_with_traits_no_xylem.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```{stan, file=here::here('stan/segments_noxylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
 ```
 
 ## depth and direction
 
-```{stan, file=here::here('stan/no_temporal.stan'), echo=TRUE, eval=FALSE, output.var="amam"}
+```{stan, file=here::here('stan/dir_dep.stan'), echo=TRUE, eval=FALSE, output.var="amam"}
 ```
 
 ## sapwood length
 
-```{stan, file=here::here('stan/normal.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
+```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
 ```
 
 ```{r, eval=FALSE}
