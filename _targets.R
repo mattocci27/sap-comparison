@@ -1342,19 +1342,6 @@ uncertainty_list <- list(
     total_uncertainty_combined_df,
     summarize_stats_uncertainty(total_summarized_df)
   ),
-#   tar_target(
-#     tr_scaled_bars_plot, {
-#       p <- tr_scaled_bars(ab_uncertainty_full_df)
-#       my_ggsave(
-#         "figs/tr_scaled_bars",
-#         p,
-#         dpi = 300,
-#         width = 6.81,
-#         height = 4.4
-#       )
-#     },
-#     format = "file"
-#   ),
   NULL
 )
 
@@ -1453,20 +1440,20 @@ uncertainty_figs_list <- list(
     },
     format = "file"
   ),
-  # tar_target(
-  #   imp_points_plot, {
-  #     p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
-  #                     imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
-  #     my_ggsave(
-  #       "figs/imp_points",
-  #       p,
-  #       dpi = 300,
-  #       width = 6.81,
-  #       height = 6.81
-  #     )
-  #   },
-  #   format = "file"
-  # ),
+  tar_target(
+    imp_points_plot, {
+      p <- imp_points(imputed_df_btrans_2016_2, rubber_raw_data_csv, year_1 = 2016, month_1 = 2, day_1 = 12,
+                      imputed_df_btrans_2016_5, rubber_raw_data_csv, year_2 = 2016, month_2 = 5, day_2 = 7)
+      my_ggsave(
+        "figs/imp_points",
+        p,
+        dpi = 300,
+        width = 6.81,
+        height = 6.81
+      )
+    },
+    format = "file"
+  ),
 #   tar_target(
 #    scaled_sapflow_csv, {
 #       tmp1 <- generate_tr_scaled_bars_data(ab_uncertainty_full_each_df, each = TRUE) |>
@@ -1563,13 +1550,6 @@ sapwood_list <- list(
   ),
   NULL
 )
-
-# append(raw_data_list, tar_impute)
-# #   append(tar_impute) |>
-# #   append(sapwood_list) |>
-# #   append(tar_dir_dep) |>
-# #   append(uncertainty_list) |>
-# #   append(post_csv_list)
 
 append(raw_data_list, main_list) |>
   append(granier_list) |>

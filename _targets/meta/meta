@@ -513,11 +513,11 @@ clean_all|function|38cb1bdda4c5a19b|||||||||||||||
 clean_cond_count|function|ad65270eb5a1e852|||||||||||||||
 clean_for_missForest|function|c98af2eff33d8ee0|||||||||||||||
 clean_imputed_df|function|17a878b6dc0f3536|||||||||||||||
-clean_imputed_df_tmp|function|394f085359fa9202|||||||||||||||
+clean_imputed_df_tmp|function|874fec9470c06843|||||||||||||||
 clean_ks_trees|function|0a5292c7fab07c9a|||||||||||||||
 clean_ks_trees_err|function|ddfa099a2febad99|||||||||||||||
 clean_raw_df|function|35904fec9ac87971|||||||||||||||
-clean_raw_df_tmp|function|35904fec9ac87971|||||||||||||||
+clean_raw_df_tmp|function|b1482c08fdfa0cfe|||||||||||||||
 clean_sap_data|function|da4f3213beb5e365|||||||||||||||
 clean_sep|function|69d6dd9823883831|||||||||||||||
 cleaned_df_missforest_2015_1|stem|089ef5e77b34c166|bed7cd5adb430231|90dc07231e88a1d8|-1462079373||t19649.1430842636s|44b22ee7d231dae4|1008863|rds|local|vector|||6.451||
@@ -1540,8 +1540,8 @@ granier_with_traits_mapped|object|dd73f1a29ca009cb|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 granier_without_traits_sp_pool_file|stem|10348a847473358b|412028bb683cf85e|d08213f484b3e9b9|-440545925|stan/granier_without_traits_sp_pool.stan|t19641.4161579639s|813a0d7697333517|548|file|local|vector|||5.348||
 granier_without_traits_sp_segments_file|stem|8f5492aab38f6528|72f7f1f49f42d65d|d08213f484b3e9b9|-760769710|stan/granier_without_traits_sp_segments.stan|t19641.4161577324s|3a1b6f7b11cba393|916|file|local|vector|||11.997||
-imp_points|function|c1960afe93b99c47|||||||||||||||
-imp_points_plot|stem|3a21ba2c80c66cb5|8dd986b3093f1b78|5f310bdc74b0c880|-1461674706|figs/imp_points.png*figs/imp_points.pdf|t19639.2951106489s||907530|file|local|vector|||3.169||Cant subset columns that dont exist. Column ks doesnt exist.
+imp_points|function|f1a09df980cd7221|||||||||||||||
+imp_points_plot|stem|85749b547c53685e|8dd986b3093f1b78|29f83e5e16fd39dd|-1461674706|figs/imp_points.png*figs/imp_points.pdf|t19668.4222802407s|cac8a251f83db14c|907218|file|local|vector|||5.134|Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.|
 impute_mapped|object|777aafe7df29b794|||||||||||||||
 impute_rest_mapped|object|d944118cfd83afcb|||||||||||||||
 impute_rubber|function|a712d7cca38bf757|||||||||||||||
@@ -1656,7 +1656,7 @@ make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
 missForest_clean|function|950d0c0dbbcd280e|||||||||||||||
-missForest_clean_keep_date|function|33bb9e02afdae78a|||||||||||||||
+missForest_clean_keep_date|function|9c9be4d2e7882cd7|||||||||||||||
 missForest_comb|function|09f743d2b153c64e|||||||||||||||
 missForest_each|function|c74abc68c2399c54|||||||||||||||
 missForest_long|function|b24f9793c07a785c|||||||||||||||
@@ -2864,7 +2864,7 @@ ttest_log_vf|stem||99173abf1dbba1b9|0ed3e33fd74c83ac|-1696157355||t19642.6489373
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|f874a2a4ea7bd9bd|||||||||||||||
+uncertainty_figs_list|object|b414b30675ddce72|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|65ea099f632d5c6f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

@@ -1417,7 +1417,7 @@ missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
     mutate(cos_transformed_time = cos((time / 1440) * 2 * pi)) |>
     dplyr::select(year, yday, date, time,
       vpd, par, t01_0_0:t15_0_0) |>
-    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "ks") |>
+    pivot_longer(c(t01_0_0:t15_0_0), names_to = "id", values_to = "k") |>
     mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
     mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
     mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
@@ -1441,32 +1441,32 @@ missForest_clean_keep_date <- function(csv, year = 2015, month = 1) {
     as.data.frame()
 }
 
-  clean_imputed_df_tmp <- function(imputed_df, tree_id, month, day) {
-    imputed_df |>
-      mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
-      mutate(hour = time %/% 60) |>
-      mutate(mins = time %% 60)  |>
-      mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S")) |>
-      filter(yday >= 30 * (month - 1) + day) |>
-      filter(yday <  30 * (month - 1) + day + 5) |>
-      filter(tree == tree_id) |>
-      dplyr::select(date_time, ks, dep, dir) |>
-      mutate(model = "Imputed")
-  }
+clean_imputed_df_tmp <- function(imputed_df, tree_id, month, day) {
+  imputed_df |>
+    mutate(date = as.Date(yday - 1, origin = paste0(year, "-01-01"))) |>
+    mutate(hour = time %/% 60) |>
+    mutate(mins = time %% 60)  |>
+    mutate(date_time = as.POSIXct(paste(date, sprintf("%02d:%02d:00", hour, mins)), format="%Y-%m-%d %H:%M:%S")) |>
+    filter(yday >= 30 * (month - 1) + day) |>
+    filter(yday <  30 * (month - 1) + day + 5) |>
+    filter(tree == tree_id) |>
+    dplyr::select(date_time, k, dep, dir) |>
+    mutate(model = "Imputed")
+}
 
-  clean_raw_df_tmp <- function(rubber_raw_data_csv, year, month, day, tree_id) {
-    missForest_clean_keep_date(
-      csv = rubber_raw_data_csv,
-      year = year,
-      month = month) |>
-      as_tibble() |>
-      filter(yday >= 30 * (month - 1) + day) |>
-      filter(yday <  30 * (month - 1) + day + 5) |>
-      filter(tree == tree_id) |>
-      dplyr::select(date, ks, dep, dir) |>
-      mutate(date_time = as.POSIXct(date)) |>
-      mutate(model = "Raw")
-  }
+clean_raw_df_tmp <- function(rubber_raw_data_csv, year, month, day, tree_id) {
+  missForest_clean_keep_date(
+    csv = rubber_raw_data_csv,
+    year = year,
+    month = month) |>
+    as_tibble() |>
+    filter(yday >= 30 * (month - 1) + day) |>
+    filter(yday <  30 * (month - 1) + day + 5) |>
+    filter(tree == tree_id) |>
+    dplyr::select(date, k, dep, dir) |>
+    mutate(date_time = as.POSIXct(date)) |>
+    mutate(model = "Raw")
+}
 
 imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day_1,
                        imputed_df_2, rubber_raw_data_csv_2, year_2, month_2, day_2) {
@@ -1485,7 +1485,7 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
     mutate(model = factor(model, levels = c("Raw", "Imputed")))
 
   dep_fun <- function(data) {
-     ggplot(data, aes(x = date_time, y = ks, col = as.factor(dep))) +
+     ggplot(data, aes(x = date_time, y = k, col = as.factor(dep))) +
       geom_line() +
       geom_point(size = 1) +
       theme_bw() +
@@ -1503,44 +1503,6 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
 
   p / p2 +
     plot_annotation(tag_levels = "A")
-
-  # if (depth) {
-  #   p <- ggplot(tmp3, aes(x = date_time, y = ks, col = as.factor(dep))) +
-  #     geom_line() +
-  #     geom_point(size = 1) +
-  #     theme_bw() +
-  #     facet_grid(~ model) +
-  #     guides(col = guide_legend(title="Depth (cm)")) +
-  #     theme(legend.position = "bottom") +
-  #     labs(x = "Date", y = "K")
-  # } else {
-  #   p <- ggplot(tmp3, aes(x = date_time, y = ks, col = as.factor(dir))) +
-  #     geom_line() +
-  #     geom_point(size = 1) +
-  #     theme_bw() +
-  #     facet_grid(~ model) +
-  #     guides(col = guide_legend(title="Direction")) +
-  #     theme(legend.position = "bottom") +
-  #     labs(x = "Date", y = "K")
-  # }
-  # p
-}
-
-combine_fit_summary <- function(s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
-  s_0.05, s_0.06, s_0.07, s_0.08) {
-  s_0.02 <- s_0.02 |> mutate(max_pg = 0.02)
-  s_0.025 <- s_0.025 |> mutate(max_pg = 0.025)
-  s_0.03 <- s_0.03 |> mutate(max_pg = 0.03)
-  s_0.035 <- s_0.035 |> mutate(max_pg = 0.035)
-  s_0.04 <- s_0.04 |> mutate(max_pg = 0.04)
-  s_0.05 <- s_0.05 |> mutate(max_pg = 0.05)
-  s_0.06 <- s_0.06 |> mutate(max_pg = 0.06)
-  s_0.07 <- s_0.07 |> mutate(max_pg = 0.07)
-  s_0.08 <- s_0.08 |> mutate(max_pg = 0.08)
-  bind_rows(
-    s_0.02, s_0.025, s_0.03, s_0.035, s_0.04,
-    s_0.05, s_0.06, s_0.07, s_0.08
-  ) |> janitor::clean_names()
 }
 
 
