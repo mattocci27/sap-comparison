@@ -78,20 +78,12 @@ s_table("summary_of_published_tdm_coefficients")
 
 # Methods (analysis)
 
-
 ## Pressure vs. tension-induced flow
 
 A bivariate relationship between pressure- and tension-induced flow rates (*K~s~*) was evaluated a standardized major axis (SMA) regression [@Warton2006].
 We also examined the effect of pressure types and species on *K~s~* using a Bayesian ANOVA model [(stan code)](#stan-codes).
-We quantified the proportion of total variance attributed to each component in our model.
-Specifically, the explained variance for a component (i.e., species and pressure) was computed as the ratio of its variance to the total variance, expressed as a percentage.
-For instance, the percentage of variance explained by species was calculated as:
-
-$$
-\frac{\sigma^2_{sp}}{\sigma^2_{sp} + \sigma^2_{pres} + \sigma^2_{res}} \times 100\;(\%).
-$$
-
-where $\sigma^2_{sp}$, $\sigma^2_{pres}$, and $\sigma^2_{res}$ are variance for species, pressure, and residuals, respectively.
+Using this model, we determined how much each component—species, pressure, and residuals—contributed to the overall variance.
+This contribution was measured as the component's variance as a share of the total variance and presented as a percentage.
 
 ## Pressure vs. number of active vessels
 
@@ -182,7 +174,7 @@ by direction ($\sigma^2_{dir}$),
 by depth ($\sigma^2_{dep}$), and
 by sapwood area ($\sigma^2_{sap}$),
 each time holding other variables at their median values.
-These individual variances are then compared to the total variance obtained when considering posterior samples for all variables (\sigma^2_{tol}$).
+These individual variances are then compared to the total variance obtained when considering posterior samples for all variables ($\sigma^2_{tol}$).
 The relative uncertainty due to *a* and *b* coefficients, for example, is quantified as the percentage of $\sigma^2_{ab}$ to $\sigma^2_{tol}$.
 
 **`r s_table("dir_dep_post")`**:
