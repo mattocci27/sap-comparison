@@ -1557,28 +1557,25 @@ ec_bar <- function(data, x, y, fill, group) {
     theme_bw()
 }
 
-ec_bar_ab <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
+generate_ec_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
 # Read and prepare granier_df
-  granier_df <- ab_granier_uncertainty_combined_df |>
-    mutate(
-      id = "granier",
-      across(c(ec_l, ec_h), ~ NA_real_) # if you have multiple such columns, use across
-    )
+    granier_df <- ab_granier_uncertainty_combined_df |>
+      mutate(
+        id = "granier",
+        across(c(ec_l, ec_h), ~ NA_real_) # if you have multiple such columns, use across
+      )
 
 # Read ab_uncertainty_combined_df and bind with granier_df
-  tmp <- ab_uncertainty_combined_df |>
-    bind_rows(granier_df) |>
-    mutate(
-      pg = as.factor(str_extract(id, "\\d+\\.\\d+")),
-      model = factor(str_extract(id, "species_xylem|segments_xylem|segments_inclusive|species_only|granier"),
-                     levels = c("species_only", "segments_inclusive", "species_xylem", "segments_xylem", "granier"))
-    )
-
-  ec_bar(tmp, pg, ec_m, model, model)
-
+    tmp <- ab_uncertainty_combined_df |>
+      bind_rows(granier_df) |>
+      mutate(
+        pg = as.factor(str_extract(id, "\\d+\\.\\d+")),
+        model = factor(str_extract(id, "species_xylem|segments_xylem|segments_inclusive|species_only|granier"),
+                       levels = c("species_only", "segments_inclusive", "species_xylem", "segments_xylem", "granier"))
+      )
 }
 
-ec_bar_all <- function(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
+generate_ec_bar_all_df <- function(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
 
   total_df <- total_uncertainty_combined_df |>
   mutate(id = "total")
@@ -1589,10 +1586,9 @@ ec_bar_all <- function(total_uncertainty_combined_df, sarea_uncertainty_combined
   dir_dep_df <- dir_dep_uncertainty_combined_df |>
     mutate(id = str_extract(id, "dir_only|dep_only|dir_dep$"))
 
-  tmp_all <- bind_rows(total_df, sarea_df, dir_dep_df)
-  ec_bar(tmp_all, id, ec_m, id, id) +
-  scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
+  bind_rows(total_df, sarea_df, dir_dep_df)
 }
+
 
 generate_rel_cont_df <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
   total_df <- total_uncertainty_combined_df |>

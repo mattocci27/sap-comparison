@@ -605,10 +605,12 @@ draws|object|d8a0d76bffd0659d|||||||||||||||
 dummy_data|stem|9b4e722e04e899f5|781517b1e65e9d13|0f3d0d62b7511381|-895299049||t19641.416255096s|9e9836541861514c|1112|rds|local|vector|||0.055||
 dummy_sap_stan_data|stem|9c06acccacd01ffb|0944751d2f6791e6|24d11d09af1603a0|2146147746||t19641.4162548645s|f164d4f4f6997bd3|91510|rds|local|vector|||0.141||
 ec_bar|function|ca972e98288cc8fe|||||||||||||||
-ec_bar_ab|function|c38172fc41d3c1e6|||||||||||||||
-ec_bar_ab_plot|stem|8d1bca17f5c15467|07e34c47a48d0689|e3774b788ed28d72|-1884672486|figs/ec_bar_ab.png*figs/ec_bar_ab.pdf|t19667.3777100626s|71a78543716216d9|95374|file|local|vector|||1.586||
-ec_bar_all|function|fcb3c8c4836b24ba|||||||||||||||
-ec_bar_all_plot|stem|e4446cb30a91d9c1|3ba3d953e9acb0dd|3cba659ecf8ed2ff|372740435|figs/ec_bar_all.png*figs/ec_bar_all.pdf|t19667.3798825787s|44ca82368c2a9956|80581|file|local|vector|||1.508||
+ec_bar_ab|function|d0bc82aaad36ee31|||||||||||||||
+ec_bar_ab_df|stem|4df91707d1a16765|b81eadb6de02c311|61765fdbc84aa8c2|2120217886||t19668.275864086s|279168da361054c9|1369|rds|local|vector|||1.039||
+ec_bar_ab_plot|stem|2aee3665937507d7|092963b55d44a68b|773b78511733195d|-1884672486|figs/ec_bar_ab.png*figs/ec_bar_ab.pdf|t19668.2758691324s|71a78543716216d9|95374|file|local|vector|||0.43||
+ec_bar_all|function|af7de562c8d74ef3|||||||||||||||
+ec_bar_all_df|stem|4833d95807fdd7dc|04eaa61ec98007d1|316ca0e88e6ff6f1|-1815017138||t19668.2774049877s|990f4e6f76416b38|452|rds|local|vector|||0.991||
+ec_bar_all_plot|stem|631637e4e7675588|df4713720fb9a635|045664d34affd397|372740435|figs/ec_bar_all.png*figs/ec_bar_all.pdf|t19668.2774102193s|44ca82368c2a9956|80581|file|local|vector|||0.442||
 fd_k_traits_csv|stem|6d01322bac733284|fab823fb334bcfaf|86725910b2dc50de|-1518555337|data/fd_k_traits.csv|t19641.4162590313s|247335fb0f54d7e7|165684|file|local|vector|||0.476||
 fd_scaling|function|c3201086be995c79|||||||||||||||
 fit_0.02|stem|227de6721bda5a3d|56888272ab614a58|8f629f5a2ab84692|1078000534||t19641.4463134748s|d14249a8724c7adf|148039|rds|local|vector|||47.289|There were 31 warnings in mutate.The first warning wasℹ In argument fit_species  map....Caused by warning EBFMI not computed because it is undefined for posterior chains of length less than 3.ℹ Run dplyrlast_dplyr_warnings to see the 30 remaining warnings.. There were 31 warnings in mutate.The first warning wasℹ In argument fit_segments  map....Caused by warning EBFMI not computed because it is undefined for posterior chains of length less than 3.ℹ Run dplyrlast_dplyr_warnings to see the 30 remaining warnings.|
@@ -1451,6 +1453,7 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 full_pool_csv_mapped|object|0f9473f77a72d0f0|||||||||||||||
 full_segments_csv_mapped|object|272a18b0b78c4322|||||||||||||||
 full_segments_traits_csv|stem|50a716452420f0eb|cc8b0b3dbce5e5ab|be27820f1804b03b|483199944|data/full_segments_traits_post.csv|t19639.6219571478s||56512|file|local|vector|||1.081||object all_seg_table not found
+genarete_ec_bar_all_df|function|49e2bf5a7214e598|||||||||||||||
 generate_ab_uncertainty|function|cc05c03d465c7a40|||||||||||||||
 generate_ab_uncertainty_granier|function|ef8da69f5f1ad66a|||||||||||||||
 generate_ab_uncertainty_pre|function|48c434d02e6e1c31|||||||||||||||
@@ -1469,6 +1472,8 @@ generate_dir_dep_stan_data2|function|3934501357b6e8a1|||||||||||||||
 generate_dir_dep_uncertainty|function|bde73eb948c760f0|||||||||||||||
 generate_dummy_data|function|9ada5e3ee86d9d8f|||||||||||||||
 generate_dummy_data_ab|function|edf8aac2a546b7ae|||||||||||||||
+generate_ec_bar_ab_df|function|8b89477c594757ae|||||||||||||||
+generate_ec_bar_all_df|function|49e2bf5a7214e598|||||||||||||||
 generate_full_date_dbh|function|7b5de0087402a3cd|||||||||||||||
 generate_imp_dbh_data|function|d99851e2e0cabf58|||||||||||||||
 generate_imputed_df|function|0f789a491d45cc73|||||||||||||||
@@ -2812,7 +2817,7 @@ ttest_log_vf|stem||99173abf1dbba1b9|0ed3e33fd74c83ac|-1696157355||t19642.6489373
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|b1cf64cb2a6a4bc5|||||||||||||||
+uncertainty_figs_list|object|f874a2a4ea7bd9bd|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|65ea099f632d5c6f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
