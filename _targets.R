@@ -1357,14 +1357,14 @@ uncertainty_list <- list(
 
 uncertainty_figs_list <- list(
   tar_target(
-    ec_bar_ab_df,
-    generate_ec_bar_ab_df(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df)
+    tr_bar_ab_df,
+    generate_tr_bar_ab_df(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df)
   ),
   tar_target(
-    ec_bar_ab_plot, {
-      p <- ec_bar(ec_bar_ab_df, pg, ec_m, fill = model, group = model)
+    tr_bar_ab_plot, {
+      p <- tr_bar(tr_bar_ab_df, pg, tr_m, fill = model, group = model)
       my_ggsave(
-        "figs/ec_bar_ab",
+        "figs/tr_bar_ab",
         p,
         dpi = 300,
         width = 6.81,
@@ -1374,15 +1374,15 @@ uncertainty_figs_list <- list(
     format = "file"
   ),
   tar_target(
-    ec_bar_all_df,
-    generate_ec_bar_all_df(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
+    tr_bar_all_df,
+    generate_tr_bar_all_df(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
   ),
   tar_target(
-    ec_bar_all_plot, {
-      p <- ec_bar(ec_bar_all_df, id, ec_m, fill = id, group = id) +
+    tr_bar_all_plot, {
+      p <- tr_bar(tr_bar_all_df, id, tr_m, fill = id, group = id) +
         scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
       my_ggsave(
-        "figs/ec_bar_all",
+        "figs/tr_bar_all",
         p,
         dpi = 300,
         width = 6.81,

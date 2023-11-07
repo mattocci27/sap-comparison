@@ -1507,10 +1507,10 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
 
 
 # Define a function for the repeated ggplot elements
-ec_bar <- function(data, x, y, fill, group) {
+tr_bar <- function(data, x, y, fill, group) {
   ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{ fill }}, group = {{ group }})) +
     geom_bar(stat = "identity", position = "dodge") +
-    geom_errorbar(aes(ymin = ec_l, ymax = ec_h), position = position_dodge(.9), width = 0.2) +
+    geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
     scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
     scale_fill_viridis_d() +
     geom_hline(yintercept = 750, lty = 2) +
@@ -1519,12 +1519,12 @@ ec_bar <- function(data, x, y, fill, group) {
     theme_bw()
 }
 
-generate_ec_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
+generate_tr_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
 # Read and prepare granier_df
     granier_df <- ab_granier_uncertainty_combined_df |>
       mutate(
         id = "granier",
-        across(c(ec_l, ec_h), ~ NA_real_) # if you have multiple such columns, use across
+        across(c(tr_l, tr_h), ~ NA_real_) # if you have multiple such columns, use across
       )
 
 # Read ab_uncertainty_combined_df and bind with granier_df
@@ -1537,7 +1537,7 @@ generate_ec_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncerta
       )
 }
 
-generate_ec_bar_all_df <- function(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
+generate_tr_bar_all_df <- function(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
 
   total_df <- total_uncertainty_combined_df |>
   mutate(id = "total")
@@ -1555,22 +1555,22 @@ generate_ec_bar_all_df <- function(total_uncertainty_combined_df, sarea_uncertai
 generate_rel_cont_df <- function(total_uncertainty_combined_df, ab_uncertainty_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df) {
   total_df <- total_uncertainty_combined_df |>
     mutate(id = "total") |>
-    mutate(var = ec_sd^2) |>
+    mutate(var = tr_sd^2) |>
     dplyr::select(id, everything())
   sarea_df <- sarea_uncertainty_combined_df |>
     mutate(id = "sarea") |>
-    mutate(var = ec_sd^2) |>
+    mutate(var = tr_sd^2) |>
     dplyr::select(id, everything())
   ab_df <- ab_uncertainty_df |>
     mutate(id = "ab") |>
-    mutate(var = ec_sd^2) |>
+    mutate(var = tr_sd^2) |>
     dplyr::select(id, everything())
 
 # Read in your data frame
   dir_dep_df <- dir_dep_uncertainty_combined_df |>
     mutate(
       id = str_extract(id, "dir_only|dep_only|dir_dep$"),
-      var = ec_sd^2
+      var = tr_sd^2
     )
 
 # Compute the covariance directly
@@ -1580,8 +1580,8 @@ generate_rel_cont_df <- function(total_uncertainty_combined_df, ab_uncertainty_d
 
 # Add the covariance as a new row
   dir_dep_df <- dir_dep_df %>%
-    add_row(id = "dir_dep_cov", ec_m = NA, ec_l = NA, ec_h = NA,
-            ec_mean = NA, ec_sd = NA, var = cov_dir_dep)
+    add_row(id = "dir_dep_cov", tr_m = NA, tr_l = NA, tr_h = NA,
+            tr_mean = NA, tr_sd = NA, var = cov_dir_dep)
 
   total_var <- total_df |>
     pull(var)

@@ -856,25 +856,25 @@ generate_total_uncertainty <- function(post_ab_fit_draws, post_dir_dep_draws, db
   summary_stats
 }
 
-# ec for each tree
+# tr for each tree
 summarize_each_uncertainty <- function(uncertainty_df) {
   uncertainty_df |>
     group_by(id, year) |>
-    summarize(ec = sum(fd) * 600 * 1e-4 * 1e-3 / 800)  |>
+    summarize(tr = sum(fd) * 600 * 1e-4 * 1e-3 / 800)  |>
     group_by(id) |>
-    summarize(ec = mean(ec))
+    summarize(tr = mean(tr))
 }
 
 
-# ec for each posterior draw
+# tr for each posterior draw
 summarize_stats_uncertainty <- function(data) {
   data |>
     summarize(
-      ec_m = median(ec),
-      ec_l = quantile(ec, 0.025),
-      ec_h = quantile(ec, 0.975),
-      ec_mean = mean(ec),
-      ec_sd = sd(ec),
+      tr_m = median(tr),
+      tr_l = quantile(tr, 0.025),
+      tr_h = quantile(tr, 0.975),
+      tr_mean = mean(tr),
+      tr_sd = sd(tr),
       .groups = "drop"
     )
 }

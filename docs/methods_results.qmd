@@ -559,9 +559,9 @@ read_csv(here::here("data/full_segments_traits_post.csv")) |>
 
 ## Scaling
 
-![`r fig("scaled_ec_ab")`:
+![`r fig("scaled_tr_ab")`:
 This figure is not finalized.
-](`r here::here("figs/ec_bar_ab.png")`)
+](`r here::here("figs/tr_bar_ab.png")`)
 
 - species_only: model 1 (in the slide)
 - segments_inclusive: model 2
@@ -569,13 +569,13 @@ This figure is not finalized.
 - segments_xylem: model 4
 - granier: model 1 with Granier's coefficients
 
-Data for `r fig("scaled_ec_ab")`.
+Data for `r fig("scaled_tr_ab")`.
 
-![`r s_fig("scaled_ec_all")`:
+![`r s_fig("scaled_tr_all")`:
 This figure is not finalized.
-](`r here::here("figs/ec_bar_all")`)
+](`r here::here("figs/tr_bar_all")`)
 
-Data for `r fig("scaled_ec_all")`.
+Data for `r fig("scaled_tr_all")`.
 
 ![`r fig("rel_bar")`:
 This figure is not finalized.
