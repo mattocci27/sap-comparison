@@ -130,44 +130,42 @@ Each of these traits was included separately as species-level predictors for the
 Additionally, we built a variation of the segment-xylem model that excluded xylem-level variation [(stan code)](#stan-codes).
 This allowed us to assess the impact of xylem-level variation on trait estimation for the coefficients *a* and *b*.
 
-## Scaling
+## Estimating tree transpiration in a forest stand
 
-(**First, we need a summary paragraph to describe what we wanted to do here.
-We might also need a conceptual diagram to explain the analytical framework.**)
+We developed a statistical framework to estimate tree transpiration while overcoming the challenges posed by missing data (K) and quantifying the uncertainty in our estimates.
+Utilizing the missForest algorithm, we imputed missing *K* values.
+Using Bayesian linear models, we estimated *K* values where depth and direction data were absent and derived sapwood area ($A_{sap}$) from DBH measurements.
+This approach allows for a probabilistic assessment of the uncertainty of our estimates.
 
-We used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset (`r s_fig("imp_points")`).
+To implement this framework, we used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset (`r s_fig("imp_points")`).
 This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
 It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
 The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
 As predictors, we used all the observed values, including K, date, time, VPD, PAR, tree ID, direction, and depth.
 Given the large size of our dataset (> 4M rows), we applied missForest to each month separately.
+Because of power outage (?), we encountered an issue with an excess of missing *K* values in September, October, and December 2016.
+The missing data from these periods could not be adequately imputed using only the data from the same months.
+To address this, we used imputed data from the corresponding months in 2015 to impute the missing values for 2016.
 The normalized root mean squared error (NRMSE) was < 0.0001 for all the months, suggesting that the imputed values were close to the observed values.
 
-We have *K* values for three depths (0-2 cm, 2-4 cm, and 4-6 cm) and four directions (north, south, east, and west), but not all the trees have all the combinations.
-We used the *K* values measured at a 0-2 cm depth and from the southern direction as reference values and estimated the effects of depth and direction on *K* by using a Bayesian multilevel linear model [(stan code)](#stan-codes).
-When there are observed *K* values for the focal depth and direction, we used the observed values for the subsequent analysis.
-When there are no observed *K* values for the focal depth and direction, we used the predicted median *K* values from the linear model for the subsequent analysis (`r s_table("dir_dep_post")`).
-*K* values were completely missing for tree ID 16 in 2015.
-We assigned the mean *K* values from the other trees to this tree.
+In our dataset, *K* values were measured across three soil depths (0-2 cm, 2-4 cm, and 4-6 cm) and four directions (north, south, east, and west).
+However, the dataset was incomplete as not all trees were measured for all depth-direction combinations.
+To address this, we used the *K* values from the 0-2 cm depth and southern exposure as a baseline, employing a Bayesian linear model to estimate the effects of varying depths and directions on *K* values [(stan code)](#stan-codes).
+This model enabled us to use actual observed *K* values for analysis when available and to substitute with the median predicted *K* values from the model when direct measurements were absent (`r s_table("dir_dep_post")`).
+When the sapwood depth exceeded 6 cm, we adapted our approach for estimating *K* values by assigning them half the value of those measured at a depth of 4-6 cm from the same direction.
 
-Over two years, we conducted 16 measurements of DBH.
+In addition to *K* value estimation, we conducted 16 measurements of DBH over two years.
 We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured (`r s_fig("dbh_points")`).
 We then modeled sapwood length as a function of DBH using a Bayesian linear model [(stan code)](#stan-codes).
 We used the posterior median of the model and interpolated DBH to estimate daily sapwood length (`r s_fig("sap_dbh_points")` and `r s_table("dbh_sapwood_post")`).
-
-Sup flux over every 10-minute intervals ($S_{10min}$) was calculated as:
-$$
-S_{10min} = a \times K^b \times A_{sap} \times 600
-$$
-
+This linear model of sapwood length is also crucial for calculating sap flux at 10-minute intervals ($S_{10min}$) using the equation
+$S_{10min} = a \times K^b \times A_{sap} \times 600$
 where $K$ is the estimated value from directions and depths when sensors are not available and the observed value when sensors are available,
 $A_{sap}$ is sapwood area estimated from DBH and sapwood length,
 and the factor 600 is the number of seconds in 10-minute intervals.
-We incorporated the uncertainty from *a*-*b* coefficients by employing their 95% credible intervals.
-For other sources of uncertainty, such as estimates of *K* from directions and depths (table), and the estimated sapwood length (`r s_fig("sap_dbh_points")`), we used their median values.
-Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
 
-To evaluate the relative contribution of uncertainty in transpiration estimates, we calculate the variance contributed
+Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
+We also evaluated the relative contribution of uncertainty in transpiration estimates, by calculating the variance contributed
 by the *a* and *b* coefficients ($\sigma^2_{ab}$),
 by the combined effects of direction and depth on *K* ($\sigma^2_{dir-dep}$),
 by direction ($\sigma^2_{dir}$),
@@ -176,6 +174,7 @@ by sapwood area ($\sigma^2_{sap}$),
 each time holding other variables at their median values.
 These individual variances are then compared to the total variance obtained when considering posterior samples for all variables ($\sigma^2_{tol}$).
 The relative uncertainty due to *a* and *b* coefficients, for example, is quantified as the percentage of $\sigma^2_{ab}$ to $\sigma^2_{tol}$.
+
 
 **`r s_table("dir_dep_post")`**:
 Bayesian estimates of posterior medians and 95% credible intervals of the effects of directions and depths on *K*.
