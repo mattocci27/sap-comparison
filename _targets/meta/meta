@@ -149,6 +149,7 @@ dbh_imp_df2|stem|0cd6d35146d58fd4|ea51559474629e47|169a2e27785946e2|-80267527||t
 dbh_points|function|ef70c464b32157f9|||||||||||||||
 dbh_points_plot|stem|d181b3e1808f5317|acc994d428613955|c695e40c960c1c02|2069474470|figs/dbh_points.png*figs/dbh_points.pdf|t19641.4162562534s|f784dbcc031c73fc|314950|file|local|vector|||1.803|Ignoring unknown parameters width|
 dbh_sap_stan_data|stem|29f47d924c2d81ff|2a7b123ce099cd8d|7fadfb025d49bec8|741940435||t19641.4161684735s|732cb9fc41365a4a|739|rds|local|vector|||1.149||
+dir_dep_comb_table|stem|1a53c31077f3e9f8|516ad1317ce4b406|a48e7f87fb280669|1650174023|data/dir_dep_comb_post.csv|t19669.4142479537s|a716db876c9596cc|353|file|local|vector|||1.104||
 dir_dep_imp_df|stem|4f486128a605f472|b9f864b60b83594f|d63b40050689cf38|-1398936709||t19661.1119071136s|091ac4c23155ed48|67413779|rds|local|vector|||79.909||
 dir_dep_map|function|e42dd016260f5e6d|||||||||||||||
 dir_dep_scaled_df_post_1000_dep_only|stem|89d0875fd80294bd|5cc6dfc9fdd57915|43a4dfc5856c3918|121779547||t19668.6140543331s|a72b4e607ecebf44|222|rds|local|vector|||0.002||
@@ -900,7 +901,7 @@ traits_points_si_plot|stem|e56bce239ec72a28|488b9af50a2794fd|1122e9e50ab3f698|-8
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|01c27fc5b3ae6ed3|||||||||||||||
+uncertainty_figs_list|object|037b2d46d1012e75|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|65ea099f632d5c6f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
@@ -910,6 +911,7 @@ values2|object|e63b2d61962c1295|||||||||||||||
 write_ab_csv|function|4aecb1ce16c74b70|||||||||||||||
 write_ab_csv2|function|4aecb1ce16c74b70|||||||||||||||
 write_anova_yml|function|b3368d15fad915cf|||||||||||||||
+write_dir_dep_comb_table|function|e8bf327af38eceda|||||||||||||||
 write_dir_dep_table|function|ef5a54f1d9725266|||||||||||||||
 write_sap_table|function|9fe9eb1f358d1cfb|||||||||||||||
 write_varpart_notrait_table|function|2742b537403e256c|||||||||||||||

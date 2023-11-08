@@ -130,29 +130,30 @@ write_dir_dep_table <- function(dir_dep_summary, out) {
     mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
     dplyr::select(Factor, Posterior) |>
     my_write_csv(out)
+}
 
-  # tmp2 <- dep_summary
-  # tmp2 <- tmp2 |>
-  #   janitor::clean_names() |>
-  #   filter(str_detect(variable, "beta")) |>
-  #   mutate(variable = case_when(
-  #     variable == "beta[1]" ~ "2-4 cm",
-  #     variable == "beta[2]" ~ "4-6 cm",
-  #   ))
-
-  # tmp3 <- bind_rows(tmp1, tmp2) |>
-  #   dplyr::select(variable, q2_5, q50, q97_5) |>
-  #   mutate(across(where(is.numeric), exp))
-
-  # tmp3 |>
-  #   mutate(across(where(is.numeric), round, 2)) |>
-  #   rename(Factor = variable) |>
-  #   mutate(Posterior = paste0(q50, " [", q2_5, ", ", q97_5, "]")) |>
-  #   dplyr::select(Factor, Posterior) |>
-  #   my_write_csv(out)
-
-    # kbl(escape = FALSE) |>
-    # kable_classic()
+write_dir_dep_comb_table <- function(dir_dep_draws, out) {
+  tibble(
+    m = map_dbl(dir_dep_draws, median),
+    l = map_dbl(dir_dep_draws, quantile, 0.025),
+    h = map_dbl(dir_dep_draws, quantile, 0.975)) |>
+    exp() |>
+    mutate(para = colnames(dir_dep_draws)) |>
+    mutate(
+      dir = str_extract(para, "s|n|e|w"),
+      dep = str_extract(para, "2|4|6"),
+      dir = str_to_upper(dir),
+      dep = case_when(
+        dep == "2" ~ "0-2 cm",
+        dep == "4" ~ "2-4 cm",
+        dep == "6" ~ "4-6 cm"
+      ),
+      post = paste0(round(m, 2), " [", round(l, 2), ", ", round(h, 2), "]"),
+      post = ifelse(para == "s_2", "-", post)
+    ) |>
+    # filter(para != "s_2") |>
+    dplyr::select(Direction = dir, Depth = dep, Posterior = post) |>
+    my_write_csv(out)
 }
 
 write_sap_table <- function(sap_summary, out) {

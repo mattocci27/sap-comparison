@@ -1464,6 +1464,11 @@ uncertainty_figs_list <- list(
     format = "file"
   ),
   tar_target(
+    dir_dep_comb_table,
+    write_dir_dep_comb_table(post_dir_dep, "data/dir_dep_comb_post.csv"),
+    format = "file"
+  ),
+  tar_target(
     sap_table,
     write_sap_table(fit_summary_sap_dbh,
        "data/dbh_sapwood_post.csv"),
