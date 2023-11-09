@@ -135,6 +135,98 @@ Additionally, we built a variation of the segment-xylem model that excluded xyle
 (stan code, `r s_table("traits_noxylem")`).
 This allowed us to assess the effects of xylem-level variation on trait estimation for the coefficients *a* and *b*.
 
+**`r s_table("species_only_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species only model, evaluated across different maximum applied pressure gradients.
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- max_pg: maximum pressure gradient
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- rhat: R-hat diagnostics for convergence. rhat < 1.1 indicates good convergence [@Gelman2013]
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/species_only_ab.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("segments_inclusive_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segment inclusive model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/segments_inclusive_ab.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("species_xylem_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/species_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.
+
+The column definitions are:
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
+
+(showing only the first 10 rows)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/traits_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_noxylem")`**:
+
+```{r, echo=FALSE}
+read_csv(here::here("data/traits_noxylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+**`r s_table("segments_xylem_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+<!-- For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees. -->
+
+(showing only the first 10 rows here)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/segments_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
 ## Estimating tree transpiration in a forest stand
 
 We developed a statistical framework to estimate tree transpiration while overcoming the challenges posed by missing data (*K*) and quantifying the uncertainty in our estimates.
@@ -359,12 +451,12 @@ b_seg <- d |>
   as.numeric()
 ```
 
-There are:
+Contents:
 
 - Species-xylem vs. segments-xylem
-- Pressure gradients
-- Variance partitioning
-- Model with traits
+- Pressure gradients (segments-xylem model)
+- Variance partitioning (segments-xylem model)
+- Model with traits (without xylem and with xylem)
 
 The power-law fittings without (i.e., species-xylem model) and with (i.e., segments-xylem) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
 Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Figs. `r s_fig_num("pg_multi")`-`r s_fig_num("pg_ribbon_b")`).
@@ -372,7 +464,8 @@ Note that the larger the maximum applied pressure gradients, the larger the samp
 Our segments-xylem model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
 Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
 In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
-The 95% CI of the relationships between both K~s~ and VAF with coefficient *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`B, D; ), when xylem-level variation was not included in the model.
+The 95% CI of the relationships between both K~s~ and VAF with coefficient *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`A, B, F, and G), when xylem-level variation was not included in the model.
+However, when xylem-level variation was accounted for, only the relationship between Ks and coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B)
 
 **`r s_table("ab_comparison")`**:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
@@ -454,65 +547,6 @@ read_csv(here("data/varpart_notrait.csv")) |>
   kable_classic()
 ```
 
-**`r s_table("species_only_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species only model, evaluated across different maximum applied pressure gradients.
-
-- variable_name: name of the variable in the stan model
-- level: overall, xylem type, species, or segment
-- targets: name of xylem type, species, or segment
-- variable_meaning: meaning of the variable
-- max_pg: maximum pressure gradient
-- q50: posterior median
-- q2.5: 2.5% posterior quantiles
-- q97.5: 97.5% posterior quantiles
-- rhat: R-hat diagnostics for convergence. rhat < 1.1 indicates good convergence [@Gelman2013]
-- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
-
-(showing only the first 20 rows here)
-```{r, echo=FALSE}
-read_csv(here::here("data/species_only_ab.csv")) |>
-  head(20) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
-
-**`r s_table("segments_inclusive_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segment inclusive model, evaluated across different maximum applied pressure gradients.
-Details are the same as in `r s_table("species_only_table")`.
-
-(showing only the first 10 rows here)
-```{r, echo=FALSE}
-read_csv(here::here("data/segments_inclusive_ab.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
-
-**`r s_table("species_xylem_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
-Details are the same as in `r s_table("species_only_table")`.
-
-(showing only the first 10 rows here)
-```{r, echo=FALSE}
-read_csv(here::here("data/species_xylem_post.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
-
-**`r s_table("segments_xylem_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
-Details are the same as in `r s_table("species_only_table")`.
-<!-- For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees. -->
-
-(showing only the first 10 rows here)
-
-```{r, echo=FALSE}
-read_csv(here::here("data/segments_xylem_post.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
 
 ![`r fig("traits_points_main")`:
 Relationships between coefficients *a* and *b* and wood and hydraulic traits, with considering xylem variation.
@@ -527,38 +561,6 @@ Slopes indicate the effects of traits on the estimates of coefficients *a* and *
 ](`r here::here("figs/traits_points_si.png")`)
 
 
-**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.
-
-The column definitions are:
-
-- variable_name: name of the variable in the stan model
-- level: overall, xylem type, species, or segment
-- targets: name of xylem type, species, or segment
-- variable_meaning: meaning of the variable
-- q50: posterior median
-- q2.5: 2.5% posterior quantiles
-- q97.5: 97.5% posterior quantiles
-- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
-
-For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
-
-(showing only the first 10 rows)
-
-```{r, echo=FALSE}
-read_csv(here::here("data/traits_xylem_post.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
-
-**`r s_table("traits_noxylem")`**:
-
-```{r, echo=FALSE}
-read_csv(here::here("data/traits_noxylem_post.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
 
 ## Estimating tree transpiration in a forest stand
 
@@ -573,12 +575,41 @@ This figure is not finalized.
 - granier: model 1 with Granier's coefficients
 
 Data for `r fig("scaled_tr_ab")`.
+```{r}
+read_csv(here("data/tr_bar_ab.csv"))
+```
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
+- pg: maximum applied pressure gradient
+- model: model names to estimate coefficients *a* and *b*
 
 ![`r s_fig("scaled_tr_all")`:
 This figure is not finalized.
 ](`r here::here("figs/tr_bar_all")`)
 
 Data for `r fig("scaled_tr_all")`.
+
+```{r}
+read_csv(here("data/tr_bar_all.csv"))
+```
+
+- id: source of uncertainty
+  - sarea: sapwood area
+  - ab: a-b estiamtes from segments-xylem model at 0.08 MPa
+  - dir_only: direction
+  - dep_only: depth
+  - dir_dep: covariance betwen direction and depth estimates
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
+- pg: maximum applied pressure gradient
 
 ![`r fig("rel_bar")`:
 This figure is not finalized.
@@ -595,12 +626,12 @@ read_csv(here("data/rel_bar.csv"))
   - dir_only: direction
   - dep_only: depth
   - dir_dep: covariance betwen direction and depth estimates
-- tr_m: median stand transpiration (divided by 800m^2^)
-- tr_l: 2.5% quanatile stand transpiration
-- tr_h: 97.5% quanatile stand transpiration
-- tr_mean: mean stand transpiration
-- tr_h: 97.5% quanatile stand transpiration
-- tr_sd: standard deviation of stand transpiration
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
 - var: variance of stand transpiration
 - rel: relative contribution of each source of uncertainty
 - rel_adj: adjusted relative contribution of each source of uncertainty so that the sum of relative contribution is 100%
@@ -662,6 +693,6 @@ read_csv(here("data/rel_bar.csv"))
 
 # References
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 knitr::knit_exit()
 ```

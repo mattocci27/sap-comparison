@@ -164,7 +164,7 @@ main_list <- list(
   ),
 
   tar_map(
-    values = list(log = c("log", "non-log")),
+    values = list(log = c("log", "nolog")),
     tar_target(
       anova_data,
       generate_anova_data(ks_spp_err_csv, log = ifelse(log == "log", TRUE, FALSE))
@@ -217,18 +217,18 @@ main_list <- list(
     )
   ),
 
-  # tar_target(
-  #   loo_,
-  #   lapply(
-  #     list(
-  #          fit_anova_mcmc_anova_int_err,
-  #          fit_anova_mcmc_anova_noint_err,
-  #          fit_anova_log_mcmc_anova,
-  #          fit_anova_log_mcmc_anova_noint
-  #       ),
-  #   \(x)x$loo(cores = parallel::detectCores())
-  #   )
-  # ),
+  tar_target(
+    loo_anova,
+    lapply(
+      list(
+           fit_mcmc_anova_log,
+           fit_mcmc_anova_nolog,
+           fit_mcmc_anova_noint_log,
+           fit_mcmc_anova_noint_nolog
+        ),
+    \(x)x$loo(cores = parallel::detectCores())
+    )
+  ),
 
   tar_target(
     sma_ks_plot, {
@@ -265,14 +265,14 @@ main_list <- list(
   ),
 
 
-  # tar_target(
-  #   anova_yml,
-  #   write_anova_yml(
-  #     "yml/anova.yml",
-  #     fit_anova_log_draws_anova_noint,
-  #     ll = 0.25, hh = 0.75),
-  #   format = "file"
-  # ),
+  tar_target(
+    anova_yml,
+    write_anova_yml(
+      "yml/anova.yml",
+      fit_draws_anova_noint_log,
+      ll = 0.25, hh = 0.75),
+    format = "file"
+  ),
 
   # fig2 ------------------------------------------
   tar_target(
@@ -1307,6 +1307,12 @@ uncertainty_figs_list <- list(
     generate_tr_bar_ab_df(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df)
   ),
   tar_target(
+    tr_bar_ab_csv,
+    tr_bar_ab_df |> dplyr::select(-id) |>
+      my_write_csv("data/tr_bar_ab.csv"),
+    format = "file"
+  ),
+  tar_target(
     tr_bar_ab_plot, {
       p <- tr_bar(tr_bar_ab_df, pg, tr_m, fill = model, group = model)
       my_ggsave(
@@ -1322,6 +1328,11 @@ uncertainty_figs_list <- list(
   tar_target(
     tr_bar_all_df,
     generate_tr_bar_all_df(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
+  ),
+  tar_target(
+    tr_bar_all_csv,
+    tr_bar_all_df |> my_write_csv("data/tr_bar_all.csv"),
+    format = "file"
   ),
   tar_target(
     tr_bar_all_plot, {
