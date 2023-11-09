@@ -146,10 +146,6 @@ main_list <- list(
     ks_box(ks_trees_csv)
   ),
   tar_target(
-    ks_box_plot2,
-    ks_box2(ks_trees_csv)
-  ),
-  tar_target(
     sma_scatter_log_plot,
     sma_scatter(five_spp_csv, log = TRUE)
   ),
@@ -178,10 +174,10 @@ main_list <- list(
        c("stan/anova.stan", "stan/anova_noint.stan"),
        data = anova_data,
        refresh = 0,
-       chains = 1,
-       parallel_chains = getOption("mc.cores", 1),
-       iter_warmup = 1,
-       iter_sampling = ,
+       chains = 4,
+       parallel_chains = getOption("mc.cores", 4),
+       iter_warmup = 1000,
+       iter_sampling = 1000,
        adapt_delta = 0.99,
        max_treedepth = 15,
        seed = 123,
@@ -236,7 +232,7 @@ main_list <- list(
 
   tar_target(
     sma_ks_plot, {
-      p <- sma_ks(sma_scatter_log_plot, ks_box_plot)
+      p <- sma_ks(five_spp_csv, ks_trees_csv, log = TRUE)
       my_ggsave(
         "figs/sma_ks",
         p,
@@ -247,99 +243,27 @@ main_list <- list(
     },
     format = "file"
   ),
+
   tar_target(
-    sma_ks_plot2, {
-      p <- sma_ks2(sma_scatter_log_plot, ks_box_plot2)
+    coef_intervals_pres_tens_plot, {
+      p1 <- coef_intervals_sd(fit_draws_anova_noint_log)
+      p2 <- coef_intervals_mean(fit_draws_anova_noint_log)
+      p3 <- coef_intervals_diff(fit_draws_anova_noint_log)
+      p <- p1 + p2 + p3 + plot_spacer() +
+        plot_layout(ncol = 2) +
+        plot_annotation(tag_levels = "A")
       my_ggsave(
-        "figs/sma_ks2",
+        "figs/coef_intervals_pres_tens",
         p,
         dpi = 300,
-        width = 6.81,
-        height = 4.4
+        width = 173,
+        height = 173,
+        units = "mm"
       )
     },
     format = "file"
   ),
 
-  # tar_target(
-  #   coef_intervals_sd_plot, {
-  #     p <- coef_intervals_sd(fit_anova_draws_anova_noint_err)
-  #     my_ggsave(
-  #       "figs/coef_intervals_sd",
-  #       p,
-  #       dpi = 300,
-  #       width = 8.5,
-  #       height = 8.5,
-  #       units = "cm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
-
-  # tar_target(
-  #   coef_intervals_mean_plot, {
-  #     p <- coef_intervals_mean(fit_anova_draws_anova_noint_err)
-  #     my_ggsave(
-  #       "figs/coef_intervals_mean",
-  #       p,
-  #       dpi = 300,
-  #       width = 8.5,
-  #       height = 8.5,
-  #       units = "cm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
-
-  # tar_target(
-  #   coef_intervals_pres_tens_plot, {
-  #     p1 <- coef_intervals_sd(fit_anova_log_draws_anova_noint)
-  #     p2 <- coef_intervals_mean(fit_anova_log_draws_anova_noint)
-  #     p3 <- coef_intervals_diff(fit_anova_log_draws_anova_noint)
-  #     p <- p1 + p2 + p3 + plot_spacer() +
-  #       plot_layout(ncol = 2) +
-  #       plot_annotation(tag_levels = "A")
-  #     my_ggsave(
-  #       "figs/coef_intervals_pres_tens",
-  #       p,
-  #       dpi = 300,
-  #       width = 173,
-  #       height = 173,
-  #       units = "mm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
-
-  # tar_target(
-  #   coef_intervals_diff_plot, {
-  #     p <- coef_intervals_diff(fit_anova_draws_anova_noint_err)
-  #     my_ggsave(
-  #       "figs/coef_intervals_diff",
-  #       p,
-  #       dpi = 300,
-  #       width = 8.5,
-  #       height = 8.5,
-  #       units = "cm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
-
-  # tar_target(
-  #   coef_density_sd_plot, {
-  #     p <- coef_density_sd(fit_anova_draws_anova_noint_err)
-  #     my_ggsave(
-  #       "figs/coef_density_sd",
-  #       p,
-  #       dpi = 300,
-  #       width = 8.5,
-  #       height = 8.5,
-  #       units = "cm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
 
   # tar_target(
   #   anova_yml,
@@ -836,21 +760,15 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
-    test2,
+    traits_xylem_table,
     generate_summary_trait_table(
       fit2_summary_segments_xylem_traits_log_ks, fd_k_traits_csv, xylem = TRUE)
   ),
   tar_target(
-    test,
+    traits_noxylem_table,
     generate_summary_trait_table(
       fit_summary_segments_noxylem_traits_log_ks, fd_k_traits_csv, xylem = FALSE)
   ),
-  # tar_target(
-  # all_seg_table,
-  # generate_summary_trait_table(
-  #   fit_abt_summary_granier_with_traits_sap_trait_clean_all,
-  #   fd_k_traits_csv)
-  # ),
   tar_target(
     ab_csv,
     write_ab_csv(
@@ -865,11 +783,16 @@ granier_list <- list(
     xylem_lab,
     generate_xylem_lab(fd_k_traits_csv)
   ),
-  # tar_target(
-  #   full_segments_traits_csv,
-  #   my_write_csv(all_seg_table, "data/full_segments_traits_post.csv"),
-  #   format = "file"
-  # ),
+  tar_target(
+    traits_xylem_table_csv,
+    my_write_csv(traits_xylem_table, "data/traits_xylem_post.csv"),
+    format = "file"
+  ),
+  tar_target(
+    traits_noxylem_table_csv,
+    my_write_csv(traits_noxylem_table, "data/traits_noxylem_post.csv"),
+    format = "file"
+  ),
 
   tar_target(
     pool_multi_plot, {

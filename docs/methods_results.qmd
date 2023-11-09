@@ -97,16 +97,19 @@ The key differences between the models are the primary unit of analysis (either 
 
 First, the species-only model takes individual species as its primary analytical unit without considering inter-segment variations.
 In this approach, each species was fitted separately.
-This model is the most conventional approach [(stan code)](#stan-codes).
+This model is the most conventionl approach (stan code, `r s_table("species_only_table")`).
 
 Second, the segment-inclusive model uses segments as its primary analytical unit.
-While this model incorporates both inter-segment and interspecific variations, each species was fitted separately [(stan code)](#stan-codes).
+While this model incorporates both inter-segment and interspecific variations, each species was fitted separately
+(stan code, `r s_table("xylem_inclusive_table")`).
 
-Third, the species-xylem model takes species as its primary analytical unit, integrating interspecific and xylem-type variations [(stan code)](#stan-codes).
+Third, the species-xylem model takes species as its primary analytical unit, integrating interspecific and xylem-type variations
+(stan code, `r s_table("species_xylem_table")`).
 Unlike the previous models, this model fits all species simultaneously.
 
 Fourth, the segment-xylem model is based on segments but includes variations between segments, species, and xylem types.
-Similar to the species-xylem model, this model fits all species at the same time [(stan code)](#stan-codes).
+Similar to the species-xylem model, this model fits all species at the same time
+(stan code, `r s_table("segments_xylem_table")`).
 
 In the main text, we primarily focused on the species-xylem and segment-xylem models.
 Our goal was to evaluate the effects of considering segment-level variation in estimating the coefficients *a* and *b*, while also quantifying xylem-level variation in the coefficients.
@@ -126,9 +129,11 @@ Considering the dependency of *K* ranges on the maximum applied pressure gradien
 We also quantified the proportion of total variance attributed to each component (i.e., segments, species, and xylem types) in the estimates of the coefficients *a* and *b* , following the methodology described above.
 
 Lastly, we built Bayesian hierarchical models incorporating wood traits ($\rho$, VAF, VF, and D~h~) and hydraulic trait *K~s~*.
-Each of these traits was included separately as species-level predictors for the coefficients *a* and *b* and were integrated into our segment-xylem model [(stan code)](#stan-codes).
-Additionally, we built a variation of the segment-xylem model that excluded xylem-level variation [(stan code)](#stan-codes).
-This allowed us to assess the impact of xylem-level variation on trait estimation for the coefficients *a* and *b*.
+Each of these traits was included separately as species-level predictors for the coefficients *a* and *b* and were integrated into our segment-xylem model
+(stan code, `r s_table("traits_xylem")`).
+Additionally, we built a variation of the segment-xylem model that excluded xylem-level variation
+(stan code, `r s_table("traits_noxylem")`).
+This allowed us to assess the effects of xylem-level variation on trait estimation for the coefficients *a* and *b*.
 
 ## Estimating tree transpiration in a forest stand
 
@@ -431,6 +436,23 @@ Relationships between the coefficient *b* and the maximum applied pressure gradi
 Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
 ](`r here::here("figs/pg_ribbon_b.png")`)
 
+![`r fig("coef_density")`:
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
+Estimates for xylem type level and species level are shown.
+Different colorsj indicate different xylem types.
+Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
+](`r here::here("figs/coef_density.png")`)
+
+**`r s_table("varpart_notrait")`**:
+Posterior medians and 50% credible intervals of the explained variance for the coefficient *a* and *b* across three sample levels.
+
+```{r, echo=FALSE}
+read_csv(here("data/varpart_notrait.csv")) |>
+  rename("Coefficient <i>a</i>" = a) |>
+  rename("Coefficient <i>b</i>" = b) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
 
 **`r s_table("species_only_table")`**:
 Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species only model, evaluated across different maximum applied pressure gradients.
@@ -458,10 +480,10 @@ read_csv(here::here("data/species_only_ab.csv")) |>
 Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segment inclusive model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
-(showing only the first 20 rows here)
+(showing only the first 10 rows here)
 ```{r, echo=FALSE}
 read_csv(here::here("data/segments_inclusive_ab.csv")) |>
-  head(20) |>
+  head(10) |>
   kbl(escape = FALSE) |>
   kable_classic()
 ```
@@ -470,10 +492,10 @@ read_csv(here::here("data/segments_inclusive_ab.csv")) |>
 Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
-(showing only the first 20 rows here)
+(showing only the first 10 rows here)
 ```{r, echo=FALSE}
 read_csv(here::here("data/species_xylem_post.csv")) |>
-  head(20) |>
+  head(10) |>
   kbl(escape = FALSE) |>
   kable_classic()
 ```
@@ -483,30 +505,11 @@ Bayesian estimates of posterior median, upper and lower credible intervals and e
 Details are the same as in `r s_table("species_only_table")`.
 <!-- For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees. -->
 
-(showing only the first 20 rows here)
+(showing only the first 10 rows here)
 
 ```{r, echo=FALSE}
 read_csv(here::here("data/segments_xylem_post.csv")) |>
-  head(20) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-  # data.table::as.data.table()
-```
-
-![`r fig("coef_density")`:
-Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
-Estimates for xylem type level and species level are shown.
-Different colorsj indicate different xylem types.
-Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
-](`r here::here("figs/coef_density.png")`)
-
-**`r s_table("varpart_notrait")`**:
-Posterior medians and 50% credible intervals of the explained variance for the coefficient *a* and *b* across three sample levels.
-
-```{r, echo=FALSE}
-read_csv(here("data/varpart_notrait.csv")) |>
-  rename("Coefficient <i>a</i>" = a) |>
-  rename("Coefficient <i>b</i>" = b) |>
+  head(10) |>
   kbl(escape = FALSE) |>
   kable_classic()
 ```
@@ -523,9 +526,6 @@ Points and bars indicate posterior medians and 95% credible intervals (CIs) of c
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
 ](`r here::here("figs/traits_points_main.png")`)
 
-**`r s_table("traits_no_xylem")`**:
-
-traits with no xylem
 
 **`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.
 
@@ -542,12 +542,20 @@ The column definitions are:
 
 For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
 
-(showing only the first 20 rows)
+(showing only the first 10 rows)
 
-**this table is wrong. I need to update this**
 ```{r, echo=FALSE}
-read_csv(here::here("data/full_segments_traits_post.csv")) |>
-  head(20) |>
+read_csv(here::here("data/traits_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_noxylem")`**:
+
+```{r, echo=FALSE}
+read_csv(here::here("data/traits_noxylem_post.csv")) |>
+  head(10) |>
   kbl(escape = FALSE) |>
   kable_classic()
 ```

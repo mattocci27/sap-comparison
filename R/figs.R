@@ -95,12 +95,10 @@ ks_box <- function(data) {
     mutate(calib_type = ifelse(pres_type == "pres",
      "Pressure", "Tension")) |>
     mutate(species = factor(species,
-     levels = c("HH", "VM", "HB", "TG", "AP"))) |>
+     levels = c("HB", "HH", "VM", "TG", "AP"))) |>
     ggplot(aes(y = ks, x = as.factor(pressure), fill = calib_type)) +
-    #geom_violin() +
     geom_boxplot() +
     geom_point(position = position_jitterdodge(jitter.width = 0), alpha = 0.5) +
-    # facet_wrap( ~ species, scale = "free") +
     facet_grid(rows = vars(species), scale = "free") +
     scale_y_log10() +
     ylab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
@@ -118,53 +116,15 @@ ks_box <- function(data) {
       legend.position = "top")
 }
 
-ks_box2 <- function(data) {
-  my_col <- RColorBrewer::brewer.pal(3, "RdBu")
-  data <- read_csv(data)
-  data |>
-    mutate(calib_type = ifelse(pres_type == "pres",
-     "Pressure", "Tension")) |>
-    mutate(species = factor(species,
-     levels = c("HH", "VM", "HB", "TG", "AP"))) |>
-    ggplot(aes(y = ks, x = as.factor(pressure), fill = calib_type)) +
-    #geom_violin() +
-    geom_boxplot() +
-    geom_point(position = position_jitterdodge(jitter.width = 0), alpha = 0.5) +
-    facet_wrap( ~ species, scale = "free") +
-   # facet_grid(rows = vars(species), scale = "free") +
-    scale_y_log10() +
-    ylab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
-    xlab("Pressure (MPa)") +
-    scale_fill_manual(
-      name = "Calibration",
-      values = my_col[-2],
-      ) +
-    my_theme() +
-    theme(
-      #plot.margin = unit(c(0, 0, 0, 0), "cm"),
-      # legend.margin =  unit(c(-1, 0, 0, 0), "cm"),
-      #plot.background = element_rect(fill='#e3fbff'),
-      strip.text = element_text(size = 8),
-      legend.position = "top")
-}
-
-sma_ks <- function(p1, p2) {
+sma_ks <- function(five_spp_csv, ks_trees_csv, log = FALSE)  {
+  p1 <- sma_scatter(five_spp_csv, log = log)
+  p2 <- ks_box(ks_trees_csv)
   p1 + p2 +
     plot_layout(nrow = 1, width = c(1.8, 1)) +
     plot_annotation(tag_levels = "A") &
     theme(
       axis.text = element_text(size = 10),
       axis.title = element_text(size = 12)
-    )
-}
-
-sma_ks2 <- function(p1, p2) {
-  p1 + p2 +
-    plot_layout(nrow = 1, width = c(1, 2)) +
-    plot_annotation(tag_levels = "A") &
-    theme(
-      # plot.margin = unit(c(0, 0, 0, 0), "cm"),
-      axis.title = element_text(size = 9)
     )
 }
 
