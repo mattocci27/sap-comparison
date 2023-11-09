@@ -524,7 +524,7 @@ Slopes indicate the effects of traits on the estimates of coefficients *a* and *
 Relationships between coefficients *a* and *b* and wood and hydraulic traits, without considering xylem variation.
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment, respectively.
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
-](`r here::here("figs/traits_points_main.png")`)
+](`r here::here("figs/traits_points_si.png")`)
 
 
 **`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.

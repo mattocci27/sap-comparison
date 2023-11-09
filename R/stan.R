@@ -1834,8 +1834,8 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
   if (coef_a & with_ribbon) {
     if (use_color) {
      p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "black") +
-        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "black")
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.6, fill = "grey") +
+        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "grey")
     } else {
      p <- ggplot() +
         geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "blue") +
@@ -1844,8 +1844,8 @@ traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TR
   } else if (with_ribbon) {
     if (use_color) {
      p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "black") +
-        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "black")
+        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "grey") +
+        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "grey")
     } else {
      p <- ggplot() +
         geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "blue") +

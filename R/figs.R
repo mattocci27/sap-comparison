@@ -1,4 +1,3 @@
-
 my_theme <- function(){
   theme_bw() %+replace%
   theme(
@@ -439,16 +438,6 @@ line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
     filter(is.na(removed_k)) |>
     rename(sp_short_chr = sp_short) |>
     left_join(xylem_lab2, by = "sp_short_chr")
-
-  # s_002 <- s_002 |> mutate(max_pg = "0.02")
-  # s_0025 <- s_0025 |> mutate(max_pg = "0.025")
-  # s_003 <- s_003 |> mutate(max_pg = "0.03")
-  # s_0035 <- s_0035 |> mutate(max_pg = "0.035")
-  # s_004 <- s_004 |> mutate(max_pg = "0.04")
-  # s_005 <- s_005 |> mutate(max_pg = "0.05")
-  # s_006 <- s_006 |> mutate(max_pg = "0.06")
-  # s_007 <- s_007 |> mutate(max_pg = "0.07")
-  # s_008 <- s_008 |> mutate(max_pg = "0.08")
 
   data <- fit_summary_combined |>
     mutate(max_pg = as.character(max_pg))

@@ -501,7 +501,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|4f5e9d5e38177b51|||||||||||||||
+granier_list|object|4af863f7a7647b68|||||||||||||||
 granier_with_traits_mapped|object|dd73f1a29ca009cb|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -893,14 +893,15 @@ tr_bar_all_plot|stem|824bd9e5bec624ac|99f8b9e7f6031aa8|674b2bab20654ddb|21352254
 tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
 tr_scaled_bars2|function|4e99d245a37379a8|||||||||||||||
 trait_pred_data_noxylem_combined|stem|d399ca27baac5486|634edfc0bcf6b71d|81ea2165a4d86a7f|1458690166||t19642.3886488876s|a9f32b0e63da1b68|78527|rds|local|vector|||9.966||
+trait_pred_data_xylem_combined|stem|e185be62453738b2|6e4848b482a718eb|52946f0b30306cbc|-313104499||t19670.2980602799s|1e7c84e4d71a13d0|78787|rds|local|vector|||8.214||
 traits_noxylem_table|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|-1440537911||t19670.1629886208s|d713d5cc4ab85b07|6053|rds|local|vector|||1.33|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_noxylem_table_csv|stem|402e38533f71c929|2ee98f0d34a48422|3dd1f9b36c2630cb|-494376851|data/traits_noxylem_post.csv|t19670.1631092252s|08e07ea0fc2d5dd3|32217|file|local|vector|||0.015||
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
-traits_points_each|function|b6fe7161f86e10c8|||||||||||||||
-traits_points_main|function|cd66d6132209e656|||||||||||||||
-traits_points_main_plot|stem|398aad52a566c38e|bbbcdd441307fe2f|628c7cd6743ed95d|221887310|figs/traits_points_main.png*figs/traits_points_main.pdf|t19670.2692722354s|57253a08342aa6d0|540407|file|local|vector|||1.576||
-traits_points_si|function|e4ecbcf7f6fb8870|||||||||||||||
-traits_points_si_plot|stem|d7dd8dca06e42a09|488b9af50a2794fd|1122e9e50ab3f698|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19670.2692440405s|6dc27af964493ea0|602428|file|local|vector|||1.224||
+traits_points_each|function|af29c24e65a0b518|||||||||||||||
+traits_points_main|function|25b3c641589d7172|||||||||||||||
+traits_points_main_plot|stem|43041099880576b0|bbbcdd441307fe2f|ecc14e9ca2ab0c20|221887310|figs/traits_points_main.png*figs/traits_points_main.pdf|t19670.3154263355s|57253a08342aa6d0|540407|file|local|vector|||2.655||
+traits_points_si|function|cb0f613c3e5c4b61|||||||||||||||
+traits_points_si_plot|stem|01ad36c1de5a5d75|c5c852758129fbd1|04ea82e3a9c09d15|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19670.3154836502s|997a91bf63cc27b8|601933|file|local|vector|||2.28||
 traits_xylem_table|stem|29eb04778c4e62c8|9485d282f232ceaa|7d54a336105b8d7d|-1062309350||t19670.1631948751s|2c6e85eb236b9b5c|6654|rds|local|vector|||1.282|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_xylem_table_csv|stem|7ebefe1a8018dd86|03a6c280dba07a0f|a90d6cfc6e8dc45d|-206480128|data/traits_xylem_post.csv|t19670.1632479318s|2d64f9e971f34d68|33749|file|local|vector|||1.164||
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||

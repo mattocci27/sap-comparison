@@ -937,6 +937,27 @@ granier_list <- list(
       single_trait = TRUE)
   ),
   tar_target(
+    # tar_read(trait_fig_data_combined)
+    trait_pred_data_xylem_combined,
+    generate_combined_trait_fig_data(
+      summary = list(
+        fit2_summary_segments_xylem_traits_log_vaf,
+        fit2_summary_segments_xylem_traits_log_ks,
+        fit2_summary_segments_xylem_traits_wood_density,
+        fit2_summary_segments_xylem_traits_log_dh,
+        fit2_summary_segments_xylem_traits_log_vf),
+      draws = list(
+        fit2_draws_segments_xylem_traits_log_vaf,
+        fit2_draws_segments_xylem_traits_log_ks,
+        fit2_draws_segments_xylem_traits_wood_density,
+        fit2_draws_segments_xylem_traits_log_dh,
+        fit2_draws_segments_xylem_traits_log_vf),
+      fd_k_traits_csv,
+      xylem_lab,
+      no_xylem = FALSE,
+      single_trait = TRUE)
+  ),
+  tar_target(
     traits_points_main_plot, {
       p <- traits_points_main(trait_pred_data_noxylem_combined)
       my_ggsave(
@@ -951,7 +972,7 @@ granier_list <- list(
   ),
   tar_target(
     traits_points_si_plot, {
-      p <- traits_points_si(trait_pred_data_noxylem_combined)
+      p <- traits_points_si(trait_pred_data_xylem_combined)
       my_ggsave(
         "figs/traits_points_si",
         p,
