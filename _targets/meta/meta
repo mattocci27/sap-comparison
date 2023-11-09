@@ -500,7 +500,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|63eaf6ce72d40503|||||||||||||||
+granier_list|object|aeb8f49cb2a53d23|||||||||||||||
 granier_with_traits_mapped|object|dd73f1a29ca009cb|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -751,7 +751,7 @@ segments_inclusive_post_ab_0.07|stem|51a91580d4bf3a07|29d355eb764d7998|6005bddf4
 segments_inclusive_post_ab_0.08|stem|69ab1007cb2ae89b|90c21d1ec0abf347|756008c199f24d19|133252897||t19661.3766785459s|a137143f11c0e3b0|19958|rds|local|vector|||0.876|Dropping draws_df class as required metadata was removed.|
 segments_noxylem_traits_post_ab_mapped|object|3195eaf6222e0063|||||||||||||||
 segments_noxylem_traits_table_combined|stem|e93b7a08ca8fd734|a0b7d9720f559e68|d200e8487f82f4d6|-1096481858||t19642.6602308912s|de02d6525f9e710a|20727|rds|local|vector|||0.001||
-segments_xylem_csv|stem|9c5b35e4a91faf7b|d9c4d6524e988cd6|303ab94e7b368e1a|2057322204|data/segments_xylem_post.csv|t19668.4016157148s|5636357c2bdf62fc|539420|file|local|vector|||1.192||
+segments_xylem_csv|stem|a04d89d87779ec21|8930d73b43c8fa59|af19da9c19e59b9b|2057322204|data/segments_xylem_post.csv|t19670.0841284167s|a9b50106810f6aca|379651|file|local|vector|||0.134||
 segments_xylem_df_combined|stem|13f77c53e7978675|d956f09e23c03cb4|19fa8bb3a3a0f4f9|1654485||t19668.3996458109s|330dc0438b1ef907|52770|rds|local|vector|||0.001||
 segments_xylem_df_mapped|object|9236471175030358|||||||||||||||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.02|stem|5d0c0049ef970825|eff5eaebcfeaffde|0c70315ec390009b|828061138||t19642.4336098758s|021caea346b270e4|20651|rds|local|vector|||1.197||
@@ -803,7 +803,7 @@ species_only_post_ab_0.05|stem|d6e9171e50036c36|0e7c1555dc98a22b|3d1c5e8c44611fa
 species_only_post_ab_0.06|stem|a394d31854c5dc2e|e2a0d8b2f7a7c0b0|809764d8902e1812|417101304||t19661.3765534529s|7b65b1fad9a4072d|19878|rds|local|vector|||0.863|Dropping draws_df class as required metadata was removed.|
 species_only_post_ab_0.07|stem|632625c15924b1c4|29d355eb764d7998|6005bddf4d633d01|129684405||t19661.3765631289s|42c7cccd90a7906d|19810|rds|local|vector|||0.907|Dropping draws_df class as required metadata was removed.|
 species_only_post_ab_0.08|stem|1759cd90307babea|90c21d1ec0abf347|756008c199f24d19|-1251987727||t19661.376564703s|2243eaf7471bdeca|19905|rds|local|vector|||0.006|Dropping draws_df class as required metadata was removed.|
-species_xylem_csv|stem|c5a191103e5aad5e|a046dd1b8842ce2d|2c800b0509a74e2e|-1628790711|data/species_xylem_post.csv|t19668.401796876s|94116ad788488bd1|88692|file|local|vector|||1.098||
+species_xylem_csv|stem|016b1198aa8d8867|70743c79b17def98|e27827229a358c1c|-1628790711|data/species_xylem_post.csv|t19670.0841169813s|9b92d579c5aadb11|62625|file|local|vector|||1.136||
 species_xylem_df_combined|stem|1e0a8ec83c5daee9|c483e367198b3d77|7632cbb81780c693|1479365987||t19668.3998592415s|9cf94dfd47710fdb|9472|rds|local|vector|||0||
 species_xylem_df_mapped|object|b60e51353266c095|||||||||||||||
 species_xylem_post_ab_fit_draws_species_xylem_0.02|stem|cf36a425f441fd9a|ca366a60c1b75d82|4329cd01d2f663a1|-35927291||t19642.4298217402s|9f46b2ff8789a939|20618|rds|local|vector|||1.468||

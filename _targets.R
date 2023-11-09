@@ -821,6 +821,7 @@ granier_list <- list(
     segments_xylem_csv, {
        segments_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
+       dplyr::select(-id) |>
        my_write_csv("data/segments_xylem_post.csv")
     },
     format = "file"
@@ -829,6 +830,7 @@ granier_list <- list(
     species_xylem_csv, {
        species_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
+       dplyr::select(-id) |>
        my_write_csv("data/species_xylem_post.csv")
     },
     format = "file"
