@@ -101,7 +101,7 @@ This model is the most conventionl approach (stan code, `r s_table("species_only
 
 Second, the segment-inclusive model uses segments as its primary analytical unit.
 While this model incorporates both inter-segment and interspecific variations, each species was fitted separately
-(stan code, `r s_table("xylem_inclusive_table")`).
+(stan code, `r s_table("segments_inclusive_table")`).
 
 Third, the species-xylem model takes species as its primary analytical unit, integrating interspecific and xylem-type variations
 (stan code, `r s_table("species_xylem_table")`).
@@ -158,7 +158,7 @@ read_csv(here::here("data/species_only_ab.csv")) |>
 ```
 
 **`r s_table("segments_inclusive_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segment inclusive model, evaluated across different maximum applied pressure gradients.
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments inclusive model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
 (showing only the first 10 rows here)
@@ -181,7 +181,21 @@ read_csv(here::here("data/species_xylem_post.csv")) |>
   kable_classic()
 ```
 
-**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for segments-xylem model with a single trait.
+**`r s_table("segments_xylem_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+
+(showing only the first 10 rows here)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/segments_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the trait-based model with xylem effects.
+Details are the same as in `r s_table("species_only_table")`.
 
 The column definitions are:
 
@@ -205,23 +219,11 @@ read_csv(here::here("data/traits_xylem_post.csv")) |>
   kable_classic()
 ```
 
-**`r s_table("traits_noxylem")`**:
+**`r s_table("traits_noxylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the trait-based model without xylem effects.
+Details are the same as in `r s_table("species_only_table")`.
 
 ```{r, echo=FALSE}
 read_csv(here::here("data/traits_noxylem_post.csv")) |>
-  head(10) |>
-  kbl(escape = FALSE) |>
-  kable_classic()
-```
-**`r s_table("segments_xylem_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
-Details are the same as in `r s_table("species_only_table")`.
-<!-- For example, variable `beta[2,1]` indicates the coefficient *a* for diffuse-porous trees. -->
-
-(showing only the first 10 rows here)
-
-```{r, echo=FALSE}
-read_csv(here::here("data/segments_xylem_post.csv")) |>
   head(10) |>
   kbl(escape = FALSE) |>
   kable_classic()
