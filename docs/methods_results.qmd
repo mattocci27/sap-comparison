@@ -19,6 +19,10 @@ format:
     embed-resources: true
     smooth-scroll: true
     highlight-style: github
+  docx:
+    toc: true
+    number-sections: true
+    highlight-style: github
 ---
 
 ```{r global_options, include=FALSE}
@@ -97,7 +101,7 @@ The key differences between the models are the primary unit of analysis (either 
 
 First, the species-only model takes individual species as its primary analytical unit without considering inter-segment variations.
 In this approach, each species was fitted separately.
-This model is the most conventionl approach (stan code, `r s_table("species_only_table")`).
+This model is the most conventional approach (stan code, `r s_table("species_only_table")`).
 
 Second, the segment-inclusive model uses segments as its primary analytical unit.
 While this model incorporates both inter-segment and interspecific variations, each species was fitted separately
@@ -112,7 +116,7 @@ Similar to the species-xylem model, this model fits all species at the same time
 (stan code, `r s_table("segments_xylem_table")`).
 
 In the main text, we primarily focused on the species-xylem and segment-xylem models.
-Our goal was to evaluate the effects of considering segment-level variation in estimating the coefficients *a* and *b*, while also quantifying xylem-level variation in the coefficients.
+Our goal was to evaluate the effects of considering segment-level variation in estimating the coefficients *a* and *b* while also quantifying xylem-level variation in the coefficients.
 
 Considering the dependency of *K* ranges on the maximum applied pressure gradients (*P~g~*), we used nine distinct datasets based on different ranges of *P~g~* in our analysis
 (Maximum *P~g~*  [MPa m^-1^]:
@@ -126,7 +130,7 @@ Considering the dependency of *K* ranges on the maximum applied pressure gradien
 0.07, and
 0.08).
 
-We also quantified the proportion of total variance attributed to each component (i.e., segments, species, and xylem types) in the estimates of the coefficients *a* and *b* , following the methodology described above.
+We also quantified the proportion of total variance attributed to each component (i.e., segments, species, and xylem types) in the coefficients *a* and *b* estimates, following the methodology described above.
 
 Lastly, we built Bayesian hierarchical models incorporating wood traits ($\rho$, VAF, VF, and D~h~) and hydraulic trait *K~s~*.
 Each of these traits was included separately as species-level predictors for the coefficients *a* and *b* and were integrated into our segment-xylem model
@@ -136,7 +140,7 @@ Additionally, we built a variation of the segment-xylem model that excluded xyle
 This allowed us to assess the effects of xylem-level variation on trait estimation for the coefficients *a* and *b*.
 
 **`r s_table("species_only_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species only model, evaluated across different maximum applied pressure gradients.
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the species-only model, evaluated across different maximum applied pressure gradients.
 
 - variable_name: name of the variable in the stan model
 - level: overall, xylem type, species, or segment
@@ -158,7 +162,7 @@ read_csv(here::here("data/species_only_ab.csv")) |>
 ```
 
 **`r s_table("segments_inclusive_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments inclusive model, evaluated across different maximum applied pressure gradients.
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the segments inclusive model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
 (showing only the first 10 rows here)
@@ -170,7 +174,7 @@ read_csv(here::here("data/segments_inclusive_ab.csv")) |>
 ```
 
 **`r s_table("species_xylem_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
 (showing only the first 10 rows here)
@@ -182,7 +186,7 @@ read_csv(here::here("data/species_xylem_post.csv")) |>
 ```
 
 **`r s_table("segments_xylem_table")`**:
-Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
 Details are the same as in `r s_table("species_only_table")`.
 
 (showing only the first 10 rows here)
@@ -194,7 +198,7 @@ read_csv(here::here("data/segments_xylem_post.csv")) |>
   kable_classic()
 ```
 
-**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the trait-based model with xylem effects.
+**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the trait-based model with xylem effects.
 Details are the same as in `r s_table("species_only_table")`.
 
 The column definitions are:
@@ -219,7 +223,7 @@ read_csv(here::here("data/traits_xylem_post.csv")) |>
   kable_classic()
 ```
 
-**`r s_table("traits_noxylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals and effective sample sizes for the trait-based model without xylem effects.
+**`r s_table("traits_noxylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the trait-based model without xylem effects.
 Details are the same as in `r s_table("species_only_table")`.
 
 ```{r, echo=FALSE}
@@ -262,7 +266,7 @@ $S_{10min} = a \times K^b \times A_{sap} \times 600$
 where the factor 600 is the number of seconds in 10-minute intervals.
 
 Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
-We also evaluated the relative contribution of uncertainty in transpiration estimates, by calculating the variance contributed
+We also evaluated the relative contribution of uncertainty in transpiration estimates by calculating the variance contributed
 by the *a* and *b* coefficients ($\sigma^2_{\mathrm{ab}}$),
 by the combined effects of direction and depth on *K* ($\sigma^2_{\mathrm{dir-dep}}$),
 by direction ($\sigma^2_{\mathrm{dir}}$),
@@ -322,7 +326,7 @@ Codes and datasets are available at
 
 # Results
 
-## Pressure vs. tension induced flow
+## Pressure vs. tension-induced flow
 
 ```{r, include=FALSE}
 d <- read_csv(here("data/ks_pres_tens_spp_err.csv"))
@@ -463,11 +467,11 @@ Contents:
 The power-law fittings without (i.e., species-xylem model) and with (i.e., segments-xylem) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
 Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Figs. `r s_fig_num("pg_multi")`-`r s_fig_num("pg_ribbon_b")`).
 Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
-Our segments-xylem model revealed little variance in the estimates of coefficient *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
+Our segments-xylem model revealed little variance in the estimates of coefficients *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
 Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
 In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
-The 95% CI of the relationships between both K~s~ and VAF with coefficient *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`A, B, F, and G), when xylem-level variation was not included in the model.
-However, when xylem-level variation was accounted for, only the relationship between Ks and coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B)
+The 95% CI of the relationships between both K~s~ and VAF with coefficients *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`A, B, F, and G), when the xylem-level variation was not included in the model.
+However, when the xylem-level variation was accounted for, only the relationship between Ks and the coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B)
 
 **`r s_table("ab_comparison")`**:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
@@ -643,7 +647,7 @@ read_csv(here("data/rel_bar.csv"))
 
 # Stan codes
 
-## Pressure- vs. tensin-inducded flow
+## Pressure- vs. tensin-induced flow
 
 ```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
 ```
@@ -653,12 +657,12 @@ read_csv(here("data/rel_bar.csv"))
 ```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge1"}
 ```
 
-## species-only model: pooled fitting for separte species
+## species-only model: pooled fitting for separate species
 
 ```{stan, file=here::here('stan/species_only.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
 ```
 
-## segment-inclusive model: multilevel fitting for separte species
+## segment-inclusive model: multilevel fitting for separate species
 
 ```{stan, file=here::here('stan/segments_inclusive.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
 ```
@@ -668,17 +672,17 @@ read_csv(here("data/rel_bar.csv"))
 ```{stan, file=here::here('stan/species_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
 ```
 
-## segement-xylem model: multilevel fitting for pooled species
+## segment-xylem model: multilevel fitting for pooled species
 
 ```{stan, file=here::here('stan/segments_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
 ```
 
-## segement-xylem model with traits
+## segment-xylem model with traits
 
 ```{stan, file=here::here('stan/segments_xylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
 ```
 
-## segement-xylem model with traits wihout xylem-type variation
+## segment-xylem model with traits without xylem-type variation
 
 ```{stan, file=here::here('stan/segments_noxylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
 ```
