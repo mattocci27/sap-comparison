@@ -187,7 +187,6 @@ read_csv(here::here("data/species_xylem_post.csv")) |>
 
 **`r s_table("segments_xylem_table")`**:
 Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
-Details are the same as in `r s_table("species_only_table")`.
 
 (showing only the first 10 rows here)
 
@@ -203,6 +202,12 @@ Details are the same as in `r s_table("species_only_table")`.
 
 The column definitions are:
 
+- trait:
+  - log_dh (log[Dh])
+  - log_vf (log(VF))
+  - wood_density (Wood density)
+  - log_ks (log[Ks])
+  - log_vaf (log[VAF])
 - variable_name: name of the variable in the stan model
 - level: overall, xylem type, species, or segment
 - targets: name of xylem type, species, or segment
@@ -212,7 +217,7 @@ The column definitions are:
 - q97.5: 97.5% posterior quantiles
 - effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
 
-For example, variable `beta_a[2,1]` indicates the xylem type variable and precisely the effect of wood density on coefficient *a* for diffuse-porous trees.
+For example, trait `log_dh` and variable `beta_a[2,1]` indicate the effect of Dh on coefficient *a* for diffuse-porous trees on the log-scale.
 
 (showing only the first 10 rows)
 
@@ -224,7 +229,7 @@ read_csv(here::here("data/traits_xylem_post.csv")) |>
 ```
 
 **`r s_table("traits_noxylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the trait-based model without xylem effects.
-Details are the same as in `r s_table("species_only_table")`.
+Details are the same as in `r s_table("traits_xylem")`.
 
 ```{r, echo=FALSE}
 read_csv(here::here("data/traits_noxylem_post.csv")) |>
@@ -471,10 +476,12 @@ Our segments-xylem model revealed little variance in the estimates of coefficien
 Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
 In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
 The 95% CI of the relationships between both K~s~ and VAF with coefficients *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`A, B, F, and G), when the xylem-level variation was not included in the model.
-However, when the xylem-level variation was accounted for, only the relationship between Ks and the coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B)
+When the xylem-level variation was accounted for, only the relationship between Ks and the coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B).
+However this model did not converge well because of the strong coveriance between Ks and xylem types (Fig. `r fig_num("traits_points_main")`B, `r s_table("traits_xylem")`)
 
 **`r s_table("ab_comparison")`**:
 Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
+
 
 ```{r, echo=FALSE}
 read_csv(here("data/all_ab.csv")) |>
@@ -553,7 +560,6 @@ read_csv(here("data/varpart_notrait.csv")) |>
   kable_classic()
 ```
 
-
 ![`r fig("traits_points_main")`:
 Relationships between coefficients *a* and *b* and wood and hydraulic traits, with considering xylem variation.
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
@@ -565,7 +571,6 @@ Relationships between coefficients *a* and *b* and wood and hydraulic traits, wi
 Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment, respectively.
 Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
 ](`r here::here("figs/traits_points_si.png")`)
-
 
 
 ## Estimating tree transpiration in a forest stand

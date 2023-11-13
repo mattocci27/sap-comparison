@@ -695,7 +695,7 @@ segments_xylem_traits_post_ab_mapped <- tar_map(
     tar_target(
       post,
       generate_summary_trait_table(
-        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+        stan_summary, fd_k_traits_csv, xylem = TRUE) |>
           mutate(trait = key) |>
           dplyr::select(trait, everything())
     )
@@ -785,12 +785,12 @@ granier_list <- list(
   ),
   tar_target(
     traits_xylem_table_csv,
-    my_write_csv(traits_xylem_table, "data/traits_xylem_post.csv"),
+    my_write_csv(segments_xylem_traits_table_combined, "data/traits_xylem_post.csv"),
     format = "file"
   ),
   tar_target(
     traits_noxylem_table_csv,
-    my_write_csv(traits_noxylem_table, "data/traits_noxylem_post.csv"),
+    my_write_csv(segments_noxylem_traits_table_combined, "data/traits_noxylem_post.csv"),
     format = "file"
   ),
 
