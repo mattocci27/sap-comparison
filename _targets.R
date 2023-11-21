@@ -236,7 +236,7 @@ main_list <- list(
       my_ggsave(
         "figs/sma_ks",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 6.81,
         height = 4.4
       )
@@ -255,7 +255,7 @@ main_list <- list(
       my_ggsave(
         "figs/coef_intervals_pres_tens",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 173,
         height = 173,
         units = "mm"
@@ -356,7 +356,7 @@ main_list <- list(
       my_ggsave(
         "figs/count_pressure_quadratic",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 4.3,
         height = 14,
         units = "cm"
@@ -371,7 +371,7 @@ main_list <- list(
       my_ggsave(
         "figs/coef_intervals_logistic",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 16,
         height = 8.5,
         units = "cm"
@@ -803,7 +803,7 @@ granier_list <- list(
       my_ggsave(
         "figs/pool_multi",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 8,
         height = 12
       )
@@ -820,7 +820,7 @@ granier_list <- list(
       my_ggsave(
         "figs/ab_points_four_models_all",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 110,
         height = 165,
         units = "mm"
@@ -838,7 +838,7 @@ granier_list <- list(
       my_ggsave(
         "figs/ab_points_four_models",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 110,
         height = 165,
         units = "mm"
@@ -867,7 +867,7 @@ granier_list <- list(
       my_ggsave(
         "figs/pg_multi",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 8,
         height = 12
       )
@@ -880,7 +880,7 @@ granier_list <- list(
       my_ggsave(
         "figs/pg_ribbon_a",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 8,
         height = 12
       )
@@ -894,7 +894,7 @@ granier_list <- list(
       my_ggsave(
         "figs/pg_ribbon_b",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 8,
         height = 12
       )
@@ -908,7 +908,7 @@ granier_list <- list(
       my_ggsave(
         "figs/coef_density",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 6.8,
         height = 5
       )
@@ -963,7 +963,7 @@ granier_list <- list(
       my_ggsave(
         "figs/traits_points_main",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 6.8,
         height = 2.7
       )
@@ -971,12 +971,20 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
+    ks_r2,
+    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_ks, stan_data_noxylem_log_ks$xj)
+  ),
+  tar_target(
+    vaf_r2,
+    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_vaf, stan_data_noxylem_log_vaf$xj)
+  ),
+  tar_target(
     traits_points_si_plot, {
       p <- traits_points_si(trait_pred_data_xylem_combined)
       my_ggsave(
         "figs/traits_points_si",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 6.8,
         height = 2.9
       )
@@ -1312,19 +1320,19 @@ uncertainty_figs_list <- list(
       my_write_csv("data/tr_bar_ab.csv"),
     format = "file"
   ),
-  tar_target(
-    tr_bar_ab_plot, {
-      p <- tr_bar(tr_bar_ab_df, pg, tr_m, fill = model, group = model)
-      my_ggsave(
-        "figs/tr_bar_ab",
-        p,
-        dpi = 300,
-        width = 6.81,
-        height = 4.4
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   tr_bar_ab_plot, {
+  #     p <- tr_bar_ab(tr_bar_ab_df, pg, tr_m, fill = model, group = model)
+  #     my_ggsave(
+  #       "figs/tr_bar_ab",
+  #       p,
+  #       dpi = 600,
+  #       width = 6.81,
+  #       height = 4.4
+  #     )
+  #   },
+  #   format = "file"
+  # ),
   tar_target(
     tr_bar_all_df,
     generate_tr_bar_all_df(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
@@ -1334,20 +1342,20 @@ uncertainty_figs_list <- list(
     tr_bar_all_df |> my_write_csv("data/tr_bar_all.csv"),
     format = "file"
   ),
-  tar_target(
-    tr_bar_all_plot, {
-      p <- tr_bar(tr_bar_all_df, id, tr_m, fill = id, group = id) +
-        scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
-      my_ggsave(
-        "figs/tr_bar_all",
-        p,
-        dpi = 300,
-        width = 6.81,
-        height = 4.4
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   tr_bar_all_plot, {
+  #     p <- tr_bar(tr_bar_all_df, id, tr_m, fill = id, group = id) +
+  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) # Override y-axis breaks for this plot
+  #     my_ggsave(
+  #       "figs/tr_bar_all",
+  #       p,
+  #       dpi = 600,
+  #       width = 6.81,
+  #       height = 4.4
+  #     )
+  #   },
+  #   format = "file"
+  # ),
   tar_target(
     rel_bar_df,
     generate_rel_cont_df(total_uncertainty_combined_df,
@@ -1366,7 +1374,7 @@ uncertainty_figs_list <- list(
       my_ggsave(
         "figs/rel_bar",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 4.33,
         height = 4.33
       )
@@ -1374,12 +1382,157 @@ uncertainty_figs_list <- list(
     format = "file"
   ),
   tar_target(
+    tr_bar_comb_plot, {
+      tr_bar_all_df2 <- tr_bar_all_df |>
+        mutate(id = ifelse(id == "sapwood_aera", "sarea", id))
+      id_fct <- c(tr_bar_all_df2$id, as.character(rel_bar_df$id)) |>
+        unique() #|>
+        # as.factor()
+      id_fct <- factor(id_fct, levels = c("dir_only", "dir_dep", "dir_dep_cov", "dep_only", "sarea", "ab", "total"))
+
+      tr_bar_all_df2 <- tr_bar_all_df2 |>
+        mutate(id = factor(id, levels = c("dir_only", "dir_dep", "dep_only", "sarea", "total")))
+      tmp <- tr_bar_all_df2 |> sample_n(2) |> mutate(id = factor(c("dir_dep_cov", "ab"))) |>
+        mutate(across(where(is.numeric), ~ NA_real_))
+      # tr_bar_all_df2 <- bind_rows(tr_bar_all_df2, tmp) |>
+      #   mutate(id = factor(id, levels = id_fct))
+
+      rel_bar_df2 <- rel_bar_df |>
+        mutate(id = factor(id, levels = id_fct))
+      tmp <- rel_bar_df2 |> sample_n(1) |> mutate(id = factor(c("total"))) |>
+        mutate(across(where(is.numeric), ~ NA_real_))
+      rel_bar_df2 <- bind_rows(rel_bar_df2, tmp) |>
+        mutate(id = factor(id, levels = c("dir_only", "dir_dep_cov", "dep_only", "sarea", "ab")))
+
+      p1 <- tr_bar_ab(tr_bar_ab_df |> filter(pg == "0.08" | model == "Model 4"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
+        coord_cartesian(ylim = c(0, 1250))  +
+        scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+        # annotate("text", x = 1, y = 1250, label = "B", hjust = -1, vjust = 0.5, size = 5) +
+        labs(fill = "A) Model") +
+        theme(
+          axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+          # axis.text.y = element_text(size = 8,margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+          # axis.title.y.left = element_blank(),
+          # axis.text.y.left = element_blank(),
+          legend.text = element_text(size = 8),
+          legend.key.size = unit(0.4, "cm"),
+          # legend.position = c(0.8, 0.25))
+          legend.position = "right")
+          #  legend.position = "top")
+      p3 <- tr_bar(tr_bar_all_df2, ab_granier_uncertainty_combined_df, id, tr_m, fill = id, group = id) +
+        scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+        # annotate("text", x = 1, y = 1250, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+        xlab("Source of uncertainty") +
+        theme(
+          axis.text.x = element_blank()
+        )
+      p4 <- rel_bar(rel_bar_df) +
+        xlab("Source of uncertainty") +
+        # annotate("text", x = 1, y = 60, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+        # scale_y_continuous(
+        #      sec.axis = sec_axis(~ ., name = "Relative contribution (%)")) +
+        theme(
+        #   axis.title.y.right = element_text(angle = 90)
+          # axis.title.y.left = element_blank(),
+          legend.text = element_text(size = 8),
+          legend.key.size = unit(0.4, "cm"),
+          axis.title.x = element_blank()#,
+          # legend.position = "right"
+        )
+
+# Define the layout with specific widths
+    p1 <- p1 + plot_layout(widths = c(3))
+    p3p4 <- p3 + p4 + plot_layout(widths = c(3, 1))
+
+# Combine your plots
+    p <- p1 / p3p4 +
+      plot_layout(guides = 'collect') +
+      plot_annotation(tag_levels = 'A')
+
+      # Combi
+      # p <- p1 / (p3 + p4) +
+      #   plot_layout(guides = "collect")
+
+      # p <- p + plot_layout(widths = c(3, 1)) +
+      #   plot_annotation(tag_levels = "A") &
+      #   theme(
+      #     plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")
+      #     )
+
+      my_ggsave(
+        "figs/tr_bar_comb",
+        p,
+        dpi = 600,
+        width = 6.81,
+        height = 6.81
+      )
+    },
+    format = "file"
+  ),
+  # tar_target(
+  #   tr_bar_comb_plot, {
+  #     p1 <- tr_bar_ab(tr_bar_ab_df |> filter(model == "Model 4") |> filter(pg != "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model) +
+  #       coord_cartesian(ylim = c(0, 1250)) +
+  #       # annotate("text", x = Inf, y = Inf, label = "A", hjust = -1, vjust = 1.1, size = 5) +
+  #       annotate("text", x = 1, y = 1250, label = "A", hjust = -0.1, vjust = 0.5, size = 5) +
+  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+  #       theme(
+  #         axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+  #         axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
+  #       )
+  #     p2 <- tr_bar_ab(tr_bar_ab_df |> filter(model != "Granier") |> filter(pg == "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
+  #       coord_cartesian(ylim = c(0, 1250))  +
+  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+  #       annotate("text", x = 1, y = 1250, label = "B", hjust = -3.8, vjust = 0.5, size = 5) +
+  #       theme(
+  #         axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+  #         # axis.text.y = element_text(size = 8,margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+  #         axis.title.y.left = element_blank(),
+  #         axis.text.y.left = element_blank(),
+  #         legend.text = element_text(size = 8),
+  #         legend.key.size = unit(0.4, "cm"),
+  #         # legend.position = c(0.8, 0.25))
+  #         legend.position = "right")
+  #         #  legend.position = "top")
+  #     p3 <- tr_bar(tr_bar_all_df, id, tr_m, fill = id, group = id) +
+  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+  #       annotate("text", x = 1, y = 1250, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+  #       xlab("Source of uncertainty")
+  #     p4 <- rel_bar_wide(rel_bar_df) +
+  #       xlab("Source of uncertainty") +
+  #       annotate("text", x = 1, y = 60, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+  #       scale_y_continuous(
+  #            sec.axis = sec_axis(~ ., name = "Relative contribution (%)")) +
+  #       theme(
+  #       #   axis.title.y.right = element_text(angle = 90)
+  #         axis.title.y.left = element_blank(),
+  #         axis.text.y.left = element_blank(),
+  #         legend.position = "right"
+  #       )
+
+  #     p <- (p1 + p2) / (p3 + p4) &
+  #       # plot_annotation(tag_levels = "A") &
+  #       theme(
+  #         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")
+  #       )
+
+  #     my_ggsave(
+  #       "figs/tr_bar_comb",
+  #       p,
+  #       dpi = 600,
+  #       width = 6.81,
+  #       height = 6.81
+  #     )
+  #   },
+  #   format = "file"
+  # ),
+  tar_target(
     dbh_points_plot, {
       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
       my_ggsave(
         "figs/dbh_points",
         p,
-        dpi = 300,
+        dpi = 600,
         # width = 6.81,
         # height = 6.81
         width = 4.33,
@@ -1394,7 +1547,7 @@ uncertainty_figs_list <- list(
       my_ggsave(
         "figs/sap_dbh_points",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 4.33,
         height = 4.33
       )
@@ -1408,7 +1561,7 @@ uncertainty_figs_list <- list(
       my_ggsave(
         "figs/imp_points",
         p,
-        dpi = 300,
+        dpi = 600,
         width = 6.81,
         height = 6.81
       )

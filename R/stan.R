@@ -2250,3 +2250,30 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
            variable_meaning = predictor,
            effecive_sample_size = ess_tail)
 }
+
+# Function to calculate R2
+calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
+  beta_int_pred <- draws %>% pull(beta_int_col)
+  beta_slope_pred <- draws %>% pull(beta_slope_col)
+  log_pred <- xj %*% rbind(beta_int_pred, beta_slope_pred)
+
+  log_obs <- draws %>%
+    select(starts_with(obs_start_col)) %>%
+    as.matrix() %>%
+    t()
+
+  r2 <- apply(log_pred, 2, var) / (apply(log_pred, 2, var) + apply(log_obs - log_pred, 2, var))
+  r2_q <- quantile(r2, c(0.025, 0.5, 0.975)) |> round(3)
+
+  return(r2_q)
+}
+
+# Main function to process the draws and calculate R2 for both a and b
+process_draws_and_calculate_trait_r2 <- function(draws, xj) {
+  draws_cleaned <- draws %>%
+    janitor::clean_names()
+
+  a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1_1", "beta_a_2_1", "a_hat_1_", xj)
+  b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1_1", "beta_b_2_1", "a_hat_2_", xj)
+  return(list(a_r2 = a_r2_q, b_r2 = b_r2_q))
+}

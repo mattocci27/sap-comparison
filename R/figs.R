@@ -1456,16 +1456,79 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
 
 
 # Define a function for the repeated ggplot elements
-tr_bar <- function(data, x, y, fill, group) {
-  ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{ fill }}, group = {{ group }})) +
+tr_bar <- function(data, granier_df, x, y, fill, group) {
+
+  new_labels <- c(
+    "sarea" = "Sapwood area",
+    "total" = "Total",
+    "dir_only" = "Direction",
+    "dep_only" = "Depth",
+    "dir_dep" = "Direction and depth")
+
+  col_pal <- viridis::viridis(n = 7)
+  colors <- c("dir_only" = col_pal[2], "dir_dep" = col_pal[3], "dep_only" = col_pal[5], "sarea" = col_pal[6], "total" = col_pal[7])
+
+  granier_val <- granier_df |>
+    pull(tr_m)
+  ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{fill}}, group = {{ group }})) +
     geom_bar(stat = "identity", position = "dodge") +
+    # geom_bar(stat = "identity", position = "dodge", fill = "lightblue") +
     geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
     scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
-    scale_fill_viridis_d() +
-    geom_hline(yintercept = 750, lty = 2) +
+    # scale_fill_viridis_d(option = "E") +
+    # scale_fill_viridis_d() +
+    scale_fill_manual(labels = new_labels, values = colors) +
+    # scale_fill_viridis_d(labels = new_labels, option = "D") +
+    labs(fill = "B) Source") +
+    geom_hline(yintercept = granier_val, lty = 2) +
     ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
     xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
-    theme_bw()
+    theme_bw() +
+    theme(
+      legend.text = element_text(size = 8),
+      legend.key.size = unit(0.4, "cm")
+    )
+}
+
+# Define a function for the repeated ggplot elements
+tr_bar_ab <- function(data, granier_df, x, y, fill, group, model4 = TRUE) {
+  col_pal <- viridis::mako(n = 5)
+  granier_val <- granier_df |>
+    pull(tr_m)
+
+  if (model4) {
+    ggplot(data, aes(x = {{ x }}, y = {{ y }})) +
+      geom_bar(stat = "identity", position = "dodge", fill = col_pal[2]) +
+      geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
+      scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
+      # scale_fill_viridis_d(option = "G") +
+      # scale_fill_brewer(palette = "PuBr") +
+      # scale_fill_manual(values = rev(col_pal[-1])) +
+      geom_hline(yintercept = granier_val, lty = 2) +
+      ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+      xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+      theme_bw() +
+      theme(
+        legend.title = element_blank()
+      )
+  } else {
+    ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{ fill }}, group = {{ group }})) +
+      geom_bar(stat = "identity", position = "dodge") +
+      geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
+      scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
+      # scale_fill_viridis_d(option = "G") +
+      # scale_fill_brewer(palette = "PuBr") +
+      scale_fill_manual(values = rev(col_pal[-1])) +
+      geom_hline(yintercept = granier_val, lty = 2) +
+      ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+      xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+      theme_bw() +
+      theme(
+        # legend.title = element_blank()
+      )
+
+  }
+
 }
 
 generate_tr_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncertainty_combined_df) {
@@ -1481,8 +1544,15 @@ generate_tr_bar_ab_df <- function(ab_uncertainty_combined_df, ab_granier_uncerta
       bind_rows(granier_df) |>
       mutate(
         pg = as.factor(str_extract(id, "\\d+\\.\\d+")),
-        model = factor(str_extract(id, "species_xylem|segments_xylem|segments_inclusive|species_only|granier"),
-                       levels = c("species_only", "segments_inclusive", "species_xylem", "segments_xylem", "granier"))
+        model = str_extract(id, "species_xylem|segments_xylem|segments_inclusive|species_only|granier"),
+        model = case_when(
+          model == "species_only" ~ "Model 1",
+          model == "segments_inclusive" ~ "Model 2",
+          model == "species_xylem" ~ "Model 3",
+          model == "segments_xylem" ~ "Model 4",
+          model == "granier" ~ "Granier",
+        ),
+        model = as.factor(model)
       )
 }
 
@@ -1549,17 +1619,50 @@ rel_bar <- function(rel_bar_df) {
     "ab" = "Coefficient a-b",
     "dir_only" = "Direction",
     "dep_only" = "Depth",
-    "dir_dep_cov" = "Direction and depth")
+    "dir_dep_cov" = "Cov(Direction, Depth)")
+
+  col_pal <- viridis::viridis(n = 7)
+  colors <- c("dir_only" = col_pal[2], "dir_dep_cov" = col_pal[4], "dep_only" = col_pal[5], "sarea" = col_pal[6], "ab" = col_pal[1])
 
   ggplot(rel_bar_df, aes(x = factor(1), y = rel_adj, fill = id)) +
+    geom_bar(stat = "identity") +
+    # scale_fill_viridis_d(labels = new_labels) +
+    scale_fill_manual(labels = new_labels, values = colors) +
+    # scale_fill_viridis_d() +
+    ylab("Relative contribution (%)") +
+    xlab("") +
+    labs(fill = "C) Source") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+}
+
+rel_bar_wide <- function(rel_bar_df) {
+  new_labels <- c(
+    "sarea" = "Sapwood area",
+    "ab" = "Coefficient a-b",
+    "dir_only" = "Direction",
+    "dep_only" = "Depth",
+    "dir_dep_cov" = "Direction and depth")
+
+  rel_bar_df <- rel_bar_df |>
+    mutate(id =  reorder(id, -rel_adj))
+
+  ggplot(rel_bar_df, aes(x = id, y = rel_adj, fill = id)) +
     geom_bar(stat = "identity") +
     scale_fill_viridis_d(labels = new_labels) +
     ylab("Relative contribution (%)") +
     xlab("") +
     labs(fill = "Source") +
-    my_theme() +
+    theme_bw() +
     theme(
+      # axis.ticks.x = element_blank(),
+      # legend.title = element_blank(),
       axis.text.x = element_blank(),
-      axis.ticks.x = element_blank()
+      legend.position = c(0.7, 0.7),
+      legend.text = element_text(size = 8),
+      legend.key.size = unit(0.4, "cm")
     )
 }
