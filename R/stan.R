@@ -557,6 +557,7 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
     summarize(
       wood_density = mean(wood_density),
       log_dh = mean(log(dh)),
+      log_swc = mean(log(swc)),
       log_vaf = mean(log(vaf)),
       log_vf = mean(log(vf)),
       log_ks = mean(log(ks))
@@ -667,6 +668,7 @@ generate_sap_each_trait_no_xylem_stan_data <- function(data, trait_name, remove_
     group_by(species) |>
     summarize(
       wood_density = mean(wood_density),
+      log_swc = mean(log(swc)),
       log_dh = mean(log(dh)),
       log_vaf = mean(log(vaf)),
       log_vf = mean(log(vf)),
@@ -1822,77 +1824,97 @@ generate_combined_trait_fig_data <- function(
    list(vaf, ks, wd, dh, vf)
  }
 
-
 traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TRUE, wd = FALSE, use_color = TRUE) {
-
   if (wd) {
     data$pred_points <- data$pred_points |>
       dplyr::mutate(wood_density = log(wood_density))
     data$pred_line$x <- log(data$pred_line$x)
   }
 
-  if (coef_a & with_ribbon) {
-    if (use_color) {
-     p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.6, fill = "grey") +
-        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "grey")
-    } else {
-     p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = exp(pred_a_ll), ymax = exp(pred_a_hh)), alpha = 0.4, fill = "blue") +
-        geom_line(data = data$pred_line, aes(x = x, y = exp(pred_a_m)), col = "blue")
-    }
-  } else if (with_ribbon) {
-    if (use_color) {
-     p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "grey") +
-        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "grey")
-    } else {
-     p <- ggplot() +
-        geom_ribbon(data = data$pred_line, aes(x = x, ymin = pred_b_ll, ymax = pred_b_hh), alpha = 0.4, fill = "blue") +
-        geom_line(data = data$pred_line, aes(x = x, y = pred_b_m), col = "blue")
-    }
-   } else {
-    p <- ggplot()
+  #  data <- tar_read(trait_pred_data_noxylem_combined)[[1]]
+  #  trait_name <- "log_vaf"
+  if (coef_a) {
+    data$pred_points <- data$pred_points |>
+      mutate(
+        ymin = exp(a_lwr),
+        ymax = exp(a_upr),
+        y = exp(a_mid)
+      )
+    data$pred_line <- data$pred_line |>
+      mutate(
+        ymin = exp(pred_a_ll),
+        ymax = exp(pred_a_hh),
+        y = exp(pred_a_m)
+      )
+    y_lab <- expression(Coefficient~italic(a))
+    alpha <- 0.6
+    p <- ggplot() +
+      coord_cartesian(ylim = c(5, 20000)) +
+      scale_y_log10(
+        breaks = c(10, 100, 1000, 10000),
+        labels = c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))
+      )
+  } else {
+    data$pred_points <- data$pred_points |>
+      mutate(
+        ymin = b_lwr,
+        ymax = b_upr,
+        y = b_mid
+      )
+    data$pred_line <- data$pred_line |>
+      mutate(
+        ymin = pred_b_ll,
+        ymax = pred_b_hh,
+        y = pred_b_m
+      )
+    alpha <- 0.6
+    y_lab <- expression(Coefficient~italic(b))
+    p <- ggplot() +
+      coord_cartesian(ylim = c(0, 4))
   }
 
-  if (coef_a) {
-    if (use_color)  {
-     p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}}), col = xylem_long_fct)) +
-        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.6)
-    } else {
-     p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = exp(a_lwr), ymax = exp(a_upr), x = exp({{trait_name}})), alpha = 0.5) +
-        geom_point(data = data$pred_points, aes(y = exp(a_mid), x = exp({{trait_name}})), alpha = 0.4, size = 1)
-    }
-     p <- p +
-        ylab(expression(Coefficient~italic(a))) +
-        coord_cartesian(ylim = c(5, 20000)) +
-        scale_x_log10() +
-        scale_y_log10(
-          breaks = c(10, 100, 1000, 10000),
-          labels = c(expression(10^1), expression(10^2), expression(10^3), expression(10^4)))
-   } else {
-    if (use_color)  {
-     p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}}), col = xylem_long_fct)) +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}}), col = xylem_long_fct), alpha = 0.4)
-    } else {
-     p <- p +
-        geom_errorbar(data = data$pred_points, aes(ymin = b_lwr, ymax = b_upr, x = exp({{trait_name}})), alpha = 0.4) +
-        geom_point(data = data$pred_points, aes(y = b_mid, x = exp({{trait_name}})), alpha = 0.4, size = 1)
-    }
-      p <- p +
-        ylab(expression(Coefficient~italic(b))) +
-        scale_x_log10() +
-        coord_cartesian(ylim = c(0, 4))
-    }
+  if (with_ribbon) {
+    p <- p +
+      geom_ribbon(data = data$pred_line, aes(x = x, ymin = ymin, ymax = ymax), alpha = 0.6, fill = "grey") +
+      geom_line(data = data$pred_line, aes(x = x, y = y), col = "grey40")
+  }
+
+  if (use_color)  {
+    p <- p +
+      scale_x_log10() +
+      ylab(y_lab) +
+      geom_errorbar(
+        data = data$pred_points,
+        aes(ymin = ymin, ymax = ymax, x = exp({{trait_name}}), col = xylem_long_fct),
+        linewidth = 0.25,
+      ) +
+      geom_point(
+        data = data$pred_points,
+        aes(y = y, x = exp({{trait_name}}), col = xylem_long_fct),
+        alpha = alpha
+      )
+  } else {
+    p <- p +
+      scale_x_log10() +
+      ylab(y_lab) +
+      geom_errorbar(
+        data = data$pred_points,
+        aes(ymin = ymin, ymax = ymax, x = exp({{trait_name}}))
+      ) +
+      geom_point(
+        data = data$pred_points,
+        aes(y = y, x = exp({{trait_name}})),
+        alpha = alpha
+      )
+  }
 
   p +
     my_theme() +
     theme(
-      legend.position = "none")
+      legend.position = "none"
+    )
 }
+
 
 label_func <- function(breaks) {
   sapply(breaks, function(b) {
@@ -1902,6 +1924,66 @@ label_func <- function(breaks) {
       return(b)
     }
   })
+}
+
+traits_points_main_re <- function(pred_data, use_color = TRUE) {
+  p1 <- traits_points_each(pred_data[[1]], log_vaf,
+    with_ribbon = TRUE, use_color = use_color) +
+    xlab("") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+     axis.text.x = element_blank()
+    )
+  p2 <- traits_points_each(pred_data[[1]], log_vaf,
+     coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
+    xlab("VAF (%)") +
+    theme(
+    #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
+    )
+  p3 <- traits_points_each(pred_data[[2]], log_ks,
+    with_ribbon = TRUE, use_color = use_color) +
+    xlab("") +
+    scale_x_log10(label = label_func) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank()
+    )
+  p4 <- traits_points_each(pred_data[[2]], log_ks,
+    coef_a = FALSE, with_ribbon = TRUE, use_color = use_color) +
+    xlab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
+    scale_x_log10(label = label_func) +
+    ylab("") +
+    theme(
+      axis.text.y = element_blank()
+    )
+
+# Use one of the plots to extract the legend
+  extracted_legend <- cowplot::get_legend(
+    p1 + guides(color = guide_legend(ncol = 4, title = "")) +
+      theme(legend.text = element_text(size = 8),
+        legend.position = "bottom",
+        legend.background = element_blank()))
+
+  # labels <- LETTERS[1:10]  # "A", "B", "C", ...
+
+# Combine the plots and the extracted legend
+  p <- p1 + p3 +
+    p2 + p4 +
+    plot_layout(nrow = 2, guides = "collect") &
+    # plot_annotation(tag_levels = "A") &
+    theme(
+      # panel.spacing = unit(-1, "lines"),
+      axis.ticks.length = unit(-0.1, "cm"),
+      # axis.text.x = element_text(size = 7, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+      axis.title.x = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      axis.title.y = element_text(size = 9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      # axis.text = element_text(size = 6),
+      plot.margin=unit(c(0.1, 0.1, 0.1, 0.1), "lines"),
+      plot.tag = element_text(size = 8)
+    )
+
+  cowplot::plot_grid(p, extracted_legend, ncol = 1, rel_heights = c(1, 0.1))
 }
 
 traits_points_main <- function(pred_data, use_color = FALSE) {

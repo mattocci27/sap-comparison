@@ -598,7 +598,7 @@ tar_combined_species_xylem_summary <- tar_combine(
   granier_with_traits_mapped <- tar_map(
     values = list(trait_name = rlang::syms(c(
       "log_dh", "log_vf", "wood_density",
-      "log_ks", "log_vaf", "int"))),
+      "log_ks", "log_vaf", "int", "log_swc"))),
     tar_target(
       stan_data_noxylem,
       generate_sap_each_trait_no_xylem_stan_data(
@@ -966,6 +966,20 @@ granier_list <- list(
         dpi = 600,
         width = 6.8,
         height = 2.7
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_points_main_re_plot, {
+      p <- traits_points_main_re(trait_pred_data_noxylem_combined)
+      my_ggsave(
+        "figs/traits_points_main_re",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 110,
+        units = "mm"
       )
     },
     format = "file"
