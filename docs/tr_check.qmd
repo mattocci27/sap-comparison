@@ -121,7 +121,9 @@ Pg: 0.08
 post_ab_df2
 ```
 
-- K ranges
+- K range
+
+Most of K < 0.05
 ```{r}
 ggplot(full_df_processed, aes(x = exp(log_k))) +
   geom_histogram() +
@@ -141,11 +143,12 @@ tibble(y1, y2, log_k) |>
   mutate(pg = ifelse(name == "y1", "0.02", "0.08")) |>
   ggplot(aes(x = exp(log_k), y = value, col = pg)) +
   geom_line() +
-  # scale_color_viridis_d() +
   xlab("K") +
   ylab("Sap flux per 10 mins") +
   theme_bw()
 ```
+
+The sum of sap flux density (i.e., annual transpiration) will be not that different among different pressure gradients.
 
 # Example of t01 on 2015-01-01
 
@@ -165,7 +168,8 @@ tmp1 |>
   theme_bw()
 ```
 
-- Sap flux; Pg = 0.02 < PSap flux; g = 0.08 (small K)
-- Sap flux; Pg = 0.02 < PSap flux; g = 0.08 (large K)
+- Sap flux; Pg = 0.02 > Sap flux; Pg = 0.08 (small K)
+- Sap flux; Pg = 0.02 < Sap flux; Pg = 0.08 (large K)
+
 
 
