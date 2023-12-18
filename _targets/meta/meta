@@ -410,21 +410,21 @@ fit2_data_log_vaf|stem|887b25d74b23d391|7638bb3f771ca3f6|7642d4eba057b1ef|-15861
 fit2_data_log_vf|stem|909afa4c0215cc6a|63c892e957a3a7a2|92539792b4067183|692362219||t19641.5814187984s|80398b832ef5884c|13420|qs|local|vector|||0||
 fit2_data_wood_density|stem|181726fe4a79e16d|92bfdbfb1b3ea7f1|35c0ab2f44bf07b3|-1708943624||t19641.5814196317s|85c711c2dae59fc6|13403|qs|local|vector|||0||
 fit2_diagnostics_dir_dep|stem|11bd1fc467b087b7|07e3019c6724d293|e04e6edb764b0c68|836325829||t19655.0661479893s|5fb9a22365b25946|151615|fst_tbl|local|vector|||0.001||
-fit2_diagnostics_segments_xylem_traits_int|stem|cc93953d49a5a3d5|e776755769e8ed2c|78967a1d7824e2c2|88600022||t19641.6358744349s|08cca1ce7b161c3e|153124|fst_tbl|local|vector|||0.001||
-fit2_diagnostics_segments_xylem_traits_log_dh|stem|4d7f0c0f17aee092|9d3d25579b982802|7804a68df8899928|1740687889||t19641.6410763638s|4884caebf020d498|154051|fst_tbl|local|vector|||0.002||
-fit2_diagnostics_segments_xylem_traits_log_ks|stem|ee90af90ae572c9b|0b255ec322ab5e1c|fd1ead5acc817672|710813169||t19641.6300992948s|45a20bdbf001355e|156139|fst_tbl|local|vector|||0.001||
-fit2_diagnostics_segments_xylem_traits_log_swc|stem|c685884e4f102e72|7d17ab1e6e206b21|934e004b6095ccc6|-281150602||t19706.3147706117s|290d5c8bb0717dfa|157434|fst_tbl|local|vector|||0.002||
-fit2_diagnostics_segments_xylem_traits_log_vaf|stem|ed6b935662fa8115|bec4e7f49b3f8aaa|793600f77ce64814|1197546333||t19641.651381945s|74cc8c6cc4a21ed1|156292|fst_tbl|local|vector|||0.002||
-fit2_diagnostics_segments_xylem_traits_log_vf|stem|a2f1e3d72c94a313|1aa015be17ae4c47|b4555d9c19aa504e|-967356591||t19641.6476051695s|880a82f677040c57|153537|fst_tbl|local|vector|||0.002||
-fit2_diagnostics_segments_xylem_traits_wood_density|stem|159e466a29a886c5|d991d5a507a2a6f4|ec5b8a58280b0c35|1239837845||t19641.6397699546s|ab9d571ebd98969c|154968|fst_tbl|local|vector|||0.002||
+fit2_diagnostics_segments_xylem_traits_int|stem|d1b8a8b4bc8e28a0|e776755769e8ed2c|e90c4fc9316c32c8|88600022||t19709.4586841464s|e0155b6c21c6bdf0|152045|fst_tbl|local|vector|||0.003||
+fit2_diagnostics_segments_xylem_traits_log_dh|stem|364f1562f4530b34|9d3d25579b982802|82eacc3f3aedfcd6|1740687889||t19709.478282889s|d8a6f12e958f944d|148894|fst_tbl|local|vector|||0.002||
+fit2_diagnostics_segments_xylem_traits_log_ks|stem|b51ea888325e7994|0b255ec322ab5e1c|99430a8c4d505460|710813169||t19709.4706798307s|4e59d7f6c217c5fa|153042|fst_tbl|local|vector|||0.002||
+fit2_diagnostics_segments_xylem_traits_log_swc|stem|ecabf0d0e4406854|7d17ab1e6e206b21|62594e79d8dece0e|-281150602||t19709.4679336759s|39e9f45403f282b3|148823|fst_tbl|local|vector|||0.002||
+fit2_diagnostics_segments_xylem_traits_log_vaf|stem|ef8ad146cd1696df|bec4e7f49b3f8aaa|110cdba51928c500|1197546333||t19709.5261797246s|5665e64245116a8e|148822|fst_tbl|local|vector|||0.001||
+fit2_diagnostics_segments_xylem_traits_log_vf|stem|8369cb50c90f7579|1aa015be17ae4c47|52984100b18a1863|-967356591||t19709.4849469495s|7c49c394b438f90d|148904|fst_tbl|local|vector|||0.002||
+fit2_diagnostics_segments_xylem_traits_wood_density|stem|2c013859ed5d779a|d991d5a507a2a6f4|ba6fc760a05b82f8|1239837845||t19709.4653369692s|efa2250ea10b082a|148897|fst_tbl|local|vector|||0.002||
 fit2_draws_dir_dep|stem|12220c775d842228|89b54a48469d2a6c|e04e6edb764b0c68|-98178585||t19655.0660853954s|b752ac9147f1e082|1905588|fst_tbl|local|vector|||0.004||
-fit2_draws_segments_xylem_traits_int|stem|e61ef233fc88781b|e0b36e3ded060da3|78967a1d7824e2c2|573216908||t19641.6358980001s|4cb7c01f4738ace9|185424519|fst_tbl|local|vector|||0.562||
-fit2_draws_segments_xylem_traits_log_dh|stem|80ff015f414beea1|46cff0dad80f85c8|7804a68df8899928|175548859||t19641.6411056689s|f0961a99f58e058b|211162280|fst_tbl|local|vector|||0.507||
-fit2_draws_segments_xylem_traits_log_ks|stem|463e6c3576636770|985712f55aa88ada|fd1ead5acc817672|1123867998||t19641.6301448511s|4350713200dfefe8|211157272|fst_tbl|local|vector|||0.62||
-fit2_draws_segments_xylem_traits_log_swc|stem|c54ec631dc8a86af|069d7c541de0d6a9|934e004b6095ccc6|-1414837049||t19706.3148057054s|19f3c5901a9e4f83|211161896|fst_tbl|local|vector|||0.497||
-fit2_draws_segments_xylem_traits_log_vaf|stem|da23da50d53be2a5|e2363b116ef41200|793600f77ce64814|-1960911414||t19641.6513976858s|431d81c3b3416ba3|211161704|fst_tbl|local|vector|||0.291||
-fit2_draws_segments_xylem_traits_log_vf|stem|c1558558b1688c3e|8c99f18d660a768f|b4555d9c19aa504e|459932821||t19641.6476247066s|974ad99f9315f5f4|211161862|fst_tbl|local|vector|||0.325||
-fit2_draws_segments_xylem_traits_wood_density|stem|82358a9401812a29|dd97870302628ebb|ec5b8a58280b0c35|-1002353517||t19641.6397821765s|ad54a1ab221376fe|211162065|fst_tbl|local|vector|||0.318||
+fit2_draws_segments_xylem_traits_int|stem|445620b5478bb126|e0b36e3ded060da3|e90c4fc9316c32c8|573216908||t19709.4587034059s|9e9700a7b2338ff2|185423498|fst_tbl|local|vector|||0.751||
+fit2_draws_segments_xylem_traits_log_dh|stem|2d4e4cb2b3b987d5|46cff0dad80f85c8|82eacc3f3aedfcd6|175548859||t19709.4783213624s|3e675847199d2312|211161503|fst_tbl|local|vector|||0.723||
+fit2_draws_segments_xylem_traits_log_ks|stem|fa87122343c51ce5|985712f55aa88ada|99430a8c4d505460|1123867998||t19709.470698581s|56d68e8d4b62a7d9|211161507|fst_tbl|local|vector|||0.751||
+fit2_draws_segments_xylem_traits_log_swc|stem|af2b719b3591fc84|069d7c541de0d6a9|62594e79d8dece0e|-1414837049||t19709.4679550651s|77ee310e32efeaa6|211162337|fst_tbl|local|vector|||0.763||
+fit2_draws_segments_xylem_traits_log_vaf|stem|9cd32c8343ad6618|e2363b116ef41200|110cdba51928c500|-1960911414||t19709.5261952804s|15695f1528f2580f|211161604|fst_tbl|local|vector|||0.31||
+fit2_draws_segments_xylem_traits_log_vf|stem|aa3156f33f3a13ad|8c99f18d660a768f|52984100b18a1863|459932821||t19709.4849682926s|f0961a99f58e058b|211162280|fst_tbl|local|vector|||0.591||
+fit2_draws_segments_xylem_traits_wood_density|stem|3e43639bfc831962|dd97870302628ebb|ba6fc760a05b82f8|-1002353517||t19709.4653511824s|b4166ce0defda29b|211162506|fst_tbl|local|vector|||0.314||
 fit2_file_dir_dep|stem|f5907eb8f5a2367e|e0c5d37520b9515d|ef46db3751d8e999|-1092216336|stan/dir_dep.stan|t19654.2957804532s|410787eedf220285|814|file|local|vector|||0.001||
 fit2_file_segments_xylem_traits_int|stem|14d91b329ebf75b6|dda0fca6ffb9cd64|ef46db3751d8e999|254326052|stan/segments_xylem_traits.stan|t19641.5735302157s|47bedfb4abb69d48|2827|file|local|vector|||0.001||
 fit2_file_segments_xylem_traits_log_dh|stem|14d91b329ebf75b6|dda0fca6ffb9cd64|ef46db3751d8e999|34934027|stan/segments_xylem_traits.stan|t19641.5735302157s|47bedfb4abb69d48|2827|file|local|vector|||0.001||
@@ -434,21 +434,21 @@ fit2_file_segments_xylem_traits_log_vaf|stem|14d91b329ebf75b6|dda0fca6ffb9cd64|e
 fit2_file_segments_xylem_traits_log_vf|stem|14d91b329ebf75b6|dda0fca6ffb9cd64|ef46db3751d8e999|-66253273|stan/segments_xylem_traits.stan|t19641.5735302157s|47bedfb4abb69d48|2827|file|local|vector|||0||
 fit2_file_segments_xylem_traits_wood_density|stem|14d91b329ebf75b6|dda0fca6ffb9cd64|ef46db3751d8e999|-1519617275|stan/segments_xylem_traits.stan|t19641.5735302157s|47bedfb4abb69d48|2827|file|local|vector|||0.001||
 fit2_mcmc_dir_dep|stem|65c3caa3470612bf|ffae038552815cd2|7dabfed3b2150f6d|172139116||t19655.0660800712s|fe6daad4c422d9fb|1716940|qs|local|vector|||37052.57||
-fit2_mcmc_segments_xylem_traits_int|stem|65e78830056b55f4|092eb6b3b75373cb|4f3418487cfcbc11|-2053413884||t19641.6358471659s|14c43d3dd2d2fd3f|153646149|qs|local|vector|||2180.925||
-fit2_mcmc_segments_xylem_traits_log_dh|stem|07b739080a9512bc|2607e3b0f1b15522|77f8aaae74d6d3eb|2125921792||t19641.6410490495s|464683d2a228e546|176319214|qs|local|vector|||2625.365||
-fit2_mcmc_segments_xylem_traits_log_ks|stem|5438c2fff54f9051|e740a093366aee52|ec106a5f81577e8b|-620843834||t19641.6300672573s|aba634e68203d4e4|174720546|qs|local|vector|||1680.053||
-fit2_mcmc_segments_xylem_traits_log_swc|stem|95d863ed88aeef85|9d9430097c5050d1|4fb371827f5a78c6|1932347616||t19706.3147524631s|2bfa8f0812d232b3|176247609|qs|local|vector|||2010.268||
-fit2_mcmc_segments_xylem_traits_log_vaf|stem|d24e05e2e674f87c|fb84ea6c9e25d4a4|aaa93a87e38503e0|-488684902||t19641.6513398151s|d91f93cf9a94db73|176351703|qs|local|vector|||3510.896||
-fit2_mcmc_segments_xylem_traits_log_vf|stem|1a9dbe99954c8e25|67b38a49544fba21|25f9428bba698e23|20123926||t19641.6475687342s|72756f8650eef066|176286866|qs|local|vector|||3189.818||
-fit2_mcmc_segments_xylem_traits_wood_density|stem|4f15bdd887aba38c|909413f494558b5c|019d7c33b37e3ddd|1883664653||t19641.6397212983s|3a49b2d7e9fd8145|176252383|qs|local|vector|||2511.736||
+fit2_mcmc_segments_xylem_traits_int|stem|c425d402cb7a40be|8ef3e1ac2320013f|4f3418487cfcbc11|-2053413884||t19709.458632618s|85acb477c72365f4|153624409|qs|local|vector|||6315.683||
+fit2_mcmc_segments_xylem_traits_log_dh|stem|d3ddfbb2d8e64739|38f800ccbb21dbca|77f8aaae74d6d3eb|2125921792||t19709.4782533048s|d1aecf4d59b0a67f|176311262|qs|local|vector|||8007.678||
+fit2_mcmc_segments_xylem_traits_log_ks|stem|1d5ddea1931687d0|9e858eb0a0854a9f|ec106a5f81577e8b|-620843834||t19709.4706381634s|c171cc3e54d1bab8|175937986|qs|local|vector|||7329.161||
+fit2_mcmc_segments_xylem_traits_log_swc|stem|ae50dabe3d472f9e|d73148ebf443d1c8|4fb371827f5a78c6|1932347616||t19709.4678920549s|d9c2dd15a70e88f3|176255791|qs|local|vector|||7094.353||
+fit2_mcmc_segments_xylem_traits_log_vaf|stem|8c1c3073d14ebd2a|748e34aa3da9b66b|aaa93a87e38503e0|-488684902||t19709.5261506963s|1dfc78c417b1eed8|176345092|qs|local|vector|||12144.652||
+fit2_mcmc_segments_xylem_traits_log_vf|stem|a6d98f842ed1b363|5f75c65dd627a954|25f9428bba698e23|20123926||t19709.4849138006s|0fa0b7c68bad1d1e|176286303|qs|local|vector|||8567.316||
+fit2_mcmc_segments_xylem_traits_wood_density|stem|33d6023587d07efb|b208d058e9204c70|019d7c33b37e3ddd|1883664653||t19709.4652929407s|05305c55cf89acf8|176241166|qs|local|vector|||6870.652||
 fit2_summary_dir_dep|stem|4fd0abbfd3be9441|d60bc4620657c798|445c5965b98a8148|-1404091401||t19655.0661420633s|1c4429e8d41bcedd|4627|fst_tbl|local|vector|||0.364||
-fit2_summary_segments_xylem_traits_int|stem|4da7129cc223e400|f74a920575909ef6|eeea89472166e8bb|-955299028||t19641.6362622655s|c726875c5822f622|325512|fst_tbl|local|vector|||33.042||
-fit2_summary_segments_xylem_traits_log_dh|stem|0b258e24b6c9e82b|c28cc97e64606f46|19df06c28235a6e6|1382209997||t19641.6415010331s|ff7392d1394b0f53|374006|fst_tbl|local|vector|||36.473||
-fit2_summary_segments_xylem_traits_log_ks|stem|0d9de071fb77d8e5|8bd5c349ba58af35|e995d92f44b946b2|1991779263||t19641.630589071s|79055e5d7007f1ed|374029|fst_tbl|local|vector|||41.763||
-fit2_summary_segments_xylem_traits_log_swc|stem|1f479bb5c4515a78|d77851d697ad46cf|404d532b2eef6ae6|366947061||t19706.3151569656s|f7d72aa6b67106f4|374028|fst_tbl|local|vector|||33.223||
-fit2_summary_segments_xylem_traits_log_vaf|stem|ef889cfd577dc792|27bee09f7e85099e|a14ed8424e2a4cf2|-570158491||t19641.6517537992s|c5b65ba5dcacb5e3|374017|fst_tbl|local|vector|||33.355||
-fit2_summary_segments_xylem_traits_log_vf|stem|a0f35701847237e4|ee1e580b18afc78e|e14127e63d4cb632|867424603||t19641.6480201704s|2fd89edfcde78497|374026|fst_tbl|local|vector|||36.236||
-fit2_summary_segments_xylem_traits_wood_density|stem|6636f8ebe11c8df9|24e7a437e5c0c692|4d0f99c3dfbea65a|-267315834||t19641.640205269s|2658968bd61708b5|374019|fst_tbl|local|vector|||38.733||
+fit2_summary_segments_xylem_traits_int|stem|ceef86cdc403926a|f74a920575909ef6|955123fb5add328a|-955299028||t19709.4591042903s|54aefb71747e9690|325500|fst_tbl|local|vector|||38.273||
+fit2_summary_segments_xylem_traits_log_dh|stem|9f52c74b63c63a30|c28cc97e64606f46|d19185da384f1527|1382209997||t19709.4786949383s|2fd89edfcde78497|374026|fst_tbl|local|vector|||36.349||
+fit2_summary_segments_xylem_traits_log_ks|stem|e3ba93b1e38479f4|8bd5c349ba58af35|deecc116108f032b|1991779263||t19709.4710950226s|259bd8a102b454f9|374027|fst_tbl|local|vector|||37.304||
+fit2_summary_segments_xylem_traits_log_swc|stem|2327f5a342fb7854|d77851d697ad46cf|80658d13dd2b7c83|366947061||t19709.4683509973s|ca33cf931555f540|374008|fst_tbl|local|vector|||37.398||
+fit2_summary_segments_xylem_traits_log_vaf|stem|e382484a54848ea9|27bee09f7e85099e|80bcd49eb574c599|-570158491||t19709.5265792681s|fb2dc46c189119e6|374024|fst_tbl|local|vector|||34.525||
+fit2_summary_segments_xylem_traits_log_vf|stem|22c98f6669f47b13|ee1e580b18afc78e|9f997f596a9c2beb|867424603||t19709.4853560791s|4e7d1961c6fae0e2|374020|fst_tbl|local|vector|||36.375||
+fit2_summary_segments_xylem_traits_wood_density|stem|02e3c4bc10f79407|24e7a437e5c0c692|3d61d45b8157cd6c|-267315834||t19709.4657951243s|259bd8a102b454f9|374027|fst_tbl|local|vector|||40.385||
 five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19641.4162579201s|7a461a341c947b38|2227|file|local|vector|||0.061||
 full_pool_csv_mapped|object|0f9473f77a72d0f0|||||||||||||||
 full_segments_csv_mapped|object|272a18b0b78c4322|||||||||||||||
@@ -527,8 +527,8 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|42f305e9ec86280d|||||||||||||||
-granier_with_traits_mapped|object|c56adf8cd9f1a8c9|||||||||||||||
+granier_list|object|8b6ea2e6e94b6620|||||||||||||||
+granier_with_traits_mapped|object|e112992db8f5a7dd|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
 imp_points_plot|stem|bbd72b9383f2294c|144f602e4ec1f549|29f83e5e16fd39dd|-1461674706|figs/imp_points.png*figs/imp_points.pdf|t19674.3581304821s|b9c87a9b2ed3f39e|1485018|file|local|vector|||5.995|Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.|
@@ -699,11 +699,11 @@ post_fit_summary_segments_noxylem_traits_log_ks_log_ks|stem|4e5f48465f12120c|00f
 post_fit_summary_segments_noxylem_traits_log_vaf_log_vaf|stem|057abe44774cebfb|526e1448a78d875f|3b07742cf8d16ace|628361788||t19642.6602306134s|9199b1ba5b8570a3|6140|rds|local|vector|||1.263|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit_summary_segments_noxylem_traits_log_vf_log_vf|stem|6109b5aa085932ae|aaf3872cb372a4aa|cb63bd46ef6f4359|-1542243561||t19642.6601057487s|26ba0d95e64ed8b3|6137|rds|local|vector|||1.337|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit_summary_segments_noxylem_traits_wood_density_wood_density|stem|eb2ef39fabeca119|e9734ad37ec41523|f245ea63d1731b96|1100608035||t19642.6600916279s|bbb7ffef970e25fd|6199|rds|local|vector|||1.335|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit2_summary_segments_xylem_traits_log_dh_log_dh|stem|fa8b040b761147b7|156e8e0dd7af2c83|ff951106463849b2|372087033||t19674.1366604679s|21363ccbc0f64554|6449|rds|local|vector|||1.253|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit2_summary_segments_xylem_traits_log_ks_log_ks|stem|646f7c6b1256718b|219be6d8dfcf02bb|b447076010a92713|-789782567||t19674.1367167653s|4dd3cbc8489e1676|6708|rds|local|vector|||0.137||
-post_fit2_summary_segments_xylem_traits_log_vaf_log_vaf|stem|dbedac6508a43cab|9d3cd5ce12a0be33|868c873a092ece13|1541730973||t19674.1367038947s|ab43dafd56c72407|6408|rds|local|vector|||0.143||
-post_fit2_summary_segments_xylem_traits_log_vf_log_vf|stem|a041e63aad25380c|ef32cb2b086d5de6|3a16bb1bde39b8a2|1298136008||t19674.1366981538s|ab43dafd56c72407|6408|rds|local|vector|||0.135||
-post_fit2_summary_segments_xylem_traits_wood_density_wood_density|stem|3192a33bb007b449|723cdb9d8ea59dcf|98a3a286c4cba58b|-248223224||t19674.1367900537s|5f11779b026aa08c|6466|rds|local|vector|||0.142||
+post_fit2_summary_segments_xylem_traits_log_dh_log_dh|stem|9a88d652dcb607de|156e8e0dd7af2c83|9c00183b9d372e9b|372087033||t19709.4786986421s|4ccb3234b1a94a5e|6427|rds|local|vector|||0.305|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit2_summary_segments_xylem_traits_log_ks_log_ks|stem|2cd42a4738babe7c|219be6d8dfcf02bb|26ef46ee4c641467|-789782567||t19709.4711131247s|6b23643dac1f8954|6375|rds|local|vector|||1.357|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit2_summary_segments_xylem_traits_log_vaf_log_vaf|stem|ef602135a1af4d39|9d3cd5ce12a0be33|c19f335d7642e16c|1541730973||t19709.5266045926s|4ff6cff74ca6ed2e|6392|rds|local|vector|||0.306|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit2_summary_segments_xylem_traits_log_vf_log_vf|stem|de8accaadc931bc6|ef32cb2b086d5de6|03255fe999c4b77f|1298136008||t19709.4853604311s|a858cdebce3619e9|6448|rds|local|vector|||0.329|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit2_summary_segments_xylem_traits_wood_density_wood_density|stem|7a11838eab23c379|723cdb9d8ea59dcf|fd2d3df99d9c6932|-248223224||t19709.4657995688s|6352163b2cad0398|6443|rds|local|vector|||0.364|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_slen|stem|37018674ba44becc|bc45c7f57078a74a|4e7cf94836f7bb11|-424063738||t19642.667982892s|b50a30e5c1d5f551|149808|rds|local|vector|||1.058||
 post_slen_1000|stem|d1fe8b82798156a1|8185bb7c856becc4|3c46e6d05119f94f|-935590609||t19643.399498658s|6dabbd895e2e9623|21347|rds|local|vector|||0.963||
 post_slen_mid|stem|db23314783d65231|6ffabbde983464e9|2639a384bdb51092|-1804616622||t19643.3994566661s|f21b4888ae8bdafc|118|rds|local|vector|||0.969||
@@ -797,7 +797,7 @@ segments_xylem_post_ab_fit_draws_segments_xylem_0.08|stem|574d46162ccc3373|aaebd
 segments_xylem_post_ab_mapped|object|f86bd89240258815|||||||||||||||
 segments_xylem_summary_combined|stem|43a0510c598f029e|cc1658a7d86105ef|ccc0ddd96468d18e|-92774147||t19668.4045175814s|c3dfd778db9117e1|782956|rds|local|vector|||0.973||
 segments_xylem_traits_post_ab_mapped|object|95ee0e9cb173a941|||||||||||||||
-segments_xylem_traits_table_combined|stem|f6f56684c774d45f|15db985b84bb0c85|a35c5284a0495abd|-1695766358||t19674.1367903778s|e1bd8a8830977b94|21576|rds|local|vector|||0.001||
+segments_xylem_traits_table_combined|stem|8a8ab0984139fd33|15db985b84bb0c85|cd34058ae6aacd51|-1695766358||t19709.526604963s|0aeeadd0b419f9c2|21153|rds|local|vector|||0.001||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-1861471131||t19641.4161698624s|b83e223494d999b0|1459|qs|local|vector|||0.207||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e828abdb85a75e11|711a40d59f022606|27ca53b1660a164b|-738841485||t19641.4161704179s|9a57ceee975c9c50|160268|fst_tbl|local|vector|||0.002||
 simple_logistic_draws_hierarchical_logistic|stem|bd5ea140c856550a|a7b7afd01490e75b|27ca53b1660a164b|-1956970355||t19641.4161705568s|caf34c0f70a6b4a7|31635362|fst_tbl|local|vector|||0.162||
@@ -929,7 +929,7 @@ tr_bar_comb_plot|stem|b90aa93cf11206d6|50361c6fc3f012eb|1a30f9e89500512d|1303317
 tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
 tr_scaled_bars2|function|4e99d245a37379a8|||||||||||||||
 trait_pred_data_noxylem_combined|stem|d399ca27baac5486|634edfc0bcf6b71d|81ea2165a4d86a7f|1458690166||t19642.3886488876s|a9f32b0e63da1b68|78527|rds|local|vector|||9.966||
-trait_pred_data_xylem_combined|stem|e185be62453738b2|6e4848b482a718eb|52946f0b30306cbc|-313104499||t19670.2980602799s|1e7c84e4d71a13d0|78787|rds|local|vector|||8.214||
+trait_pred_data_xylem_combined|stem|f461b36882950754|6e4848b482a718eb|110bf98a692b637d|-313104499||t19709.5267515858s|d9bdcdf97b611a48|78743|rds|local|vector|||7.694||
 traits_noxylem_table|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|-1440537911||t19670.1629886208s|d713d5cc4ab85b07|6053|rds|local|vector|||1.33|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_noxylem_table_csv|stem|9a8156c91fadff1c|140509156cde4a23|57bed35b7e021799|-494376851|data/traits_noxylem_post.csv|t19674.1168746501s|93ee010d0277abb6|175839|file|local|vector|||1.143||
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
@@ -939,9 +939,9 @@ traits_points_main_plot|stem|1954ce761357f2e7|29e1bd21d56ab9c5|5643757653a412a4|
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
 traits_points_main_re_plot|stem|6ffcc8a085e28196|74ed42cc0f98bb1c|478f6ccd2e4663a2|1626401767|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf|t19706.4260790634s|6b7a675811bedeef|881599|file|local|vector|||2.057||
 traits_points_si|function|b641c71d20fa676a|||||||||||||||
-traits_points_si_plot|stem|cc274c64e2151d0d|4c8c363d4354c02d|147a0274c1691135|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19706.4253254852s|1536e94649d20175|1461237|file|local|vector|||2.695||
-traits_xylem_table|stem|29eb04778c4e62c8|9485d282f232ceaa|7d54a336105b8d7d|-1062309350||t19670.1631948751s|2c6e85eb236b9b5c|6654|rds|local|vector|||1.282|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-traits_xylem_table_csv|stem|da6bfcba2e8bad32|510b1b5af374e20d|dc6b5d89536a750b|-206480128|data/traits_xylem_post.csv|t19674.1367937111s|3ec90852d02084c7|184923|file|local|vector|||0.06||
+traits_points_si_plot|stem|f2b7594a87411aed|4c8c363d4354c02d|022e422b048ab701|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19709.5267775585s|1d9c1c6add6ba840|1461003|file|local|vector|||2.237||
+traits_xylem_table|stem|7d454a4b58e962dd|9485d282f232ceaa|3f985196ece32dde|-1062309350||t19709.4710990504s|707058d2e584af21|6323|rds|local|vector|||0.304|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-206480128|data/traits_xylem_post.csv|t19709.5266056575s|3ec90852d02084c7|184923|file|local|vector|||0.056||
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
