@@ -1,0 +1,171 @@
+---
+title: "Transpiration"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+csl: apa.csl
+bibliography: [sap-comparison.bib]
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r setup, eval=TRUE}
+root <- rprojroot::find_root_file(criterion = "_targets.R") # Find the pipeline root directory.
+knitr::opts_knit$set(root.dir = root) # Run the report from the pipeline root directory.
+options(knitr.graphics.rel_path = FALSE) # Make knitr::include_graphics() use absolute paths.
+```
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  echo = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"#,
+  # root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+source(here("R", "data_clean.R"))
+```
+
+```{r}
+tar_read(sarea_df)
+tar_load(post_dir_dep_mid)
+tar_load(dir_dep_imp_df)
+tar_load(sarea_df)
+
+post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
+  dir_dep_effects = as.numeric(post_dir_dep_mid))
+
+dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_mid_df)
+
+full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df)
+
+tmp1 <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.02)
+tmp2 <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+post_ab_list1 <- lapply(1:3, function(i) as.list(tmp1[i, ]))
+post_ab_list2 <- lapply(1:3, function(i) as.list(tmp2[i, ]))
+
+post_ab_df1 <- tmp1 |>
+  summarize(log_a = median(log_a), b = median(b))
+post_ab_df2 <- tmp2 |>
+  summarize(log_a = median(log_a), b = median(b))
+
+calc_summary2 <- function(row, s_df) {
+  s_df2 <- s_df |>
+    mutate(log_fd = row$log_a + row$b * log_k) |>
+    mutate(fd = exp(log_fd)) # scale by sapwood area
+    # mutate(fd = exp(log_fd) * s) # scale by sapwood area
+  return(s_df2)
+}
+
+summary_stats1 <- calc_summary2(post_ab_df1, full_df_processed)
+summary_stats2 <- calc_summary2(post_ab_df2, full_df_processed)
+
+# summary_stats1 <- pmap_dfr(list(post_ab_list1, list(full_df_processed)), calc_summary2, .id = "id")
+# summary_stats2 <- pmap_dfr(list(post_ab_list2, list(full_df_processed)), calc_summary2, .id = "id")
+
+tmp1 <- summary_stats1 |>
+  filter(date == "2015-01-01") |>
+  filter(tree == "t01") #|>
+  # filter(dir == "E")
+tmp2 <- summary_stats2 |>
+  filter(date == "2015-01-01") |>
+  filter(tree == "t01") #|>
+  # filter(dir == "E")
+
+log_fd2 <- tmp2 |> pull(log_fd)
+fd2 <- tmp2 |> pull(fd)
+```
+
+# Example
+
+Pg: 0.02
+```{r}
+post_ab_df1
+```
+
+
+Pg: 0.08
+```{r}
+post_ab_df2
+```
+
+- K ranges
+```{r}
+ggplot(full_df_processed, aes(x = exp(log_k))) +
+  geom_histogram() +
+  xlab("K") +
+  theme_bw()
+```
+
+```{r}
+log_k <- seq(0.001, 0.5, length = 100)  |> log()
+fd_fun1 <- function(x) exp(post_ab_df1$log_a + post_ab_df1$b * x)
+fd_fun2 <- function(x) exp(post_ab_df2$log_a + post_ab_df2$b * x)
+y1 <- fd_fun1(log_k)
+y2 <- fd_fun2(log_k)
+
+tibble(y1, y2, log_k) |>
+  pivot_longer(-log_k) |>
+  mutate(pg = ifelse(name == "y1", "0.02", "0.08")) |>
+  ggplot(aes(x = exp(log_k), y = value, col = pg)) +
+  geom_line() +
+  # scale_color_viridis_d() +
+  xlab("K") +
+  ylab("Sap flux per 10 mins") +
+  theme_bw()
+```
+
+# Example of t01 on 2015-01-01
+
+- not scaled by sapwood area
+
+```{r}
+tmp1 |>
+  mutate(fd2) |>
+  ggplot(aes(x = fd, y = fd2)) +
+  geom_line() +
+  # geom_point(aes(color = as.factor(dep))) +
+  geom_abline(intercept = 0, slope = 1, lty = 2) +
+  scale_color_viridis_d() +
+  xlab("Sap flux per 10 mins; Pg = 0.02") +
+  ylab("Sap flux per 10 mins; Pg = 0.08") +
+  coord_cartesian(xlim = c(0, 125), ylim = c(0, 125)) +
+  theme_bw()
+```
+
+- Sap flux; Pg = 0.02 < PSap flux; g = 0.08 (small K)
+- Sap flux; Pg = 0.02 < PSap flux; g = 0.08 (large K)
+
+
