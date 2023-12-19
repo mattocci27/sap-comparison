@@ -1666,3 +1666,99 @@ rel_bar_wide <- function(rel_bar_df) {
       legend.key.size = unit(0.4, "cm")
     )
 }
+
+
+generate_ab_pg_data <- function(s, d, xylem_lab, a = TRUE) {
+  if (a) {
+    alpha_vars <- str_c("alpha_1_", 1:31)
+    alpha_s_vars <- str_c("alpha[1,", 1:31, "]")
+  } else {
+    alpha_vars <- str_c("alpha_2_", 1:31)
+    alpha_s_vars <- str_c("alpha[2,", 1:31, "]")
+  }
+
+# Initialize a list to store results
+  results <- tibble()
+
+# Loop over each alpha variable
+  for (i in seq_along(alpha_vars)) {
+    # Selecting relevant columns from d for the current alpha
+    d2 <- d |>
+      dplyr::select(matches(paste0(alpha_vars[i], "$")), max_pg)
+
+    # Filtering s for the current alpha summary
+    s2 <- s |>
+      filter(variable == alpha_s_vars[i])
+
+    # Find max_pg that maximizes and minimizes q50
+    max_pg_maximize_q50 <- s2 |>
+      arrange(desc(q50)) |>
+      slice(1) |>
+      pull(max_pg)
+
+    max_pg_minimize_q50 <- s2 |>
+      arrange(q50) |>
+      slice(1) |>
+      pull(max_pg)
+
+    # Process the data
+    d3 <- d2 |>
+      filter(max_pg %in% c(max_pg_maximize_q50, max_pg_minimize_q50)) |>
+      mutate(max_pg = ifelse(max_pg == max_pg_maximize_q50, "max", "min"))
+
+    d4 <- d3 |>
+      pivot_wider(names_from = max_pg, values_from = all_of(alpha_vars[i])) |>
+      unnest(cols = c(min, max)) |>
+      mutate(diff = max - min)
+
+    summary_stats <- d4 |>
+      summarize(m = median(diff), ll = quantile(diff, 0.025), hh = quantile(diff, 0.975))
+
+    # Store results
+    results <- bind_rows(results, summary_stats)
+    # results[[alpha_vars[i]]] <- summary_stats
+  }
+
+  results <- results |>
+    mutate(sp = 1:31) |>
+    mutate(sp = str_c("sp", sp))
+
+  xylem_lab2 <-  xylem_lab |>
+    mutate(sp = str_c("sp", sp_num))
+
+  full_join(results, xylem_lab2)
+}
+
+ab_pg_summary_bars <- function(s, d, xylem_lab) {
+  a_df <- generate_ab_pg_data(s, d, xylem_lab, a = TRUE) |>
+    mutate(across(where(is.numeric), exp))
+  b_df <- generate_ab_pg_data(s, d, xylem_lab, a = FALSE)
+
+  p1 <- a_df |>
+    mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
+    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    geom_vline(xintercept = 1, lty = 2, col = "grey30") +
+    geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
+    geom_point() +
+    xlab(expression("Differences in " * italic(a)))
+
+  p2 <- b_df |>
+    mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
+    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    geom_vline(xintercept = 0, lty = 2, col = "grey30") +
+    geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
+    geom_point() +
+    xlab(expression("Differences in " * italic(b)))
+
+  p1 + p2 +
+    plot_annotation(tag_levels = "A") &
+    my_theme() +
+    theme(
+      legend.position = "none",
+      axis.text.y = element_text(face = "italic", size = 8),
+      # axis.text.y = element_blank(),
+      axis.title.y = element_blank(),
+      strip.background = element_blank(),
+      strip.text.y = element_blank()
+    )
+}

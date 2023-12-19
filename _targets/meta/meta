@@ -7,6 +7,9 @@ ab_granier_summarized_df|stem|394e602729c8a000|440f37626717e2a4|645c95d2e2215fee
 ab_granier_uncertainty_combined_df|stem|bf8e5624049eb981|9591f55837f2652f|8485d84248d52759|2066792403||t19668.6140362772s|4b46e8ae20ede711|198|rds|local|vector|||0.002||
 ab_granier_uncertainty_df|stem|1a4ae6415dec1afd|d6937c811171c85c|cd11c3767f48c9d5|1662224229||t19665.5324999623s|20798277a5bbdf65|499|rds|local|vector|||22.059||
 ab_pg_ribbon|function|85ff3bb7fdfd9004|||||||||||||||
+ab_pg_summary_bars|function|4a568108936d99c1|||||||||||||||
+ab_pg_summary_bars_plot|stem|bd4613891a81faa6|52def1ce595d9fb9|96ae0071ace90cf1|649647961|figs/ab_pg_summary_bars.png*figs/ab_pg_summary_bars.pdf|t19710.3511083801s|972086b2912a6deb|191582|file|local|vector|||3.605|Values from alpha_1_1 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrgroup_bymax_pg   dplyrsummarisen  dplyrn, .groups  drop   dplyrfiltern  1L. Values from alpha_1_2 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrgroup_bymax_pg   dplyrsummarisen  dplyrn, .groups  drop   dplyrfiltern  1L. Values from alpha_1_3 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrgroup_bymax_pg   dplyrsummarisen  dplyrn, .groups  drop   dplyrfiltern  1L. Values from alpha_1_4 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrgroup_bymax_pg   dplyrsummarisen  dplyrn, .groups  drop   dplyrfiltern  1L. Values from alpha_1_5 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrgroup_bymax_pg   dplyrsummarisen  dplyrn, .groups  drop   dplyrfiltern  1L. Values from alpha_1_6 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summar|
+ab_pg_summary_plot|stem||460de189ecdb2c2e|b814fa3e8976c3a1|-1386108537||t19710.3312755667s||0|file|local|vector|||0.909||could not find function ab_pg_summary
 ab_points_four_models_plot|stem|5a5c4a7d920845cc|5c805cab1df717ba|eb5b945effd5cd2d|-534231190|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf|t19674.3584197938s|126ce8b30ae0918e|470808|file|local|vector|||2.639||
 ab_points_four_models_plot_all|stem|07d17fcc59347496|9c01fd54f38d81ed|eb5b945effd5cd2d|-1774495133|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf|t19674.3584351645s|ee1ab097d984fd92|443346|file|local|vector|||2.649||
 ab_scaled_df_segments_inclusive_post_ab_0.08|stem|373b963dd258e813|db83b0ffadd734bf|ecc119c25a256d72|1451486552||t19668.6140533145s|a72b4e607ecebf44|222|rds|local|vector|||0.002||
@@ -170,6 +173,15 @@ dir_dep_uncertainty_df_post_1000_dir_dep|stem|445233d9bf8eb571|c051f49d4c144a5b|
 dir_dep_uncertainty_df_post_1000_dir_only|stem|339eb09ddbc9003f|a8f34e03ad412895|3b0c7ba01c45a189|-1281800600||t19665.7640150137s|b6e3e7ec48614d98|248168|rds|local|vector|||19735.694||
 div_check|function|beb567e61da4a283|||||||||||||||
 draws|object|d8a0d76bffd0659d|||||||||||||||
+draws_fit_draws_segments_xylem_0.02|stem|1a47d62968038f70|6cbe2056ec3e8623|e84e330f9c4146b2|-492202843||t19710.1174235915s|d73cc199e2ae1fb6|2778554|rds|local|vector|||1.665||
+draws_fit_draws_segments_xylem_0.025|stem|447a0ad9f8779da6|9a1bbe0478889c0e|5f7d5706dc73cb10|299529768||t19710.1172741907s|604a6def292cae00|2746803|rds|local|vector|||1.413||
+draws_fit_draws_segments_xylem_0.03|stem|e500fed33092211e|53bc0a30c3bcc6f0|e7b897fdf39c6883|-52246249||t19710.1174262768s|9c39698663e51e39|2669538|rds|local|vector|||1.76||
+draws_fit_draws_segments_xylem_0.035|stem|a3038ef3d5c39fd1|c1da212484c1b7cd|a0850c5c23db0b2a|-1022633616||t19710.1173023394s|eb0d742b868a51a4|2615025|rds|local|vector|||1.396||
+draws_fit_draws_segments_xylem_0.04|stem|f8ae829b1434b3be|34b6c35b76438835|438688bd96135f7d|-499215405||t19710.1174285453s|80ccfab1fbca5678|2577780|rds|local|vector|||1.791||
+draws_fit_draws_segments_xylem_0.05|stem|c1f003ab15c43635|6f043b70950fb13b|484da24c356cdd4d|-260296626||t19710.1174144247s|bfeb23bede380029|2520016|rds|local|vector|||0.314||
+draws_fit_draws_segments_xylem_0.06|stem|85ea6979965a41b4|f5b356e7ed8bcc31|621503ad6f9ec4f0|-976037128||t19710.1174189155s|a30f04d237819bec|2509714|rds|local|vector|||0.355||
+draws_fit_draws_segments_xylem_0.07|stem|78df928b2fbe0744|ba2539ec84893d65|7368f319363f1d25|-673612027||t19710.1174165544s|2fe46cf5e2365c42|2509639|rds|local|vector|||0.334||
+draws_fit_draws_segments_xylem_0.08|stem|f474ddf32ff8c39b|60ea9e8e78f8e59b|3900921f8f591b07|-1730346739||t19710.117421323s|3b6a075f200d7387|2496888|rds|local|vector|||0.353||
 dummy_data|stem|9b4e722e04e899f5|781517b1e65e9d13|0f3d0d62b7511381|-895299049||t19641.416255096s|9e9836541861514c|1112|rds|local|vector|||0.055||
 dummy_sap_stan_data|stem|9c06acccacd01ffb|0944751d2f6791e6|24d11d09af1603a0|2146147746||t19641.4162548645s|f164d4f4f6997bd3|91510|rds|local|vector|||0.141||
 ec_bar|function|ca972e98288cc8fe|||||||||||||||
@@ -239,6 +251,15 @@ fit_draws_anova_noint_nolog|stem|92d0836e37a51794|4d0f9e347b84be0c|5ed0bae450e17
 fit_draws_anova_noint_non.log|stem|92d0836e37a51794|c8e77d49186f3419|25dee5c1cb6e1c33|-969843646||t19670.2756751204s|65d7b466c23c6a40|3580803|fst_tbl|local|vector|||0.011||
 fit_draws_anova_nolog|stem|84d6fb8650fe0d03|4ee878fb42f3d229|e037d474d11c25b4|1512982587||t19670.4144851839s|86dd7da5eefeffde|4192575|fst_tbl|local|vector|||0.01||
 fit_draws_anova_non.log|stem|84d6fb8650fe0d03|1d02e1da86e76bbf|8f03cbc21c72d4a3|2119759098||t19670.2758711887s|86dd7da5eefeffde|4192575|fst_tbl|local|vector|||0.012||
+fit_draws_fit_draws_segments_xylem_0.02|stem|e40e4c93fe95011e|7ff8b5c79b78cad6|f2330f58bcfffdfa|1629736741||t19710.1170345569s|fa1dc3808ab4d382|38274238|rds|local|vector|||1.341||
+fit_draws_fit_draws_segments_xylem_0.025|stem|4d37cd26bcb2f8e3|f541184c2096a5df|2545abb8c2f60904|-1865092057||t19710.117498778s|ca958bc22e7f6aba|41118843|rds|local|vector|||1.105||
+fit_draws_fit_draws_segments_xylem_0.03|stem|6eaaf1742dde8dc4|ad06fd7cfb188eb8|216034bde9cb0702|1872522262||t19710.1170817336s|9800c57996ec7118|42983418|rds|local|vector|||1.297||
+fit_draws_fit_draws_segments_xylem_0.035|stem|e7655b3de12c1b95|a5d636e99c5812cb|5d0b77df41bd995d|-1841429683||t19710.1174779443s|04d18bb9f7c218aa|42543885|rds|local|vector|||0.001||
+fit_draws_fit_draws_segments_xylem_0.04|stem|c7f0c09ae56a2c67|07b26ff029933dad|a410cd1cbc879cbf|-1248856068||t19710.1171049285s|010e1cff55e061d2|42664972|rds|local|vector|||1.499||
+fit_draws_fit_draws_segments_xylem_0.05|stem|51a278f9dfaef252|475ab43df057dc33|223cc704e646444a|-2095115493||t19710.1171282159s|a671e37793142fc9|42404235|rds|local|vector|||1.574||
+fit_draws_fit_draws_segments_xylem_0.06|stem|9ba925fe6d16247e|c3c2449ae6a68eee|1084d16e63f582f6|1017579024||t19710.1170590944s|22e96f03ffe50ae1|42349708|rds|local|vector|||1.476||
+fit_draws_fit_draws_segments_xylem_0.07|stem|56ba7a4521d11809|757b04a3d6a59b2a|da6e0bdb7841f7f1|1255973499||t19710.117152383s|657091572b0dbe41|42346950|rds|local|vector|||1.355||
+fit_draws_fit_draws_segments_xylem_0.08|stem|8f96e372b8307ba2|10ae620e7335ee60|bf0ed876dcb43718|1611058383||t19710.1171763186s|eb4a1e680a8183f1|42170258|rds|local|vector|||1.245||
 fit_draws_sap_dbh|stem|b3130002a2ce11f3|baf4c89c93736e14|d8f35d60762691d4|-2120118860||t19642.667970438s|0f9ec4149fc5250b|274966|fst_tbl|local|vector|||0.006||
 fit_draws_segments_noxylem_traits_int|stem|83058db513af95ec|4e79a55e92cb2690|12163b6a933d1a75|1968316570||t19641.6145794733s|c5472e1ae94fc3a5|218242934|fst_tbl|local|vector|||0.612||
 fit_draws_segments_noxylem_traits_log_dh|stem|c1a0c4a3dd968dab|e9e8d680a9b93476|507bac8d174c9b1f|-1125791057||t19641.6158611827s|0c647f2ad247e71d|276545014|fst_tbl|local|vector|||1.105||
@@ -256,6 +277,7 @@ fit_draws_segments_xylem_0.05|stem|a28c90cbf94e1b59|27c4a75f67d95954|5ce4cca702a
 fit_draws_segments_xylem_0.06|stem|e1532c3ce87e6411|426d5aa5fb9a33dd|278a048c87aea974|749041073||t19641.468968125s|b5b0a0cb409f83c4|60851365|fst_tbl|local|vector|||1.076||
 fit_draws_segments_xylem_0.07|stem|71fbca35ce1fb584|f089ede1b9715211|a0429caae0ac0a8a|457954050||t19641.4669923887s|e402602cff41ed7b|60852018|fst_tbl|local|vector|||0.349||
 fit_draws_segments_xylem_0.08|stem|e2f565e006c8cc59|d3478638ad11e240|0a91a141e11bda68|824835774||t19641.4673057288s|63c296617589f21f|60851034|fst_tbl|local|vector|||0.342||
+fit_draws_segments_xylem_combined|stem|5704c195c96c975d|b3a519d01bdcd2d7|60f385953e45dca1|586884146||t19710.1199220457s|de428c8faceae4db|22304899|rds|local|vector|||0.929||
 fit_draws_species_xylem_0.02|stem|60032b970925928f|accb045119912788|2e2963407a2b6e85|-257029363||t19641.4575049751s|5fccceef54cb883b|12041536|fst_tbl|local|vector|||0.037||
 fit_draws_species_xylem_0.025|stem|4562244cea6dd43d|48b9e4799bfc1e7a|bc1379adafab1f25|-1061471890||t19641.4568828258s|137bcbf8737ce1c8|12032467|fst_tbl|local|vector|||0.037||
 fit_draws_species_xylem_0.03|stem|ef3f5b9a22635dba|47dd8e48aef3fdd8|2f3bb42a22b8fe9b|1719858873||t19641.4575067344s|c36ccccfaccdd006|12024389|fst_tbl|local|vector|||0.034||
@@ -453,6 +475,7 @@ five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215
 full_pool_csv_mapped|object|0f9473f77a72d0f0|||||||||||||||
 full_segments_csv_mapped|object|272a18b0b78c4322|||||||||||||||
 genarete_ec_bar_all_df|function|49e2bf5a7214e598|||||||||||||||
+generate_ab_pg_data|function|b0f3c967d3b214b0|||||||||||||||
 generate_ab_uncertainty|function|cc05c03d465c7a40|||||||||||||||
 generate_ab_uncertainty_granier|function|ef8da69f5f1ad66a|||||||||||||||
 generate_ab_uncertainty_pre|function|48c434d02e6e1c31|||||||||||||||
@@ -527,7 +550,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|8b6ea2e6e94b6620|||||||||||||||
+granier_list|object|f3dec9bc339ee6a7|||||||||||||||
 granier_with_traits_mapped|object|e112992db8f5a7dd|||||||||||||||
 granier_without_traits_mapped|object|09ea246c26574e14|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -785,6 +808,8 @@ segments_noxylem_traits_table_combined|stem|e93b7a08ca8fd734|a0b7d9720f559e68|d2
 segments_xylem_csv|stem|a04d89d87779ec21|8930d73b43c8fa59|af19da9c19e59b9b|2057322204|data/segments_xylem_post.csv|t19670.0841284167s|a9b50106810f6aca|379651|file|local|vector|||0.134||
 segments_xylem_df_combined|stem|13f77c53e7978675|d956f09e23c03cb4|19fa8bb3a3a0f4f9|1654485||t19668.3996458109s|330dc0438b1ef907|52770|rds|local|vector|||0.001||
 segments_xylem_df_mapped|object|9236471175030358|||||||||||||||
+segments_xylem_draws_combined|stem|fdcfc1a9912ec2e5|7ed74bd8ddd5bc9c|d37a44dcd28f2b39|-171653790||t19710.1174533606s|1c724b265e35a8ce|22301942|rds|local|vector|||0.011||
+segments_xylem_draws_mapped|object|65c226b475bd3830|||||||||||||||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.02|stem|5d0c0049ef970825|eff5eaebcfeaffde|0c70315ec390009b|828061138||t19642.4336098758s|021caea346b270e4|20651|rds|local|vector|||1.197||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.025|stem|f0aa6b9050f09962|683d797b69fa5f11|d8656bae9bc7eb63|68442364||t19642.4337231189s|7cbd46e0c848ff2b|20292|rds|local|vector|||1.182||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.03|stem|0c6d8a2e87180eb9|27248d25cbbeb2a4|7cb9aead9fe1acfa|212298855||t19642.4336177s|f8a4655f9134cb4c|19827|rds|local|vector|||1.533||

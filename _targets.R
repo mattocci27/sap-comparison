@@ -531,6 +531,25 @@ segments_xylem_df_mapped <- tar_map(
     generate_summary_non_trait_table(table)
   )
 )
+
+segments_xylem_draws_mapped <- tar_map(
+  list(stan_draws =
+    rlang::syms(
+    str_c("fit_draws_segments_xylem_",
+      c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)))),
+  tar_target(
+    fit_draws,
+    stan_draws
+  ),
+  tar_target(
+    draws, {
+      stan_draws  |>
+        janitor::clean_names() |>
+        dplyr::select(starts_with("alpha"))
+    }
+  )
+)
+
 species_xylem_df_mapped <- tar_map(
   list(stan_summary =
     rlang::syms(
@@ -577,6 +596,12 @@ tar_combined_segments_xylem_df <- tar_combine(
   segments_xylem_df_mapped[["table_re"]],
   command = dplyr::bind_rows(!!!.x, .id = "id")
 )
+tar_combined_segments_xylem_draws <- tar_combine(
+  segments_xylem_draws_combined,
+  segments_xylem_draws_mapped[["draws"]],
+  command = dplyr::bind_rows(!!!.x, .id = "id")
+)
+
 tar_combined_segments_xylem_summary <- tar_combine(
   segments_xylem_summary_combined,
   segments_xylem_df_mapped[["fit_summary"]],
@@ -727,6 +752,14 @@ granier_list <- list(
   segments_noxylem_traits_post_ab_mapped,
   tar_combined_segments_noxylem_traits_table,
   tar_combined_segments_xylem_traits_table,
+  segments_xylem_draws_mapped,
+  tar_combined_segments_xylem_draws,
+  tar_target(
+    fit_draws_segments_xylem_combined, {
+      segments_xylem_draws_combined |>
+      mutate(max_pg = str_extract(id, "\\d+\\.\\d+"))
+    }
+  ),
   tar_target(
     segments_inclusive_ab_csv,
     generate_species_segments_ab_csv(segments_ab_table_combined, "data/segments_inclusive_ab.csv"),
@@ -1001,6 +1034,23 @@ granier_list <- list(
         dpi = 600,
         width = 6.8,
         height = 2.9
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    ab_pg_summary_bars_plot, {
+      p <- ab_pg_summary_bars(
+        s = fit_summary_segments_xylem_combined,
+        d = fit_draws_segments_xylem_combined,
+        xylem_lab)
+      my_ggsave(
+        "figs/ab_pg_summary_bars",
+        p,
+        dpi = 200,
+        width = 173,
+        height = 173,
+        units = "mm"
       )
     },
     format = "file"
