@@ -75,6 +75,7 @@ ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.05|stem|20458f
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.06|stem|629b79447906420d|4b9c90e75583b719|fb71b3618271c376|-1931131896||t19667.1839513087s|8ee6763a19b98a99|248273|rds|local|vector|||1274.334||
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.07|stem|024ec33c5fd13b21|cdc27d374820e6a1|3f5a378a9893cda4|1077127834||t19667.18343316s|1c9d8bbf92493989|248229|rds|local|vector|||1191.012||
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.08|stem|15b8973da7b264ce|586919d50a7dccf4|61da5dacc3f047c2|829033735||t19665.5492426945s|617538999d6f0191|248307|rds|local|vector|||1183.128||
+ab_uncertainty_points_plot|stem|381b8f2e2424f72e|38c9cbaa6db040e8|ffdeedc10a23e973|1367951201|figs/ab_uncertainty_points.png*figs/ab_uncertainty_points.pdf|t19710.420143819s|b9e15dfde533b072|383617|file|local|vector|||1.385||
 add_t16|function|39c9529e3853d8de|||||||||||||||
 anova_data_log|stem|a094a992fe90d830|1b6f948e63581fe1|c27d6a068aac6fdb|-1005727767||t19641.4238021719s|15a3751d344e39a8|1455|rds|local|vector|||1.203||
 anova_data_nolog|stem|7c2a0995a8cc403f|1d31823bf1829f85|c27d6a068aac6fdb|-1587033423||t19670.4142218923s|ba8f2f557a4dd502|1405|rds|local|vector|||1.092||
@@ -970,7 +971,7 @@ traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-
 uncertainty_ab_mapped|object|cfa13429f45aa37b|||||||||||||||
 uncertainty_dir_dep_mapped|object|94de4d3a684cc9dc|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|2aba731e440c2fad|||||||||||||||
+uncertainty_figs_list|object|df05385fd617dfc5|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|65ea099f632d5c6f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

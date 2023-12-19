@@ -1533,6 +1533,33 @@ uncertainty_figs_list <- list(
     },
     format = "file"
   ),
+  tar_target(
+    ab_uncertainty_points_plot, {
+      tmp1 <- ab_summarized_df_species_xylem_post_ab_fit_draws_species_xylem_0.08
+      tmp2 <- segments_xylem_post_ab_fit_draws_segments_xylem_0.08 %>%
+        mutate(id = 1:nrow(.)) |>
+        mutate(id = as.character(id))
+      tmp3 <- full_join(tmp1, tmp2)
+      p <- ggplot(tmp3, aes(x = exp(log_a), y = b, col = tr)) +
+        geom_point() +
+        scale_color_viridis_c(name = expression("Transpiration (mm"~y^-1*")" )) +
+        xlab(expression(italic(a))) +
+        ylab(expression(italic(b))) +
+        my_theme() +
+        theme(
+          legend.position = "right"
+        )
+      my_ggsave(
+        "figs/ab_uncertainty_points",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 65,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   # tar_target(
   #   tr_bar_comb_plot, {
   #     p1 <- tr_bar_ab(tr_bar_ab_df |> filter(model == "Model 4") |> filter(pg != "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model) +
