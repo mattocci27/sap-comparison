@@ -40,7 +40,9 @@ tar_option_set(packages = c(
   "missForest",
   "data.table",
   "gtable",
-  "ggrepel"
+  "ggrepel",
+  "viridis",
+  "ggpointdensity"
 ))
 
 # tar_option_set(
@@ -671,6 +673,29 @@ tar_combined_species_xylem_summary <- tar_combine(
       iter_warmup = 4000,
       iter_sampling = 2000,
       adapt_delta = 0.99,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+        ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+        )
+    ),
+   tar_stan_mcmc(
+      fit3,
+      "stan/segments_noxylem_traits_sp.stan",
+      data = stan_data_noxylem,
+      refresh = 0,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 2),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.95,
       max_treedepth = 15,
       seed = 123,
       return_draws = TRUE,
@@ -1540,11 +1565,11 @@ uncertainty_figs_list <- list(
         mutate(id = 1:nrow(.)) |>
         mutate(id = as.character(id))
       tmp3 <- full_join(tmp1, tmp2)
-      p <- ggplot(tmp3, aes(x = exp(log_a), y = b, col = tr)) +
-        geom_point() +
+      p <- ggplot(tmp3 |> sample_n(1000), aes(x = exp(log_a), y = b, col = tr)) +
+        geom_point(alpha = 0.8) +
         scale_color_viridis_c(name = expression("Transpiration (mm"~y^-1*")" )) +
-        xlab(expression(italic(a))) +
-        ylab(expression(italic(b))) +
+        xlab(expression("Coefficient"~italic(a))) +
+        ylab(expression("Coefficient"~italic(b))) +
         my_theme() +
         theme(
           legend.position = "right"
@@ -1555,6 +1580,27 @@ uncertainty_figs_list <- list(
         dpi = 600,
         width = 110,
         height = 65,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    tr_example_list,
+    generate_tr_example_list(
+      post_dir_dep_mid, dir_dep_imp_df, sarea_df,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.02,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+  ),
+  tar_target(
+    tr_example_panel_plot, {
+      p <- tr_example_panel(tr_example_list)
+      my_ggsave(
+        "figs/tr_example_panel_plot",
+        p,
+        dpi = 200,
+        width = 173,
+        height = 58,
         units = "mm"
       )
     },
