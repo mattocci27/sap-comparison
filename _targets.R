@@ -1016,10 +1016,45 @@ granier_list <- list(
       single_trait = TRUE)
   ),
   tar_target(
+    # tar_read(trait_fig_data_combined)
+    trait_pred_data_noxylem_sp_combined,
+    generate_combined_trait_fig_data(
+      summary = list(
+        fit3_summary_segments_noxylem_traits_sp_log_vaf,
+        fit3_summary_segments_noxylem_traits_sp_log_ks,
+        fit3_summary_segments_noxylem_traits_sp_wood_density,
+        fit3_summary_segments_noxylem_traits_sp_log_dh,
+        fit3_summary_segments_noxylem_traits_sp_log_vf),
+      draws = list(
+        fit3_draws_segments_noxylem_traits_sp_log_vaf,
+        fit3_draws_segments_noxylem_traits_sp_log_ks,
+        fit3_draws_segments_noxylem_traits_sp_wood_density,
+        fit3_draws_segments_noxylem_traits_sp_log_dh,
+        fit3_draws_segments_noxylem_traits_sp_log_vf),
+      fd_k_traits_csv,
+      xylem_lab,
+      no_xylem = TRUE,
+      single_trait = TRUE,
+      sp_level = TRUE)
+  ),
+  tar_target(
     traits_points_main_plot, {
       p <- traits_points_main(trait_pred_data_noxylem_combined)
       my_ggsave(
         "figs/traits_points_main",
+        p,
+        dpi = 600,
+        width = 6.8,
+        height = 2.7
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_points_sp_main_plot, {
+      p <- traits_points_main(trait_pred_data_noxylem_sp_combined)
+      my_ggsave(
+        "figs/traits_points_sp_main",
         p,
         dpi = 600,
         width = 6.8,

@@ -1671,19 +1671,26 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
 }
 
 
-generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE) {
-# summary_data <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
+generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
+# summary_data <- tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf)
+# draws <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)
+# summary_data <- tar_read(fit_summary_segments_noxylem_traits_log_vaf)
 # draws <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)
 # summary_data <- tar_read(fit_abt2_summary_granier_with_traits_no_xylem)
 # draws <- tar_read(fit_abt2_draws_granier_with_traits_no_xylem)
-  a_mat <- summary_data |>
-    filter(str_detect(variable, "^A\\[1"))
-  b_mat <- summary_data |>
-    filter(str_detect(variable, "^A\\[2"))
+# data <- tar_read(stan_data_noxylem_log_vaf)
 
-# summary_data <- tar_read(fit_abt_summary_granier_with_traits_sap_trait_clean_vaf)
-# summary_data |>
-#     filter(str_detect(variable, "gamma"))
+  if (sp_level) {
+    a_mat <- summary_data |>
+        filter(str_detect(variable, "^a_species"))
+    b_mat <- summary_data |>
+        filter(str_detect(variable, "^b_species"))
+  } else {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[1"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[2"))
+  }
 
   # tar_load(fd_k_traits_csv)
   d <- read_csv(fd_k_traits_csv)
@@ -1697,6 +1704,10 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 
   d <- d |>
     filter(is.na(removed_k)) #|>
+
+  # d <- read_csv(fd_k_traits_csv)
+  # d |>
+  #   pull(sp_short) |> unique()
 
   tmp0 <- d |>
     mutate(log_swc = log(swc)) |>
@@ -1725,14 +1736,25 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
   }
 
   if (no_xylem) {
-    ga <- paste("beta_a", tmp, "1", sep = "_")
-    gb <- paste("beta_b", tmp, "1", sep = "_")
-    coef_a <- draws |>
-      dplyr::select(beta_a_1_1, {{ga}}) |>
-      as.matrix()
-    coef_b <- draws |>
-      dplyr::select(beta_b_1_1, {{gb}}) |>
-      as.matrix()
+    if (sp_level) {
+      ga <- paste("beta_a", tmp, sep = "_")
+      gb <- paste("beta_b", tmp, sep = "_")
+      coef_a <- draws |>
+        dplyr::select(beta_a_1, {{ga}}) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_b_1, {{gb}}) |>
+        as.matrix()
+    } else {
+      ga <- paste("beta_a", tmp, "1", sep = "_")
+      gb <- paste("beta_b", tmp, "1", sep = "_")
+      coef_a <- draws |>
+        dplyr::select(beta_a_1_1, {{ga}}) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_b_1_1, {{gb}}) |>
+        as.matrix()
+    }
   } else {
     ga <- paste("gamma_a", tmp, "1", sep = "_")
     gb <- paste("gamma_b", tmp, "1", sep = "_")
@@ -1745,6 +1767,12 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
   }
 
   # trait_name <- "log_ks"
+  if (sp_level) {
+    tmp0 <- tmp0 |>
+      group_by(species) |>
+      summarise_if(is.numeric, mean, na.rm = TRUE) |>
+      ungroup()
+  }
   trait <- tmp0 |> pull({{trait_name}})
   ts <- scale(trait) |> range()
   ts <- seq(ts[1], ts[2], length = 100)
@@ -1803,23 +1831,24 @@ generate_combined_trait_fig_data <- function(
     fd_k_traits_csv,
     xylem_lab,
     no_xylem = TRUE,
-    single_trait = TRUE) {
+    single_trait = TRUE,
+    sp_level = FALSE) {
 
    vaf <- generate_trait_fig_data(summary[[1]], draws[[1]],
      fd_k_traits_csv, xylem_lab,
-     "log_vaf", no_xylem, single_trait)
+     "log_vaf", no_xylem, single_trait, sp_level)
    ks <- generate_trait_fig_data(summary[[2]], draws[[2]],
      fd_k_traits_csv, xylem_lab,
-     "log_ks", no_xylem, single_trait)
+     "log_ks", no_xylem, single_trait, sp_level)
    wd <- generate_trait_fig_data(summary[[3]], draws[[3]],
      fd_k_traits_csv, xylem_lab,
-     "wood_density", no_xylem, single_trait)
+     "wood_density", no_xylem, single_trait, sp_level)
    dh <- generate_trait_fig_data(summary[[4]], draws[[4]],
      fd_k_traits_csv, xylem_lab,
-     "log_dh", no_xylem, single_trait)
+     "log_dh", no_xylem, single_trait, sp_level)
    vf <- generate_trait_fig_data(summary[[5]], draws[[5]],
      fd_k_traits_csv, xylem_lab,
-     "log_vf", no_xylem, single_trait)
+     "log_vf", no_xylem, single_trait, sp_level)
 
    list(vaf, ks, wd, dh, vf)
  }

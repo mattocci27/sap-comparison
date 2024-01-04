@@ -52,6 +52,7 @@ library(GGally)
 library(ggridges)
 library(ggrepel)
 library(bayesplot)
+library(patchwork)
 source(here("R", "stan.R"))
 source(here("R", "render.R"))
 source(here("R", "figs.R"))
@@ -60,8 +61,11 @@ source(here("R", "data_clean.R"))
 
 ```{r}
 tar_read(sarea_df)
+
 tar_load(post_dir_dep_mid)
+
 tar_load(dir_dep_imp_df)
+
 tar_load(sarea_df)
 
 post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
@@ -73,8 +77,8 @@ full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df)
 
 tmp1 <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.02)
 tmp2 <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
-post_ab_list1 <- lapply(1:3, function(i) as.list(tmp1[i, ]))
-post_ab_list2 <- lapply(1:3, function(i) as.list(tmp2[i, ]))
+# post_ab_list1 <- lapply(1:3, function(i) as.list(tmp1[i, ]))
+# post_ab_list2 <- lapply(1:3, function(i) as.list(tmp2[i, ]))
 
 post_ab_df1 <- tmp1 |>
   summarize(log_a = median(log_a), b = median(b))
@@ -125,10 +129,11 @@ post_ab_df2
 
 Most of K < 0.05
 ```{r}
-ggplot(full_df_processed, aes(x = exp(log_k))) +
+p1 <- ggplot(full_df_processed, aes(x = exp(log_k))) +
   geom_histogram() +
   xlab("K") +
   theme_bw()
+p1
 ```
 
 ```{r}
@@ -138,7 +143,7 @@ fd_fun2 <- function(x) exp(post_ab_df2$log_a + post_ab_df2$b * x)
 y1 <- fd_fun1(log_k)
 y2 <- fd_fun2(log_k)
 
-tibble(y1, y2, log_k) |>
+p2 <- tibble(y1, y2, log_k) |>
   pivot_longer(-log_k) |>
   mutate(pg = ifelse(name == "y1", "0.02", "0.08")) |>
   ggplot(aes(x = exp(log_k), y = value, col = pg)) +
@@ -146,6 +151,7 @@ tibble(y1, y2, log_k) |>
   xlab("K") +
   ylab("Sap flux per 10 mins") +
   theme_bw()
+p2
 ```
 
 The sum of sap flux density (i.e., annual transpiration) will be not that different among different pressure gradients.
@@ -155,7 +161,7 @@ The sum of sap flux density (i.e., annual transpiration) will be not that differ
 - not scaled by sapwood area
 
 ```{r}
-tmp1 |>
+p3 <- tmp1 |>
   mutate(fd2) |>
   ggplot(aes(x = fd, y = fd2)) +
   geom_line() +
@@ -166,10 +172,13 @@ tmp1 |>
   ylab("Sap flux per 10 mins; Pg = 0.08") +
   coord_cartesian(xlim = c(0, 125), ylim = c(0, 125)) +
   theme_bw()
+p3
 ```
 
 - Sap flux; Pg = 0.02 > Sap flux; Pg = 0.08 (small K)
 - Sap flux; Pg = 0.02 < Sap flux; Pg = 0.08 (large K)
 
 
-
+```{r}
+p1 + p2 + p3
+```

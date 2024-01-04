@@ -1762,3 +1762,89 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
       strip.text.y = element_blank()
     )
 }
+
+generate_tr_example_list <- function(post_dir_dep_mid, dir_dep_imp_df, sarea_df, segments_xylem_post_ab_fit_draws_segments_xylem_0.02, segments_xylem_post_ab_fit_draws_segments_xylem_0.08) {
+  post_dir_dep_mid_df <- tibble(dir_dep = names(post_dir_dep_mid),
+    dir_dep_effects = as.numeric(post_dir_dep_mid))
+  dir_dep_imp_df_re <- prepare_dir_dep_imp_df(dir_dep_imp_df, post_dir_dep_mid_df)
+  full_df_processed <- process_full_df(dir_dep_imp_df_re, sarea_df)
+
+  # fd vs k
+  tmp1 <- segments_xylem_post_ab_fit_draws_segments_xylem_0.02
+  tmp2 <- segments_xylem_post_ab_fit_draws_segments_xylem_0.08
+  post_ab_df1 <- tmp1 |>
+    summarize(log_a = median(log_a), b = median(b))
+  post_ab_df2 <- tmp2 |>
+    summarize(log_a = median(log_a), b = median(b))
+
+  log_k <- seq(0.001, 0.5, length = 100)  |> log()
+  fd_fun1 <- function(x) exp(post_ab_df1$log_a + post_ab_df1$b * x)
+  fd_fun2 <- function(x) exp(post_ab_df2$log_a + post_ab_df2$b * x)
+  y1 <- fd_fun1(log_k)
+  y2 <- fd_fun2(log_k)
+
+  # fd
+  calc_summary2 <- function(row, s_df) {
+  s_df2 <- s_df |>
+    mutate(log_fd = row$log_a + row$b * log_k) |>
+    # mutate(fd = exp(log_fd)) # scale by sapwood area
+    mutate(fd = exp(log_fd) * s) # scale by sapwood area
+    return(s_df2)
+  }
+
+  summary_stats1 <- calc_summary2(post_ab_df1, full_df_processed)
+  summary_stats2 <- calc_summary2(post_ab_df2, full_df_processed)
+
+  tmp1 <- summary_stats1 |>
+    # filter(date == "2015-01-01") |>
+    filter(tree == "t01")
+  tmp2 <- summary_stats2 |>
+    # filter(date == "2015-01-01") |>
+    filter(tree == "t01")
+  log_fd2 <- tmp2 |> pull(log_fd)
+  fd2 <- tmp2 |> pull(fd)
+
+  list(
+    df1 = full_df_processed |> dplyr::select(log_k),
+    df2 = tibble(y1, y2, log_k),
+    df3 = tmp1 |> mutate(fd2)
+   )
+}
+
+tr_example_panel <- function(tr_example_list) {
+  p1 <- ggplot(tr_example_list$df1, aes(x = exp(log_k))) +
+    geom_histogram() +
+    xlab(expression(italic(K))) +
+    theme_bw()
+
+  p2 <- tr_example_list$df2 |>
+    pivot_longer(-log_k) |>
+    mutate(pg = ifelse(name == "y1", "0.02", "0.08")) |>
+    ggplot(aes(x = exp(log_k), y = value, col = pg)) +
+    geom_line() +
+    xlab(expression(italic(K))) +
+    ylab(expression(italic(F[d])~(g~m^{-2}~s^{-1}))) +
+    guides(col = guide_legend(title = expression(italic(P[g])~(MPa~m^{-1})))) +
+    theme_bw() +
+    theme(
+      legend.position = c(0.3, 0.72),
+      legend.title = element_text(size = 7),
+      legend.text = element_text(size = 7),
+      legend.margin = margin(1, 1, 1, 1)
+    )
+
+  df3 <- tr_example_list$df3 #|>
+    # filter(str_detect(date, "2015-07|2015-08"))
+
+  p3 <- ggplot(df3, aes(x = fd * 600 * 1e-7, y = fd2 * 600 * 1e-7)) +
+    geom_point() +
+    # geom_pointdensity() +
+    geom_abline(intercept = 0, slope = 1, lty = 2) +
+    scale_color_viridis() +
+    xlab("Sap flux; Pg == 0.02") +
+    ylab("Sap flux; Pg = 0.08") +
+    # coord_cartesian(xlim = c(0, 5000), ylim = c(0, 5000)) +
+    theme_bw()
+
+  p1 + p2 + p3
+}
