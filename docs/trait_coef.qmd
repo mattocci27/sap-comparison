@@ -11,7 +11,6 @@ crossref:
 prefer-html: true
 format:
   html:
-    # theme: spacelab
     theme: coderpro
     toc: true
     toc-depth: 2
@@ -63,53 +62,53 @@ clean_tbl <- function(x) {
     filter(q2_5 * q97_5 > 0)
 }
 
-
-tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf,
-  store = here("_targets")) |>
-  clean_tbl()
-
-# tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf,
-#   store = here("_targets")) |>
-#   janitor::clean_names() |>
-#   kbl()
-
 tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
   store = here("_targets")) |>
   clean_tbl()
 
-tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_ks,
   store = here("_targets")) |>
-  filter(str_detect(variable, "a_hat"))
+  clean_tbl()
 
-tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+tar_read(fit3_summary_segments_noxylem_traits_sp_wood_density,
   store = here("_targets")) |>
-  filter(str_detect(variable, "^A\\["))
+  clean_tbl()
 
-tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh,
   store = here("_targets")) |>
-  filter(str_detect(variable, "^A_species\\["))
+  clean_tbl()
 
-d <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf,
-  store = here("_targets"))
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf,
+  store = here("_targets")) |>
+  clean_tbl()
 
-d2 <- posterior::as_draws_array(d)
-
-color_scheme_set("viridis")
-mcmc_trace(d2, regex_pars = "tau_species")
-
-mcmc_trace(d2, regex_pars = "beta")
-
-# tar_read(fit3_summary_segments_noxylem_traits_sp_wood_density,
-#   store = here("_targets")) |>
-#   clean_tbl()
-
-# tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh,
-#   store = here("_targets")) |>
-#   clean_tbl()
-
-# tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf,
-#   store = here("_targets")) |>
-#   clean_tbl()
-
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_swc,
+  store = here("_targets")) |>
+  clean_tbl()
 ```
 
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_log_vaf,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit_summary_segments_noxylem_traits_log_ks,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit_summary_segments_noxylem_traits_wood_density,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit_summary_segments_noxylem_traits_log_dh,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit_summary_segments_noxylem_traits_log_vf,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit_summary_segments_noxylem_traits_log_swc,
+  store = here("_targets")) |>
+  clean_tbl()
+```
