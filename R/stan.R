@@ -2384,11 +2384,17 @@ calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_co
 }
 
 # Main function to process the draws and calculate R2 for both a and b
-process_draws_and_calculate_trait_r2 <- function(draws, xj) {
+process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE) {
   draws_cleaned <- draws %>%
     janitor::clean_names()
 
-  a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1_1", "beta_a_2_1", "a_hat_1_", xj)
-  b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1_1", "beta_b_2_1", "a_hat_2_", xj)
+  if (sp_level) {
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1", "beta_a_2", "A_species_1_", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1", "beta_b_2", "A_species_2_", x)
+  } else {
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1_1", "beta_a_2_1", "a_hat_1_", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1_1", "beta_b_2_1", "a_hat_2_", x)
+  }
+
   return(list(a_r2 = a_r2_q, b_r2 = b_r2_q))
 }
