@@ -1,0 +1,115 @@
+---
+title: "Traits vs coefficients"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+csl: apa.csl
+bibliography: [sap-comparison.bib]
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+prefer-html: true
+format:
+  html:
+    # theme: spacelab
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    smooth-scroll: true
+    highlight-style: github
+  docx:
+    toc: true
+    number-sections: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+source(here("R", "data_clean.R"))
+```
+
+```{r}
+clean_tbl <- function(x) {
+  x |> janitor::clean_names() |>
+    filter(str_detect(variable, "beta")) |>
+    filter(q2_5 * q97_5 > 0)
+}
+
+
+tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf,
+  store = here("_targets")) |>
+  clean_tbl()
+
+# tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf,
+#   store = here("_targets")) |>
+#   janitor::clean_names() |>
+#   kbl()
+
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+  store = here("_targets")) |>
+  clean_tbl()
+
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+  store = here("_targets")) |>
+  filter(str_detect(variable, "a_hat"))
+
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+  store = here("_targets")) |>
+  filter(str_detect(variable, "^A\\["))
+
+tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf,
+  store = here("_targets")) |>
+  filter(str_detect(variable, "^A_species\\["))
+
+d <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf,
+  store = here("_targets"))
+
+d2 <- posterior::as_draws_array(d)
+
+color_scheme_set("viridis")
+mcmc_trace(d2, regex_pars = "tau_species")
+
+mcmc_trace(d2, regex_pars = "beta")
+
+# tar_read(fit3_summary_segments_noxylem_traits_sp_wood_density,
+#   store = here("_targets")) |>
+#   clean_tbl()
+
+# tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh,
+#   store = here("_targets")) |>
+#   clean_tbl()
+
+# tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf,
+#   store = here("_targets")) |>
+#   clean_tbl()
+
+```
+

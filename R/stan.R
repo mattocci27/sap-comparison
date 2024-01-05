@@ -1679,12 +1679,15 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 # summary_data <- tar_read(fit_abt2_summary_granier_with_traits_no_xylem)
 # draws <- tar_read(fit_abt2_draws_granier_with_traits_no_xylem)
 # data <- tar_read(stan_data_noxylem_log_vaf)
-
+    # a_mat1 <- summary_data |>
+    #     filter(str_detect(variable, "^A_species\\[1"))
+    # a_mat2 <- summary_data |>
+    #     filter(str_detect(variable, "^a_species"))
   if (sp_level) {
     a_mat <- summary_data |>
-        filter(str_detect(variable, "^a_species"))
+        filter(str_detect(variable, "^A_species\\[1"))
     b_mat <- summary_data |>
-        filter(str_detect(variable, "^b_species"))
+        filter(str_detect(variable, "^A_species\\[2"))
   } else {
     a_mat <- summary_data |>
       filter(str_detect(variable, "^A\\[1"))
@@ -1773,6 +1776,7 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
       summarise_if(is.numeric, mean, na.rm = TRUE) |>
       ungroup()
   }
+  # trait_name <- "log_vaf"
   trait <- tmp0 |> pull({{trait_name}})
   ts <- scale(trait) |> range()
   ts <- seq(ts[1], ts[2], length = 100)

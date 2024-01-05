@@ -625,7 +625,7 @@ tar_combined_species_xylem_summary <- tar_combine(
   granier_with_traits_mapped <- tar_map(
     values = list(trait_name = rlang::syms(c(
       "log_dh", "log_vf", "wood_density",
-      "log_ks", "log_vaf", "int", "log_swc"))),
+      "log_ks", "log_vaf", "log_swc"))),
     tar_target(
       stan_data_noxylem,
       generate_sap_each_trait_no_xylem_stan_data(
@@ -693,6 +693,29 @@ tar_combined_species_xylem_summary <- tar_combine(
       refresh = 0,
       chains = 4,
       parallel_chains = getOption("mc.cores", 2),
+      iter_warmup = 2000,
+      iter_sampling = 2000,
+      adapt_delta = 0.95,
+      max_treedepth = 15,
+      seed = 123,
+      return_draws = TRUE,
+      return_diagnostics = TRUE,
+      return_summary = TRUE,
+      summaries = list(
+        mean = ~mean(.x),
+        sd = ~sd(.x),
+        mad = ~mad(.x),
+        ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+        posterior::default_convergence_measures()
+        )
+    ),
+   tar_stan_mcmc(
+      fit4,
+      "stan/segments_noxylem_traits_sp2.stan",
+      data = stan_data_noxylem,
+      refresh = 0,
+      chains = 4,
+      parallel_chains = getOption("mc.cores", 4),
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.95,
