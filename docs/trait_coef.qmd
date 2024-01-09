@@ -117,219 +117,16 @@ tar_read(fit_summary_segments_noxylem_traits_log_swc,
 
 
 ```{r}
-# define your custom theme function with reduced panel spacing
-my_theme2 <- function() {
-  my_theme() +
-  theme(
-    panel.spacing = unit(0.1, "lines"), # adjust this value to reduce the space
-    legend.position = "none",
-    # any other theme customizations go here
-  )
-}
-
-library(grid)
 pred_data_seg <- tar_read(trait_pred_data_noxylem_combined, store = here("_targets"))
 pred_data_sp  <- tar_read(trait_pred_data_noxylem_sp_combined, store = here("_targets"))
-
-use_color <- TRUE
-ks_r2 <- tar_read(ks_r2, store = here("_targets"))
-
-# Create a grob (graphical object) for the text annotation
-r2_grob <- textGrob(label = expression(italic(R)^2 * " = 0.81"),
-                    x = unit(0.95, "npc"), y = unit(0.1, "npc"),
-                    hjust = 1, vjust = 0, gp = gpar(col = "black"))
-
 ```
-```{r, eval=FALSE, include=FALSE}
-p1 <- traits_points_each(pred_data_seg[[1]], log_vaf,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob) +
-  xlab("") +
-  my_theme2()
-  # theme(
-  # #  axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
-  #  axis.text.x = element_blank()
-  # ) +
-
-p2 <- traits_points_each(pred_data_seg[[1]], log_vaf, coef_a = FALSE,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob) +
-  xlab("") +
-  my_theme2()
-p3 <- traits_points_each(pred_data_seg[[2]], log_ks,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob) +
-  ylab("") +
-  xlab("") #+
-p4 <- traits_points_each(pred_data_seg[[2]], log_ks, coef_a = FALSE,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob)# +
-
-p5 <- traits_points_each(pred_data_sp[[1]], log_vaf,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob) +
-  xlab("") #+
-p6 <- traits_points_each(pred_data_sp[[1]], log_vaf, coef_a = FALSE,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob)# +
-p7 <- traits_points_each(pred_data_sp[[2]], log_ks,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob) +
-  xlab("") #+
-p8 <- traits_points_each(pred_data_sp[[2]], log_ks, coef_a = FALSE,
-  with_ribbon = TRUE, use_color = use_color) +
-  annotation_custom(r2_grob)# +
-
-p1 + p3 + p5 + p7 + p2 + p4 + p6 + p8 +
-  plot_layout(nrow = 2, ncol = 4)
-```
-
-```{r, eval=F, echo=F}
-tmp_seg <- pred_data_seg[[1]]$pred_points
-
-tmp_seg_a <- tmp_seg |>
-  dplyr::select(-contains("b_")) |>
-  rename(
-    mid = a_mid |> exp(),
-    lwr = a_lwr |> exp(),
-    upr = a_up |> exp()
-  ) |>
-  mutate(ab = "a")
-tmp_seg_b <- tmp_seg |>
-  dplyr::select(-contains("a_")) |>
-  rename(
-    mid = b_mid,
-    lwr = b_lwr,
-    upr = b_upr
-  ) |>
-  mutate(ab = "b")
-
-fig_data_seg <- bind_rows(tmp_seg_a, tmp_seg_b) |>
-  pivot_longer(
-    cols = c(log_vaf, log_ks),
-    names_to = "trait",
-    values_to = "val"
-  ) |>
-  mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
-
-p1 <- fig_data_seg |>
-  filter(ab == "a") |>
-    ggplot() +
-    geom_point(
-      aes(y = mid, x = exp(val), col = xylem_long_fct),
-      alpha = 0.5
-      ) +
-    facet_grid(. ~ trait, scale = "free") +
-    scale_x_log10() +
-    scale_y_log10() +
-    ggtitle("Segments") +
-    my_theme() +
-    theme(
-      axis.text.x = element_blank(),
-      axis.title.x = element_blank(),
-      strip.background.x = element_blank(),
-      # legend.position = c(0.8, 0.8),
-      legend.position = "none",
-      plot.title = element_text(hjust = 0.5, vjust = 1)
-    )
-
-p2 <- fig_data_seg |>
-  filter(ab == "b") |>
-    ggplot() +
-    geom_point(
-      aes(y = mid, x = exp(val), col = xylem_long_fct),
-      alpha = 0.5
-      ) +
-    facet_grid(. ~ trait, scale = "free", switch = "x") +
-    scale_x_log10() +
-    my_theme() +
-    theme(
-      strip.text.x = element_blank(),
-      legend.position = "none",
-      axis.title.x = element_blank()
-    )
-
-tmp_sp <- pred_data_sp[[1]]$pred_points
-
-tmp_sp_a <- tmp_sp |>
-  dplyr::select(-contains("b_")) |>
-  rename(
-    mid = a_mid |> exp(),
-    lwr = a_lwr |> exp(),
-    upr = a_up |> exp()
-  ) |>
-  mutate(ab = "a")
-tmp_sp_b <- tmp_sp |>
-  dplyr::select(-contains("a_")) |>
-  rename(
-    mid = b_mid,
-    lwr = b_lwr,
-    upr = b_upr
-  ) |>
-  mutate(ab = "b")
-
-tmp_sp_a
-tmp_sp_b
-
-
-
-fig_data_sp <- bind_rows(tmp_sp_a, tmp_sp_b) |>
-  pivot_longer(
-    cols = c(log_vaf, log_ks),
-    names_to = "trait",
-    values_to = "val"
-  ) |>
-  mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
-
-p3 <- fig_data_sp |>
-  filter(ab == "a") |>
-    ggplot() +
-    geom_point(
-      aes(y = mid, x = exp(val), col = xylem_long_fct),
-      alpha = 0.5
-      ) +
-    facet_grid(. ~ trait, scale = "free") +
-    scale_x_log10() +
-    scale_y_log10() +
-    ggtitle("Species") +
-    my_theme() +
-    theme(
-      axis.text.x = element_blank(),
-      axis.title.x = element_blank(),
-      strip.background.x = element_blank(),
-      legend.position = "right",
-      plot.title = element_text(hjust = 0.5, vjust = 1)
-    )
-
-p4 <- fig_data_sp |>
-  filter(ab == "b") |>
-    ggplot() +
-    geom_point(
-      aes(y = mid, x = exp(val), col = xylem_long_fct),
-      alpha = 0.5
-      ) +
-    facet_grid(. ~ trait, scale = "free", switch = "x") +
-    scale_x_log10() +
-    my_theme() +
-    theme(
-      strip.background.x = element_blank(),
-      axis.title.x = element_blank(),
-      strip.text.x = element_blank(),
-      legend.position = "none"
-    )
-
-p1 + p3 + p2 + p4 +
-  plot_layout(nrow = 2, ncol = 2)
-```
-
-
 
 ```{r}
 # Create a function to prepare the data
 prepare_data <- function(data, value_prefix) {
-  data %>%
-    select(-contains(setdiff(c("a_", "b_"), value_prefix))) %>%
-    rename_with(~ sub(value_prefix, "", .x)) %>%
+  data |>
+    select(-contains(setdiff(c("a_", "b_"), value_prefix))) |>
+    rename_with(~ sub(value_prefix, "", .x)) |>
     mutate(ab = substr(value_prefix, 1, 1))  |>
     mutate(
       mid = ifelse(ab == "a", exp(mid), mid),
@@ -357,16 +154,40 @@ prepare_line_data <- function(data, ab = "a") {
   }
 }
 
+tar_load(ks_r2, store = here("_targets"))
+tar_load(vaf_r2, store = here("_targets"))
+tar_load(ks_sp_r2, store = here("_targets"))
+tar_load(vaf_sp_r2, store = here("_targets"))
 
+r2_list <- list(vaf_r2, ks_r2)
+r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
 
 # Create a function for the repeated plotting code
-plot_data <- function(data, ab_value, plot_title = NULL) {
-  p <- data |>
+plot_data <- function(data, r2_list, ab_value, plot_title = NULL) {
+
+  r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |> sapply("[[", 2)
+
+  data <- data |>
     mutate(trait = ifelse(trait == "log_vaf", "VAF~(`%`)", "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})")) |>
-    filter(ab == ab_value) %>%
+    filter(ab == ab_value)
+
+  r2_data <- data |>
+    group_by(trait) |>
+    mutate(r2_x = max(exp(val)), r2_y = min(mid)) |>
+    ungroup() |>
+    dplyr::select(trait, r2_x, r2_y) |>
+    distinct() |>
+    mutate(r2 = paste0("italic(R^2) == ", round(r2, 2))) |>
+    mutate(r2_y = ifelse(ab_value == "a", 10, 0))
+
+  print(r2_data)
+
+  p <- data |>
     ggplot() +
       geom_point(aes(y = mid, x = exp(val), color = xylem_long_fct), alpha = 0.5) +
       geom_errorbar(aes(x = exp(val), ymin = lwr, ymax = upr, color = xylem_long_fct), linewidth = 0.25) +
+      geom_text(data = r2_data, aes(x = r2_x, y = r2_y, label = r2),
+        parse = TRUE, size = 3, hjust = 1, vjust = 0) +
       facet_grid(. ~ trait, scales = "free", label = label_parsed) +
       scale_x_log10() +
       my_theme() +
@@ -391,7 +212,7 @@ plot_data <- function(data, ab_value, plot_title = NULL) {
         breaks = c(10, 100, 1000, 10000),
         labels = c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))
       ) +
-      coord_cartesian(ylim = c(10, 10000)) +
+      coord_cartesian(ylim = c(10, 20000)) +
       theme(
         strip.text.x = element_blank(),
         axis.ticks.x = element_blank()
@@ -409,7 +230,7 @@ plot_data <- function(data, ab_value, plot_title = NULL) {
 add_lines <- function(p, data) {
   p +
     geom_ribbon(data = data, aes(x = x, ymin = ymin, ymax = ymax), alpha = 0.6, fill = "grey") +
-    geom_line(data = data, aes(x = x, y = y), linewidth = 0.4, col = "grey")
+    geom_line(data = data, aes(x = x, y = y), linewidth = 0.4, col = "grey40")
 }
 
 
@@ -418,8 +239,8 @@ tmp_seg <- prepare_data(pred_data_seg[[1]]$pred_points, "a_")
 tmp_seg_b <- prepare_data(pred_data_seg[[1]]$pred_points, "b_")
 tmp_seg
 tmp_seg_b
-fig_data_seg <- bind_rows(tmp_seg, tmp_seg_b) %>%
-  pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") %>%
+fig_data_seg <- bind_rows(tmp_seg, tmp_seg_b) |>
+  pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") |>
   mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
 
 fig_data_seg_line <- bind_rows(
@@ -452,26 +273,26 @@ line_b_seg <- create_line(pred_data_seg, pred_b_ll, pred_b_hh, pred_b_m)
 # Apply the data preparation function to species data
 tmp_sp <- prepare_data(pred_data_sp[[1]]$pred_points, "a_")
 tmp_sp_b <- prepare_data(pred_data_sp[[1]]$pred_points, "b_")
-fig_data_sp <- bind_rows(tmp_sp, tmp_sp_b) %>%
-  pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") %>%
+fig_data_sp <- bind_rows(tmp_sp, tmp_sp_b) |>
+  pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") |>
   mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
 
 # fig_data_seg |> str()
 # Generate the plots using the plotting function
-p1 <- plot_data(fig_data_seg, "a", "Segments")
+p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments")
 p1 <- add_lines(p1, data = line_a_seg) +
   theme(
     axis.text.x = element_blank(),
     axis.text.y = element_text(size = 7)
   )
-p2 <- plot_data(fig_data_seg, "b")
+p2 <- plot_data(fig_data_seg, r2_list, "b")
 p2 <- add_lines(p2, data = line_b_seg) +
   theme(
     # strip.text.x = element_blank()
     axis.text.x = element_text(size = 8),
     axis.text.y = element_text(size = 7)
   )
-p3 <- plot_data(fig_data_sp, "a", "Species")
+p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species")
 p3 <- add_lines(p3, data = line_a_sp) +
   theme(
     axis.text.x = element_blank(),
@@ -480,7 +301,7 @@ p3 <- add_lines(p3, data = line_a_sp) +
     axis.ticks.y = element_blank(),
     legend.text = element_text(size = 7),
   )
-p4 <- plot_data(fig_data_sp, "b")
+p4 <- plot_data(fig_data_sp, r2_sp_list, "b")
 p4 <- add_lines(p4, data = line_b_sp) +
   theme(
     axis.title.y = element_blank(),
@@ -540,6 +361,7 @@ prepare_x_fake_lab <- function(fig_data) {
       axis.ticks = element_blank(),
       axis.title = element_blank(),
       strip.text.x = element_blank(),
+      panel.background = element_blank(),
       plot.margin = margin(t = -1, r = 0, b = 0, l = 0)
     )
 }

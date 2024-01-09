@@ -637,7 +637,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|b2c0ac932c46a67d|||||||||||||||
+granier_list|object|04f2f861d84c3b1c|||||||||||||||
 granier_with_traits_mapped|object|7930ef5e7a1f138c|||||||||||||||
 granier_without_traits_mapped|object|1a409f752d13db64|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -1069,6 +1069,7 @@ uncertainty_list|object|689359ae9725a3f1|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
 uncertainty_mapped|object|f43ca3100edaf723|||||||||||||||
 vaf_r2|stem|02f5339aa753ed76|8d1427b0f79ce84a|5cad662a5e912cfe|-784629324||t19727.2695740159s|ae3ca543e47cf4fd|166|rds|local|vector|||4.058||
+vaf_sp_r2|stem|f4bac089cf9ec7a6|8820f0cc939cc1b6|f309c4b1b2936f7e|-676508774||t19731.1591186976s|97f5d5ebb4412369|161|rds|local|vector|||2.24||
 values|object|d9af27a27ad26844|||||||||||||||
 values2|object|e63b2d61962c1295|||||||||||||||
 vf_sp_r2|stem|5c847e4ce77ca064|47afebff3d17b875|c6adf7db42b22da9|-504571323||t19727.2702218532s|69d3b8a65cb67b2d|164|rds|local|vector|||2.56||

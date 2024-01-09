@@ -1114,6 +1114,10 @@ granier_list <- list(
     process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_vaf, stan_data_noxylem_log_vaf$xj)
   ),
   tar_target(
+    vaf_sp_r2,
+    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_vaf, stan_data_noxylem_log_vaf$xk, sp_level = TRUE)
+  ),
+  tar_target(
     dh_sp_r2,
     process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_dh, stan_data_noxylem_log_dh$xk, sp_level = TRUE)
   ),
