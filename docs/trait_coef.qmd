@@ -163,7 +163,7 @@ r2_list <- list(vaf_r2, ks_r2)
 r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
 
 # Create a function for the repeated plotting code
-plot_data <- function(data, r2_list, ab_value, plot_title = NULL) {
+plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A") {
 
   r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |> sapply("[[", 2)
 
@@ -173,14 +173,15 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL) {
 
   r2_data <- data |>
     group_by(trait) |>
-    mutate(r2_x = max(exp(val)), r2_y = min(mid)) |>
+    mutate(r2_x = max(exp(val)), tag_x = min(exp(val)), r2_y = min(mid)) |>
     ungroup() |>
-    dplyr::select(trait, r2_x, r2_y) |>
+    dplyr::select(trait, tag_x, r2_x, r2_y) |>
     distinct() |>
     mutate(r2 = paste0("italic(R^2) == ", round(r2, 2))) |>
-    mutate(r2_y = ifelse(ab_value == "a", 10, 0))
+    mutate(r2_y = ifelse(ab_value == "a", 10, 0)) |>
+    mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
+    mutate(inner_tag = inner_tag)
 
-  print(r2_data)
 
   p <- data |>
     ggplot() +
@@ -188,6 +189,8 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL) {
       geom_errorbar(aes(x = exp(val), ymin = lwr, ymax = upr, color = xylem_long_fct), linewidth = 0.25) +
       geom_text(data = r2_data, aes(x = r2_x, y = r2_y, label = r2),
         parse = TRUE, size = 3, hjust = 1, vjust = 0) +
+      geom_text(data = r2_data, aes(x = tag_x, y = tag_y, label = inner_tag),
+        parse = TRUE, size = 3, hjust = 0, vjust = -0.25) +
       facet_grid(. ~ trait, scales = "free", label = label_parsed) +
       scale_x_log10() +
       my_theme() +
@@ -219,7 +222,7 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL) {
         )
   } else {
     p <- p +
-      coord_cartesian(ylim = c(0, 4)) +
+      coord_cartesian(ylim = c(0, 4.3)) +
       ylab(expression(Coefficient~italic(b))) +
       theme(strip.text.x = element_blank())
   }
@@ -279,20 +282,20 @@ fig_data_sp <- bind_rows(tmp_sp, tmp_sp_b) |>
 
 # fig_data_seg |> str()
 # Generate the plots using the plotting function
-p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments")
+p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("B", "A"))
 p1 <- add_lines(p1, data = line_a_seg) +
   theme(
     axis.text.x = element_blank(),
     axis.text.y = element_text(size = 7)
   )
-p2 <- plot_data(fig_data_seg, r2_list, "b")
+p2 <- plot_data(fig_data_seg, r2_list, "b", inner_tag = c("F", "E"))
 p2 <- add_lines(p2, data = line_b_seg) +
   theme(
     # strip.text.x = element_blank()
     axis.text.x = element_text(size = 8),
     axis.text.y = element_text(size = 7)
   )
-p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species")
+p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("D", "C"))
 p3 <- add_lines(p3, data = line_a_sp) +
   theme(
     axis.text.x = element_blank(),
@@ -301,7 +304,7 @@ p3 <- add_lines(p3, data = line_a_sp) +
     axis.ticks.y = element_blank(),
     legend.text = element_text(size = 7),
   )
-p4 <- plot_data(fig_data_sp, r2_sp_list, "b")
+p4 <- plot_data(fig_data_sp, r2_sp_list, "b", inner_tag = c("H", "G"))
 p4 <- add_lines(p4, data = line_b_sp) +
   theme(
     axis.title.y = element_blank(),
