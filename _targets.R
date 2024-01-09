@@ -1005,12 +1005,14 @@ granier_list <- list(
         fit_summary_segments_noxylem_traits_log_vaf,
         fit_summary_segments_noxylem_traits_log_ks,
         fit_summary_segments_noxylem_traits_wood_density,
+        fit_summary_segments_noxylem_traits_log_swc,
         fit_summary_segments_noxylem_traits_log_dh,
         fit_summary_segments_noxylem_traits_log_vf),
       draws = list(
         fit_draws_segments_noxylem_traits_log_vaf,
         fit_draws_segments_noxylem_traits_log_ks,
         fit_draws_segments_noxylem_traits_wood_density,
+        fit_draws_segments_noxylem_traits_log_swc,
         fit_draws_segments_noxylem_traits_log_dh,
         fit_draws_segments_noxylem_traits_log_vf),
       fd_k_traits_csv,
@@ -1041,19 +1043,20 @@ granier_list <- list(
       single_trait = TRUE)
   ),
   tar_target(
-    # tar_read(trait_fig_data_combined)
     trait_pred_data_noxylem_sp_combined,
     generate_combined_trait_fig_data(
       summary = list(
         fit3_summary_segments_noxylem_traits_sp_log_vaf,
         fit3_summary_segments_noxylem_traits_sp_log_ks,
         fit3_summary_segments_noxylem_traits_sp_wood_density,
+        fit3_summary_segments_noxylem_traits_sp_log_swc,
         fit3_summary_segments_noxylem_traits_sp_log_dh,
         fit3_summary_segments_noxylem_traits_sp_log_vf),
       draws = list(
         fit3_draws_segments_noxylem_traits_sp_log_vaf,
         fit3_draws_segments_noxylem_traits_sp_log_ks,
         fit3_draws_segments_noxylem_traits_sp_wood_density,
+        fit3_draws_segments_noxylem_traits_sp_log_swc,
         fit3_draws_segments_noxylem_traits_sp_log_dh,
         fit3_draws_segments_noxylem_traits_sp_log_vf),
       fd_k_traits_csv,

@@ -16,7 +16,7 @@ prepare_line_data <- function(data, ab = "a") {
   if (ab == "a") {
     data <- data |>
       mutate(
-        ymin = exp(pred_a_ll) + 2,
+        ymin = exp(pred_a_ll),
         ymax = exp(pred_a_hh),
         y = exp(pred_a_m)
       )
@@ -33,25 +33,26 @@ prepare_line_data <- function(data, ab = "a") {
 # Create a function for the repeated plotting code
 plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A") {
 
-  r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |> sapply("[[", 2)
-
   data <- data |>
-    mutate(trait = ifelse(trait == "log_vaf", "VAF~(`%`)", "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})")) |>
     filter(ab == ab_value)
 
+  if (!is.null(r2_list)) {
+    r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |> sapply("[[", 2)
+  } else {
+    r2 <- rep(NA, 4)
+  }
   r2_data <- data |>
     group_by(trait) |>
     mutate(r2_x = max(exp(val)), tag_x = min(exp(val)), r2_y = min(mid)) |>
     ungroup() |>
     dplyr::select(trait, tag_x, r2_x, r2_y) |>
     distinct() |>
-    mutate(r2 = paste0("italic(R^2) == ", round(r2, 2))) |>
+    mutate(r2 = ifelse(is.na(r2), NA, paste0("italic(R^2) == ", round(r2, 2)))) |>
     mutate(r2_y = ifelse(ab_value == "a", 10, 0)) |>
     mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
     mutate(inner_tag = inner_tag)
 
-
-  p <- data |>
+ p <- data |>
     ggplot() +
       geom_point(aes(y = mid, x = exp(val), color = xylem_long_fct), alpha = 0.5) +
       geom_errorbar(aes(x = exp(val), ymin = lwr, ymax = upr, color = xylem_long_fct), linewidth = 0.25) +
@@ -59,7 +60,7 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
         parse = TRUE, size = 3, hjust = 1, vjust = 0) +
       geom_text(data = r2_data, aes(x = tag_x, y = tag_y, label = inner_tag),
         parse = TRUE, size = 3, hjust = 0, vjust = -0.25) +
-      facet_grid(. ~ trait, scales = "free", label = label_parsed) +
+      facet_grid(. ~ trait, scales = "free") +
       scale_x_log10() +
       my_theme() +
       theme(
@@ -114,7 +115,20 @@ create_line <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
       ymax = {{ymax_trans}},
       y = {{y_trans}}
     ) |>
-    mutate(trait = ifelse(trait == "log_vaf", "VAF~(`%`)", "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})"))
+    mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
+}
+
+create_line2 <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
+  bind_rows(
+    pred_data[[1]]$pred_line |> mutate(trait = "log_vaf"),
+    pred_data[[2]]$pred_line |> mutate(trait = "log_ks")
+  ) |>
+    mutate(
+      ymin = {{ymin_trans}},
+      ymax = {{ymax_trans}},
+      y = {{y_trans}}
+    ) |>
+    mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
 }
 
 # Function to extract legend
@@ -135,10 +149,10 @@ prepare_x_fake_lab <- function(fig_data) {
     summarize(text_x = median(val), mid = median(mid)) |>
     ungroup() |>
     mutate(mid = mean(mid)) |>
-    mutate(trait = ifelse(trait == "log_vaf", "VAF~(`%`)", "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})"))
+    mutate(trait_lab = ifelse(trait == "log_vaf", "VAF~(`%`)", "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})"))
 
   ggplot(tmp2, aes(x = val, y = mid)) +
-    geom_text(aes(x = text_x, y = mid, label = trait), parse = TRUE, size = 3, hjust = 0.5, vjust = 0.4) +
+    geom_text(aes(x = text_x, y = mid, label = trait_lab), parse = TRUE, size = 3, hjust = 0.5, vjust = 0.4) +
     facet_grid(. ~ trait, scales = "free") +
     theme_void() +
     theme(
@@ -156,6 +170,103 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
 
   r2_list <- list(vaf_r2, ks_r2)
   r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
+
+#Apply the data preparation function to segment data
+  tmp_seg_vaf <- prepare_plot_data(pred_data_seg[[1]]$pred_points, "a_") |> mutate(trait = "log_vaf")
+  tmp_seg_vaf_b <- prepare_plot_data(pred_data_seg[[1]]$pred_points, "b_") |> mutate(trait = "log_vaf")
+  tmp_seg_ks <- prepare_plot_data(pred_data_seg[[2]]$pred_points, "a_") |> mutate(trait = "log_ks")
+  tmp_seg_ks_b <- prepare_plot_data(pred_data_seg[[2]]$pred_points, "b_") |> mutate(trait = "log_ks")
+
+  fig_data_seg <- bind_rows(
+    tmp_seg_vaf,
+    tmp_seg_vaf_b,
+    tmp_seg_ks,
+    tmp_seg_ks_b) |>
+    mutate(trait = fct_relevel(trait, "log_vaf", "log_ks")) |>
+    mutate(val = ifelse(trait == "log_vaf", log_vaf, log_ks))
+
+  tmp_sp_vaf <- prepare_plot_data(pred_data_sp[[1]]$pred_points, "a_") |> mutate(trait = "log_vaf")
+  tmp_sp_vaf_b <- prepare_plot_data(pred_data_sp[[1]]$pred_points, "b_") |> mutate(trait = "log_vaf")
+  tmp_sp_ks <- prepare_plot_data(pred_data_sp[[2]]$pred_points, "a_") |> mutate(trait = "log_ks")
+  tmp_sp_ks_b <- prepare_plot_data(pred_data_sp[[2]]$pred_points, "b_") |> mutate(trait = "log_ks")
+
+  fig_data_sp <- bind_rows(
+    tmp_sp_vaf,
+    tmp_sp_vaf_b,
+    tmp_sp_ks,
+    tmp_sp_ks_b) |>
+    mutate(trait = fct_relevel(trait, "log_vaf", "log_ks")) |>
+    mutate(val = ifelse(trait == "log_vaf", log_vaf, log_ks))
+
+  line_a_sp <- create_line(pred_data_sp, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
+  line_b_sp <- create_line(pred_data_sp, pred_b_ll, pred_b_hh, pred_b_m)
+  line_a_seg <- create_line(pred_data_seg, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
+  line_b_seg <- create_line(pred_data_seg, pred_b_ll, pred_b_hh, pred_b_m)
+
+  p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("B", "A"))
+  p1 <- add_lines(p1, data = line_a_seg) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_text(size = 7)
+    )
+
+  p2 <- plot_data(fig_data_seg, r2_list, "b", inner_tag = c("F", "E"))
+  p2 <- add_lines(p2, data = line_b_seg) +
+    theme(
+      # strip.text.x = element_blank()
+      axis.text.x = element_text(size = 8),
+      axis.text.y = element_text(size = 7)
+    )
+
+  p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("D", "C"))
+  p3 <- add_lines(p3, data = line_a_sp) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.text = element_text(size = 7),
+    )
+
+  p4 <- plot_data(fig_data_sp, r2_sp_list, "b", inner_tag = c("H", "G"))
+  p4 <- add_lines(p4, data = line_b_sp) +
+    theme(
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.text.x = element_text(size = 7),
+      axis.ticks.y = element_blank(),
+      legend.position = "none",
+      legend.title = element_blank(),
+      legend.box.margin = margin(t = 0, b = 0, unit = "pt"),  # Adjust top and bottom margin of the legend box
+      legend.margin = margin(t = 0, r = 0, b = 0, l = 0)  # Adjust the space around the individual legend items
+    )
+
+# Create a dummy plot which will be used only to extract the legend
+  p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, color = xylem_long_fct)) +
+    geom_point() +
+    theme_void() +
+    theme(
+      legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.spacing.x = unit(-0.2, "lines"),
+      legend.title = element_blank())
+
+# Extract the legend from p5
+  legend <- g_legend(p5)
+
+  x_fake_lab_sp <- prepare_x_fake_lab(fig_data_sp)
+  x_fake_lab_seg <- prepare_x_fake_lab(fig_data_seg)
+
+# Combine the plots
+  combined_plot <- p1 + p3 + p2 + p4 + plot_layout(nrow = 2, ncol = 2)
+  combined_plot / (x_fake_lab_seg + x_fake_lab_sp) /  legend +
+    plot_layout(heights = c(1, 0.05, 0.05))
+
+}
+
+
+traits_seg_points_si <- function(pred_data_seg, pred_data_sp) {
 
 #Apply the data preparation function to segment data
   tmp_seg_vaf <- prepare_plot_data(pred_data_seg[[1]]$pred_points, "a_") |> mutate(trait = "log_vaf")

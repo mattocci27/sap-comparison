@@ -1703,13 +1703,14 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
     mutate(log_swc = log(swc)) |>
     mutate(log_dh = log(dh)) |>
     mutate(log_vaf = log(vaf)) |>
+    mutate(log_swc = log(swc)) |>
     mutate(log_vf = log(vf)) |>
     mutate(log_ks = log(ks)) |>
     group_by(sample_id, xylem_type, species) |>
     summarise_if(is.numeric, mean, na.rm = TRUE) |>
     ungroup() |>
     dplyr::select(sample_id, xylem_type, species,
-     wood_density, log_dh, log_vaf, log_vf, log_ks)
+     wood_density, log_dh, log_vaf, log_vf, log_ks, log_swc)
 
   draws <- janitor::clean_names(draws)
 
@@ -1807,12 +1808,14 @@ generate_combined_trait_fig_data <- function(
       fit_summary_segments_noxylem_traits_log_vaf,
       fit_summary_segments_noxylem_traits_log_ks,
       fit_summary_segments_noxylem_traits_wood_density,
+      fit_summary_segments_noxylem_traits_log_swc,
       fit_summary_segments_noxylem_traits_log_dh,
       fit_summary_segments_noxylem_traits_log_vf),
     draws = list(
       fit_draws_segments_noxylem_traits_log_vaf,
       fit_draws_segments_noxylem_traits_log_ks,
       fit_draws_segments_noxylem_traits_wood_density,
+      fit_draws_segments_noxylem_traits_log_swc,
       fit_draws_segments_noxylem_traits_log_dh,
       fit_draws_segments_noxylem_traits_log_vf),
     fd_k_traits_csv,
@@ -1830,14 +1833,17 @@ generate_combined_trait_fig_data <- function(
    wd <- generate_trait_fig_data(summary[[3]], draws[[3]],
      fd_k_traits_csv, xylem_lab,
      "wood_density", no_xylem, single_trait, sp_level)
-   dh <- generate_trait_fig_data(summary[[4]], draws[[4]],
+   swc <- generate_trait_fig_data(summary[[4]], draws[[4]],
+     fd_k_traits_csv, xylem_lab,
+     "log_swc", no_xylem, single_trait, sp_level)
+   dh <- generate_trait_fig_data(summary[[5]], draws[[5]],
      fd_k_traits_csv, xylem_lab,
      "log_dh", no_xylem, single_trait, sp_level)
-   vf <- generate_trait_fig_data(summary[[5]], draws[[5]],
+   vf <- generate_trait_fig_data(summary[[6]], draws[[6]],
      fd_k_traits_csv, xylem_lab,
      "log_vf", no_xylem, single_trait, sp_level)
 
-   list(vaf, ks, wd, dh, vf)
+   list(vaf, ks, wd, swc, dh, vf)
  }
 
 traits_points_each <- function(data, trait_name, coef_a = TRUE, with_ribbon = TRUE, wd = FALSE, use_color = TRUE) {
