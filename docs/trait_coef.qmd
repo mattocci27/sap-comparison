@@ -127,7 +127,6 @@ pred_data_sp  <- tar_read(trait_pred_data_noxylem_sp_combined, store = here("_ta
 
 
 ```{r}
-
 #Apply the data preparation function to segment data
   tmp_seg_wd <- prepare_plot_data(pred_data_seg[[3]]$pred_points, "a_") |> mutate(trait = "wood_density")
   tmp_seg_wd_b <- prepare_plot_data(pred_data_seg[[3]]$pred_points, "b_") |> mutate(trait = "wood_density")
@@ -155,34 +154,44 @@ pred_data_sp  <- tar_read(trait_pred_data_noxylem_sp_combined, store = here("_ta
       trait == "log_vf" ~ log_vf,
     ))
 
-# Function to prepare plot data for a given trait
-prepare_trait_data <- function(data_list, index, trait_name) {
-  a_data <- prepare_plot_data(data_list[[index]]$pred_points, "a_") |> mutate(trait = trait_name)
-  b_data <- prepare_plot_data(data_list[[index]]$pred_points, "b_") |> mutate(trait = trait_name)
-  list(a_data, b_data)
-}
 
-# Applying the function to each segment
-seg_data_list <- list(
-  prepare_trait_data(pred_data_seg, 3, "wood_density"),
-  prepare_trait_data(pred_data_seg, 4, "log_swc"),
-  prepare_trait_data(pred_data_seg, 5, "log_dh"),
-  prepare_trait_data(pred_data_seg, 6, "log_vf")
-)
+  # source("R/traits.R")
+  p1 <- plot_data(fig_data_seg, r2_list = NULL, "a", "Segments", inner_tag = LETTERS[1:4]) +
+    theme(
+      axis.text.x = element_blank(),
+      strip.text.x = element_blank()
+    )
+  p2 <- plot_data(fig_data_seg, r2_list = NULL, "b", inner_tag = LETTERS[5:8]) +
+    theme(
+      strip.text.x = element_blank()
+    )
 
-# Combine all segments into a single dataframe
-fig_data_seg <- bind_rows(lapply(seg_data_list, unlist, recursive = FALSE)) |>
-  mutate(trait = fct_relevel(trait, "wood_density", "log_swc", "log_dh", "log_vf")) |>
-  mutate(val = case_when(
-    trait == "wood_density" ~ log(wood_density),
-    trait == "log_swc" ~ log_swc,
-    trait == "log_dh" ~ log_dh,
-    trait == "log_vf" ~ log_vf
-  ))
+# Create a dummy plot which will be used only to extract the legend
+  p3 <- ggplot(fig_data_seg, aes(x = val, y = mid, color = xylem_long_fct)) +
+    geom_point() +
+    theme_void() +
+    theme(
+      legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.spacing.x = unit(0, "lines"),
+      legend.title = element_blank())
 
-  source("R/traits.R")
-  # r2_list <- list(wd_r2, ks_r2)
-  p1 <- plot_data(fig_data_seg, r2_list = NULL, "a", "Segments", inner_tag = LETTERS[1:4])
-  p1
+# Extract the legend from p5
+  legend <- g_legend(p3)
+  x_fake_lab_seg <- prepare_x_fake_lab(fig_data_seg)
 
+  p <- p1 + p2 + x_fake_lab_seg + legend + plot_layout(nrow = 4, ncol = 1) +
+    plot_layout(heights = c(0.5, 0.5, 0.05, 0.05))
+
+      my_ggsave(
+        here("figs/test"),
+        p,
+        dpi = 600,
+        width = 173,
+        height = 100,
+        units = "mm")
 ```
+
+![](`r here("figs/test.png")`)
+

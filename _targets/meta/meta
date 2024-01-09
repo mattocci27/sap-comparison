@@ -641,7 +641,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|093908573c80a6d7|||||||||||||||
+granier_list|object|5b01957810696306|||||||||||||||
 granier_with_traits_mapped|object|7930ef5e7a1f138c|||||||||||||||
 granier_without_traits_mapped|object|1a409f752d13db64|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -796,7 +796,7 @@ piecewise_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee
 piecewise_logistic_mcmc_piecewise_logistic|stem|6316862787800eef|13f6a7fe6e5c4c13|2f41908871432436|2134540686||t19641.4161698624s|76b5ad8e3eef2349|5621754|qs|local|vector|||133.737||
 piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f71598|998900439||t19641.4161698624s|05dddead137fffcf|1715|rds|local|vector|||0.208||
 piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19641.4161700476s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
-plot_data|function|2cc14568cefb0e91|||||||||||||||
+plot_data|function|760e86365666a670|||||||||||||||
 plot_logistic_sp|function|b1e72171f9d1e5e5|||||||||||||||
 pool_multi_plot|stem|ddbb80d504de0d38|f1e0bd93a36701d6|cb5bde2c1d618e34|980054747|figs/pool_multi.png*figs/pool_multi.pdf|t19674.3585426205s|f860f24c691409c8|2097923|file|local|vector|||3.309||
 post_1000_dep_only|stem|9d6343da0494ebf3|6f50ee7522d6dcc2|cf5e2b257d03f3aa|-1344021131||t19655.0661115534s|377e7f9e80f423a9|59419|rds|local|vector|||0.033||
@@ -829,7 +829,7 @@ prepare_data|function|a65799731e954d95|||||||||||||||
 prepare_dir_dep_imp_df|function|4e75a6cf15f4425b|||||||||||||||
 prepare_line_data|function|332b060fe3eb15a8|||||||||||||||
 prepare_plot_data|function|dd9ff6a7075501dd|||||||||||||||
-prepare_x_fake_lab|function|19b8eda44b44a27e|||||||||||||||
+prepare_x_fake_lab|function|00ba5bcb066856b7|||||||||||||||
 process_dir_dep|function|4f4157033b9ef39b|||||||||||||||
 process_draws_and_calculate_trait_r2|function|f9dc5d72497b6d46|||||||||||||||
 process_full_df|function|d21e8fa59a3b37fd|||||||||||||||
@@ -1054,7 +1054,7 @@ tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
 tr_scaled_bars2|function|4e99d245a37379a8|||||||||||||||
 trait_pred_data_noxylem_combined|stem|bc35c0a0749ae2aa|81e68f63bd08f443|6a7aad1b7f08dacf|1458690166||t19731.4078210362s|b8234003e2f90e6c|93841|rds|local|vector|||12.61||
 trait_pred_data_noxylem_sp_combined|stem|4022a26b0bfdcca9|91d9336deaee1666|44394f8cf2a39a20|-927210835||t19731.4077631648s|df2ddb6a39324f30|59452|rds|local|vector|||8.645||
-trait_pred_data_xylem_combined|stem|f461b36882950754|6e4848b482a718eb|38ea9f5195a1729d|-313104499||t19727.102371667s||78743|rds|local|vector|||8.946||subscript out of bounds
+trait_pred_data_xylem_combined|stem|df9cae0922335bcc|bf80393a75b08eea|a7c8743eeea2b00a|-313104499||t19731.5614581533s|cf06069bd9e45a26|94147|rds|local|vector|||9.488||
 traits_noxylem_table|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|-1440537911||t19670.1629886208s|d713d5cc4ab85b07|6053|rds|local|vector|||1.33|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_noxylem_table_csv|stem|9a8156c91fadff1c|140509156cde4a23|57bed35b7e021799|-494376851|data/traits_noxylem_post.csv|t19674.1168746501s|93ee010d0277abb6|175839|file|local|vector|||1.143||
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
@@ -1064,10 +1064,12 @@ traits_points_main_plot|stem|0bfaa428442eb3da|29e1bd21d56ab9c5|fcb6b1f6eb8601c1|
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
 traits_points_main_re_plot|stem|f5f4a06cfc1f2e24|74ed42cc0f98bb1c|457df554648cda9e|1626401767|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf|t19731.4078467775s|ed645eea696e6fc2|881617|file|local|vector|||2.209||
 traits_points_si|function|b641c71d20fa676a|||||||||||||||
-traits_points_si_plot|stem|7473fa8d871c0f61|4c8c363d4354c02d|022e422b048ab701|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19726.145911487s|1d9c1c6add6ba840|1461003|file|local|vector|||2.161||
+traits_points_si_plot|stem|ddc77f78f45291e3|4c8c363d4354c02d|e10927aad876d017|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19731.5614849131s|31c3939080fdafa7|1462223|file|local|vector|||2.302||
 traits_points_sp_main_plot|stem|dda65fee9df1caf6|d52218e18922dae5|826c54382801d79c|108861035|figs/traits_points_sp_main.png*figs/traits_points_sp_main.pdf|t19727.1113599807s|7cbc78be99b3c563|508616|file|local|vector|||2.196||
-traits_sp_points_main|function|58e21e60b21a3b84|||||||||||||||
-traits_sp_points_main_plot|stem|f342ec1e6e98bdca|ee7f6258426c2a94|cec6905b0273500f|752632805|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf|t19731.4078464071s|5ad7f5344f751f83|926210|file|local|vector|||2.181||
+traits_seg_points_si|function|0b1e9f1efc33575c|||||||||||||||
+traits_seg_points_si_plot|stem|79de11a8ec16aae4|f719455c48538f69|8615a3a25171a2bd|4638631|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf|t19731.6566202053s|db16be4562cd5f7f|1190786|file|local|vector|||2.691|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
+traits_sp_points_main|function|011c42496c2d5e7b|||||||||||||||
+traits_sp_points_main_plot|stem|11b7f0c243a10d9c|ee7f6258426c2a94|32807153096966ae|752632805|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf|t19731.6548078137s|f42d2652605f6f0a|926473|file|local|vector|||3.082||
 traits_xylem_table|stem|7d454a4b58e962dd|9485d282f232ceaa|3f985196ece32dde|-1062309350||t19709.4710990504s|707058d2e584af21|6323|rds|local|vector|||0.304|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-206480128|data/traits_xylem_post.csv|t19709.5266056575s|3ec90852d02084c7|184923|file|local|vector|||0.056||
 uncertainty_ab_mapped|object|920b5a418c7cab24|||||||||||||||
