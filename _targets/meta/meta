@@ -76,6 +76,7 @@ ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.06|stem|629b79
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.07|stem|024ec33c5fd13b21|cdc27d374820e6a1|3f5a378a9893cda4|1077127834||t19667.18343316s|1c9d8bbf92493989|248229|rds|local|vector|||1191.012||
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.08|stem|15b8973da7b264ce|586919d50a7dccf4|61da5dacc3f047c2|829033735||t19665.5492426945s|617538999d6f0191|248307|rds|local|vector|||1183.128||
 ab_uncertainty_points_plot|stem|4256a4d978e63b03|ad7ea4102ce6772a|640a04bb45c97d28|1367951201|figs/ab_uncertainty_points.png*figs/ab_uncertainty_points.pdf|t19711.1252785716s|bedba7f7166eb52c|704148|file|local|vector|||1.383||
+add_lines|function|ca3f8e620e788d8f|||||||||||||||
 add_t16|function|39c9529e3853d8de|||||||||||||||
 anova_data_log|stem|a094a992fe90d830|1b6f948e63581fe1|c27d6a068aac6fdb|-1005727767||t19641.4238021719s|15a3751d344e39a8|1455|rds|local|vector|||1.203||
 anova_data_nolog|stem|7c2a0995a8cc403f|1d31823bf1829f85|c27d6a068aac6fdb|-1587033423||t19670.4142218923s|ba8f2f557a4dd502|1405|rds|local|vector|||1.092||
@@ -150,6 +151,7 @@ combined_nrmse_rest|stem|145f3519e2d86ba4|ca72f565df37809c|6db249f638eec811|9474
 compile_model|function|440cd3c27c638fb3|||||||||||||||
 cond_count_csv|stem|57e9eabf90c08b40|ba3403c0e17c5871|eba47c1af4058cb4|59605837|data/cond_count.csv|t19641.4162590313s|b37f5599f3f5b913|7478|file|local|vector|||0.415||
 cond_count_raw_csv|stem|afa1d7fa864c4e3c|3e1e21b3c7839bc2|ef46db3751d8e999|30577745|data-raw/cond_count_raw.csv|t19641.4162579201s|4a676e8324a82310|3598|file|local|vector|||0.072||
+create_line|function|274f81dea26682c2|||||||||||||||
 create_single_fold|function|10dd97c0adfaee1e|||||||||||||||
 create_stan_tab|function|d23d841ad0c22173|||||||||||||||
 dbh_imp_df|stem|87e5c499905ee08d|324b81d0e7234e85|3c8297a1dc950e65|679704866||t19641.4161707883s|11c48bd13ccce883|73683|rds|local|vector|||0.956||
@@ -560,6 +562,7 @@ fit4_summary_segments_noxylem_traits_sp2_wood_density|stem|792f4c83da5777c5|42f8
 five_spp_csv|stem|bf9ed5f80f544657|063919a9079cc91f|ef46db3751d8e999|-1691918215|data-raw/pres_tens_five_spp.csv|t19641.4162579201s|7a461a341c947b38|2227|file|local|vector|||0.061||
 full_pool_csv_mapped|object|0f9473f77a72d0f0|||||||||||||||
 full_segments_csv_mapped|object|272a18b0b78c4322|||||||||||||||
+g_legend|function|d3d3ed238b35a032|||||||||||||||
 genarete_ec_bar_all_df|function|49e2bf5a7214e598|||||||||||||||
 generate_ab_pg_data|function|b0f3c967d3b214b0|||||||||||||||
 generate_ab_uncertainty|function|cc05c03d465c7a40|||||||||||||||
@@ -637,7 +640,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|04f2f861d84c3b1c|||||||||||||||
+granier_list|object|06738bbb0c598758|||||||||||||||
 granier_with_traits_mapped|object|7930ef5e7a1f138c|||||||||||||||
 granier_without_traits_mapped|object|1a409f752d13db64|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -792,6 +795,7 @@ piecewise_logistic_file_piecewise_logistic|stem|95378f5fc0a82401|88a74045587c1ee
 piecewise_logistic_mcmc_piecewise_logistic|stem|6316862787800eef|13f6a7fe6e5c4c13|2f41908871432436|2134540686||t19641.4161698624s|76b5ad8e3eef2349|5621754|qs|local|vector|||133.737||
 piecewise_logistic_stan_data|stem|e2c39c9e8c7e4be2|b2aa112298155cc8|4c30d28298f71598|998900439||t19641.4161698624s|05dddead137fffcf|1715|rds|local|vector|||0.208||
 piecewise_logistic_summary_piecewise_logistic|stem|d8d89ddf5d304d60|701588cdfc8d1f36|7c5fdac2a4650221|1993452340||t19641.4161700476s|5ecf67d35f16f3ba|41048|fst_tbl|local|vector|||5.998||
+plot_data|function|e5eccc07acf7eae7|||||||||||||||
 plot_logistic_sp|function|b1e72171f9d1e5e5|||||||||||||||
 pool_multi_plot|stem|ddbb80d504de0d38|f1e0bd93a36701d6|cb5bde2c1d618e34|980054747|figs/pool_multi.png*figs/pool_multi.pdf|t19674.3585426205s|f860f24c691409c8|2097923|file|local|vector|||3.309||
 post_1000_dep_only|stem|9d6343da0494ebf3|6f50ee7522d6dcc2|cf5e2b257d03f3aa|-1344021131||t19655.0661115534s|377e7f9e80f423a9|59419|rds|local|vector|||0.033||
@@ -809,7 +813,7 @@ post_fit_summary_segments_noxylem_traits_log_dh_log_dh|stem|7c9a81afb7cfa0c9|0b4
 post_fit_summary_segments_noxylem_traits_log_ks_log_ks|stem|4e5f48465f12120c|00fe8f1dec9f9677|54ff7af3a20c1ca7|-1765851455||t19642.6600907019s|6cfaa05a8a60f31e|6103|rds|local|vector|||1.299|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit_summary_segments_noxylem_traits_log_vaf_log_vaf|stem|057abe44774cebfb|526e1448a78d875f|3b07742cf8d16ace|628361788||t19642.6602306134s|9199b1ba5b8570a3|6140|rds|local|vector|||1.263|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit_summary_segments_noxylem_traits_log_vf_log_vf|stem|6109b5aa085932ae|aaf3872cb372a4aa|cb63bd46ef6f4359|-1542243561||t19642.6601057487s|26ba0d95e64ed8b3|6137|rds|local|vector|||1.337|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit_summary_segments_noxylem_traits_wood_density_wood_density|stem|eb2ef39fabeca119|e9734ad37ec41523|f245ea63d1731b96|1100608035||t19642.6600916279s|bbb7ffef970e25fd|6199|rds|local|vector|||1.335|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit_summary_segments_noxylem_traits_wood_density_wood_density|stem|eb2ef39fabeca119|e9734ad37ec41523|f245ea63d1731b96|1100608035||t19731.2856664123s|bbb7ffef970e25fd|6199|rds|local|vector|||1.268|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit2_summary_segments_xylem_traits_log_dh_log_dh|stem|9a88d652dcb607de|156e8e0dd7af2c83|9c00183b9d372e9b|372087033||t19709.4786986421s|4ccb3234b1a94a5e|6427|rds|local|vector|||0.305|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit2_summary_segments_xylem_traits_log_ks_log_ks|stem|2cd42a4738babe7c|219be6d8dfcf02bb|26ef46ee4c641467|-789782567||t19709.4711131247s|6b23643dac1f8954|6375|rds|local|vector|||1.357|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 post_fit2_summary_segments_xylem_traits_log_vaf_log_vaf|stem|ef602135a1af4d39|9d3cd5ce12a0be33|c19f335d7642e16c|1541730973||t19709.5266045926s|4ff6cff74ca6ed2e|6392|rds|local|vector|||0.306|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
@@ -822,6 +826,9 @@ pred_sap|function|5ed61ed83149b7e2|||||||||||||||
 predictor_extractor|function|578ea6c90fad41fb|||||||||||||||
 prepare_data|function|a65799731e954d95|||||||||||||||
 prepare_dir_dep_imp_df|function|4e75a6cf15f4425b|||||||||||||||
+prepare_line_data|function|167c906634027706|||||||||||||||
+prepare_plot_data|function|dd9ff6a7075501dd|||||||||||||||
+prepare_x_fake_lab|function|1bcebee1708cbcdc|||||||||||||||
 process_dir_dep|function|4f4157033b9ef39b|||||||||||||||
 process_draws_and_calculate_trait_r2|function|f9dc5d72497b6d46|||||||||||||||
 process_full_df|function|d21e8fa59a3b37fd|||||||||||||||
@@ -1058,6 +1065,8 @@ traits_points_main_re_plot|stem|4da836e5a0042f35|74ed42cc0f98bb1c|478f6ccd2e4663
 traits_points_si|function|b641c71d20fa676a|||||||||||||||
 traits_points_si_plot|stem|7473fa8d871c0f61|4c8c363d4354c02d|022e422b048ab701|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19726.145911487s|1d9c1c6add6ba840|1461003|file|local|vector|||2.161||
 traits_points_sp_main_plot|stem|dda65fee9df1caf6|d52218e18922dae5|826c54382801d79c|108861035|figs/traits_points_sp_main.png*figs/traits_points_sp_main.pdf|t19727.1113599807s|7cbc78be99b3c563|508616|file|local|vector|||2.196||
+traits_sp_points_main|function|64e67b6f31d25580|||||||||||||||
+traits_sp_points_main_plot|stem|501c86f64df5e8d4|ee7f6258426c2a94|04bf9e551be01963|752632805|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf|t19731.3678415865s|c127f47a5da8dc7a|926317|file|local|vector|||3.065||
 traits_xylem_table|stem|7d454a4b58e962dd|9485d282f232ceaa|3f985196ece32dde|-1062309350||t19709.4710990504s|707058d2e584af21|6323|rds|local|vector|||0.304|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-206480128|data/traits_xylem_post.csv|t19709.5266056575s|3ec90852d02084c7|184923|file|local|vector|||0.056||
 uncertainty_ab_mapped|object|920b5a418c7cab24|||||||||||||||

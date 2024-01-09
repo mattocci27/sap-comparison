@@ -13,6 +13,7 @@ source("R/stan.R")
 source("R/figs.R")
 source("R/tables.R")
 source("R/scale.R")
+source("R/traits.R")
 
 plan(multicore, workers = 2)
 options(clustermq.scheduler = "multicore")
@@ -1074,19 +1075,19 @@ granier_list <- list(
     },
     format = "file"
   ),
-  tar_target(
-    traits_points_sp_main_plot, {
-      p <- traits_points_main(trait_pred_data_noxylem_sp_combined)
-      my_ggsave(
-        "figs/traits_points_sp_main",
-        p,
-        dpi = 600,
-        width = 6.8,
-        height = 2.7
-      )
-    },
-    format = "file"
-  ),
+  # tar_target(
+  #   traits_points_sp_main_plot, {
+  #     p <- traits_points_main(trait_pred_data_noxylem_sp_combined)
+  #     my_ggsave(
+  #       "figs/traits_points_sp_main",
+  #       p,
+  #       dpi = 600,
+  #       width = 6.8,
+  #       height = 2.7
+  #     )
+  #   },
+  #   format = "file"
+  # ),
   tar_target(
     traits_points_main_re_plot, {
       p <- traits_points_main_re(trait_pred_data_noxylem_combined)
@@ -1095,6 +1096,27 @@ granier_list <- list(
         p,
         dpi = 600,
         width = 110,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_sp_points_main_plot, {
+      p <- traits_sp_points_main(
+        trait_pred_data_noxylem_combined,
+        trait_pred_data_noxylem_sp_combined,
+        vaf_r2,
+        ks_r2,
+        vaf_sp_r2,
+        ks_sp_r2
+        )
+      my_ggsave(
+        "figs/traits_sp_points_main",
+        p,
+        dpi = 600,
+        width = 173,
         height = 110,
         units = "mm"
       )

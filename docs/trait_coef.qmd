@@ -238,13 +238,24 @@ add_lines <- function(p, data) {
 
 
 # Apply the data preparation function to segment data
-tmp_seg <- prepare_data(pred_data_seg[[1]]$pred_points, "a_")
-tmp_seg_b <- prepare_data(pred_data_seg[[1]]$pred_points, "b_")
-tmp_seg
-tmp_seg_b
-fig_data_seg <- bind_rows(tmp_seg, tmp_seg_b) |>
-  pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") |>
-  mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
+tmp_seg_vaf <- prepare_data(pred_data_seg[[1]]$pred_points, "a_") |> mutate(trait = "log_vaf")
+tmp_seg_vaf_b <- prepare_data(pred_data_seg[[1]]$pred_points, "b_") |> mutate(trait = "log_vaf")
+tmp_seg_ks <- prepare_data(pred_data_seg[[2]]$pred_points, "a_") |> mutate(trait = "log_ks")
+tmp_seg_ks_b <- prepare_data(pred_data_seg[[2]]$pred_points, "b_") |> mutate(trait = "log_ks")
+
+fig_data_seg <- bind_rows(
+  tmp_seg_vaf,
+  tmp_seg_vaf_b,
+  tmp_seg_ks,
+  tmp_seg_ks_b) |>
+  mutate(trait = fct_relevel(trait, "log_vaf", "log_ks")) |>
+  mutate(val = ifelse(trait == "log_vaf", log_vaf, log_ks))
+
+# tmp_seg
+# tmp_seg_b
+# fig_data_seg <- bind_rows(tmp_seg, tmp_seg_b) |>
+#   pivot_longer(cols = c(log_vaf, log_ks), names_to = "trait", values_to = "val") |>
+#   mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
 
 fig_data_seg_line <- bind_rows(
   pred_data_seg[[1]]$pred_line |> mutate(trait = "log_vaf"),
@@ -343,7 +354,10 @@ legend <- g_legend(p5)
 
 # Assuming combined_plot has been defined and it's your main plot without legend
 # combined_plot_with_legend <- combined_plot + plot_layout(guides = "collect")
+# fig_data <- fig_data_sp
 
+# hoge |>
+#   filter(str_detect(name, "traits_sp_points"))
 # Add the extracted legend to the bottom of the combined plot
 prepare_x_fake_lab <- function(fig_data) {
   tmp <- fig_data |>
@@ -408,4 +422,4 @@ my_ggsave(
 
 ```
 
-![](`r here("figs/test.png")`)
+![](`r here("figs/traits_sp_points_main.png")`)
