@@ -1674,15 +1674,6 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
 generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
 # summary_data <- tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf)
 # draws <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)
-# summary_data <- tar_read(fit_summary_segments_noxylem_traits_log_vaf)
-# draws <- tar_read(fit_abt_draws_granier_with_traits_sap_trait_clean_vaf)
-# summary_data <- tar_read(fit_abt2_summary_granier_with_traits_no_xylem)
-# draws <- tar_read(fit_abt2_draws_granier_with_traits_no_xylem)
-# data <- tar_read(stan_data_noxylem_log_vaf)
-    # a_mat1 <- summary_data |>
-    #     filter(str_detect(variable, "^A_species\\[1"))
-    # a_mat2 <- summary_data |>
-    #     filter(str_detect(variable, "^a_species"))
   if (sp_level) {
     a_mat <- summary_data |>
         filter(str_detect(variable, "^A_species\\[1"))
@@ -1707,10 +1698,6 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 
   d <- d |>
     filter(is.na(removed_k)) #|>
-
-  # d <- read_csv(fd_k_traits_csv)
-  # d |>
-  #   pull(sp_short) |> unique()
 
   tmp0 <- d |>
     mutate(log_swc = log(swc)) |>
@@ -1781,10 +1768,6 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
   ts <- scale(trait) |> range()
   ts <- seq(ts[1], ts[2], length = 100)
   xx <- sd(trait) * ts + mean(trait)
-  # # ts <- scale(tmp0$log_vaf) |> range()
-  # ts <- scale(tmp0 |> pull(trait)) |> range()
-  # ts <- seq(ts[1], ts[2], length = 100)
-  # xx <- sd(tmp0$log_vaf) * ts + mean(tmp0$log_vaf)
 
   pred_a <- coef_a %*% t(cbind(1, ts))
   pred_a_m <- apply(pred_a, 2, median)

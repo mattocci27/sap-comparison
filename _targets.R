@@ -1015,7 +1015,8 @@ granier_list <- list(
       fd_k_traits_csv,
       xylem_lab,
       no_xylem = TRUE,
-      single_trait = TRUE)
+      single_trait = TRUE,
+      sp_level = FALSE)
   ),
   tar_target(
     # tar_read(trait_fig_data_combined)

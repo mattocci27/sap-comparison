@@ -637,7 +637,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|043322824fc6b529|||||||||||||||
+granier_list|object|b2c0ac932c46a67d|||||||||||||||
 granier_with_traits_mapped|object|7930ef5e7a1f138c|||||||||||||||
 granier_without_traits_mapped|object|1a409f752d13db64|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -1044,7 +1044,7 @@ tr_example_panel|function|3a03bfbda3dc8704|||||||||||||||
 tr_example_panel_plot|stem|a1e107d0b9adfa49|ea68b623f29ac351|f1136e026b94b16e|-741798999|figs/tr_example_panel_plot.png*figs/tr_example_panel_plot.pdf|t19713.4145712899s|fac7bc2873950f0b|64160605|file|local|vector|||54.025|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.|
 tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
 tr_scaled_bars2|function|4e99d245a37379a8|||||||||||||||
-trait_pred_data_noxylem_combined|stem|d399ca27baac5486|634edfc0bcf6b71d|8c5d3dbfb9a5b6f4|1458690166||t19727.1023488888s|a9f32b0e63da1b68|78527|rds|local|vector|||10.859||
+trait_pred_data_noxylem_combined|stem|d399ca27baac5486|d9cb12741c135414|8c5d3dbfb9a5b6f4|1458690166||t19727.5459194938s|a9f32b0e63da1b68|78527|rds|local|vector|||10.29||
 trait_pred_data_noxylem_sp_combined|stem|1dc3a2a11ba2bd0c|87e703c24dc629a9|97c81dc2eb0ccf0a|-927210835||t19727.111334471s|27350d148bc7b6aa|49709|rds|local|vector|||6.227||
 trait_pred_data_xylem_combined|stem|f461b36882950754|6e4848b482a718eb|528a66a71c1c4959|-313104499||t19727.102371667s|d9bdcdf97b611a48|78743|rds|local|vector|||8.671||
 traits_noxylem_table|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|-1440537911||t19670.1629886208s|d713d5cc4ab85b07|6053|rds|local|vector|||1.33|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
