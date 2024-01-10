@@ -1740,6 +1740,7 @@ uncertainty_figs_list <- list(
       p <- ggplot(tmp3 |> sample_n(1000), aes(x = exp(log_a), y = b, col = tr)) +
         geom_point(alpha = 0.8) +
         scale_color_viridis_c(name = expression("Transpiration (mm"~y^-1*")" )) +
+        scale_x_log10() +
         xlab(expression("Coefficient"~italic(a))) +
         ylab(expression("Coefficient"~italic(b))) +
         my_theme() +
@@ -1773,6 +1774,38 @@ uncertainty_figs_list <- list(
         dpi = 200,
         width = 173,
         height = 58,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    full_df_ab_processed,
+    process_full_ab_df(sarea_df, post_dir_dep_mid, dir_dep_imp_df)
+  ),
+  tar_target(
+    summary_stats_list,
+    prepare_summary_stats(
+      full_df_ab_processed,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.02,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+  ),
+  tar_target(
+    ab_example_panel_plot, {
+      p <- ab_example(
+        full_df_ab_processed,
+        segments_xylem_post_ab_fit_draws_segments_xylem_0.02,
+        segments_xylem_post_ab_fit_draws_segments_xylem_0.08,
+        summary_stats_list,
+        ab_summarized_df_species_xylem_post_ab_fit_draws_species_xylem_0.08,
+        segments_xylem_post_ab_fit_draws_segments_xylem_0.08
+        )
+      my_ggsave(
+        "figs/test",
+        p,
+        dpi = 200,
+        width = 173,
+        height = 113,
         units = "mm"
       )
     },
