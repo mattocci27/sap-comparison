@@ -160,6 +160,7 @@ dbh_imp_df2|stem|0cd6d35146d58fd4|ea51559474629e47|169a2e27785946e2|-80267527||t
 dbh_points|function|ef70c464b32157f9|||||||||||||||
 dbh_points_plot|stem|bb9b5b42212c5d8f|70b0367b88559ddb|c695e40c960c1c02|2069474470|figs/dbh_points.png*figs/dbh_points.pdf|t19674.358047147s|10c3997482f235b6|577744|file|local|vector|||1.881|Ignoring unknown parameters width|
 dbh_sap_stan_data|stem|29f47d924c2d81ff|2a7b123ce099cd8d|7fadfb025d49bec8|741940435||t19641.4161684735s|732cb9fc41365a4a|739|rds|local|vector|||1.149||
+dh_r2|stem|fc15efaf94dd3cef|1c4ec9a6734299bb|78609b6c5db61934|1145912405||t19732.1223928742s|ce9b4a225e799bab|165|rds|local|vector|||3.289||
 dh_sp_r2|stem|679b02c17e8e958a|3b8276868167c710|91f1f246cfd2c22d|-1540742106||t19727.270071989s|c8c08b546a334f8d|170|rds|local|vector|||2.3||
 dir_dep_comb_table|stem|1a53c31077f3e9f8|516ad1317ce4b406|a48e7f87fb280669|1650174023|data/dir_dep_comb_post.csv|t19669.4142479537s|a716db876c9596cc|353|file|local|vector|||1.104||
 dir_dep_imp_df|stem|4f486128a605f472|b9f864b60b83594f|d63b40050689cf38|-1398936709||t19661.1119071136s|091ac4c23155ed48|67413779|rds|local|vector|||79.909||
@@ -641,7 +642,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|1975334704|data-raw/girth_increment.csv|t19641.4162579201s|9ef5b03992486a66|1444|file|local|vector|||1.01||
-granier_list|object|b1b602d8bf9c2872|||||||||||||||
+granier_list|object|15d8684a81c7969d|||||||||||||||
 granier_with_traits_mapped|object|7930ef5e7a1f138c|||||||||||||||
 granier_without_traits_mapped|object|1a409f752d13db64|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -988,6 +989,7 @@ summarize_df_data2|function|756b7becb4133826|||||||||||||||
 summarize_each_uncertainty|function|150ea98098d6ea77|||||||||||||||
 summarize_stats_uncertainty|function|b317e5cd508c115f|||||||||||||||
 summarize_uncertainty|function|71dfe8f4cf45190c|||||||||||||||
+swc_r2|stem|ca0ab8673336418a|4019b4a5e1a05b9b|1dc1d4b7fee50949|-180001441||t19732.1223833371s|4859fc503e8e9e17|155|rds|local|vector|||3.265||
 swc_sp_r2|stem|ee40be22cd5dcdae|b6b243d9d3eb05e6|cae6de2eaba1c69b|-2065674525||t19732.0843773682s|5f22883ff0bcf597|153|rds|local|vector|||2.281||
 table_fit_summary_segments_xylem_0.02|stem|2e7ef8ca419908da|6069784f291c1b1c|2748de1c89d5a34b|-1659866181||t19668.3995140024s|a65b417ee2269624|40213|rds|local|vector|||1.128||
 table_fit_summary_segments_xylem_0.025|stem|97f75f77541d232f|aaf377c3f3790a31|f4f4f20cfaa122ce|775282219||t19668.3994633531s|2facc0364e3889d5|43579|rds|local|vector|||2.289||
@@ -1064,14 +1066,14 @@ traits_points_main|function|38b7841ba4fbfe51|||||||||||||||
 traits_points_main_plot|stem|0bfaa428442eb3da|29e1bd21d56ab9c5|fcb6b1f6eb8601c1|221887310|figs/traits_points_main.png*figs/traits_points_main.pdf|t19731.4078449256s|318ab033a998a14f|918279|file|local|vector|||2.053||
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
 traits_points_main_re_plot|stem|f5f4a06cfc1f2e24|74ed42cc0f98bb1c|457df554648cda9e|1626401767|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf|t19731.4078467775s|ed645eea696e6fc2|881617|file|local|vector|||2.209||
-traits_points_si|function|ca566903637148f4|||||||||||||||
-traits_points_si_plot|stem|1575d96dd0613694|4c8c363d4354c02d|7003092e0637496c|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19732.1175876902s|9afda9ef0b037f8a|1013618|file|local|vector|||1.571|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
+traits_points_si|function|72916aca1757728d|||||||||||||||
+traits_points_si_plot|stem|a900fe3c39b3a520|4c8c363d4354c02d|2ca1c692f36b6f92|-893545861|figs/traits_points_si.png*figs/traits_points_si.pdf|t19732.1264229963s|9ca2eb57a701130c|1037342|file|local|vector|||2.691|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
 traits_points_sp_main_plot|stem|dda65fee9df1caf6|d52218e18922dae5|826c54382801d79c|108861035|figs/traits_points_sp_main.png*figs/traits_points_sp_main.pdf|t19727.1113599807s|7cbc78be99b3c563|508616|file|local|vector|||2.196||
 traits_seg_points_si|function|426c74414e84c66d|||||||||||||||
-traits_seg_points_si_plot|stem|2dc820bf00d676f3|31563561da82c042|f79f4a51d95d36aa|4638631|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf|t19732.1176119962s|01fb44fff551f9d6|1198060|file|local|vector|||1.707|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
-traits_sp_points_main|function|a5d1a3ed3874383c|||||||||||||||
-traits_sp_points_main_plot|stem|b826911fd89113f6|ee7f6258426c2a94|97110a58cc5182c1|752632805|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf|t19731.6964489635s|f42d2652605f6f0a|926473|file|local|vector|||3.157||
-traits_sp_points_si_plot|stem|b99a41416f1ff745|4410a82a83f942ad|2a8a3eea2848decf|-1230281809|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf|t19732.1175567173s|b9c3a973a50f749b|544954|file|local|vector|||2.458||
+traits_seg_points_si_plot|stem|608b4716ace2b455|9178fe58186a1f77|a0771c0a0a12239e|4638631|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf|t19732.1264245704s|d325fe698d8ed7ae|1213404|file|local|vector|||2.744||
+traits_sp_points_main|function|4ac8b531729b9591|||||||||||||||
+traits_sp_points_main_plot|stem|08e7f5f3b8662fd4|ee7f6258426c2a94|cf253d90388d203f|752632805|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf|t19732.1201252406s|fd6e9c6bae35b6ac|926488|file|local|vector|||3.002||
+traits_sp_points_si_plot|stem|5e07aa9fecf278e1|4410a82a83f942ad|2eb46991dadb06c8|-1230281809|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf|t19732.1264225797s|b9c3a973a50f749b|544954|file|local|vector|||2.631||
 traits_xylem_table|stem|7d454a4b58e962dd|9485d282f232ceaa|3f985196ece32dde|-1062309350||t19709.4710990504s|707058d2e584af21|6323|rds|local|vector|||0.304|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-206480128|data/traits_xylem_post.csv|t19709.5266056575s|3ec90852d02084c7|184923|file|local|vector|||0.056||
 uncertainty_ab_mapped|object|920b5a418c7cab24|||||||||||||||
@@ -1086,7 +1088,9 @@ vaf_r2|stem|02f5339aa753ed76|8d1427b0f79ce84a|5cad662a5e912cfe|-784629324||t1972
 vaf_sp_r2|stem|f4bac089cf9ec7a6|8820f0cc939cc1b6|f309c4b1b2936f7e|-676508774||t19731.1591186976s|97f5d5ebb4412369|161|rds|local|vector|||2.24||
 values|object|d9af27a27ad26844|||||||||||||||
 values2|object|e63b2d61962c1295|||||||||||||||
+vf_r2|stem|94ca99987daf1d77|f2b6274990f5863d|b8ff4535b98d7a66|-899410645||t19732.122167179s|bbe0e43529942e5e|163|rds|local|vector|||3.275||
 vf_sp_r2|stem|5c847e4ce77ca064|47afebff3d17b875|c6adf7db42b22da9|-504571323||t19727.2702218532s|69d3b8a65cb67b2d|164|rds|local|vector|||2.56||
+wd_r2|stem|2f5d17c119fc2112|0385adbd0b6e26f2|40c5a80baa22b229|-277847415||t19732.1225798194s|2f4c0f199b39241a|151|rds|local|vector|||3.092||
 wd_sp_r2|stem|7901bc983d2208c4|4818aba2823445e7|1dd1d911092ed0c4|1830589277||t19732.0868236179s|4859fc503e8e9e17|155|rds|local|vector|||2.314||
 write_ab_csv|function|4aecb1ce16c74b70|||||||||||||||
 write_ab_csv2|function|4aecb1ce16c74b70|||||||||||||||

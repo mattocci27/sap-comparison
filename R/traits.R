@@ -216,14 +216,14 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
   line_a_seg <- create_line(pred_data_seg, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
   line_b_seg <- create_line(pred_data_seg, pred_b_ll, pred_b_hh, pred_b_m)
 
-  p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("B", "A"))
+  p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("A", "B"))
   p1 <- add_lines(p1, data = line_a_seg) +
     theme(
       axis.text.x = element_blank(),
       axis.text.y = element_text(size = 7)
     )
 
-  p2 <- plot_data(fig_data_seg, r2_list, "b", inner_tag = c("F", "E"))
+  p2 <- plot_data(fig_data_seg, r2_list, "b", inner_tag = c("E", "F"))
   p2 <- add_lines(p2, data = line_b_seg) +
     theme(
       # strip.text.x = element_blank()
@@ -231,7 +231,7 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
       axis.text.y = element_text(size = 7)
     )
 
-  p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("D", "C"))
+  p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("C", "D"))
   p3 <- add_lines(p3, data = line_a_sp) +
     theme(
       axis.text.x = element_blank(),
@@ -241,7 +241,7 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
       legend.text = element_text(size = 7),
     )
 
-  p4 <- plot_data(fig_data_sp, r2_sp_list, "b", inner_tag = c("H", "G"))
+  p4 <- plot_data(fig_data_sp, r2_sp_list, "b", inner_tag = c("G", "H"))
   p4 <- add_lines(p4, data = line_b_sp) +
     theme(
       axis.title.y = element_blank(),
@@ -372,23 +372,20 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
   line_b_sp <- create_line2(pred_data, pred_b_ll, pred_b_hh, pred_b_m) |>
     filter(trait == "log_dh")
 
-  p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = LETTERS[1:4], sp = sp)
-  p1 <- add_lines(p1, data = line_a_sp) +
+  p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = LETTERS[1:4], sp = sp) +
     theme(
       axis.text.x = element_blank(),
       strip.text.x = element_blank()
     )
-
-  p2 <- plot_data(fig_data, r2_list = r2_list, "b", inner_tag = LETTERS[5:8], sp = sp)
-  p2 <- add_lines(p2, data = line_b_sp) +
+  p2 <- plot_data(fig_data, r2_list = r2_list, "b", inner_tag = LETTERS[5:8], sp = sp) +
     theme(
       strip.text.x = element_blank()
     )
 
   if (sp) {
-    p1 <- p1 +
+    p1 <- add_lines(p1, data = line_a_sp) +
       coord_cartesian(ylim = c(10, 15667))
-    p2 <- p2 +
+    p2 <- add_lines(p2, data = line_b_sp) +
       coord_cartesian(ylim = c(0, 2.15))
   }
 
