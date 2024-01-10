@@ -125,73 +125,10 @@ pred_data_sp  <- tar_read(trait_pred_data_noxylem_sp_combined, store = here("_ta
 
 ![](`r here("figs/traits_sp_points_main.png")`)
 
+![](`r here("figs/traits_seg_points_si")`)
 
-```{r}
-#Apply the data preparation function to segment data
-  tmp_seg_wd <- prepare_plot_data(pred_data_seg[[3]]$pred_points, "a_") |> mutate(trait = "wood_density")
-  tmp_seg_wd_b <- prepare_plot_data(pred_data_seg[[3]]$pred_points, "b_") |> mutate(trait = "wood_density")
-  tmp_seg_swc <- prepare_plot_data(pred_data_seg[[4]]$pred_points, "a_") |> mutate(trait = "log_swc")
-  tmp_seg_swc_b <- prepare_plot_data(pred_data_seg[[4]]$pred_points, "b_") |> mutate(trait = "log_swc")
-  tmp_seg_dh <- prepare_plot_data(pred_data_seg[[5]]$pred_points, "a_") |> mutate(trait = "log_dh")
-  tmp_seg_dh_b <- prepare_plot_data(pred_data_seg[[5]]$pred_points, "b_") |> mutate(trait = "log_dh")
-  tmp_seg_vf <- prepare_plot_data(pred_data_seg[[6]]$pred_points, "a_") |> mutate(trait = "log_vf")
-  tmp_seg_vf_b <- prepare_plot_data(pred_data_seg[[6]]$pred_points, "b_") |> mutate(trait = "log_vf")
-
-  fig_data_seg <- bind_rows(
-    tmp_seg_wd,
-    tmp_seg_wd_b,
-    tmp_seg_swc,
-    tmp_seg_swc_b,
-    tmp_seg_vf,
-    tmp_seg_vf_b,
-    tmp_seg_dh,
-    tmp_seg_dh_b) |>
-    mutate(trait = fct_relevel(trait, "wood_density", "log_swc", "log_dh", "log_vf")) |>
-    mutate(val = case_when(
-      trait == "wood_density" ~ log(wood_density),
-      trait == "log_swc" ~ log_swc,
-      trait == "log_dh" ~ log_dh,
-      trait == "log_vf" ~ log_vf,
-    ))
+![](`r here("figs/traits_sp_points_si")`)
 
 
-  # source("R/traits.R")
-  p1 <- plot_data(fig_data_seg, r2_list = NULL, "a", "Segments", inner_tag = LETTERS[1:4]) +
-    theme(
-      axis.text.x = element_blank(),
-      strip.text.x = element_blank()
-    )
-  p2 <- plot_data(fig_data_seg, r2_list = NULL, "b", inner_tag = LETTERS[5:8]) +
-    theme(
-      strip.text.x = element_blank()
-    )
 
-# Create a dummy plot which will be used only to extract the legend
-  p3 <- ggplot(fig_data_seg, aes(x = val, y = mid, color = xylem_long_fct)) +
-    geom_point() +
-    theme_void() +
-    theme(
-      legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
-      legend.position = "bottom",
-      legend.direction = "horizontal",
-      legend.spacing.x = unit(0, "lines"),
-      legend.title = element_blank())
-
-# Extract the legend from p5
-  legend <- g_legend(p3)
-  x_fake_lab_seg <- prepare_x_fake_lab(fig_data_seg)
-
-  p <- p1 + p2 + x_fake_lab_seg + legend + plot_layout(nrow = 4, ncol = 1) +
-    plot_layout(heights = c(0.5, 0.5, 0.05, 0.05))
-
-      my_ggsave(
-        here("figs/test"),
-        p,
-        dpi = 600,
-        width = 173,
-        height = 100,
-        units = "mm")
-```
-
-![](`r here("figs/test.png")`)
 

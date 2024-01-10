@@ -1129,12 +1129,36 @@ granier_list <- list(
   ),
   tar_target(
     traits_seg_points_si_plot, {
-      p <- traits_seg_points_si(
+      p <- traits_points_si(
         trait_pred_data_noxylem_combined,
-        trait_pred_data_noxylem_sp_combined
+        title = "Segments"
         )
       my_ggsave(
         "figs/traits_seg_points_si",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_sp_points_si_plot, {
+      p <- traits_points_si(
+        trait_pred_data_noxylem_sp_combined,
+        r2_list = list(
+          wd_sp_r2,
+          swc_sp_r2,
+          dh_sp_r2,
+          vf_sp_r2
+        ),
+        title = "Species",
+        sp = TRUE
+        )
+      my_ggsave(
+        "figs/traits_sp_points_si",
         p,
         dpi = 600,
         width = 173,
@@ -1167,6 +1191,14 @@ granier_list <- list(
   tar_target(
     vf_sp_r2,
     process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_vf, stan_data_noxylem_log_vf$xk, sp_level = TRUE)
+  ),
+  tar_target(
+    swc_sp_r2,
+    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_swc, stan_data_noxylem_log_swc$xk, sp_level = TRUE)
+  ),
+  tar_target(
+    wd_sp_r2,
+    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_wood_density, stan_data_noxylem_wood_density$xk, sp_level = TRUE)
   ),
   tar_target(
     traits_points_si_plot, {

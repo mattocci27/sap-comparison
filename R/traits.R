@@ -31,7 +31,7 @@ prepare_line_data <- function(data, ab = "a") {
 }
 
 # Create a function for the repeated plotting code
-plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A") {
+plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A", sp = FALSE) {
 
   data <- data |>
     filter(ab == ab_value)
@@ -52,6 +52,12 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
     mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
     arrange(trait) |>
     mutate(inner_tag = inner_tag)
+
+  if (sp) {
+    r2_data <- r2_data |>
+      mutate(tag_y = ifelse(ab_value == "a", 8000, 2))
+  }
+  # print(r2_data)
 
  p <- data |>
     ggplot() +
@@ -121,15 +127,15 @@ create_line <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
 
 create_line2 <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
   bind_rows(
-    pred_data[[1]]$pred_line |> mutate(trait = "log_vaf"),
-    pred_data[[2]]$pred_line |> mutate(trait = "log_ks")
+    pred_data[[5]]$pred_line |> mutate(trait = "log_dh"),
+    pred_data[[6]]$pred_line |> mutate(trait = "log_vf")
   ) |>
     mutate(
       ymin = {{ymin_trans}},
       ymax = {{ymax_trans}},
       y = {{y_trans}}
     ) |>
-    mutate(trait = fct_relevel(trait, "log_vaf", "log_ks"))
+    mutate(trait = fct_relevel(trait, "log_dh", "log_vf"))
 }
 
 # Function to extract legend
@@ -302,7 +308,6 @@ traits_seg_points_si <- function(pred_data_seg, pred_data_sp) {
     ))
 
 
-  # source("R/traits.R")
   p1 <- plot_data(fig_data_seg, r2_list = NULL, "a", "Segments", inner_tag = LETTERS[1:4]) +
     theme(
       axis.text.x = element_blank(),
@@ -329,5 +334,79 @@ traits_seg_points_si <- function(pred_data_seg, pred_data_sp) {
   x_fake_lab_seg <- prepare_x_fake_lab(fig_data_seg)
 
   p1 + p2 + x_fake_lab_seg + legend + plot_layout(nrow = 4, ncol = 1) +
+    plot_layout(heights = c(0.5, 0.5, 0.06, 0.05))
+}
+
+traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp = FALSE) {
+
+  # r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
+
+#Apply the data preparation function to spment data
+  tmp_wd <- prepare_plot_data(pred_data[[3]]$pred_points, "a_") |> mutate(trait = "wood_density")
+  tmp_wd_b <- prepare_plot_data(pred_data[[3]]$pred_points, "b_") |> mutate(trait = "wood_density")
+  tmp_swc <- prepare_plot_data(pred_data[[4]]$pred_points, "a_") |> mutate(trait = "log_swc")
+  tmp_swc_b <- prepare_plot_data(pred_data[[4]]$pred_points, "b_") |> mutate(trait = "log_swc")
+  tmp_dh <- prepare_plot_data(pred_data[[5]]$pred_points, "a_") |> mutate(trait = "log_dh")
+  tmp_dh_b <- prepare_plot_data(pred_data[[5]]$pred_points, "b_") |> mutate(trait = "log_dh")
+  tmp_vf <- prepare_plot_data(pred_data[[6]]$pred_points, "a_") |> mutate(trait = "log_vf")
+  tmp_vf_b <- prepare_plot_data(pred_data[[6]]$pred_points, "b_") |> mutate(trait = "log_vf")
+
+  fig_data <- bind_rows(
+    tmp_wd,
+    tmp_wd_b,
+    tmp_swc,
+    tmp_swc_b,
+    tmp_vf,
+    tmp_vf_b,
+    tmp_dh,
+    tmp_dh_b) |>
+    mutate(trait = fct_relevel(trait, "wood_density", "log_swc", "log_dh", "log_vf")) |>
+    mutate(val = case_when(
+      trait == "wood_density" ~ log(wood_density),
+      trait == "log_swc" ~ log_swc,
+      trait == "log_dh" ~ log_dh,
+      trait == "log_vf" ~ log_vf,
+    ))
+
+  line_a_sp <- create_line2(pred_data, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
+  line_b_sp <- create_line2(pred_data, pred_b_ll, pred_b_hh, pred_b_m) |>
+    filter(trait == "log_dh")
+
+  p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = LETTERS[1:4], sp = sp)
+  p1 <- add_lines(p1, data = line_a_sp) +
+    theme(
+      axis.text.x = element_blank(),
+      strip.text.x = element_blank()
+    )
+
+  p2 <- plot_data(fig_data, r2_list = r2_list, "b", inner_tag = LETTERS[5:8], sp = sp)
+  p2 <- add_lines(p2, data = line_b_sp) +
+    theme(
+      strip.text.x = element_blank()
+    )
+
+  if (sp) {
+    p1 <- p1 +
+      coord_cartesian(ylim = c(10, 15667))
+    p2 <- p2 +
+      coord_cartesian(ylim = c(0, 2.15))
+  }
+
+# Create a dummy plot which will be used only to extract the legend
+  p3 <- ggplot(fig_data, aes(x = val, y = mid, color = xylem_long_fct)) +
+    geom_point() +
+    theme_void() +
+    theme(
+      legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.spacing.x = unit(0, "lines"),
+      legend.title = element_blank())
+
+# Extract the legend from p5
+  legend <- g_legend(p3)
+  x_fake_lab <- prepare_x_fake_lab(fig_data)
+
+  p1 + p2 + x_fake_lab + legend + plot_layout(nrow = 4, ncol = 1) +
     plot_layout(heights = c(0.5, 0.5, 0.06, 0.05))
 }
