@@ -1,0 +1,708 @@
+---
+title: "Figures"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 11pt
+csl: apa.csl
+bibliography: [sap-comparison.bib]
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+prefer-html: true
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    smooth-scroll: true
+    highlight-style: github
+  docx:
+    toc: true
+    number-sections: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r,include=FALSE}
+library(tidyverse)
+library(tarchetypes)
+library(here)
+library(kableExtra)
+library(targets)
+library(loo)
+library(smatr)
+library(GGally)
+library(ggridges)
+library(ggrepel)
+library(bayesplot)
+source(here("R", "stan.R"))
+source(here("R", "render.R"))
+source(here("R", "figs.R"))
+source(here("R", "data_clean.R"))
+anova_yml <- yaml::yaml.load_file(here("yml/anova.yml"))
+para <- read_csv(here("data/ab_var_clean_008.csv"))
+```
+
+
+```{r, include=FALSE}
+s_fig_num("diagram")
+s_fig_num("cross_section")
+# s_fig_num("coef_intervals_pres_tens")
+# s_fig_num("coef_int_quad_mean")
+# s_fig_num("pool_multi")
+# s_fig_num("ab_points")
+# s_fig_num("pg_multi")
+# s_fig_num("pg_ribbon_a")
+# s_fig_num("pg_ribbon_b")
+# s_fig_num("traits_points_si")
+s_table("summary_of_published_tdm_coefficients")
+```
+
+# Not in this file
+
+- `r s_fig("diagram")`: diagram
+- `r s_fig("cross_section")`: cross_section
+- `r s_table("summary_of_published_tdm_coefficients")`: summary of published tdm coefficients
+- Soil and tree properties
+
+# Methods (analysis)
+
+## Pressure vs. tension-induced flow
+
+A bivariate relationship between pressure- and tension-induced flow rates (*K~s~*) was evaluated a standardized major axis (SMA) regression [@Warton2006].
+We also examined the effect of pressure types and species on *K~s~* using a Bayesian ANOVA model [(stan code)](#stan-codes).
+Using this model, we determined how much each component—species, pressure, and residuals—contributed to the overall variance.
+This contribution was measured as the component's variance as a share of the total variance and presented as a percentage.
+
+## Pressure vs. number of active vessels
+
+We modeled the probability of a vessel filled with silicon as linear and quadratic logistic functions of perfusion pressures with varying- intercepts and slopes by species [(stan code)](#stan-codes).
+Model selection using Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO; @Vehtari2014; @Vehtari2017) suggested that the quadratic model performed better (the difference in expected log pointwise predictive accuracies between the two models was 207.9), and thus we only report the result of the quadratic model.
+
+## Coefficients *a* and *b*
+
+Using a power-law function as the foundational model form, we applied four different Bayesian model approaches to analyze the relationship between *F*~d~ and K (i.e., log(*F*~d~) = log(*a*) + *b* $\times$ log(*K*)).
+The key differences between the models are the primary unit of analysis (either segments or species) and the incorporation of xylem-type variation.
+
+First, the species-only model takes individual species as its primary analytical unit without considering inter-segment variations.
+In this approach, each species was fitted separately.
+This model is the most conventional approach (stan code, `r s_table("species_only_table")`).
+
+Second, the segment-inclusive model uses segments as its primary analytical unit.
+While this model incorporates both inter-segment and interspecific variations, each species was fitted separately
+(stan code, `r s_table("segments_inclusive_table")`).
+
+Third, the species-xylem model takes species as its primary analytical unit, integrating interspecific and xylem-type variations
+(stan code, `r s_table("species_xylem_table")`).
+Unlike the previous models, this model fits all species simultaneously.
+
+Fourth, the segment-xylem model is based on segments but includes variations between segments, species, and xylem types.
+Similar to the species-xylem model, this model fits all species at the same time
+(stan code, `r s_table("segments_xylem_table")`).
+
+In the main text, we primarily focused on the species-xylem and segment-xylem models.
+Our goal was to evaluate the effects of considering segment-level variation in estimating the coefficients *a* and *b* while also quantifying xylem-level variation in the coefficients.
+
+Considering the dependency of *K* ranges on the maximum applied pressure gradients (*P~g~*), we used nine distinct datasets based on different ranges of *P~g~* in our analysis
+(Maximum *P~g~*  [MPa m^-1^]:
+0.02,
+0.025,
+0.03,
+0.035,
+0.04,
+0.05,
+0.06,
+0.07, and
+0.08).
+
+We also quantified the proportion of total variance attributed to each component (i.e., segments, species, and xylem types) in the coefficients *a* and *b* estimates, following the methodology described above.
+
+Lastly, we built Bayesian hierarchical models incorporating wood traits ($\rho$, VAF, VF, and D~h~) and hydraulic trait *K~s~*.
+Each of these traits was included separately as species-level predictors for the coefficients *a* and *b* and were integrated into our segment-xylem model
+(stan code, `r s_table("traits_xylem")`).
+Additionally, we built a variation of the segment-xylem model that excluded xylem-level variation
+(stan code, `r s_table("traits_noxylem")`).
+This allowed us to assess the effects of xylem-level variation on trait estimation for the coefficients *a* and *b*.
+
+**`r s_table("species_only_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the species-only model, evaluated across different maximum applied pressure gradients.
+
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- max_pg: maximum pressure gradient
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- rhat: R-hat diagnostics for convergence. rhat < 1.1 indicates good convergence [@Gelman2013]
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/species_only_ab.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("segments_inclusive_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the segments inclusive model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/segments_inclusive_ab.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("species_xylem_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the species-xylem model, evaluated across different maximum applied pressure gradients.
+Details are the same as in `r s_table("species_only_table")`.
+
+(showing only the first 10 rows here)
+```{r, echo=FALSE}
+read_csv(here::here("data/species_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("segments_xylem_table")`**:
+Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the segments-xylem model, evaluated across different maximum applied pressure gradients.
+
+(showing only the first 10 rows here)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/segments_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_xylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the trait-based model with xylem effects.
+Details are the same as in `r s_table("species_only_table")`.
+
+The column definitions are:
+
+- trait:
+  - log_dh (log[Dh])
+  - log_vf (log(VF))
+  - wood_density (Wood density)
+  - log_ks (log[Ks])
+  - log_vaf (log[VAF])
+- variable_name: name of the variable in the stan model
+- level: overall, xylem type, species, or segment
+- targets: name of xylem type, species, or segment
+- variable_meaning: meaning of the variable
+- q50: posterior median
+- q2.5: 2.5% posterior quantiles
+- q97.5: 97.5% posterior quantiles
+- effective_sample_size: tail effective sample size > 400 indicates good convergence [@Vehtari2021].
+
+For example, trait `log_dh` and variable `beta_a[2,1]` indicate the effect of Dh on coefficient *a* for diffuse-porous trees on the log-scale.
+
+(showing only the first 10 rows)
+
+```{r, echo=FALSE}
+read_csv(here::here("data/traits_xylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("traits_noxylem")`**: Bayesian estimates of posterior median, upper and lower credible intervals, and effective sample sizes for the trait-based model without xylem effects.
+Details are the same as in `r s_table("traits_xylem")`.
+
+```{r, echo=FALSE}
+read_csv(here::here("data/traits_noxylem_post.csv")) |>
+  head(10) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+## Estimating tree transpiration in a forest stand
+
+We developed a statistical framework to estimate tree transpiration while overcoming the challenges posed by missing data (*K*) and quantifying the uncertainty in our estimates.
+Utilizing the missForest algorithm, we imputed missing *K* values.
+Using Bayesian linear models, we estimated *K* values where depth and direction data were absent and derived sapwood area ($A_{sap}$) from DBH measurements.
+This approach allows for a probabilistic assessment of the uncertainty of our estimates.
+
+To implement this framework, we used the missForest algorithm [@Stekhoven2012] to handle missing K values in our dataset (`r s_fig("imp_points")`).
+This algorithm uses an ensemble of decision trees, known as a Random Forest, to predict and fill in the missing values.
+It treats the missing value as a response variable and the observed values as predictors, iteratively estimating the missing data points until convergence.
+The missForest algorithm has been proven to perform robustly, providing reliable imputations with minimal assumptions about the underlying data distribution [@Stekhoven2012].
+As predictors, we used all the observed values, including *K*, date, time, VPD, PAR, tree ID, direction, and depth.
+Given the large size of our dataset (> 4M rows), we applied missForest to each month separately.
+Because of power outage (?), we encountered an issue with an excess of missing *K* values in September, October, and December 2016.
+The missing data from these periods could not be adequately imputed using only the data from the same months.
+To address this, we used imputed data from the corresponding months in 2015 to impute the missing values for 2016.
+The normalized root mean squared error (NRMSE) was < 0.0001 for all the months, suggesting that the imputed values were close to the observed values.
+
+In our dataset, *K* values were measured across three depths (0-2 cm, 2-4 cm, and 4-6 cm) and four directions (north, south, east, and west).
+However, the dataset was incomplete as not all trees were measured for all depth-direction combinations.
+To address this, we used the *K* values from the 0-2 cm depth and southern exposure as a baseline, employing a Bayesian linear model to estimate the effects of varying depths and directions on *K* values [(stan code)](#stan-codes).
+This model enabled us to use actual observed *K* values for analysis when available and to substitute with the median predicted *K* values from the model when direct measurements were absent (`r s_table("dir_dep_post")`).
+When the sapwood depth exceeded 6 cm, we adapted our approach for estimating *K* values by assigning them half the value of those measured at a depth of 4-6 cm from the same direction.
+
+In addition to *K* value estimation, we conducted 16 measurements of DBH over two years.
+We employed interpolation techniques to estimate the corresponding values for the days when DBH was not measured (`r s_fig("dbh_points")`).
+We then modeled sapwood length as a function of DBH using a Bayesian linear model [(stan code)](#stan-codes).
+We used the posterior median of the model and interpolated DBH to estimate daily sapwood length (`r s_fig("sap_dbh_points")` and `r s_table("dbh_sapwood_post")`).
+This linear model of sapwood length is also crucial for calculating sap flux at 10-minute intervals ($S_{10min}$; g m^-2^ 10 min^-1^) using the equation
+$S_{10min} = a \times K^b \times A_{sap} \times 600$
+where the factor 600 is the number of seconds in 10-minute intervals.
+
+Finally, we computed annual stand transpiration by summing up $S_{10min}$ for all the trees over two years and normalizing this sum by the area of the stand (800 m^2^).
+We also evaluated the relative contribution of uncertainty in transpiration estimates by calculating the variance contributed
+by the *a* and *b* coefficients ($\sigma^2_{\mathrm{ab}}$),
+by the combined effects of direction and depth on *K* ($\sigma^2_{\mathrm{dir-dep}}$),
+by direction ($\sigma^2_{\mathrm{dir}}$),
+by depth ($\sigma^2_{\mathrm{dep}}$), and
+by sapwood area ($\sigma^2_{\mathrm{sap}}$),
+each time holding other variables at their median values.
+These individual variances are then compared to the total variance obtained when considering posterior samples for all variables ($\sigma^2_{\mathrm{tol}}$).
+The relative uncertainty due to *a* and *b* coefficients, for example, is quantified as the percentage of $\sigma^2_{\mathrm{ab}}$ to $\sigma^2_{\mathrm{tol}}$.
+
+
+**`r s_table("dir_dep_post")`**:
+Bayesian estimates of posterior medians and 95% credible intervals of the effects of directions and depths on *K*.
+The south direction and 0-2 cm depth were used as reference values.
+As an illustration, the posterior median *K* value at the 4-6 cm depth in the north is approximately 63% of the value at the 0-2 cm depth in the south direction.
+
+```{r, echo=FALSE}
+read_csv(here("data/dir_dep_comb_post.csv")) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+**`r s_table("dbh_sapwood_post")`**:
+Bayesian estimates of posterior medians and 95% credible intervals of the intercept and slope for the relationship between sapwood length and DBH on a log-scale.
+
+```{r, echo=FALSE}
+read_csv(here("data/dbh_sapwood_post.csv")) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+![`r s_fig("imp_points")`:
+Examples of *K* value imputations for tree ID 11,  measured at three depths (2, 4, 6 cm) from the south direction.
+(A) February 2016: Imputed values at 4 cm depth between February 14th and 15th are accurately tracking the observed patterns.
+(B) May 2016: In an extreme case, observations are absent across all depths for several days, yet the imputed values align closely with the observed patterns.
+](`r here::here("figs/imp_points.png")`)
+
+![`r s_fig("dbh_points")`:
+DBH increments for each tree (t01-t16) over two years.
+Each point indicates the actual measurement, and dashed lines indicate interpolated values.
+](`r here::here("figs/dbh_points.png")`)
+
+
+![`r s_fig("sap_dbh_points")`:
+Relationship between sapwood length and DBH.
+The solid line indicates the posterior medians of the linear model, and the shaded areas represent the 95% credible intervals.
+](`r here::here("figs/sap_dbh_points.png")`)
+
+
+## General
+
+All statistical analyses were conducted in R version 4.2.2 [@RCoreTeam2022] using the R package *targets* version 0.14.3 for workflow management [@Landau2021].
+Posterior distributions of all parameters were estimated using the Hamiltonian Monte Carlo algorithm (HMC) implemented in Stan [@Carpenter2017] using the informative (i.e., *a* = 119, *b* = 1.23; @Granier1985) or weakly-informative priors [@Gelman2008].
+Convergence of the posterior distribution was assessed with the Gelman-Rubin statistic with a convergence threshold of 1.1 [@Gelman2013] and effective sample sizes > 400 [@Vehtari2021] for all parameters.
+Codes and datasets are available at
+<https://github.com/mattocci27/sap-comparison> and
+(adds zenodo or something), respectively.
+
+# Results
+
+## Pressure vs. tension-induced flow
+
+```{r, include=FALSE}
+d <- read_csv(here("data/ks_pres_tens_spp_err.csv"))
+sma_fit <- sma(log10(tens_calib_mean) ~ log10(pres_calib_mean), d)
+```
+
+```{r, include=FALSE}
+sma_slope <- sma_fit$coef[[1]][2, ] |>
+  round(2) |> format(nsmall = 2)
+sma_int <- sma_fit$coef[[1]][1, ] |> round(2) |> format(nsmall = 2)
+```
+
+We found that pressure type (pressure vs. tension) had a marginal effect on the induced flow rate.
+Although a strong relationship emerged within each species between tension- and pressure-derived *K~s~*, a significant shift was found in elevation between pressure- and tension-induced flow rates
+(
+`r fig("sma")`a,
+SMA intercept:
+`r sma_int[1]`
+[95% CI:
+`r sma_int[2]`,
+`r sma_int[3]`
+]
+).
+The SMA slope was different from 1
+(
+`r fig("sma")`a,
+SMA slope:
+`r sma_slope[1]`
+[95% CI:
+`r sma_slope[2]`,
+`r sma_slope[3]`
+]
+).
+Pressure-induced flow rates tend to be greater than tension-induced flow rates for samples of low flow rates, converging with increasing flow rates (`r fig("sma")`a).
+
+Pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained little variation in the differences between pressure- and tension-induced flow rates,
+whereas species difference explained much more variation
+(`r str_split(anova_yml$pressure, " ")[[1]][1]` vs. `r str_split(anova_yml$species, " ")[[1]][1]` of the total variance,
+Figs. `r fig_num("sma")`b &
+`r s_fig_num("coef_intervals_pres_tens")`a;
+`r s_table("anova_pres_tens")`).
+After controlling species and pressure-level effects (i.e., hierarchical model), pressure-induced flow rates still likely to be greater than tension-induced flow rates (`r s_fig("coef_intervals_pres_tens")`b).
+
+![`r fig("sma")`:
+Flow rate under three levels of driving force employed as pressure or tension, normalized to maximum hydraulic conductivity (Ks) to account for small differences in sample length and diameter demonstrating the effect of increasing force on Ks (???).
+(A) Relationship between sample mean pressure- and tension-induced flow rates.
+The blue solid line indicates a standardized major axis (SMA) regression.
+The 95% confidence interval is represented as the shaded area.
+(B) Comparisons between pressure- and tension-induced flow rates at three levels for three diffuse-porous, one ring-porous, and one liana species.
+The center line in each box indicates the median and the upper and lower box sides indicate the interquartile range.
+The whiskers extend to a maximum of 1.5 times the interquartile range.
+Statistical results are shown in SX.
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*.
+](`r here::here("figs/sma_ks.png")`)
+
+**`r s_table("anova_pres_tens")`**:
+Posterior medians and 50% credible intervals of the explained variance for the ratio between pressure- and tension-induced flow rates.
+
+```{r, echo=FALSE}
+tibble(Factor = names(anova_yml) |> str_to_title(),
+  Posterior = unlist(anova_yml)) |>
+  kbl() |>
+  kable_classic(full_width = F)
+```
+
+![`r s_fig("coef_intervals_pres_tens")`:
+Posterior medians (circles), 50% (rectangles), and 95% (thin lines) Bayesian credible intervals (CIs) for species and pressure effects on the ratio between pressure and tension induced flows.
+(A) Estimates for standard deviations.
+(B) Estimates for the effect of each predictor.
+(C) Estimates for differences in effects between predictors.
+There is a large variation in pressure-level, but pressure-level (i.e., 0.02, 0.05, 0.08 MPa) explained little variation in the differences between pressure- and tension-induced flow rates of the total variance in (A).
+Positive values indicate pressure-induced flow rates are greater than tension-induced flow rates in (B) and (C).
+The positive ks_ratio parameter in (B) suggests that pressure-induced flow rates are greater than tension-induced flow rates.
+The estimate for AP is smaller than HH, TG, and VM in (C), suggesting that the difference between pressure and tension-induced flow rates tends to be smaller for AP compared to HH, TG, and VM.
+HB shows a similar pattern to AP.
+ks_ratio, a ratio of pressure-induced flow rates to tension-induced flow rates;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*;
+p_2, 0.02 MPa;
+p_5, 0.05 MPa;
+p_8, 0.08 MPa.
+](`r here::here("figs/coef_intervals_pres_tens.png")`){ width=650 }
+
+## Pressure vs. number of active vessels
+
+Overall, increasing pressure tended to linearly increase the proportion of vessels participating in flow (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+Although quadratic function best described the responses, the proportion of vessels participating in flow rate for *Hopea hongayensi* increased was highest in the intermediate pressure, but either remained the same or increased to a maximum moving from the intermediate to the highest pressure in the other four species (Figs. `r fig_num("count_pressure")` & `r s_fig_num("coef_int_quad_mean")`).
+
+![`r fig("count_pressure")`:
+Changes in the proportion of silicon-stained vessels along perfusion pressures for diffuse-porous (A-C: red), ring-porous (D: green), and liana species (E: purple).
+Lines and shaded areas indicate the posterior medians and 95% credible intervals, respectively.
+The size of data points is proportional to the total number of vessels.
+The right columns are fluorography images of active vessels under UV light using silicon-perfusion.
+The red scale at the bottom right represents 500$\micro$m.
+](`r here::here("figs/count_pressure_quadratic.png")`){ width=200 }
+
+![`r s_fig("coef_int_quad_mean")`:
+Posterior medians (circles), 50% (rectangle), and 95% (thin lines) credible intervals (CIs) for model coefficients of the effects of perfusion pressure on the probability of a vessel filled with silicon.
+All, Common effects across all the species;
+HH, *Hopea hongayensis*;
+VM, *Vatica mangachapoi*;
+HB, *Hevea brasiliensis*;
+TG, *Tectona grandis*;
+AP, *Acacia pennata*.
+](`r here::here("figs/coef_intervals_logistic.png")`){ width=450 }
+
+
+## Coefficients *a* and *b*
+
+```{r, echo=FALSE}
+d <- read_csv(here("data/varpart_notrait.csv"))
+a_xylem <- d |>
+  filter(Levels == "Xylem types") |>
+  pull(a) |>
+  str_extract("[0-9]+\\.[0-9]+") |>
+  as.numeric()
+b_seg <- d |>
+  filter(Levels == "Segments") |>
+  pull(b) |>
+  str_extract("[0-9]+\\.[0-9]+") |>
+  as.numeric()
+```
+
+Contents:
+
+- Species-xylem vs. segments-xylem
+- Pressure gradients (segments-xylem model)
+- Variance partitioning (segments-xylem model)
+- Model with traits (without xylem and with xylem)
+
+The power-law fittings without (i.e., species-xylem model) and with (i.e., segments-xylem) inter-segment variation yielded similar estimates for coefficients *a* but slightly different estimates for coefficients *b* (Figs. `r s_fig_num("pool_multi")`-`r s_fig_num("ab_points")`; Table `r s_table_num("ab_comparison")`).
+Generally, the estimates of coefficients *a* and *b* tended to increase with increasing maximum applied pressure gradients (Figs. `r s_fig_num("pg_multi")`-`r s_fig_num("pg_ribbon_b")`).
+Note that the larger the maximum applied pressure gradients, the larger the sample sizes for the analyses.
+Our segments-xylem model revealed little variance in the estimates of coefficients *a* and *b* between species (`r fig("coef_density")` and Table `r s_table_num("varpart_notrait")`).
+Xylem types (`r a_xylem`% of total variance) were the largest source for the variance for coefficient *a*.
+In comparison, segments (`r b_seg`% of total variance) were the largest source for the variance for coefficient *b* (Table `r s_table_num("varpart_notrait")`).
+The 95% CI of the relationships between both K~s~ and VAF with coefficients *a* and *b* did not overlap with zero (Figs. `r fig_num("traits_points_main")`A, B, F, and G), when the xylem-level variation was not included in the model.
+When the xylem-level variation was accounted for, only the relationship between Ks and the coefficient *a* maintained a 95% CI that did not overlap with zero (Fig. `r fig_num("traits_points_main")`B).
+However this model did not converge well because of the strong coveriance between Ks and xylem types (Fig. `r fig_num("traits_points_main")`B, `r s_table("traits_xylem")`)
+
+**`r s_table("ab_comparison")`**:
+Bayesian estimates of posterior median and 95% credible intervals of the coefficients *a* and *b* values for 31 species obtained based on traditional curve fitting (Granier, 1985) and our multilevel model.
+
+
+```{r, echo=FALSE}
+read_csv(here("data/all_ab.csv")) |>
+  dplyr::select(
+    Species = species,
+    `Xylem types` = xylem_long_fct,
+    pool_a2 = pool_sep_a,
+    pool_b2 = pool_sep_b,
+    multi_a2 = multi_sep_a,
+    multi_b2 = multi_sep_b,
+    pool_a = pool_full_ln_a,
+    pool_b = pool_full_b,
+    multi_a = multi_full_ln_a,
+    multi_b = multi_full_b
+  ) |>
+  kbl() |>
+  column_spec(1, italic = TRUE) |>
+  kable_classic() |>
+  add_header_above(c(" " = 2,
+  "Pooled Segments Model" = 2, "Multilevel Model" = 2,
+  "Pooled Segments Model" = 2, "Multilevel Model" = 2)) |>
+  add_header_above(c(" " = 2,
+  "Species-Specific Models" = 4, "Pooled Species Model" = 4))
+  # add_header_above(c(" " = 2, "Traditional fitting" = 2, "Multilevel model" = 2))
+```
+
+![`r s_fig("pool_multi")`:
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+The K values are the averages of two sets of sensors from each segment to account for sapwood variation along the segment.
+The dashed and solid lines represent posterior medians of the power-law relationships without (i.e., traditional approaches) and with (i.e., multilevel approaches) inter-segment variation, respectively.
+](`r here::here("figs/pool_multi.png")`)
+
+
+![`r s_fig("ab_points")`:
+Estimates of coefficients *a* (A) and *b* (B) based on traditional fitting (Granier, 1985) vs. our multilevel model.
+Each point represents the posterior medians of the coefficients for each species.
+Error bars show 95% credible intervals.
+Dashed lines indicate 1:1 lines.
+](`r here::here("figs/ab_points_four_models_all.png")`)
+
+
+![`r s_fig("pg_multi")`:
+Relationships between sap flux density and sap flow index K ((△T~max~-△T)/△T) for different upper limits of pressure gradients (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Different lines indicate different maximum pressure gradients for subsets of data used to draw posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+](`r here::here("figs/pg_multi.png")`)
+
+![`r s_fig("pg_ribbon_a")`:
+Relationships between the coefficient *a* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Solid points indicate posterior medians of the power-law relationships with inter-segment variation (i.e., multilevel approaches).
+Light and dark-shaded areas indicate 95% and 50% Bayesian credible intervals, respectively.
+The maximum applied *P~g~* are different among species because segment lengths are different.
+Species × maximum applied *P~g~* combinations with less than 5 data points were removed from this visualization.
+Therefore, the lower ranges for maximum applied *P~g~* are also different among species.
+](`r here::here("figs/pg_ribbon_a.png")`)
+
+![`r s_fig("pg_ribbon_b")`:
+Relationships between the coefficient *b* and the maximum applied pressure gradient (*P~g~*) for diffuse-porous tree (red), ring-porous tree (purple), palm (blue), and liana (green) species.
+Details as for Fig. `r s_fig_num("pg_ribbon_a")`.
+](`r here::here("figs/pg_ribbon_b.png")`)
+
+![`r fig("coef_density")`:
+Posterior distributions of coefficients *a* (A) and *b* (B) estimated by the Bayesian multilevel model that includes inter-segment, interspecific, and xylem-type variation.
+Estimates for xylem type level and species level are shown.
+Different colorsj indicate different xylem types.
+Vertical lines indicate Granier's estimates (*a* = 119, *b* = 1.23).
+](`r here::here("figs/coef_density.png")`)
+
+**`r s_table("varpart_notrait")`**:
+Posterior medians and 50% credible intervals of the explained variance for the coefficient *a* and *b* across three sample levels.
+
+```{r, echo=FALSE}
+read_csv(here("data/varpart_notrait.csv")) |>
+  rename("Coefficient <i>a</i>" = a) |>
+  rename("Coefficient <i>b</i>" = b) |>
+  kbl(escape = FALSE) |>
+  kable_classic()
+```
+
+![`r fig("traits_points_main")`:
+Relationships between coefficients *a* and *b* and wood and hydraulic traits, with considering xylem variation.
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment.
+Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
+](`r here::here("data-raw/traits_points_si_re.jpg")`)
+
+![`r s_fig("traits_points_si")`:
+Relationships between coefficients *a* and *b* and wood and hydraulic traits, without considering xylem variation.
+Points and bars indicate posterior medians and 95% credible intervals (CIs) of coefficients for each segment, respectively.
+Slopes indicate the effects of traits on the estimates of coefficients *a* and *b*.
+](`r here::here("figs/traits_points_si.png")`)
+
+
+## Estimating tree transpiration in a forest stand
+
+![`r fig("scaled_tr_ab")`:
+This figure is not finalized.
+](`r here::here("figs/tr_bar_ab.png")`)
+
+- species_only: model 1 (in the slide)
+- segments_inclusive: model 2
+- species_xylem: model 3
+- segments_xylem: model 4
+- granier: model 1 with Granier's coefficients
+
+Data for `r fig("scaled_tr_ab")`.
+```{r}
+read_csv(here("data/tr_bar_ab.csv"))
+```
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
+- pg: maximum applied pressure gradient
+- model: model names to estimate coefficients *a* and *b*
+
+![`r s_fig("scaled_tr_all")`:
+This figure is not finalized.
+](`r here::here("figs/tr_bar_all")`)
+
+Data for `r fig("scaled_tr_all")`.
+
+```{r}
+read_csv(here("data/tr_bar_all.csv"))
+```
+
+- id: source of uncertainty
+  - sarea: sapwood area
+  - ab: a-b estiamtes from segments-xylem model at 0.08 MPa
+  - dir_only: direction
+  - dep_only: depth
+  - dir_dep: covariance betwen direction and depth estimates
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
+- pg: maximum applied pressure gradient
+
+![`r fig("rel_bar")`:
+This figure is not finalized.
+](`r here::here("figs/rel_bar.png")`)
+
+Data for `r fig("rel_bar")`.
+```{r}
+read_csv(here("data/rel_bar.csv"))
+```
+
+- id: source of uncertainty
+  - sarea: sapwood area
+  - ab: a-b estiamtes from segments-xylem model at 0.08 MPa
+  - dir_only: direction
+  - dep_only: depth
+  - dir_dep: covariance betwen direction and depth estimates
+- tr_x: transpiration estimates
+  - m: median
+  - l: 2.5% quanatile
+  - h: 97.5% quanatile
+  - mean: mean
+  - sd: sd
+- var: variance of stand transpiration
+- rel: relative contribution of each source of uncertainty
+- rel_adj: adjusted relative contribution of each source of uncertainty so that the sum of relative contribution is 100%
+
+
+
+
+# Stan codes
+
+## Pressure- vs. tensin-induced flow
+
+```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
+```
+
+## Pressure vs. number of active vessels
+
+```{stan, file=here::here('stan/hierarchical_logistic.stan'), echo=TRUE, eval=FALSE, output.var="hoge1"}
+```
+
+## species-only model: pooled fitting for separate species
+
+```{stan, file=here::here('stan/species_only.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```
+
+## segment-inclusive model: multilevel fitting for separate species
+
+```{stan, file=here::here('stan/segments_inclusive.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```
+
+## species-xylem model: pooled fitting for pooled species
+
+```{stan, file=here::here('stan/species_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
+```
+
+## segment-xylem model: multilevel fitting for pooled species
+
+```{stan, file=here::here('stan/segments_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
+```
+
+## segment-xylem model with traits
+
+```{stan, file=here::here('stan/segments_xylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
+```
+
+## segment-xylem model with traits without xylem-type variation
+
+```{stan, file=here::here('stan/segments_noxylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```
+
+## depth and direction
+
+```{stan, file=here::here('stan/dir_dep.stan'), echo=TRUE, eval=FALSE, output.var="amam"}
+```
+
+## sapwood length
+
+```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
+```jk f
+
+# References
+
+```{r, eval=FALSE, echo=FALSE}
+knitr::knit_exit()
+```
