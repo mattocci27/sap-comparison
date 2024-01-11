@@ -495,7 +495,8 @@ line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = as.numeric(max_pg), group = max_pg)) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
-    xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    # xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    xlab("K") +
     scale_color_viridis_c(option = "D") +
     labs(col =expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
     my_theme() +
@@ -723,7 +724,8 @@ line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred_pool)), lty = 2) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
-    xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    # xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
+    xlab("K") +
     labs(col = "") +
     my_theme() +
     theme(
