@@ -646,8 +646,62 @@ read_csv(here("data/rel_bar.csv"))
 - rel: relative contribution of each source of uncertainty
 - rel_adj: adjusted relative contribution of each source of uncertainty so that the sum of relative contribution is 100%
 
+## Similarity of transpiration rates across varying pressure gradients
+
+(A)
+Distribution of sap flow coefficient (K).
+Data points correspond to K values for specific cardinal directions (South, West, East, North) and depths (0-2 cm, 2-4 cm, 4-6 cm) of an individual tree.
+The dataset reflects 1-second intervals averaged over 10 minutes.
+The distribution shows a higher frequency of data points with K values less than 0.05.
+(B)
+Sap flux density relationships under different pressure gradients (*P~g~*, MPa m^-1^).
+Under *P~g~* = 0.02, the relationship between sap flux density and K is defined as Fd = 270K^1.09^.
+Under *P~g~* = 0.08, the relationship is defined as Fd = 143K^0.717^.
+At smaller K values, Fd is greater under *P~g~* = 0.02 than under *P~g~* = 0.08; this trend reverses at larger K values.
+The cumulative sap flux density (i.e., transpiration) is likely comparable between the two *P~g~* values.
+(C)
+Sap flux density comparison at different *P~g~* values
+Data points are sap flux (g s^-1^) under *P~g~* = 0.02 MPa m^-1^ vs. *P~g~* = 0.08 MPa m^-1^ for each tree recorded at 10-minute intervals.
+The majority of data points indicate that under *P~g~* = 0.08, the sap flux is underestimated, while a subset with larger K values exhibit a pronounced overestimation of sap flux.
+A color gradient indicates the sap flow coefficient (K), demonstrating its variation across the dataset.
+(D)
+Posterior distributions of coefficients *a* and *b* related to transpiration rates, under *P~g~* = 0.08.
+Multiple regression analysis suggests that the sum of Fd (transpiration) is independent with a-b estiamtes (*P* > 0.05).
+A color gradient is used to visualize annual transpiration rates.
+
+```{r, include=FALSE, eval=FALSE}
+ab_summarized_df <- tar_read(ab_summarized_df_species_xylem_post_ab_fit_draws_species_xylem_0.08)
+ab_unce_df <- tar_read(ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.08)
+segments_post <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+
+library(ggridges)
+tmp <- ab_unce_df |>
+  group_by(id, tree) |>
+  summarize(fd = mean(fd) * 1e-7) |>
+  ungroup()
+
+tmp2 <- tmp |>
+  filter(id == "5")
+
+ggplot(tmp, aes(x = fd, y = tree, fill = tree)) +
+  geom_density_ridges() +
+  geom_point(data = tmp2, aes(x = fd, y = tree))
+
+t1 <- tmp |>
+  filter(tree == "t01")
+t6 <- tmp |>
+  filter(tree == "t08")
+
+t1 |>
+  mutate(fd6 = t6$fd) |>
+  ggplot(aes(x = fd, y = fd6)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, lty = 2)
 
 
+```
+
+![](`r here::here("figs/ab_example_panel.png")`)
 
 # Stan codes
 
@@ -699,7 +753,7 @@ read_csv(here("data/rel_bar.csv"))
 ## sapwood length
 
 ```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
-```jk f
+```
 
 # References
 

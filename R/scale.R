@@ -9,7 +9,7 @@ calc_summary2 <- function(row, s_df) {
   s_df2 <- s_df |>
     mutate(log_fd = row$log_a + row$b * log_k) |>
     # mutate(fd = exp(log_fd)) # scale by sapwood area
-    mutate(fd = exp(log_fd) * s) # scale by sapwood area
+    mutate(fd = exp(log_fd) * s * 1e-4) # scale by sapwood area (cm2 -> m2)
   return(s_df2)
 }
 
@@ -64,6 +64,11 @@ ab_example <- function(full_df_processed, post1, post2, summary_stats_list, ab_s
   p1 <- ggplot(full_df_processed, aes(x = exp(log_k))) +
     geom_histogram() +
     xlab("K") +
+    ylab(expression(Number~of~data~(plain('×')~10^6))) +
+    scale_y_continuous(
+      breaks = seq(0, 6e+06, by = 2e+06),   # Set breaks at every 2 million
+      labels = c('0', '2', '4', '6')        # Set labels corresponding to the breaks
+    ) +
     theme_bw()
 
   log_k <- seq(0.001, 0.5, length = 100) |> log()
@@ -98,8 +103,11 @@ ab_example <- function(full_df_processed, post1, post2, summary_stats_list, ab_s
     geom_point(alpha = 0.2, aes(color = k)) +
     scale_color_viridis_c(name = "K", option = "C") +
     geom_abline(intercept = 0, slope = 1, lty = 2) +
-    ylab(expression(Sap~flux~(g~s^{-1}) * ";"~italic(P[g])==0.08~(MPa ~m^{-1}))) +
-    xlab(expression(Sap~flux~(g~s^{-1}) * ";"~italic(P[g])==0.02~(MPa ~m^{-1}))) +
+    # ylab(expression(Sap~flux~(g~s^{-1}) * ";"~italic(P[g])==0.08)) +
+    ylab(expression(Sap~flux~under~italic(P[g])==0.08~(g~s^{-1}))) +
+    xlab(expression(Sap~flux~under~italic(P[g])==0.02~(g~s^{-1}))) +
+    # ylab(expression(Sap~flux~(g~s^{-1}) * ";"~italic(P[g])==0.08~(MPa ~m^{-1}))) +
+    # xlab(expression(Sap~flux~(g~s^{-1}) * ";"~italic(P[g])==0.02~(MPa ~m^{-1}))) +
     coord_cartesian(xlim = c(0, max_lab), ylim = c(0, max_lab)) +
     theme_bw() +
     theme(
@@ -128,10 +136,14 @@ ab_example <- function(full_df_processed, post1, post2, summary_stats_list, ab_s
   p1 + p2 + p3 + p4 + plot_layout(ncol = 2, nrow = 2) +
      plot_annotation(tag_levels = "A") &
      theme(
-      axis.title = element_text(size = 8),
-      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 9),
+      axis.text = element_text(size = 8),
       legend.title = element_text(size = 8),
       legend.text = element_text(size = 8),
+      legend.box.margin = margin(0, 0, 0, 0, "lines"),
+      legend.margin = margin(0, 0, 0, 0, "lines"),
+      axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0)),
+      # plot.margin = margin(0, 0, 0, 0, "lines"),
       plot.tag = element_text(size = 10)
      )
 }
