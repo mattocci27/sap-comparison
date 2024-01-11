@@ -3,8 +3,8 @@ name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iterat
 ab_comp_four_models_points|function|3b27ee0450c1744a|||||||||||||||
 ab_comp_points|function|ddd934d0cd9a050d|||||||||||||||
 ab_csv|stem|6b7efdaf8754cbcd|87c18c55e4acbe33|70e9317e4116513f|1788216019|data/all_ab.csv|t19642.1101534307s|acfb60e2b556c634|10201|file|local|vector|||1.866|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-ab_example|function|883eca77082acfd2|||||||||||||||
-ab_example_panel_plot|stem|2cb2d75b5f502b28|2068180166141d1b|5dc7fb7a4f8bbd05|-1348979954|figs/test.png*figs/test.pdf|t19732.6643650723s|8c8430e1d75bbe1c|390853|file|local|vector|||16.292|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.|
+ab_example|function|e3f4a9fa2dd9f2bb|||||||||||||||
+ab_example_panel_plot|stem|54d8a5401c9cc6df|5b7634c0ae47937d|b33c225615c313f5|-1348979954|figs/ab_example_panel.png*figs/ab_example_panel.pdf|t19733.1211845061s|aa75b7e832b89cf5|1090007|file|local|vector|||16.568|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.|
 ab_granier_summarized_df|stem|394e602729c8a000|440f37626717e2a4|645c95d2e2215fee|-711021499||t19668.6140361846s|2f4c0f199b39241a|151|rds|local|vector|||0.017||
 ab_granier_uncertainty_combined_df|stem|bf8e5624049eb981|9591f55837f2652f|8485d84248d52759|2066792403||t19668.6140362772s|4b46e8ae20ede711|198|rds|local|vector|||0.002||
 ab_granier_uncertainty_df|stem|1a4ae6415dec1afd|d6937c811171c85c|cd11c3767f48c9d5|1662224229||t19665.5324999623s|20798277a5bbdf65|499|rds|local|vector|||22.059||
@@ -1049,6 +1049,7 @@ total_map|function|ea73dd1353a4642a|||||||||||||||
 total_summarized_df|stem|88b1de8e7d74915e|f534e928c960bab0|1319e46108b2f1c5|1181053533||t19668.6140331753s|822112cfe18d7c26|10345|rds|local|vector|||1.077||
 total_uncertainty_combined_df|stem|f143cec00dc54101|6c41fbf25b07ce0f|e3cc74e37c30d9c6|300501354||t19668.6140466478s|f0ef80e5f0ea82e1|224|rds|local|vector|||0.002||
 total_uncertainty_df|stem|0697f5d5c581b1c3|ea38922dbb6c25c5|15521dac542c5aaa|831750198||t19665.731933506s|15b79f82b1c31f34|248654|rds|local|vector|||10173.512||
+tr_ab_lm|stem|01c27aca9684476a|8d53b9aab391291c|8be8e80253172ab8|-301352907||t19733.1239070034s|39244ba716bd7a57|126904|rds|local|vector|||1.061||
 tr_bar|function|fa59b517e618e1e7|||||||||||||||
 tr_bar_ab|function|f1c6f5d2fe29a1c3|||||||||||||||
 tr_bar_ab_csv|stem|f90ec9ef398e9eb9|b8894e0d5640d425|c071ee07401de1be|-1032516843|data/tr_bar_ab.csv|t19674.3415971022s|765642534b1b69ef|2170|file|local|vector|||0.083||
@@ -1087,7 +1088,7 @@ traits_xylem_table_csv|stem|1dc801150c1e5080|510b1b5af374e20d|39c574946d04db6e|-
 uncertainty_ab_mapped|object|920b5a418c7cab24|||||||||||||||
 uncertainty_dir_dep_mapped|object|e1165c4305d489ee|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|37e242eeeddc645b|||||||||||||||
+uncertainty_figs_list|object|84f7c588de9a3b0d|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|689359ae9725a3f1|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

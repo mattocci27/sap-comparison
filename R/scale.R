@@ -83,6 +83,7 @@ ab_example <- function(full_df_processed, post1, post2, summary_stats_list, ab_s
     theme_bw() +
     theme(
       legend.position = "right",
+      legend.justification = c(0, 0.5),
       legend.key.width = unit(0.2, "cm"),
       legend.key.height = unit(0.4, "cm")
     )
@@ -130,15 +131,7 @@ ab_example <- function(full_df_processed, post1, post2, summary_stats_list, ab_s
       axis.title = element_text(size = 8),
       axis.text = element_text(size = 7),
       legend.title = element_text(size = 8),
-      legend.text = element_text(size = 7)
+      legend.text = element_text(size = 8),
+      plot.tag = element_text(size = 10)
      )
-  # my_ggsave(
-  #   here("figs/test"),
-  #   p,
-  #   dpi = 600,
-  #   width = 173,
-  #   height = 173,
-  #   units = "mm"
-  # )
-
 }

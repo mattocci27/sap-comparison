@@ -1801,73 +1801,29 @@ uncertainty_figs_list <- list(
         segments_xylem_post_ab_fit_draws_segments_xylem_0.08
         )
       my_ggsave(
-        "figs/test",
+        "figs/ab_example_panel",
         p,
-        dpi = 200,
+        dpi = 600,
         width = 173,
-        height = 113,
+        height = 123,
         units = "mm"
       )
     },
     format = "file"
   ),
-  # tar_target(
-  #   tr_bar_comb_plot, {
-  #     p1 <- tr_bar_ab(tr_bar_ab_df |> filter(model == "Model 4") |> filter(pg != "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model) +
-  #       coord_cartesian(ylim = c(0, 1250)) +
-  #       # annotate("text", x = Inf, y = Inf, label = "A", hjust = -1, vjust = 1.1, size = 5) +
-  #       annotate("text", x = 1, y = 1250, label = "A", hjust = -0.1, vjust = 0.5, size = 5) +
-  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
-  #       theme(
-  #         axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
-  #         axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
-  #       )
-  #     p2 <- tr_bar_ab(tr_bar_ab_df |> filter(model != "Granier") |> filter(pg == "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
-  #       coord_cartesian(ylim = c(0, 1250))  +
-  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
-  #       annotate("text", x = 1, y = 1250, label = "B", hjust = -3.8, vjust = 0.5, size = 5) +
-  #       theme(
-  #         axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
-  #         # axis.text.y = element_text(size = 8,margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
-  #         axis.title.y.left = element_blank(),
-  #         axis.text.y.left = element_blank(),
-  #         legend.text = element_text(size = 8),
-  #         legend.key.size = unit(0.4, "cm"),
-  #         # legend.position = c(0.8, 0.25))
-  #         legend.position = "right")
-  #         #  legend.position = "top")
-  #     p3 <- tr_bar(tr_bar_all_df, id, tr_m, fill = id, group = id) +
-  #       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
-  #       annotate("text", x = 1, y = 1250, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
-  #       xlab("Source of uncertainty")
-  #     p4 <- rel_bar_wide(rel_bar_df) +
-  #       xlab("Source of uncertainty") +
-  #       annotate("text", x = 1, y = 60, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
-  #       scale_y_continuous(
-  #            sec.axis = sec_axis(~ ., name = "Relative contribution (%)")) +
-  #       theme(
-  #       #   axis.title.y.right = element_text(angle = 90)
-  #         axis.title.y.left = element_blank(),
-  #         axis.text.y.left = element_blank(),
-  #         legend.position = "right"
-  #       )
+  tar_target(
+    tr_ab_lm, {
+      ab_summarized_df <- ab_summarized_df_species_xylem_post_ab_fit_draws_species_xylem_0.08
+      segments_post <- segments_xylem_post_ab_fit_draws_segments_xylem_0.08
 
-  #     p <- (p1 + p2) / (p3 + p4) &
-  #       # plot_annotation(tag_levels = "A") &
-  #       theme(
-  #         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")
-  #       )
+      segments_post2 <- segments_post %>%
+        mutate(id = 1:nrow(.)) |>
+        mutate(id = as.character(id))
+      tmp <- full_join(ab_summarized_df, segments_post2)
 
-  #     my_ggsave(
-  #       "figs/tr_bar_comb",
-  #       p,
-  #       dpi = 600,
-  #       width = 6.81,
-  #       height = 6.81
-  #     )
-  #   },
-  #   format = "file"
-  # ),
+      lm(tr ~ log_a + b, tmp)
+    }
+  ),
   tar_target(
     dbh_points_plot, {
       p <- dbh_points(dbh_imp_df2, girth_increment_csv)
