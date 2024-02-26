@@ -9,7 +9,6 @@ data {
 
 parameters {
   real<lower=0> sigma;
-  #matrix[2, 1] alpha;
   real log_a_tilde;
   real b_tilde;
   matrix[2, J] z;
