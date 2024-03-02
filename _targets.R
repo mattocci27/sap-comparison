@@ -1905,7 +1905,7 @@ sapwood_list <- list(
      data = dbh_sap_stan_data,
      refresh = 0,
      chains = 4,
-     parallel_chains = 1,
+     parallel_chains = 4,
      iter_warmup = 2000,
      iter_sampling = 2000,
      adapt_delta = 0.9,
@@ -1928,7 +1928,7 @@ sapwood_list <- list(
     data = dir_dep_stan_data,
     refresh = 0,
     chains = 4,
-    parallel_chains = 1,
+    parallel_chains = 4,
     iter_warmup = 2000,
     iter_sampling = 2000,
     adapt_delta = 0.9,
@@ -1962,8 +1962,8 @@ sapwood_list <- list(
 
 append(raw_data_list, main_list) |>
   append(granier_list) |>
-  append(tar_impute)
-#   append(sapwood_list) |>
-#   append(tar_dir_dep) |>
-#   append(uncertainty_list) |>
-#   append(uncertainty_figs_list)
+  append(tar_impute) |>
+  append(sapwood_list) |>
+  append(tar_dir_dep) |>
+  append(uncertainty_list) |>
+  append(uncertainty_figs_list)
