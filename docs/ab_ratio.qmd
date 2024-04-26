@@ -1,0 +1,170 @@
+---
+title: "ab raito"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+# fontsize: 11pt
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    # embed-resources: true
+    # self_contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  echo = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+
+```{r}
+library(targets)
+library(tidyverse)
+```
+
+```{r, eval=FALSE}
+hoge <- tar_manifest()
+
+hoge |>
+  filter(str_detect(name, "log_ks")) |>
+  filter(str_detect(name, "summary")) |> pull(name)
+
+hoge |>
+  filter(str_detect(name, "species_ab_table_combined"))
+
+data <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fd_k_traits_csv))
+
+tar_read(stan_data_noxylem_log_ks)$uj |> dim()
+tar_read(stan_data_noxylem_log_ks)$uj |>　rownames()
+
+tar_read(stan_data_xylem_log_ks)$uj |> dim()
+tar_read(stan_data_xylem_log_ks)$uj |>　rownames()
+
+tar_read(fit_summary_segments_noxylem_traits_log_ks)
+tar_read(fit2_summary_segments_xylem_traits_log_ks)
+
+
+tar_read(fit_summary_segments_noxylem_traits_log_ks) |>
+  filter(str_detect(variable, "^alpha_a")) |>
+  filter(str_detect(variable, "15"))
+
+tar_read(fit_summary_segments_noxylem_traits_log_ks) |>
+  filter(str_detect(variable, "^alpha_b")) |>
+  filter(str_detect(variable, "15"))
+
+tar_read(fit_draws_segments_xylem_0.08) |>
+  janitor::clean_names() |>
+  dplyr::select(starts_with("alpha")) |>
+  dplyr::select(ends_with("15"))
+
+
+tar_read(sap_all_clean_0.08)$uj |> rownames()
+
+```
+
+sp no. 15
+Use fit and fit2.
+
+Ks
+
+```{r}
+d <- read_csv(here::here("data/fd_k_traits.csv")) |>
+  filter(species == "Hevea brasiliensis") |>
+  dplyr::select(species, sample_number, ks, vaf)
+
+# d |> kable()
+
+d_samp <- d |>
+  group_by(sample_number) |>
+  summarise(ks = mean(ks), vaf = mean(vaf, na.rm = TRUE))
+
+d_samp
+
+mean_ks <- mean(d$ks)
+mean_vaf <- mean(d$vaf, na.rm = TRUE)
+mean_ks
+
+s1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_ks))
+draws1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
+    janitor::clean_names()
+s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
+draws2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_draws_segments_xylem_traits_log_ks)) |>
+    janitor::clean_names()
+
+s1 |>
+  filter(str_detect(variable, "^alpha")) |>
+  filter(str_detect(variable, "15")) |>
+  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
+  kable()
+
+draws1 |>
+  dplyr::select(starts_with("alpha")) |>
+  dplyr::select(ends_with("15"))
+
+s2 |>
+  filter(str_detect(variable, "^alpha")) |>
+  filter(str_detect(variable, "15")) |>
+  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
+  kable()
+
+model4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_xylem_0.08)) |>
+    janitor::clean_names()
+
+model4 |>
+  dplyr::select(starts_with("alpha")) |>
+  dplyr::select(ends_with("15"))
+
+```
+
+```{r}
+m1 <- draws1 |>
+  dplyr::select(c(alpha_a_1_15, alpha_a_2_15)) |>
+  as.matrix()
+m2 <- draws2 |>
+  dplyr::select(c(alpha_a_1_15, alpha_a_2_15)) |>
+  as.matrix()
+```
+
+a from ks, no xylem
+
+```{r}
+a_ks_post <- m1 %*% c(1, log(mean_ks))
+exp(a_ks_post) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+a from ks, xylem
+
+```{r}
+a_ks_post <- m2 %*% c(1, log(mean_ks))
+exp(a_ks_post) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+a from model4, pg = 0.08
+
+```{r}
+a_post <- model4 |> pull(alpha_1_15) |> exp()  |> quantile(c(0.025, 0.5, 0.975))
+a_post
+```
