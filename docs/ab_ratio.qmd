@@ -75,7 +75,6 @@ tar_read(fit_draws_segments_xylem_0.08) |>
   dplyr::select(starts_with("alpha")) |>
   dplyr::select(ends_with("15"))
 
-
 tar_read(sap_all_clean_0.08)$uj |> rownames()
 
 ```
@@ -83,7 +82,158 @@ tar_read(sap_all_clean_0.08)$uj |> rownames()
 sp no. 15
 Use fit and fit2.
 
+Ok, we use global a (hyper species) rather than species specific a.
+
 Ks
+
+- eq for a, ks, seg (xylem, fit2)
+- eq for a, ks, sp (no xylem, fit)
+- eq for b, ks, seg (xylem, fit2)
+- eq for b, ks, sp (no xylem, fit)
+
+- eq for a, vaf, seg (xylem, fit2)
+- eq for a, vaf, sp (no xylem, fit)
+- eq for b, vaf, seg (xylem, fit2)
+- eq for b, vaf, sp (no xylem, fit)
+
+
+## ks, no xylem (sp)
+```{r}
+summary_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_ks))
+draws_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
+    janitor::clean_names()
+
+ks_sp_a_int <- summary_ks_sp |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_sp_a_power <- summary_ks_sp |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+ks_sp_b_int <- summary_ks_sp |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> exp() |> round(3)
+ks_sp_b_power <- summary_ks_sp |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a = `r ks_sp_a_int` \times ^{`r ks_sp_a_power`}
+$$
+$$
+b = `r ks_sp_b_int` \times K_s^{`r ks_sp_b_power`}
+$$
+
+
+## ks, xylem
+```{r}
+
+summary_ks_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
+draws_ks_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_draws_segments_xylem_traits_log_ks)) |>
+    janitor::clean_names()
+
+ks_xylem_a_int <- summary_ks_xylem |>
+  filter(variable == "gamma_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_xylem_a_power <- summary_ks_xylem |>
+  filter(variable == "gamma_a[2,1]") |>
+  pull(q50) |> round(3)
+ks_xylem_b_int <- summary_ks_xylem |>
+  filter(variable == "gamma_b[1,1]") |>
+  pull(q50) |> exp() |> round(3)
+ks_xylem_b_power <- summary_ks_xylem |>
+  filter(variable == "gamma_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a = `r ks_xylem_a_int` \times K_s^{`r ks_xylem_a_power`}
+$$
+$$
+b = `r ks_xylem_b_int` \times K_s^{`r ks_xylem_b_power`}
+$$
+
+
+## vaf, no xylem (sp)
+```{r}
+summary_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
+draws_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_vaf)) |>
+    janitor::clean_names()
+
+vaf_sp_a_int <- summary_vaf_sp |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_sp_a_power <- summary_vaf_sp |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+vaf_sp_b_int <- summary_vaf_sp |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> exp() |> round(3)
+vaf_sp_b_power <- summary_vaf_sp |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a = `r vaf_sp_a_int` \times \text{VAF}^{`r vaf_sp_a_power`}
+$$
+$$
+b = `r vaf_sp_b_int` \times \text{VAF}^{`r vaf_sp_b_power`}
+$$
+
+
+## vaf, xylem
+```{r}
+
+summary_vaf_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
+draws_vaf_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_draws_segments_xylem_traits_log_vaf)) |>
+    janitor::clean_names()
+
+vaf_xylem_a_int <- summary_vaf_xylem |>
+  filter(variable == "gamma_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_xylem_a_power <- summary_vaf_xylem |>
+  filter(variable == "gamma_a[2,1]") |>
+  pull(q50) |> round(3)
+vaf_xylem_b_int <- summary_vaf_xylem |>
+  filter(variable == "gamma_b[1,1]") |>
+  pull(q50) |> exp() |> round(3)
+vaf_xylem_b_power <- summary_vaf_xylem |>
+  filter(variable == "gamma_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a = `r vaf_xylem_a_int` \times \text{VAF}^{`r vaf_xylem_a_power`}
+$$
+$$
+b = `r vaf_xylem_b_int` \times \text{VAF}^{`r vaf_xylem_b_power`}
+$$
+
+```{r}
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf))
+
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf))
+```
+
+
 
 ```{r}
 d <- read_csv(here::here("data/fd_k_traits.csv")) |>
@@ -107,6 +257,7 @@ s1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
 draws1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
     janitor::clean_names()
+
 s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
 draws2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
@@ -138,6 +289,22 @@ model4 |>
   dplyr::select(ends_with("15"))
 
 ```
+No xylem or with xylme doesn't matter. I don't need to fix the following:
+
+
+- a from ks, sp
+- a from ks, xylem
+- b from ks, no xylem
+- b from ks, xylem
+- a from vaf, no xylem
+- a from vaf, xylem
+- b from vaf, no xylem
+- b from vaf, xylem
+
+- a from model4, pg = 0.08
+- a from model4, pg = 0.07
+...
+
 
 ```{r}
 m1 <- draws1 |>
