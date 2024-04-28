@@ -1,5 +1,5 @@
 ---
-title: "ab raito"
+title: "a', b', a* and b* for *Hevea brasiliensis*"
 author: "Masatoshi Katabuchi"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 # fontsize: 11pt
@@ -33,305 +33,265 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r}
 library(targets)
 library(tidyverse)
 ```
-
-```{r, eval=FALSE}
-hoge <- tar_manifest()
-
-hoge |>
-  filter(str_detect(name, "log_ks")) |>
-  filter(str_detect(name, "summary")) |> pull(name)
-
-hoge |>
-  filter(str_detect(name, "species_ab_table_combined"))
-
-data <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fd_k_traits_csv))
-
-tar_read(stan_data_noxylem_log_ks)$uj |> dim()
-tar_read(stan_data_noxylem_log_ks)$uj |>　rownames()
-
-tar_read(stan_data_xylem_log_ks)$uj |> dim()
-tar_read(stan_data_xylem_log_ks)$uj |>　rownames()
-
-tar_read(fit_summary_segments_noxylem_traits_log_ks)
-tar_read(fit2_summary_segments_xylem_traits_log_ks)
-
-
-tar_read(fit_summary_segments_noxylem_traits_log_ks) |>
-  filter(str_detect(variable, "^alpha_a")) |>
-  filter(str_detect(variable, "15"))
-
-tar_read(fit_summary_segments_noxylem_traits_log_ks) |>
-  filter(str_detect(variable, "^alpha_b")) |>
-  filter(str_detect(variable, "15"))
-
-tar_read(fit_draws_segments_xylem_0.08) |>
-  janitor::clean_names() |>
-  dplyr::select(starts_with("alpha")) |>
-  dplyr::select(ends_with("15"))
-
-tar_read(sap_all_clean_0.08)$uj |> rownames()
-
-```
-
-sp no. 15
-Use fit and fit2.
-
-Ok, we use global a (hyper species) rather than species specific a.
-
-Ks
-
-- eq for a, ks, seg (xylem, fit2)
-- eq for a, ks, sp (no xylem, fit)
-- eq for b, ks, seg (xylem, fit2)
-- eq for b, ks, sp (no xylem, fit)
-
-- eq for a, vaf, seg (xylem, fit2)
-- eq for a, vaf, sp (no xylem, fit)
-- eq for b, vaf, seg (xylem, fit2)
-- eq for b, vaf, sp (no xylem, fit)
-
-
-## ks, no xylem (sp)
-```{r}
-summary_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_summary_segments_noxylem_traits_log_ks))
-draws_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
-    janitor::clean_names()
-
-ks_sp_a_int <- summary_ks_sp |>
-  filter(variable == "beta_a[1,1]") |>
-  pull(q50) |> exp() |> round(1)
-ks_sp_a_power <- summary_ks_sp |>
-  filter(variable == "beta_a[2,1]") |>
-  pull(q50) |> round(3)
-ks_sp_b_int <- summary_ks_sp |>
-  filter(variable == "beta_b[1,1]") |>
-  pull(q50) |> exp() |> round(3)
-ks_sp_b_power <- summary_ks_sp |>
-  filter(variable == "beta_b[2,1]") |>
-  pull(q50) |> round(3)
-```
-
-$$
-a = `r ks_sp_a_int` \times ^{`r ks_sp_a_power`}
-$$
-$$
-b = `r ks_sp_b_int` \times K_s^{`r ks_sp_b_power`}
-$$
-
-
-## ks, xylem
-```{r}
-
-summary_ks_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
-draws_ks_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_draws_segments_xylem_traits_log_ks)) |>
-    janitor::clean_names()
-
-ks_xylem_a_int <- summary_ks_xylem |>
-  filter(variable == "gamma_a[1,1]") |>
-  pull(q50) |> exp() |> round(1)
-ks_xylem_a_power <- summary_ks_xylem |>
-  filter(variable == "gamma_a[2,1]") |>
-  pull(q50) |> round(3)
-ks_xylem_b_int <- summary_ks_xylem |>
-  filter(variable == "gamma_b[1,1]") |>
-  pull(q50) |> exp() |> round(3)
-ks_xylem_b_power <- summary_ks_xylem |>
-  filter(variable == "gamma_b[2,1]") |>
-  pull(q50) |> round(3)
-```
-
-$$
-a = `r ks_xylem_a_int` \times K_s^{`r ks_xylem_a_power`}
-$$
-$$
-b = `r ks_xylem_b_int` \times K_s^{`r ks_xylem_b_power`}
-$$
-
-
-## vaf, no xylem (sp)
-```{r}
-summary_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
-draws_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_draws_segments_noxylem_traits_log_vaf)) |>
-    janitor::clean_names()
-
-vaf_sp_a_int <- summary_vaf_sp |>
-  filter(variable == "beta_a[1,1]") |>
-  pull(q50) |> exp() |> round(1)
-vaf_sp_a_power <- summary_vaf_sp |>
-  filter(variable == "beta_a[2,1]") |>
-  pull(q50) |> round(3)
-vaf_sp_b_int <- summary_vaf_sp |>
-  filter(variable == "beta_b[1,1]") |>
-  pull(q50) |> exp() |> round(3)
-vaf_sp_b_power <- summary_vaf_sp |>
-  filter(variable == "beta_b[2,1]") |>
-  pull(q50) |> round(3)
-```
-
-$$
-a = `r vaf_sp_a_int` \times \text{VAF}^{`r vaf_sp_a_power`}
-$$
-$$
-b = `r vaf_sp_b_int` \times \text{VAF}^{`r vaf_sp_b_power`}
-$$
-
-
-## vaf, xylem
-```{r}
-
-summary_vaf_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
-draws_vaf_xylem <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_draws_segments_xylem_traits_log_vaf)) |>
-    janitor::clean_names()
-
-vaf_xylem_a_int <- summary_vaf_xylem |>
-  filter(variable == "gamma_a[1,1]") |>
-  pull(q50) |> exp() |> round(1)
-vaf_xylem_a_power <- summary_vaf_xylem |>
-  filter(variable == "gamma_a[2,1]") |>
-  pull(q50) |> round(3)
-vaf_xylem_b_int <- summary_vaf_xylem |>
-  filter(variable == "gamma_b[1,1]") |>
-  pull(q50) |> exp() |> round(3)
-vaf_xylem_b_power <- summary_vaf_xylem |>
-  filter(variable == "gamma_b[2,1]") |>
-  pull(q50) |> round(3)
-```
-
-$$
-a = `r vaf_xylem_a_int` \times \text{VAF}^{`r vaf_xylem_a_power`}
-$$
-$$
-b = `r vaf_xylem_b_int` \times \text{VAF}^{`r vaf_xylem_b_power`}
-$$
-
-```{r}
-
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
-
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
-
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf))
-
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit4_summary_segments_noxylem_traits_sp2_log_vaf))
-```
-
-
 
 ```{r}
 d <- read_csv(here::here("data/fd_k_traits.csv")) |>
   filter(species == "Hevea brasiliensis") |>
   dplyr::select(species, sample_number, ks, vaf)
 
-# d |> kable()
-
-d_samp <- d |>
-  group_by(sample_number) |>
-  summarise(ks = mean(ks), vaf = mean(vaf, na.rm = TRUE))
-
-d_samp
-
 mean_ks <- mean(d$ks)
 mean_vaf <- mean(d$vaf, na.rm = TRUE)
-mean_ks
+```
 
-s1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+I used *Hevea brasiliensis*'s mean values:
+mean ks: `r mean_ks |> round(3)`, mean vaf: `r mean_vaf |> round(3)`
+
+The equations below are the common regression model for all species in Fig. 4.
+We also have equations for *Hevea brasiliensis* for the segment-level traits model, but the effects of Ks and VAF are not significant.
+
+```{r, eval=FALSE}
+summary_ks_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
+summary_ks_seg2 |>
+  filter(str_detect(variable, "alpha")) |>
+  filter(str_detect(variable, "15\\]"))
+
+summary_vaf_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
+summary_vaf_seg2 |>
+  filter(str_detect(variable, "alpha")) |>
+  filter(str_detect(variable, "15\\]"))
+```
+
+## Ks, segment-level
+
+```{r}
+summary_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit_summary_segments_noxylem_traits_log_ks))
-draws1 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+draws_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
     janitor::clean_names()
 
-s2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
-draws2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit2_draws_segments_xylem_traits_log_ks)) |>
+ks_seg_a_int <- summary_ks_seg |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_seg_a_power <- summary_ks_seg |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+ks_seg_b_int <- summary_ks_seg |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> round(3)
+ks_seg_b_slope <- summary_ks_seg |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a' = `r ks_seg_a_int` \times K_s^{`r ks_seg_a_power`}
+$$
+$$
+b' = `r ks_seg_b_int` + `r ks_seg_b_slope` \times \text{ln} K_s
+$$
+
+95% CI of a from estimated Ks (segment-level):
+```{r}
+m <- draws_ks_seg |>
+  dplyr::select(c(beta_a_1_1, beta_a_2_1)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_ks))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated Ks (segment-level):
+```{r}
+m <- draws_ks_seg |>
+  dplyr::select(c(beta_b_1_1, beta_b_2_1)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_ks))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+
+## Ks, species-level
+```{r}
+summary_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_ks))
+draws_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_ks)) |>
     janitor::clean_names()
 
-s1 |>
-  filter(str_detect(variable, "^alpha")) |>
-  filter(str_detect(variable, "15")) |>
-  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
-  kable()
+ks_sp_a_int <- summary_ks_sp |>
+  filter(variable == "beta_a[1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_sp_a_power <- summary_ks_sp |>
+  filter(variable == "beta_a[2]") |>
+  pull(q50) |> round(3)
+ks_sp_b_int <- summary_ks_sp |>
+  filter(variable == "beta_b[1]") |>
+  pull(q50) |> round(3)
+ks_sp_b_slope <- summary_ks_sp |>
+  filter(variable == "beta_b[2]") |>
+  pull(q50) |> round(3)
+```
 
-draws1 |>
-  dplyr::select(starts_with("alpha")) |>
-  dplyr::select(ends_with("15"))
+$$
+a' = `r ks_sp_a_int` \times K_s^{`r ks_sp_a_power`}
+$$
+$$
+b' = `r ks_sp_b_int` + `r ks_sp_b_slope` \times \text{ln VAF}
+$$
 
-s2 |>
-  filter(str_detect(variable, "^alpha")) |>
-  filter(str_detect(variable, "15")) |>
-  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
-  kable()
+95% CI of a from estimated Ks (species-level):
+```{r}
+m <- draws_ks_sp |>
+  dplyr::select(c(beta_a_1, beta_a_2)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_ks))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
 
-model4 <- withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit_draws_segments_xylem_0.08)) |>
+95% CI of b from estimated Ks (species-level):
+```{r}
+m <- draws_ks_sp |>
+  dplyr::select(c(beta_b_1, beta_b_2)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_ks))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+
+## VAF, segment-level
+```{r}
+summary_vaf_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
+draws_vaf_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_vaf)) |>
     janitor::clean_names()
 
-model4 |>
-  dplyr::select(starts_with("alpha")) |>
-  dplyr::select(ends_with("15"))
-
+vaf_seg_a_int <- summary_vaf_seg |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_seg_a_power <- summary_vaf_seg |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+vaf_seg_b_int <- summary_vaf_seg |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> round(3)
+vaf_seg_b_slope <- summary_vaf_seg |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
 ```
-No xylem or with xylme doesn't matter. I don't need to fix the following:
 
+$$
+a' = `r vaf_seg_a_int` \times \text{VAF}^{`r vaf_seg_a_power`}
+$$
+$$
+b' = `r vaf_seg_b_int` + `r vaf_seg_b_slope` \times \text{lnVAF}
+$$
 
-- a from ks, sp
-- a from ks, xylem
-- b from ks, no xylem
-- b from ks, xylem
-- a from vaf, no xylem
-- a from vaf, xylem
-- b from vaf, no xylem
-- b from vaf, xylem
-
-- a from model4, pg = 0.08
-- a from model4, pg = 0.07
-...
-
-
+95% CI of a from estimated Ks (segment-level):
 ```{r}
-m1 <- draws1 |>
-  dplyr::select(c(alpha_a_1_15, alpha_a_2_15)) |>
+m <- draws_vaf_seg |>
+  dplyr::select(c(beta_a_1_1, beta_a_2_1)) |>
   as.matrix()
-m2 <- draws2 |>
-  dplyr::select(c(alpha_a_1_15, alpha_a_2_15)) |>
+log_a <- m %*% c(1, log(mean_vaf))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated vaf (segment-level):
+```{r}
+m <- draws_vaf_seg |>
+  dplyr::select(c(beta_b_1_1, beta_b_2_1)) |>
   as.matrix()
+b <- m %*% c(1, log(mean_vaf))
+b |> quantile(c(0.025, 0.5, 0.975))
 ```
 
-a from ks, no xylem
 
+## VAF, species-level
 ```{r}
-a_ks_post <- m1 %*% c(1, log(mean_ks))
-exp(a_ks_post) |> quantile(c(0.025, 0.5, 0.975))
+summary_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf))
+draws_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)) |>
+    janitor::clean_names()
+
+vaf_sp_a_int <- summary_vaf_sp |>
+  filter(variable == "beta_a[1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_sp_a_power <- summary_vaf_sp |>
+  filter(variable == "beta_a[2]") |>
+  pull(q50) |> round(3)
+vaf_sp_b_int <- summary_vaf_sp |>
+  filter(variable == "beta_b[1]") |>
+  pull(q50) |> round(3)
+vaf_sp_b_slope <- summary_vaf_sp |>
+  filter(variable == "beta_b[2]") |>
+  pull(q50) |> round(3)
 ```
 
-a from ks, xylem
+$$
+a' = `r vaf_sp_a_int` \times \text{VAF}^{`r vaf_sp_a_power`}
+$$
+$$
+b' = `r vaf_sp_b_int` + `r vaf_sp_b_slope` \times \text{ln} K_s
+$$
 
+95% CI of a from estimated VAF (species-level):
 ```{r}
-a_ks_post <- m2 %*% c(1, log(mean_ks))
-exp(a_ks_post) |> quantile(c(0.025, 0.5, 0.975))
+m <- draws_vaf_sp |>
+  dplyr::select(c(beta_a_1, beta_a_2)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_vaf))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
 ```
 
-a from model4, pg = 0.08
+95% CI of b from estimated VAF (species-level):
+```{r}
+m <- draws_vaf_sp |>
+  dplyr::select(c(beta_b_1, beta_b_2)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_vaf))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+# without traits model4
+
+a\*
+
+- q2_5: lower 2.5% CI
+- q50: median
+- q97_5: upper 97.5% CI
 
 ```{r}
-a_post <- model4 |> pull(alpha_1_15) |> exp()  |> quantile(c(0.025, 0.5, 0.975))
-a_post
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_xylem_combined)) |>
+  filter(str_detect(variable, "log_a$")) |>
+  dplyr::select(pg = max_pg, q2_5, q50, q97_5) |>
+  mutate(across(where(is.numeric), \(x) exp(x))) |>
+  mutate(pg = as.numeric(pg)) |>
+  arrange(pg) |>
+  kable()
+```
+
+b\*
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_xylem_combined)) |>
+  filter(str_detect(variable, "b$")) |>
+  dplyr::select(pg = max_pg, q2_5, q50, q97_5) |>
+  # mutate(across(where(is.numeric), \(x) exp(x))) |>
+  mutate(pg = as.numeric(pg)) |>
+  arrange(pg) |>
+  kable()
+```
+
+
+```{r}
+knitr::knit_exit()
 ```
