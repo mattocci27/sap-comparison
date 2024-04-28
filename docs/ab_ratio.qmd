@@ -1,0 +1,301 @@
+---
+title: "a', b', a* and b* for *Hevea brasiliensis*"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+# fontsize: 11pt
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+format:
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    embed-resources: true
+    # self_contained: true
+    smooth-scroll: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  echo = FALSE,
+  fig.align = "center",
+  fig.show = "hold",
+  root.dir = rprojroot::find_root('_targets.R')
+)
+```
+
+```{r}
+library(targets)
+library(tidyverse)
+```
+
+```{r}
+d <- read_csv(here::here("data/fd_k_traits.csv")) |>
+  filter(species == "Hevea brasiliensis") |>
+  dplyr::select(species, sample_number, ks, vaf)
+
+mean_ks <- mean(d$ks)
+mean_vaf <- mean(d$vaf, na.rm = TRUE)
+```
+
+I used *Hevea brasiliensis*'s mean values:
+mean ks: `r mean_ks |> round(3)`, mean vaf: `r mean_vaf |> round(3)`
+
+The equations below are the common regression model for all species in Fig. 4.
+Note that those models do not take abount for the effects for xylem types unlike the Model 4.
+As we discussed before, the effects of Ks and VAF were not significant if we include the effects of xylem types.
+This might be why the a' and a\* are very different.
+
+<!-- We also have equations for *Hevea brasiliensis* for the segment-level traits model, but the effects of Ks and VAF are not significant. -->
+
+```{r, eval=FALSE}
+summary_ks_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_ks))
+summary_ks_seg2 |>
+  filter(str_detect(variable, "alpha")) |>
+  filter(str_detect(variable, "15\\]"))
+
+summary_vaf_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit2_summary_segments_xylem_traits_log_vaf))
+summary_vaf_seg2 |>
+  filter(str_detect(variable, "alpha")) |>
+  filter(str_detect(variable, "15\\]"))
+```
+
+## Ks, segment-level
+
+```{r}
+summary_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_ks))
+draws_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
+    janitor::clean_names()
+
+ks_seg_a_int <- summary_ks_seg |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_seg_a_power <- summary_ks_seg |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+ks_seg_b_int <- summary_ks_seg |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> round(3)
+ks_seg_b_slope <- summary_ks_seg |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a' = `r ks_seg_a_int` \times K_s^{`r ks_seg_a_power`}
+$$
+$$
+b' = `r ks_seg_b_int` + `r ks_seg_b_slope` \times \text{ln} K_s
+$$
+
+95% CI of a from estimated Ks (segment-level):
+```{r}
+m <- draws_ks_seg |>
+  dplyr::select(c(beta_a_1_1, beta_a_2_1)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_ks))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated Ks (segment-level):
+```{r}
+m <- draws_ks_seg |>
+  dplyr::select(c(beta_b_1_1, beta_b_2_1)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_ks))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+
+## Ks, species-level
+```{r}
+summary_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_ks))
+draws_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_ks)) |>
+    janitor::clean_names()
+
+ks_sp_a_int <- summary_ks_sp |>
+  filter(variable == "beta_a[1]") |>
+  pull(q50) |> exp() |> round(1)
+ks_sp_a_power <- summary_ks_sp |>
+  filter(variable == "beta_a[2]") |>
+  pull(q50) |> round(3)
+ks_sp_b_int <- summary_ks_sp |>
+  filter(variable == "beta_b[1]") |>
+  pull(q50) |> round(3)
+ks_sp_b_slope <- summary_ks_sp |>
+  filter(variable == "beta_b[2]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a' = `r ks_sp_a_int` \times K_s^{`r ks_sp_a_power`}
+$$
+$$
+b' = `r ks_sp_b_int` + `r ks_sp_b_slope` \times \text{ln} K_s
+$$
+
+95% CI of a from estimated Ks (species-level):
+```{r}
+m <- draws_ks_sp |>
+  dplyr::select(c(beta_a_1, beta_a_2)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_ks))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated Ks (species-level):
+```{r}
+m <- draws_ks_sp |>
+  dplyr::select(c(beta_b_1, beta_b_2)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_ks))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+
+## VAF, segment-level
+```{r}
+summary_vaf_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_noxylem_traits_log_vaf))
+draws_vaf_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_draws_segments_noxylem_traits_log_vaf)) |>
+    janitor::clean_names()
+
+vaf_seg_a_int <- summary_vaf_seg |>
+  filter(variable == "beta_a[1,1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_seg_a_power <- summary_vaf_seg |>
+  filter(variable == "beta_a[2,1]") |>
+  pull(q50) |> round(3)
+vaf_seg_b_int <- summary_vaf_seg |>
+  filter(variable == "beta_b[1,1]") |>
+  pull(q50) |> round(3)
+vaf_seg_b_slope <- summary_vaf_seg |>
+  filter(variable == "beta_b[2,1]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a' = `r vaf_seg_a_int` \times \text{VAF}^{`r vaf_seg_a_power`}
+$$
+$$
+b' = `r vaf_seg_b_int` + `r vaf_seg_b_slope` \times \text{lnVAF}
+$$
+
+95% CI of a from estimated Ks (segment-level):
+```{r}
+m <- draws_vaf_seg |>
+  dplyr::select(c(beta_a_1_1, beta_a_2_1)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_vaf))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated vaf (segment-level):
+```{r}
+m <- draws_vaf_seg |>
+  dplyr::select(c(beta_b_1_1, beta_b_2_1)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_vaf))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+
+## VAF, species-level
+```{r}
+summary_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf))
+draws_vaf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)) |>
+    janitor::clean_names()
+
+vaf_sp_a_int <- summary_vaf_sp |>
+  filter(variable == "beta_a[1]") |>
+  pull(q50) |> exp() |> round(1)
+vaf_sp_a_power <- summary_vaf_sp |>
+  filter(variable == "beta_a[2]") |>
+  pull(q50) |> round(3)
+vaf_sp_b_int <- summary_vaf_sp |>
+  filter(variable == "beta_b[1]") |>
+  pull(q50) |> round(3)
+vaf_sp_b_slope <- summary_vaf_sp |>
+  filter(variable == "beta_b[2]") |>
+  pull(q50) |> round(3)
+```
+
+$$
+a' = `r vaf_sp_a_int` \times \text{VAF}^{`r vaf_sp_a_power`}
+$$
+$$
+b' = `r vaf_sp_b_int` + `r vaf_sp_b_slope` \times \text{lnVAF}
+$$
+
+95% CI of a from estimated VAF (species-level):
+```{r}
+m <- draws_vaf_sp |>
+  dplyr::select(c(beta_a_1, beta_a_2)) |>
+  as.matrix()
+log_a <- m %*% c(1, log(mean_vaf))
+exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
+```
+
+95% CI of b from estimated VAF (species-level):
+```{r}
+m <- draws_vaf_sp |>
+  dplyr::select(c(beta_b_1, beta_b_2)) |>
+  as.matrix()
+b <- m %*% c(1, log(mean_vaf))
+b |> quantile(c(0.025, 0.5, 0.975))
+```
+
+# Model4 for *Hevea brasiliensis* with varying *Pg*
+
+a\*
+
+- q2_5: lower 2.5% CI
+- q50: median
+- q97_5: upper 97.5% CI
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_xylem_combined)) |>
+  filter(str_detect(variable, "log_a$")) |>
+  dplyr::select(pg = max_pg, q2_5, q50, q97_5) |>
+  mutate(across(where(is.numeric), \(x) exp(x))) |>
+  mutate(pg = as.numeric(pg)) |>
+  arrange(pg) |>
+  kable()
+```
+
+b\*
+
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit_summary_segments_xylem_combined)) |>
+  filter(str_detect(variable, "b$")) |>
+  dplyr::select(pg = max_pg, q2_5, q50, q97_5) |>
+  # mutate(across(where(is.numeric), \(x) exp(x))) |>
+  mutate(pg = as.numeric(pg)) |>
+  arrange(pg) |>
+  kable()
+```
+
+
+```{r}
+knitr::knit_exit()
+```

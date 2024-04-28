@@ -1,0 +1,16 @@
+version: '3'
+services:
+  sap-comparison:
+    image: mattocci/cmdstan-verse-zsh:4.3.2
+    container_name: sap-comparison
+    user: ${HOST_UID}:${HOST_GID}
+    environment:
+      - RENV_PATHS_CACHE=/renv
+      - INSIDE_CONTAINER=true
+      - INSIDE_DOCKER=true
+      - HOST_UID=${HOST_UID}
+      - HOST_GID=${HOST_GID}
+    volumes:
+      - ./:/home/rstudio/sap-comparison
+      - $HOME/renv:/renv
+      - ./scripts/entrypoint.sh:/usr/local/bin/entrypoint.sh

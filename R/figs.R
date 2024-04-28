@@ -1739,30 +1739,57 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
   p1 <- a_df |>
     mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
     ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
-    geom_vline(xintercept = 1, lty = 2, col = "grey30") +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
-    xlab(expression("Differences in " * italic(a)))
+    scale_x_continuous(breaks = c(0, 1, 5, 10)) +
+    xlab(expression("Max-to-min ratios of " * italic(a))) +
+    geom_vline(xintercept = 1, lty = 2, col = "grey30") +
+    my_theme() +
+    theme(
+       legend.position = "none")
 
   p2 <- b_df |>
     mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
     ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
-    geom_vline(xintercept = 0, lty = 2, col = "grey30") +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
-    xlab(expression("Differences in " * italic(b)))
-
-  p1 + p2 +
-    plot_annotation(tag_levels = "A") &
+    xlab(expression("Ranges of " * italic(b))) +
+    geom_vline(xintercept = 0, lty = 2, col = "grey30") +
     my_theme() +
     theme(
-      legend.position = "none",
+       legend.position = "none")
+
+  p3 <- a_df |>
+    mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
+    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    geom_point() +
+    geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
+    guides(color = guide_legend(ncol = 4, title = "")) #+
+    my_theme() +
+    theme(
+      plot.background = element_blank(),
+      legend.background = element_blank(),
+      plot.margin = margin(0, 0, 0, 0),
+      legend.margin = margin(0, 0, 0, 0),
+      legend.box = element_blank()
+      )
+  # extracted_legend <- g_legend(p3)
+
+  extracted_legend <- cowplot::get_legend(
+    p1 + guides(color = guide_legend(ncol = 4, title = "")) +
+      theme(legend.text = element_text(size = 9),
+        # legend.background = element_blank(),
+        legend.position = "bottom"))
+  p <- p1 + p2 +
+    plot_annotation(tag_levels = "A") &
+    theme(
+      plot.margin = margin(2, 2, 0, 2),
       axis.text.y = element_text(face = "italic", size = 8),
-      # axis.text.y = element_blank(),
       axis.title.y = element_blank(),
       strip.background = element_blank(),
       strip.text.y = element_blank()
     )
+  cowplot::plot_grid(p, extracted_legend, ncol = 1, rel_heights = c(1, .1))
 }
 
 generate_tr_example_list <- function(post_dir_dep_mid, dir_dep_imp_df, sarea_df, segments_xylem_post_ab_fit_draws_segments_xylem_0.02, segments_xylem_post_ab_fit_draws_segments_xylem_0.08) {

@@ -2,7 +2,7 @@ library(targets)
 library(tarchetypes)
 library(tidyverse)
 library(stantargets)
-library(cmdstanr)
+# library(cmdstanr)
 library(furrr)
 library(clustermq)
 library(bayesplot)
@@ -15,7 +15,7 @@ source("R/tables.R")
 source("R/scale.R")
 source("R/traits.R")
 
-plan(multicore, workers = 2)
+plan(multicore)
 options(clustermq.scheduler = "multicore")
 
 set.seed(123)
@@ -25,7 +25,7 @@ tar_option_set(packages = c(
   "patchwork",
   "cowplot",
   "bayesplot",
-  "httpgd",
+  "cmdstanr",
   "smatr",
   "ggsma",
   "ggpubr",
@@ -52,19 +52,31 @@ tar_option_set(packages = c(
 # )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
-# check if it's inside a container
-# if (file.exists("/.dockerenv") | file.exists("/.singularity.d/startscript")) {
-#   Sys.setenv(CMDSTAN = "/opt/cmdstan/cmdstan-2.29.2")
-#   set_cmdstan_path("/opt/cmdstan/cmdstan-2.29.2")
-# }
-
-# cmdstan_version()
 
 # Register the parallel backend
 n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
 # cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
 cl <- 8
 doParallel::registerDoParallel(cl)  # Register the parallel backend
+
+# Target to list all Stan files
+stan_files <- list.files(path = "stan", pattern = "\\.stan$", full.names = TRUE)
+
+# Dynamic branching target to compile Stan models
+compile_stan_models <- tar_map(
+  values = tibble(stan_file = stan_files),
+  # names = "model",
+  tar_target(
+    stan_model,
+    {
+      model_path <- stan_file
+      # model_name <- sub("\\.stan$", "", basename(model_path))
+      cmdstan_model(model_path)
+    }
+  )
+)
+
+# list(compile_stan_models)
 
  # raw data ----------------------------------
 raw_data_list <- list(
@@ -129,12 +141,6 @@ raw_data_list <- list(
     "data-raw/sapwood_depth.csv",
     format = "file"
   ),
-  # tar_target(
-  #   ks_spp_err_csv,
-  #   "data/ks_pres_tens_spp_err.csv",
-  #   format = "file"
-  # ),
-
   NULL
 )
 
@@ -178,7 +184,7 @@ main_list <- list(
        data = anova_data,
        refresh = 0,
        chains = 4,
-       parallel_chains = getOption("mc.cores", 4),
+       parallel_chains = 1,
        iter_warmup = 1000,
        iter_sampling = 1000,
        adapt_delta = 0.99,
@@ -202,7 +208,7 @@ main_list <- list(
      data = dummy_data,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
+     parallel_chains = 1,
      iter_warmup = 1000,
      iter_sampling = 1000,
      adapt_delta = 0.9,
@@ -288,7 +294,7 @@ main_list <- list(
     data = piecewise_logistic_stan_data,
     refresh = 0,
     chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
+    parallel_chains = 1,
     iter_warmup = 2000,
     iter_sampling = 2000,
     adapt_delta = 0.9,
@@ -312,7 +318,7 @@ main_list <- list(
     data = generate_logistic_stan_data(cond_count_csv, quad = TRUE),
     refresh = 0,
     chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
+    parallel_chains = 1,
     iter_warmup = 2000,
     iter_sampling = 2000,
     adapt_delta = 0.9,
@@ -335,7 +341,7 @@ main_list <- list(
     data = generate_logistic_stan_data(cond_count_csv, quad = FALSE),
     refresh = 0,
     chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
+    parallel_chains = 1,
     iter_warmup = 2000,
     iter_sampling = 2000,
     adapt_delta = 0.9,
@@ -388,7 +394,6 @@ main_list <- list(
     dummy_sap_stan_data,
     generate_dummy_data_ab()
   ),
-
 
   # simple -------------------
   tar_target(
@@ -647,7 +652,7 @@ tar_combined_species_xylem_summary <- tar_combine(
       data = stan_data_noxylem,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 2),
+      parallel_chains = 4,
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.95,
@@ -670,7 +675,7 @@ tar_combined_species_xylem_summary <- tar_combine(
       data = stan_data_xylem,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 2),
+      parallel_chains = 4,
       iter_warmup = 4000,
       iter_sampling = 2000,
       adapt_delta = 0.99,
@@ -693,7 +698,7 @@ tar_combined_species_xylem_summary <- tar_combine(
       data = stan_data_noxylem,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 2),
+      parallel_chains = 1,
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.95,
@@ -716,7 +721,7 @@ tar_combined_species_xylem_summary <- tar_combine(
       data = stan_data_noxylem,
       refresh = 0,
       chains = 4,
-      parallel_chains = getOption("mc.cores", 4),
+      parallel_chains = 1,
       iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.95,
@@ -1246,7 +1251,7 @@ granier_list <- list(
         p,
         dpi = 200,
         width = 173,
-        height = 173,
+        height = 120,
         units = "mm"
       )
     },
@@ -1900,7 +1905,7 @@ sapwood_list <- list(
      data = dbh_sap_stan_data,
      refresh = 0,
      chains = 4,
-     parallel_chains = getOption("mc.cores", 4),
+     parallel_chains = 4,
      iter_warmup = 2000,
      iter_sampling = 2000,
      adapt_delta = 0.9,
@@ -1923,7 +1928,7 @@ sapwood_list <- list(
     data = dir_dep_stan_data,
     refresh = 0,
     chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
+    parallel_chains = 4,
     iter_warmup = 2000,
     iter_sampling = 2000,
     adapt_delta = 0.9,
