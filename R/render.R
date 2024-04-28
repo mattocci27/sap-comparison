@@ -12,11 +12,11 @@ s_fig_full <- captioner::captioner(prefix = "Fig. S", auto_space = FALSE)
 s_table_full <- captioner::captioner(prefix = "Table S", auto_space = FALSE)
 
 # - Make a short function that prints only the object type and number, e.g., "Figure 1"
-fig <- pryr::partial(fig_full, display = "cite", caption = "blank")
-table <- pryr::partial(table_full, display = "cite", caption = "blank")
-eq <- pryr::partial(eq_full, display = "cite", caption = "blank")
-s_fig <- pryr::partial(s_fig_full, display = "cite", caption = "blank")
-s_table <- pryr::partial(s_table_full, display = "cite", caption = "blank")
+fig <- purrr::partial(fig_full, display = "cite", caption = "blank")
+table <- purrr::partial(table_full, display = "cite", caption = "blank")
+eq <- purrr::partial(eq_full, display = "cite", caption = "blank")
+s_fig <- purrr::partial(s_fig_full, display = "cite", caption = "blank")
+s_table <- purrr::partial(s_table_full, display = "cite", caption = "blank")
 
 # - Make a short function that prints only the number (e.g., "1")
 # |> doen't work
