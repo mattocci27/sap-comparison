@@ -12,7 +12,7 @@ format:
     toc: true
     toc-depth: 2
     toc-title: Contents
-    # embed-resources: true
+    embed-resources: true
     # self_contained: true
     smooth-scroll: true
     highlight-style: github
@@ -51,7 +51,11 @@ I used *Hevea brasiliensis*'s mean values:
 mean ks: `r mean_ks |> round(3)`, mean vaf: `r mean_vaf |> round(3)`
 
 The equations below are the common regression model for all species in Fig. 4.
-We also have equations for *Hevea brasiliensis* for the segment-level traits model, but the effects of Ks and VAF are not significant.
+Note that those models do not take abount for the effects for xylem types unlike the Model 4.
+As we discussed before, the effects of Ks and VAF were not significant if we include the effects of xylem types.
+This might be why the a' and a\* are very different.
+
+<!-- We also have equations for *Hevea brasiliensis* for the segment-level traits model, but the effects of Ks and VAF are not significant. -->
 
 ```{r, eval=FALSE}
 summary_ks_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
@@ -142,7 +146,7 @@ $$
 a' = `r ks_sp_a_int` \times K_s^{`r ks_sp_a_power`}
 $$
 $$
-b' = `r ks_sp_b_int` + `r ks_sp_b_slope` \times \text{ln VAF}
+b' = `r ks_sp_b_int` + `r ks_sp_b_slope` \times \text{ln} K_s
 $$
 
 95% CI of a from estimated Ks (species-level):
@@ -238,7 +242,7 @@ $$
 a' = `r vaf_sp_a_int` \times \text{VAF}^{`r vaf_sp_a_power`}
 $$
 $$
-b' = `r vaf_sp_b_int` + `r vaf_sp_b_slope` \times \text{ln} K_s
+b' = `r vaf_sp_b_int` + `r vaf_sp_b_slope` \times \text{lnVAF}
 $$
 
 95% CI of a from estimated VAF (species-level):
@@ -259,7 +263,7 @@ b <- m %*% c(1, log(mean_vaf))
 b |> quantile(c(0.025, 0.5, 0.975))
 ```
 
-# without traits model4
+# Model4 for *Hevea brasiliensis* with varying *Pg*
 
 a\*
 
