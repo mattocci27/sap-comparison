@@ -114,7 +114,7 @@ extract_seg_coef <- function(fit_summary, trait_df, trait) {
   b_int_re <- b_int - b_slope * t_mean / t_sd
   b_slope_re <- b_slope / t_sd
   list(
-    a_int_re = a_int_re |> round(3),
+    a_int_re = a_int_re |> exp() |> round(2),
     a_power_re = a_power_re |> round(3),
     b_int_re = b_int_re |> round(3),
     b_slope_re = b_slope_re |> round(3))
@@ -180,7 +180,7 @@ extract_sp_coef <- function(fit_summary, trait_df, trait) {
   b_int_re <- b_int - b_slope * t_mean / t_sd
   b_slope_re <- b_slope / t_sd
   list(
-    a_int_re = a_int_re |> round(3),
+    a_int_re = a_int_re |> exp() |> round(2),
     a_power_re = a_power_re |> round(3),
     b_int_re = b_int_re |> round(3),
     b_slope_re = b_slope_re |> round(3))
