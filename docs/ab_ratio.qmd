@@ -171,7 +171,7 @@ draws_ks_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
 ```
 
 ```{r}
-extract_sp_coef <- function(fit_summary, trait_df, trait) {
+extract_sp_coef <- function(fit_summary, trait_df, trait, round_a = 2) {
   t_s <- trait_df |> pull({{trait}}) |> scale()
   t_mean <- trait_df |> pull({{trait}}) |> mean()
   t_sd <- trait_df |> pull({{trait}}) |> sd()
@@ -192,7 +192,7 @@ extract_sp_coef <- function(fit_summary, trait_df, trait) {
   b_int_re <- b_int - b_slope * t_mean / t_sd
   b_slope_re <- b_slope / t_sd
   list(
-    a_int_re = a_int_re |> exp() |> round(2),
+    a_int_re = a_int_re |> exp() |> round(round_a),
     a_power_re = a_power_re |> round(3),
     b_int_re = b_int_re |> round(3),
     b_slope_re = b_slope_re |> round(3))
@@ -304,14 +304,11 @@ summary_dh_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
 draws_dh_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_dh)) |>
     janitor::clean_names()
-dh_sp_coef <- extract_sp_coef(summary_dh_sp, d_sp, log_dh)
+dh_sp_coef <- extract_sp_coef(summary_dh_sp, d_sp, log_dh, round_a = 3)
 ```
 
 $$
 a' = `r dh_sp_coef$a_int_re` \times \text{D}_{\text{h}}^{`r dh_sp_coef$a_power_re`}
-$$
-$$
-b' = `r dh_sp_coef$b_int_re` + `r dh_sp_coef$b_slope_re` \times \text{lnD}_{\text{h}}
 $$
 
 ## VF, species-level
@@ -395,71 +392,6 @@ $$
 \beta_1^{*} &= \frac{\beta_1}{\sigma}.
 \end{align}
 $$
-
-wd
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_wood_density)) |>
-    filter(str_detect(variable, "beta_"))
-```
-
-swc
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_swc)) |>
-    filter(str_detect(variable, "beta_"))
-```
-
-dh
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh)) |>
-    filter(str_detect(variable, "beta_"))
-```
-
-vf
-```{r}
-withr::with_dir(rprojroot::find_root('_targets.R'),
-    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf)) |>
-    filter(str_detect(variable, "beta_"))
-```
-
-```{r, eval=FALSE}
-library(cowplot)
-library(patchwork)
-pred_data <- tar_read(trait_pred_data_noxylem_sp_combined)
-tar_load(trait_pred_data_noxylem_sp_combined)
-
-tar_load(wd_sp_r2)
-tar_load(swc_sp_r2)
-tar_load(dh_sp_r2)
-tar_load(vf_sp_r2)
-
-df <- tmp[[5]]$pred_points
-ggplot(df, aes(x = exp(log_dh), y = b_mid, col = xylem_long_fct)) +
-  geom_point() +
-  scale_x_log10()
-
-df2 <- tmp[[5]]$pred_line
-ggplot(df2, aes(x = x)) +
-  geom_line(aes(y = pred_b_ll), col = "black") +
-  geom_line(aes(y = pred_b_m), col = "black") +
-  geom_line(aes(y = pred_b_hh), col = "black") +
-  scale_x_log10()
-
-p <- traits_points_si(
-  trait_pred_data_noxylem_sp_combined,
-  r2_list = list(
-    wd_sp_r2,
-    swc_sp_r2,
-    dh_sp_r2,
-    vf_sp_r2
-  ),
-  title = "Species",
-  sp = TRUE
-  )
-
-```
 
 
 ```{r}
