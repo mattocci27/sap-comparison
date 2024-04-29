@@ -69,12 +69,24 @@ log_vaf_s <- log_vaf_s[15]
 log_vaf_mean <- d_sp |> pull(log_vaf) |> mean()
 log_vaf_sd <- d_sp |> pull(log_vaf) |> sd()
 
+log_dh_s <- d_sp |> pull(log_dh) |> scale()
+log_dh_s <- log_dh_s[15]
+log_dh_mean <- d_sp |> pull(log_dh) |> mean()
+log_dh_sd <- d_sp |> pull(log_dh) |> sd()
+
+log_vf_s <- d_sp |> pull(log_vf) |> scale()
+log_vf_s <- log_vf_s[15]
+log_vf_mean <- d_sp |> pull(log_vf) |> mean()
+log_vf_sd <- d_sp |> pull(log_vf) |> sd()
+
 
 d_rub <- d |>
   filter(species == "Hevea brasiliensis")
 mean_ks <- mean(d_rub$ks)
 mean_vaf <- mean(d_rub$vaf, na.rm = TRUE)
 ```
+
+# a' and b'
 
 I used *Hevea brasiliensis*'s mean values:
 mean Ks: `r mean_ks |> round(3)`, mean VAF: `r mean_vaf |> round(3)`.
@@ -285,8 +297,43 @@ b <- m %*% c(1, log_vaf_s)
 b |> quantile(c(0.025, 0.5, 0.975))
 ```
 
+## Dh, species-level
+```{r}
+summary_dh_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh))
+draws_dh_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_dh)) |>
+    janitor::clean_names()
+dh_sp_coef <- extract_sp_coef(summary_dh_sp, d_sp, log_dh)
+```
 
-# Model4 for *Hevea brasiliensis* with varying *Pg*
+$$
+a' = `r dh_sp_coef$a_int_re` \times \text{D}_{\text{h}}^{`r dh_sp_coef$a_power_re`}
+$$
+$$
+b' = `r dh_sp_coef$b_int_re` + `r dh_sp_coef$b_slope_re` \times \text{lnD}_{\text{h}}
+$$
+
+## VF, species-level
+```{r}
+summary_vf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf))
+draws_vf_sp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_draws_segments_noxylem_traits_sp_log_vf)) |>
+    janitor::clean_names()
+vf_sp_coef <- extract_sp_coef(summary_vf_sp, d_sp, log_vf)
+```
+
+$$
+a' = `r vf_sp_coef$a_int_re` \times \text{VF}^{`r vf_sp_coef$a_power_re`}
+$$
+$$
+b' = `r vf_sp_coef$b_int_re` + `r vf_sp_coef$b_slope_re` \times \text{lnVF}
+$$
+
+# a* and b*
+
+## Model4 for *Hevea brasiliensis* with varying *Pg*
 
 a\*
 
@@ -348,6 +395,71 @@ $$
 \beta_1^{*} &= \frac{\beta_1}{\sigma}.
 \end{align}
 $$
+
+wd
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_wood_density)) |>
+    filter(str_detect(variable, "beta_"))
+```
+
+swc
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_swc)) |>
+    filter(str_detect(variable, "beta_"))
+```
+
+dh
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_dh)) |>
+    filter(str_detect(variable, "beta_"))
+```
+
+vf
+```{r}
+withr::with_dir(rprojroot::find_root('_targets.R'),
+    targets::tar_read(fit3_summary_segments_noxylem_traits_sp_log_vf)) |>
+    filter(str_detect(variable, "beta_"))
+```
+
+```{r, eval=FALSE}
+library(cowplot)
+library(patchwork)
+pred_data <- tar_read(trait_pred_data_noxylem_sp_combined)
+tar_load(trait_pred_data_noxylem_sp_combined)
+
+tar_load(wd_sp_r2)
+tar_load(swc_sp_r2)
+tar_load(dh_sp_r2)
+tar_load(vf_sp_r2)
+
+df <- tmp[[5]]$pred_points
+ggplot(df, aes(x = exp(log_dh), y = b_mid, col = xylem_long_fct)) +
+  geom_point() +
+  scale_x_log10()
+
+df2 <- tmp[[5]]$pred_line
+ggplot(df2, aes(x = x)) +
+  geom_line(aes(y = pred_b_ll), col = "black") +
+  geom_line(aes(y = pred_b_m), col = "black") +
+  geom_line(aes(y = pred_b_hh), col = "black") +
+  scale_x_log10()
+
+p <- traits_points_si(
+  trait_pred_data_noxylem_sp_combined,
+  r2_list = list(
+    wd_sp_r2,
+    swc_sp_r2,
+    dh_sp_r2,
+    vf_sp_r2
+  ),
+  title = "Species",
+  sp = TRUE
+  )
+
+```
 
 
 ```{r}

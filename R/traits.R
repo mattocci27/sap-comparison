@@ -338,9 +338,7 @@ traits_seg_points_si <- function(pred_data_seg, pred_data_sp) {
 }
 
 traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp = FALSE) {
-
-  # r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
-
+# r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
 #Apply the data preparation function to spment data
   tmp_wd <- prepare_plot_data(pred_data[[3]]$pred_points, "a_") |> mutate(trait = "wood_density")
   tmp_wd_b <- prepare_plot_data(pred_data[[3]]$pred_points, "b_") |> mutate(trait = "wood_density")
@@ -356,10 +354,10 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
     tmp_wd_b,
     tmp_swc,
     tmp_swc_b,
-    tmp_vf,
-    tmp_vf_b,
     tmp_dh,
-    tmp_dh_b) |>
+    tmp_dh_b,
+    tmp_vf,
+    tmp_vf_b) |>
     mutate(trait = fct_relevel(trait, "wood_density", "log_swc", "log_dh", "log_vf")) |>
     mutate(val = case_when(
       trait == "wood_density" ~ log(wood_density),
@@ -370,7 +368,7 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
 
   line_a_sp <- create_line2(pred_data, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
   line_b_sp <- create_line2(pred_data, pred_b_ll, pred_b_hh, pred_b_m) |>
-    filter(trait == "log_dh")
+    filter(trait == "log_vf")
 
   p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = LETTERS[1:4], sp = sp) +
     theme(
