@@ -40,15 +40,47 @@ library(tidyverse)
 
 ```{r}
 d <- read_csv(here::here("data/fd_k_traits.csv")) |>
-  filter(species == "Hevea brasiliensis") |>
-  dplyr::select(species, sample_number, ks, vaf)
+  filter(!is.na(wood_density)) |>
+  filter(!is.na(swc)) |>
+  filter(!is.na(dh)) |>
+  filter(!is.na(vaf)) |>
+  filter(!is.na(vf)) |>
+  filter(!is.na(ks)) |>
+  filter(is.na(removed_k))
 
-mean_ks <- mean(d$ks)
-mean_vaf <- mean(d$vaf, na.rm = TRUE)
+d_sp <- d |>
+  group_by(species) |>
+  summarize(
+    wood_density = mean(wood_density),
+    log_swc = mean(log(swc)),
+    log_dh = mean(log(dh)),
+    log_vaf = mean(log(vaf)),
+    log_vf = mean(log(vf)),
+    log_ks = mean(log(ks))
+  )
+
+log_ks_s <- d_sp |> pull(log_ks) |> scale()
+log_ks_s <- log_ks_s[15]
+log_ks_mean <- d_sp |> pull(log_ks) |> mean()
+log_ks_sd <- d_sp |> pull(log_ks) |> sd()
+
+log_vaf_s <- d_sp |> pull(log_vaf) |> scale()
+log_vaf_s <- log_vaf_s[15]
+log_vaf_mean <- d_sp |> pull(log_vaf) |> mean()
+log_vaf_sd <- d_sp |> pull(log_vaf) |> sd()
+
+# log_ks_s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#     targets::tar_read(stan_data_noxylem_log_ks))$xk[15, 2]
+
+# log_vaf_s <- withr::with_dir(rprojroot::find_root('_targets.R'),
+#     targets::tar_read(stan_data_noxylem_log_vaf))$xk[15, 2]
+# mean_ks <- mean(d$ks)
+# mean_ks <- exp(-0.243)
+# mean_vaf <- mean(d$vaf, na.rm = TRUE)
 ```
 
 I used *Hevea brasiliensis*'s mean values:
-mean ks: `r mean_ks |> round(3)`, mean vaf: `r mean_vaf |> round(3)`
+mean ks: `#r mean_ks |> round(3)`, mean vaf: `#r mean_vaf |> round(3)`
 
 The equations below are the common regression model for all species in Fig. 4.
 Note that those models do not take abount for the effects for xylem types unlike the Model 4.
@@ -56,6 +88,39 @@ As we discussed before, the effects of Ks and VAF were not significant if we inc
 This might be why the a' and a\* are very different.
 
 <!-- We also have equations for *Hevea brasiliensis* for the segment-level traits model, but the effects of Ks and VAF are not significant. -->
+
+
+**Note**:
+
+The orignial regression model used the scaled predictor:
+$$
+y = \beta_0 + \beta_1 \times x_s
+$$
+
+where $x_s$ is defined as:
+
+$$
+x_s = \frac{x - \bar{x}}{\sigma}.
+$$
+
+Here, $\bar{x}$ is the mean of $x$, and $\sigma$ is the standard deviaion of $x$.
+
+
+The regression model with the original predictor is:
+
+$$
+y = \beta_0^{*} + \beta_1^{*} \times x
+$$
+
+where:
+
+$$
+\begin{align}
+\beta_0^{*} &= \beta_0 - \beta_1 \times \frac{\bar{x}}{\sigma} \\
+\beta_1^{*} &= \frac{\beta_1}{\sigma}.
+\end{align}
+$$
+
 
 ```{r, eval=FALSE}
 summary_ks_seg2 <- withr::with_dir(rprojroot::find_root('_targets.R'),
@@ -79,26 +144,45 @@ summary_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
 draws_ks_seg <- withr::with_dir(rprojroot::find_root('_targets.R'),
     targets::tar_read(fit_draws_segments_noxylem_traits_log_ks)) |>
     janitor::clean_names()
+```
 
-ks_seg_a_int <- summary_ks_seg |>
-  filter(variable == "beta_a[1,1]") |>
-  pull(q50) |> exp() |> round(1)
-ks_seg_a_power <- summary_ks_seg |>
-  filter(variable == "beta_a[2,1]") |>
-  pull(q50) |> round(3)
-ks_seg_b_int <- summary_ks_seg |>
-  filter(variable == "beta_b[1,1]") |>
-  pull(q50) |> round(3)
-ks_seg_b_slope <- summary_ks_seg |>
-  filter(variable == "beta_b[2,1]") |>
-  pull(q50) |> round(3)
+```{r}
+extract_seg_coef <- function(fit_summary, trait_df, trait) {
+  t_s <- trait_df |> pull({{trait}}) |> scale()
+  t_mean <- trait_df |> pull({{trait}}) |> mean()
+  t_sd <- trait_df |> pull({{trait}}) |> sd()
+  a_int <- fit_summary |>
+    filter(variable == "beta_a[1,1]") |>
+    pull(q50)
+  a_power <- fit_summary |>
+    filter(variable == "beta_a[2,1]") |>
+    pull(q50)
+  b_int <- fit_summary |>
+    filter(variable == "beta_b[1,1]") |>
+    pull(q50)
+  b_slope <- fit_summary |>
+    filter(variable == "beta_b[2,1]") |>
+    pull(q50)
+
+  a_int_re <- a_int - a_power * t_mean / t_sd
+  a_power_re <- a_power / t_sd
+  b_int_re <- b_int - b_slope * t_mean / t_sd
+  b_slope_re <- b_slope / t_sd
+  list(
+    a_int_re = a_int_re |> round(3),
+    a_power_re = a_power_re |> round(3),
+    b_int_re = b_int_re |> round(3),
+    b_slope_re = b_slope_re |> round(3))
+}
+
+ks_seg_coef <- extract_seg_coef(summary_ks_seg, d_sp, log_ks)
 ```
 
 $$
-a' = `r ks_seg_a_int` \times K_s^{`r ks_seg_a_power`}
+a' = `r ks_seg_coef$a_int_re` \times K_s^{`r ks_seg_coef$a_power_re`}
 $$
 $$
-b' = `r ks_seg_b_int` + `r ks_seg_b_slope` \times \text{ln} K_s
+b' = `r ks_seg_coef$b_int_re` + `r ks_seg_coef$b_slope_re` \times \text{ln} K_s
 $$
 
 95% CI of a from estimated Ks (segment-level):
@@ -106,7 +190,7 @@ $$
 m <- draws_ks_seg |>
   dplyr::select(c(beta_a_1_1, beta_a_2_1)) |>
   as.matrix()
-log_a <- m %*% c(1, log(mean_ks))
+log_a <- m %*% c(1, log_ks_s)
 exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
 ```
 
@@ -115,10 +199,13 @@ exp(log_a) |> quantile(c(0.025, 0.5, 0.975))
 m <- draws_ks_seg |>
   dplyr::select(c(beta_b_1_1, beta_b_2_1)) |>
   as.matrix()
-b <- m %*% c(1, log(mean_ks))
+b <- m %*% c(1, log_ks_s)
 b |> quantile(c(0.025, 0.5, 0.975))
 ```
 
+```{r}
+knitr::knit_exit()
+```
 
 ## Ks, species-level
 ```{r}
