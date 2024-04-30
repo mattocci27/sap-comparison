@@ -1160,6 +1160,102 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
       plot_annotation(tag_levels = "A")
 }
 
+# Extract percentiles for model 3 and 4
+extract_alpha_percentiles <- function(data, index) {
+  data %>%
+    janitor::clean_names() %>%
+    filter(str_detect(variable, paste0("alpha\\[", index))) %>%
+    dplyr::select(q2_5, q50, q97_5)
+}
+extract_A_percentiles <- function(data, index) {
+  data %>%
+    janitor::clean_names() %>%
+    filter(str_detect(variable, paste0("A\\[", index))) %>%
+    dplyr::select(q2_5, q50, q97_5)
+}
+
+# post hoc
+ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, rm_dip = TRUE) {
+  # library(targets)
+  # library(tidyverse)
+  # s <- tar_read(fit_summary_segments_xylem_0.08)
+  # tar_load(xylem_lab)
+  # tar_load(fd_k_traits_csv)
+  # tar_read(sap_all_clean_0.08)$uj |> str()
+
+  # sp
+  a_sp <- extract_alpha_percentiles(summary, 1) |> exp()
+  b_sp <- extract_alpha_percentiles(summary, 2)
+
+  # seg
+  a_seg <- extract_A_percentiles(summary, 1) |> exp()
+  b_seg <- extract_A_percentiles(summary, 2)
+
+  # tar_read(sap_all_clean_0.08) |> str()
+
+  sp_df <- xylem_lab |>
+    arrange(species) |>
+    bind_cols(
+      a_sp |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
+      b_sp |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
+      )
+
+  sample_id <- read_csv(fd_k_traits_csv) |>
+    filter(is.na(removed_k)) |>
+    arrange(species) |>
+    dplyr::select(species, sample_id) |>
+    distinct()
+
+  seg_df <- sample_id |>
+    bind_cols(
+      a_seg |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
+      b_seg |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
+      ) |>
+    left_join(xylem_lab)
+
+  fit_sp <- lm(b_q50 ~ log(a_q50), data = sp_df)
+  eq_sp <- paste0("y=", coef(fit_sp)[1] |> round(3), "+", coef(fit_sp)[2] |> round(3), "lnx" )
+
+  fit_seg <- lm(b_q50 ~ log(a_q50), data = seg_df)
+  eq_seg <- paste0("y=", coef(fit_seg)[1] |> round(3), "+", coef(fit_seg)[2] |> round(3), "lnx" )
+
+  p1 <- ggplot(sp_df, aes(x = a_q50, y = b_q50)) +
+    geom_point(aes(col = xylem_long_fct)) +
+    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    xlab("a") +
+    ylab("b") +
+    scale_x_log10() +
+    ggtitle("Species") +
+    geom_smooth(method = "lm", se = FALSE) +
+    stat_cor(
+      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
+    ) +
+    annotate("text", x = Inf, y = Inf, label = eq_sp, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
+    my_theme() +
+    labs(col = "") +
+    theme(legend.position = "none")
+
+  p2 <- ggplot(seg_df, aes(x = a_q50, y = b_q50)) +
+    geom_point(aes(col = xylem_long_fct)) +
+    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    xlab("a") +
+    ylab("b") +
+    scale_x_log10() +
+    annotate("text", x = Inf, y = Inf, label = eq_seg, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
+    ggtitle("Segments") +
+    geom_smooth(method = "lm", se = FALSE) +
+    stat_cor(
+      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
+    ) +
+    my_theme() +
+    labs(col = "") +
+    theme(legend.position = "none")
+
+  p1 + p2
+}
+
 ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab, rm_dip = TRUE) {
 
 # Extract percentiles for model 1 and 2
