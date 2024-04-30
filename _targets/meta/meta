@@ -14,6 +14,10 @@ ab_pg_summary_bars_plot|stem|2b1c6b33ef5c91ef|cdb58a2a535e4c33|3b082c460f0a9315|
 ab_pg_summary_plot|stem||460de189ecdb2c2e|b814fa3e8976c3a1|-1386108537||t19710.3312755667s||0|file|local|vector|||0.909||could not find function ab_pg_summary
 ab_points_four_models_plot|stem|5c02f2dcc36f3ec0|5c805cab1df717ba|7a20344b561b838f|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf|t19778.2665099172s|3bbe3d4c1e017c3e|471830|file|local|vector|||3.31||
 ab_points_four_models_plot_all|stem|615a27e0dcb9aad1|9c01fd54f38d81ed|7a20344b561b838f|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf|t19778.266520427s|f52a6e3518cfcc4b|443664|file|local|vector|||3.298||
+ab_points_model4|function|78d4207ca03518da|||||||||||||||
+ab_points_model4_create_plot|function|4b86d68e82dd2469|||||||||||||||
+ab_points_model4_plot|stem|9116269196c6ce48|3b63e066e8bba43a|b9c3833189d352f9|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf|t19843.5452952653s|0db03d6496ea4fc4|395771|file|local|vector|||0.901||
+ab_points_model4_prepare_df|function|180e71306cae66ff|||||||||||||||
 ab_scaled_df_segments_inclusive_post_ab_0.08|stem|c45043cf056a30e3|db83b0ffadd734bf|b3d10d7b5b1fa02e|1611737254||t19783.7171019214s|f0ef80e5f0ea82e1|224|rds|local|vector|||0.004||
 ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.02|stem|b5582d94d9f43e8a|32be8bcfbca6ceaf|b5ccc04529784cf8|-661691512||t19783.6998128977s|b87462683b64d887|223|rds|local|vector|||3.736||
 ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.025|stem|89986a0012650a76|83ffd894e69ced3a|7a5acf011827715b|1702669726||t19783.7024597119s|6afa6e1fd73417a7|225|rds|local|vector|||1.303||
@@ -203,6 +207,8 @@ ec_bar_ab_plot|stem|2aee3665937507d7|092963b55d44a68b|773b78511733195d|-18846724
 ec_bar_all|function|af7de562c8d74ef3|||||||||||||||
 ec_bar_all_df|stem|4833d95807fdd7dc|04eaa61ec98007d1|316ca0e88e6ff6f1|-1815017138||t19668.2774049877s|990f4e6f76416b38|452|rds|local|vector|||0.991||
 ec_bar_all_plot|stem|631637e4e7675588|df4713720fb9a635|045664d34affd397|372740435|figs/ec_bar_all.png*figs/ec_bar_all.pdf|t19668.2774102193s|44ca82368c2a9956|80581|file|local|vector|||0.442||
+extract_A_percentiles|function|a1acf887fd0b3b3f|||||||||||||||
+extract_alpha_percentiles|function|3175d7221ad03191|||||||||||||||
 fd_k_traits_csv|stem|6d01322bac733284|fab823fb334bcfaf|86725910b2dc50de|-616397736|data/fd_k_traits.csv|t19778.1654816148s|247335fb0f54d7e7|165684|file|local|vector|||0.083||
 fd_scaling|function|c3201086be995c79|||||||||||||||
 fit_data|stem|5b7ff56e53cbdc2b|2122020d9968f2bb|bf3276ea95925036|2045157859||t19778.1617753445s|d8f5f6122767a9b9|661|qs|local|vector|||0||
@@ -650,7 +656,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t19641.41625s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|1be8bd8cae42e48f|||||||||||||||
+granier_list|object|c3a73662bc377dcb|||||||||||||||
 granier_with_traits_mapped|object|13848fa13bc063a2|||||||||||||||
 granier_without_traits_mapped|object|9007355c81ba9eec|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -752,7 +758,7 @@ logistic|function|85b2eccc2fdb02b5|||||||||||||||
 logistic_sp_plot|stem|ff7c2d54cf851c3a|c4d05f279c6e88a7|3695cc1e9bb6f27d|-273867338|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19778.245381565s|fa9ea6a554439618|666821|file|local|vector|||2.189|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_anova|stem|bfe95d8f13d45113|769bb86112e2daea|9d781f64dc0c44e6|627861828||t19778.2439506673s|5d835b1a34883270|8376|rds|local|vector|||7.319|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.|
-main_list|object|1cf335cf08eb6361|||||||||||||||
+main_list|object|c65d2630d7b086bf|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1071,8 +1077,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t19778.2503943923s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t19778.2503991145s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t19778.2504056886s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|edab147f21ce76f6|||||||||||||||
-tar_impute|object|3edc5599056b8780|||||||||||||||
+tar_dir_dep|object|630e8d028150c982|||||||||||||||
+tar_impute|object|07c7c9971b95db9d|||||||||||||||
 test|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|1064684737||t19642.6409043385s|d713d5cc4ab85b07|6053|rds|local|vector|||1.958|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
@@ -1124,7 +1130,7 @@ traits_xylem_table_csv|stem|1018c371902ce670|510b1b5af374e20d|1f82f4f8729bb1b2|1
 uncertainty_ab_mapped|object|e077b035540296a4|||||||||||||||
 uncertainty_dir_dep_mapped|object|cba52109e60727fd|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|0a1dd978de4483f2|||||||||||||||
+uncertainty_figs_list|object|4e93f6cde7783e88|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|0c957a947586b3ee|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

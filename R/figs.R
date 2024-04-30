@@ -1174,38 +1174,55 @@ extract_A_percentiles <- function(data, index) {
     dplyr::select(q2_5, q50, q97_5)
 }
 
+
+# Helper function to prepare data frames
+ab_points_model4_prepare_df <- function(data, a_values, b_values) {
+  bind_cols(
+    a_values |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
+    b_values |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
+  ) |>
+  left_join(data, by = "sample_id")
+}
+
+# Helper function to create plots
+ab_points_model4_create_plot <- function(df, title, eq) {
+  ggplot(df, aes(x = a_q50, y = b_q50)) +
+    geom_point(aes(col = xylem_long_fct)) +
+    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    scale_x_log10() +
+    ggtitle(title) +
+    geom_smooth(method = "lm", se = FALSE) +
+    annotate("text", x = Inf, y = Inf, label = eq, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
+    stat_cor(
+      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
+    ) +
+    my_theme() +
+    labs(col = "") +
+    theme(legend.position = "none")
+}
 # post hoc
 ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, rm_dip = TRUE) {
-  # library(targets)
-  # library(tidyverse)
-  # s <- tar_read(fit_summary_segments_xylem_0.08)
-  # tar_load(xylem_lab)
-  # tar_load(fd_k_traits_csv)
-  # tar_read(sap_all_clean_0.08)$uj |> str()
-
-  # sp
-  a_sp <- extract_alpha_percentiles(summary, 1) |> exp()
+  # Prepare data
+  a_sp <- exp(extract_alpha_percentiles(summary, 1))
   b_sp <- extract_alpha_percentiles(summary, 2)
-
-  # seg
-  a_seg <- extract_A_percentiles(summary, 1) |> exp()
+  a_seg <- exp(extract_A_percentiles(summary, 1))
   b_seg <- extract_A_percentiles(summary, 2)
 
-  # tar_read(sap_all_clean_0.08) |> str()
+  sample_id <- read_csv(fd_k_traits_csv) |>
+    filter(is.na(removed_k)) |>
+    select(species, sample_id) |>
+    distinct()
 
+  # Create data frames
+  # sp_df <- ab_points_model4_prepare_df(xylem_lab, a_sp, b_sp)
+  # seg_df <- ab_points_model4_prepare_df(sample_id, a_seg, b_seg)
   sp_df <- xylem_lab |>
     arrange(species) |>
     bind_cols(
       a_sp |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
       b_sp |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
       )
-
-  sample_id <- read_csv(fd_k_traits_csv) |>
-    filter(is.na(removed_k)) |>
-    arrange(species) |>
-    dplyr::select(species, sample_id) |>
-    distinct()
-
   seg_df <- sample_id |>
     bind_cols(
       a_seg |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
@@ -1213,46 +1230,17 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, rm_dip = TRUE)
       ) |>
     left_join(xylem_lab)
 
+  # Linear models and equations
   fit_sp <- lm(b_q50 ~ log(a_q50), data = sp_df)
-  eq_sp <- paste0("y=", coef(fit_sp)[1] |> round(3), "+", coef(fit_sp)[2] |> round(3), "lnx" )
-
   fit_seg <- lm(b_q50 ~ log(a_q50), data = seg_df)
-  eq_seg <- paste0("y=", coef(fit_seg)[1] |> round(3), "+", coef(fit_seg)[2] |> round(3), "lnx" )
+  eq_sp <- sprintf("y=%.3f+%.3flnx", coef(fit_sp)[1], coef(fit_sp)[2])
+  eq_seg <- sprintf("y=%.3f+%.3flnx", coef(fit_seg)[1], coef(fit_seg)[2])
 
-  p1 <- ggplot(sp_df, aes(x = a_q50, y = b_q50)) +
-    geom_point(aes(col = xylem_long_fct)) +
-    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    xlab("a") +
-    ylab("b") +
-    scale_x_log10() +
-    ggtitle("Species") +
-    geom_smooth(method = "lm", se = FALSE) +
-    stat_cor(
-      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
-    ) +
-    annotate("text", x = Inf, y = Inf, label = eq_sp, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
-    my_theme() +
-    labs(col = "") +
-    theme(legend.position = "none")
+  # Create plots
+  p1 <- ab_points_model4_create_plot(sp_df, "Species", eq_sp)
+  p2 <- ab_points_model4_create_plot(seg_df, "Segments", eq_seg)
 
-  p2 <- ggplot(seg_df, aes(x = a_q50, y = b_q50)) +
-    geom_point(aes(col = xylem_long_fct)) +
-    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    xlab("a") +
-    ylab("b") +
-    scale_x_log10() +
-    annotate("text", x = Inf, y = Inf, label = eq_seg, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
-    ggtitle("Segments") +
-    geom_smooth(method = "lm", se = FALSE) +
-    stat_cor(
-      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
-    ) +
-    my_theme() +
-    labs(col = "") +
-    theme(legend.position = "none")
-
+  # Combine plots
   p1 + p2
 }
 

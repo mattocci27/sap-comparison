@@ -1257,6 +1257,24 @@ granier_list <- list(
     },
     format = "file"
   ),
+  tar_target(
+    ab_points_model4_plot, {
+      p <- ab_points_model4(
+        fit_summary_segments_xylem_0.08,
+        fd_k_traits_csv,
+        xylem_lab
+        )
+      my_ggsave(
+        "figs/ab_points_model4",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   NULL
 )
 
