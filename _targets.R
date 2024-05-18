@@ -141,6 +141,11 @@ raw_data_list <- list(
     "data-raw/sapwood_depth.csv",
     format = "file"
   ),
+  tar_target(
+    pub_ab_csv,
+    "data-raw/pub_ab.csv",
+    format = "file"
+  ),
   NULL
 )
 
@@ -1258,11 +1263,21 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
+    ab_points_model4_sma_list,
+    ab_points_model4_sma(
+        fit_summary_segments_xylem_0.08,
+        fd_k_traits_csv,
+        xylem_lab,
+        pub_ab_csv
+     )
+  ),
+  tar_target(
     ab_points_model4_plot, {
       p <- ab_points_model4(
         fit_summary_segments_xylem_0.08,
         fd_k_traits_csv,
-        xylem_lab
+        xylem_lab,
+        pub_ab_csv
         )
       my_ggsave(
         "figs/ab_points_model4",

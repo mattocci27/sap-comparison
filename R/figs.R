@@ -1185,24 +1185,69 @@ ab_points_model4_prepare_df <- function(data, a_values, b_values) {
 }
 
 # Helper function to create plots
-ab_points_model4_create_plot <- function(df, title, eq) {
-  ggplot(df, aes(x = a_q50, y = b_q50)) +
-    geom_point(aes(col = xylem_long_fct)) +
-    geom_errorbar(aes(ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    geom_errorbar(aes(xmin = a_q2_5, xmax = a_q97_5, col = xylem_long_fct), alpha = 0.5) +
+ab_points_model4_create_plot <- function(df, pub_df, title) {
+  ggplot() +
+    geom_point(data = pub_df, aes(x = a, y = b), col = "grey") +
+    geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = FALSE, col = "grey") +
+    geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
+    geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
+    geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_long_fct), alpha = 0.5) +
     scale_x_log10() +
     ggtitle(title) +
-    geom_smooth(method = "lm", se = FALSE) +
-    annotate("text", x = Inf, y = Inf, label = eq, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
-    stat_cor(
-      aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
-    ) +
+    geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
+    # annotate("text", x = Inf, y = Inf, label = eq, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
+    # stat_cor(
+    #   aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
+    # ) +
     my_theme() +
     labs(col = "") +
     theme(legend.position = "none")
 }
 # post hoc
-ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, rm_dip = TRUE) {
+ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
+  a_sp <- exp(extract_alpha_percentiles(summary, 1))
+  b_sp <- extract_alpha_percentiles(summary, 2)
+  a_seg <- exp(extract_A_percentiles(summary, 1))
+  b_seg <- extract_A_percentiles(summary, 2)
+
+  sample_id <- read_csv(fd_k_traits_csv) |>
+    filter(is.na(removed_k)) |>
+    select(species, sample_id) |>
+    distinct()
+
+  sp_df <- xylem_lab |>
+    arrange(species) |>
+    bind_cols(
+      a_sp |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
+      b_sp |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
+      )
+  seg_df <- sample_id |>
+    bind_cols(
+      a_seg |> rename(a_q2_5 = q2_5, a_q50 = q50, a_q97_5 = q97_5),
+      b_seg |> rename(b_q2_5 = q2_5, b_q50 = q50, b_q97_5 = q97_5)
+      ) |>
+    left_join(xylem_lab)
+
+  pub_df <- read_csv(pub_ab_path) |>
+    janitor::clean_names()
+
+  # Linear models and equations
+  fit_sp <- smatr::sma(b_q50 ~ log(a_q50), data = sp_df)
+  fit_seg <- smatr::sma(b_q50 ~ log(a_q50), data = seg_df)
+  fit_pub <- smatr::sma(b ~ log(a), data = pub_df)
+
+  list(
+    fit_sp,
+    fit_seg,
+    fit_pub
+  )
+}
+
+ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
+
+  # summary <- tar_read(fit_summary_segments_xylem_0.08)
+  # tar_load(fd_k_traits_csv)
+  # tar_load(xylem_lab)
   # Prepare data
   a_sp <- exp(extract_alpha_percentiles(summary, 1))
   b_sp <- extract_alpha_percentiles(summary, 2)
@@ -1236,9 +1281,19 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, rm_dip = TRUE)
   eq_sp <- sprintf("y=%.3f+%.3flnx", coef(fit_sp)[1], coef(fit_sp)[2])
   eq_seg <- sprintf("y=%.3f+%.3flnx", coef(fit_seg)[1], coef(fit_seg)[2])
 
+  pub_df <- read_csv(pub_ab_path) |>
+  # pub_df <- read_csv("data-raw/pub_ab.csv") |>
+    janitor::clean_names()
+
+  # sp_df2 <- sp_df |>
+  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
+  #     a_q50, b_q50, a_q97_5, b_q97_5)
+  # seg_df2 <- seg_df |>
+  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
+  #     a_q50, b_q50, a_q97_5, b_q97_5)
   # Create plots
-  p1 <- ab_points_model4_create_plot(sp_df, "Species", eq_sp)
-  p2 <- ab_points_model4_create_plot(seg_df, "Segments", eq_seg)
+  p1 <- ab_points_model4_create_plot(sp_df, pub_df, "Species")
+  p2 <- ab_points_model4_create_plot(seg_df, pub_df, "Segments")
 
   # Combine plots
   p1 + p2
