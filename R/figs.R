@@ -1185,24 +1185,29 @@ ab_points_model4_prepare_df <- function(data, a_values, b_values) {
 }
 
 # Helper function to create plots
-ab_points_model4_create_plot <- function(df, pub_df, title) {
-  ggplot() +
-    geom_point(data = pub_df, aes(x = a, y = b), col = "grey") +
-    geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = FALSE, col = "grey") +
-    geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-    geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
-    geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_long_fct), alpha = 0.5) +
+ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
+  base_plot <- ggplot() +
     scale_x_log10() +
-    ggtitle(title) +
-    geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
-    # annotate("text", x = Inf, y = Inf, label = eq, hjust = 1.1, vjust = 1.1, size = 3, colour = "blue") +
-    # stat_cor(
-    #   aes(label = paste(after_stat(rr.label), sep = "~`,`~"))
-    # ) +
+    # ggtitle(title) +
     my_theme() +
-    labs(col = "") +
+    labs(col = "", x = "Co-a", y = "Co-b") +
     theme(legend.position = "none")
+  if (with_pub) {
+    base_plot +
+      geom_point(data = pub_df, aes(x = a, y = b), col = "grey") +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
+      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+  } else {
+    base_plot +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_long_fct), alpha = 0.5) +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+  }
 }
+
+
 # post hoc
 ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
   a_sp <- exp(extract_alpha_percentiles(summary, 1))
@@ -1242,7 +1247,7 @@ ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_pat
     fit_pub
   )
 }
-
+#
 ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
 
   # summary <- tar_read(fit_summary_segments_xylem_0.08)
@@ -1292,11 +1297,11 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
   #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
   #     a_q50, b_q50, a_q97_5, b_q97_5)
   # Create plots
-  p1 <- ab_points_model4_create_plot(sp_df, pub_df, "Species")
-  p2 <- ab_points_model4_create_plot(seg_df, pub_df, "Segments")
+  p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)
+  p2 <- ab_points_model4_create_plot(seg_df, pub_df, with_pub = TRUE)
 
   # Combine plots
-  p1 + p2
+  p1 + p2 + plot_annotation(tag_levels = "a")
 }
 
 ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab, rm_dip = TRUE) {

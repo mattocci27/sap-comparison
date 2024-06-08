@@ -14,10 +14,10 @@ ab_pg_summary_bars_plot|stem|2b1c6b33ef5c91ef|cdb58a2a535e4c33|3b082c460f0a9315|
 ab_pg_summary_plot|stem||460de189ecdb2c2e|b814fa3e8976c3a1|-1386108537||t19710.3312755667s||0|file|local|vector|||0.909||could not find function ab_pg_summary
 ab_points_four_models_plot|stem|5c02f2dcc36f3ec0|5c805cab1df717ba|7a20344b561b838f|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf|t19778.2665099172s|3bbe3d4c1e017c3e|471830|file|local|vector|||3.31||
 ab_points_four_models_plot_all|stem|615a27e0dcb9aad1|9c01fd54f38d81ed|7a20344b561b838f|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf|t19778.266520427s|f52a6e3518cfcc4b|443664|file|local|vector|||3.298||
-ab_points_model4|function|e31a452e582ffaa7|||||||||||||||
-ab_points_model4_create_plot|function|7a183be465631d30|||||||||||||||
+ab_points_model4|function|2fb38c0193e641a2|||||||||||||||
+ab_points_model4_create_plot|function|14e2c73ae0748444|||||||||||||||
 ab_points_model4_eq_list|stem||a368207e9063f18c|7657c84cb33c69b0|1353446339||t19861.4485715838s||0|rds|local|vector|||1.249||could not find function ab_points_model4_eq
-ab_points_model4_plot|stem|70d3eb3e6ea70692|2f2c87553d6b92b2|0e96eb0881e1e3f1|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf|t19861.4484059864s|89bd5f4c8796b23a|454559|file|local|vector|||2.376|Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.|
+ab_points_model4_plot|stem|4837776ae4201878|a008175cff87f256|c12a41ff1c72484a|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf|t19882.358256122s|8cb2dded914e31ce|358678|file|local|vector|||12.689|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.|
 ab_points_model4_prepare_df|function|180e71306cae66ff|||||||||||||||
 ab_points_model4_sma|function|71241816a18ff8f9|||||||||||||||
 ab_points_model4_sma_list|stem|6f2bf6b9a001b730|128d63ab8317c8ff|5339b6d0f2237126|-1498962017||t19861.4497473998s|6b15181d82eb2c94|133947|rds|local|vector|||1.642||
@@ -659,7 +659,7 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t19641.41625s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|4f4c13da699f3f20|||||||||||||||
+granier_list|object|bf39fb79588cf23f|||||||||||||||
 granier_with_traits_mapped|object|8acfee5ac058f248|||||||||||||||
 granier_without_traits_mapped|object|fb255612a5de8e9f|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -761,7 +761,7 @@ logistic|function|85b2eccc2fdb02b5|||||||||||||||
 logistic_sp_plot|stem|ff7c2d54cf851c3a|c4d05f279c6e88a7|3695cc1e9bb6f27d|-273867338|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf|t19778.245381565s|fa9ea6a554439618|666821|file|local|vector|||2.189|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_anova|stem|bfe95d8f13d45113|769bb86112e2daea|9d781f64dc0c44e6|627861828||t19778.2439506673s|5d835b1a34883270|8376|rds|local|vector|||7.319|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.|
-main_list|object|b14e82cff13ababd|||||||||||||||
+main_list|object|ec08b439c22b3eee|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1081,8 +1081,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t19778.2503943923s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t19778.2503991145s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t19778.2504056886s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|cff970c1f1e28433|||||||||||||||
-tar_impute|object|0b16040a977fc0df|||||||||||||||
+tar_dir_dep|object|741a67f5ac4fd68b|||||||||||||||
+tar_impute|object|524cb4a00e167aef|||||||||||||||
 test|stem|09e2a95eeec5d87b|67eafd76d276de77|9d1c4a24c6a9c9b8|1064684737||t19642.6409043385s|d713d5cc4ab85b07|6053|rds|local|vector|||1.958|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
@@ -1134,7 +1134,7 @@ traits_xylem_table_csv|stem|1018c371902ce670|510b1b5af374e20d|1f82f4f8729bb1b2|1
 uncertainty_ab_mapped|object|632308fa60d39125|||||||||||||||
 uncertainty_dir_dep_mapped|object|d545f50172d229fd|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|e92e35c8d4b0d264|||||||||||||||
+uncertainty_figs_list|object|6d629079364d36f0|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|957767bbe3e0b72f|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

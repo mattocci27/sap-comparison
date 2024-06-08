@@ -1284,7 +1284,7 @@ granier_list <- list(
         p,
         dpi = 600,
         width = 173,
-        height = 110,
+        height = 90,
         units = "mm"
       )
     },
