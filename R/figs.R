@@ -95,9 +95,10 @@ ks_box <- function(data) {
      "Pressure", "Tension")) |>
     mutate(species = factor(species,
      levels = c("HB", "HH", "VM", "TG", "AP"))) |>
-    ggplot(aes(y = ks, x = as.factor(pressure), fill = calib_type)) +
-    geom_boxplot() +
-    geom_point(position = position_jitterdodge(jitter.width = 0), alpha = 0.5) +
+    filter(calib_type == "Pressure") |>
+    ggplot(aes(y = ks, x = as.factor(pressure))) +
+    geom_boxplot(width = 0.4) +
+    geom_point(alpha = 0.5) +
     facet_grid(rows = vars(species), scale = "free") +
     scale_y_log10() +
     ylab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
@@ -1194,7 +1195,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     theme(legend.position = "none")
   if (with_pub) {
     base_plot +
-      geom_point(data = pub_df, aes(x = a, y = b), col = "grey") +
+      geom_point(data = pub_df, aes(x = a, y = b), pch = 1, color = "grey20") +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
       geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
@@ -1298,7 +1299,7 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
   #     a_q50, b_q50, a_q97_5, b_q97_5)
   # Create plots
   p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)
-  p2 <- ab_points_model4_create_plot(seg_df, pub_df, with_pub = TRUE)
+  p2 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = TRUE)
 
   # Combine plots
   p1 + p2 + plot_annotation(tag_levels = "a")

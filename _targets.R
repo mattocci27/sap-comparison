@@ -155,10 +155,10 @@ main_list <- list(
     sma_scatter_plot,
     sma_scatter(five_spp_csv)
   ),
-  tar_target(
-    ks_box_plot,
-    ks_box(ks_trees_csv)
-  ),
+  # tar_target(
+  #   ks_box_plot,
+  #   ks_box(ks_trees_csv)
+  # ),
   tar_target(
     sma_scatter_log_plot,
     sma_scatter(five_spp_csv, log = TRUE)
@@ -253,6 +253,21 @@ main_list <- list(
         dpi = 600,
         width = 6.81,
         height = 4.4
+      )
+    },
+    format = "file"
+  ),
+
+  tar_target(
+    ks_box_plot, {
+      p <- ks_box(ks_trees_csv)
+      my_ggsave(
+        "figs/ks_box",
+        p,
+        dpi = 600,
+        width = 82,
+        height = 100,
+        units = "mm"
       )
     },
     format = "file"
@@ -423,6 +438,16 @@ main_list <- list(
     compile_model("stan/segments_inclusive.stan"),
     format = "file"
   ),
+  tar_target(
+    model1_like_file,
+    compile_model("stan/model1_like.stan"),
+    format = "file"
+  ),
+  tar_target(
+    model2_like_file,
+    compile_model("stan/model2_like.stan"),
+    format = "file"
+  ),
 
 
 #   tar_target(
@@ -525,6 +550,43 @@ granier_without_traits_mapped <- tar_map(
     )
   )
 
+like_check_list <- list(
+  tar_stan_mcmc(
+    fit_like,
+    c("stan/model3_like.stan",
+      "stan/model4_like.stan"),
+    data = sap_all_clean_0.08,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = getOption("mc.cores", 4),
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.95,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = FALSE,
+    return_summary = FALSE
+  ),
+  tar_target(sap_sp_clean_like,
+    generate_sap_stan_data_sp(fd_k_traits_csv,
+      remove_abnormal_values = TRUE,
+      upper_pressure = 0.8)),
+  tar_target(
+    fit_each_like, {
+    sap_sp_clean_0.08 |>
+        mutate(fit_species = map(stan_data, fit_model,
+          model1_like_file,
+          adapt_delta = 0.95,
+          iter_warmup = 2000,
+          iter_sampling = 2000)) |>
+        mutate(fit_segments = map(stan_data, fit_model,
+          model2_like_file,
+          adapt_delta = 0.95,
+          iter_warmup = 2000,
+          iter_sampling = 2000))
+    })
+)
 
 segments_xylem_df_mapped <- tar_map(
   list(stan_summary =
@@ -1999,4 +2061,5 @@ append(raw_data_list, main_list) |>
   append(sapwood_list) |>
   append(tar_dir_dep) |>
   append(uncertainty_list) |>
-  append(uncertainty_figs_list)
+  append(uncertainty_figs_list) |>
+  append(like_check_list)
