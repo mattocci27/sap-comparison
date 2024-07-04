@@ -129,12 +129,24 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 # draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf)
 # tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf)
 
-trait_name <- "log_vaf"
-  if (sp_level) {
+# summary_data <- tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
+# tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# draws <- tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf)
+# trait_name <- "log_vaf"
+
+# species or segment-level coef
+  if (sp_level & no_xylem) {
     a_mat <- summary_data |>
-        filter(str_detect(variable, "^beta_hat\\[1"))
+      filter(str_detect(variable, "^beta_hat\\[1"))
     b_mat <- summary_data |>
-        filter(str_detect(variable, "^beta_hat\\[2"))
+      filter(str_detect(variable, "^beta_hat\\[2"))
+  } else if (sp_level & !no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_a"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_b"))
   } else {
     a_mat <- summary_data |>
       filter(str_detect(variable, "^A\\[1"))
@@ -257,25 +269,33 @@ trait_name <- "log_vaf"
 ```{r}
 tar_load(fd_k_traits_csv)
 tar_load(xylem_lab)
+```
 
+```{r a}
 generate_trait_fig_data(
   tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf),
   tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf),
   fd_k_traits_csv, xylem_lab,
   "log_vaf", no_xylem = TRUE, single_trait = TRUE, sp_level = TRUE)
+```
 
+```{r b}
 generate_trait_fig_data(
   tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf),
   tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf),
   fd_k_traits_csv, xylem_lab,
   "log_vaf", no_xylem = TRUE, single_trait = TRUE, sp_level = FALSE)
+```
 
+```{r c}
 generate_trait_fig_data(
   tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf),
   tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf),
   fd_k_traits_csv, xylem_lab,
   "log_vaf", no_xylem = FALSE, single_trait = TRUE, sp_level = TRUE)
+```
 
+```{r d}
 generate_trait_fig_data(
   tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf),
   tar_read(fit2_draws_segments_xylem_traits_simple_log_vaf),

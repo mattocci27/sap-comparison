@@ -1693,13 +1693,28 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
 
 
 generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
-# summary_data <- tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf)
-# draws <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)
-  if (sp_level) {
+# summary_data <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf)
+
+# summary_data <- tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
+# tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# draws <- tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf)
+# trait_name <- "log_vaf"
+
+# species or segment-level coef
+  if (sp_level & no_xylem) {
     a_mat <- summary_data |>
-        filter(str_detect(variable, "^A_species\\[1"))
+      filter(str_detect(variable, "^beta_hat\\[1"))
     b_mat <- summary_data |>
-        filter(str_detect(variable, "^A_species\\[2"))
+      filter(str_detect(variable, "^beta_hat\\[2"))
+  } else if (sp_level & !no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_a"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_b"))
   } else {
     a_mat <- summary_data |>
       filter(str_detect(variable, "^A\\[1"))
@@ -1749,33 +1764,27 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 
   if (no_xylem) {
     if (sp_level) {
-      ga <- paste("beta_a", tmp, sep = "_")
-      gb <- paste("beta_b", tmp, sep = "_")
       coef_a <- draws |>
-        dplyr::select(beta_a_1, {{ga}}) |>
+        dplyr::select(beta_1_1, beta_2_1) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_b_1, {{gb}}) |>
+        dplyr::select(beta_1_2, beta_2_2) |>
         as.matrix()
     } else {
-      ga <- paste("beta_a", tmp, "1", sep = "_")
-      gb <- paste("beta_b", tmp, "1", sep = "_")
       coef_a <- draws |>
-        dplyr::select(beta_a_1_1, {{ga}}) |>
+        dplyr::select(beta_1, beta_2) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_b_1_1, {{gb}}) |>
+        dplyr::select(beta_3, beta_4) |>
         as.matrix()
     }
   } else {
-    ga <- paste("gamma_a", tmp, "1", sep = "_")
-    gb <- paste("gamma_b", tmp, "1", sep = "_")
-    coef_a <- draws |>
-      dplyr::select(gamma_a_1_1, {{ga}}) |>
-      as.matrix()
-    coef_b <- draws |>
-      dplyr::select(gamma_b_1_1, {{gb}}) |>
-      as.matrix()
+      coef_a <- draws |>
+        dplyr::select(gamma_1, gamma_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(gamma_3, gamma_4) |>
+        as.matrix()
   }
 
   # trait_name <- "log_ks"
@@ -2378,11 +2387,20 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
 
 # Function to calculate R2
 calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
-  beta_int_pred <- draws %>% pull(beta_int_col)
-  beta_slope_pred <- draws %>% pull(beta_slope_col)
+  # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_vaf)
+  # beta_int_col <- "beta_1"
+  # beta_slope_col <- "beta_2"
+  # xj <- tar_read(stan_data_noxylem_log_vaf)$xj
+  # obs_start_col <- "mu_a"
+
+  draws_cleaned <- draws %>%
+    janitor::clean_names()
+
+  beta_int_pred <- draws_cleaned %>% pull(beta_int_col)
+  beta_slope_pred <- draws_cleaned %>% pull(beta_slope_col)
   log_pred <- xj %*% rbind(beta_int_pred, beta_slope_pred)
 
-  log_obs <- draws %>%
+  log_obs <- draws_cleaned %>%
     select(starts_with(obs_start_col)) %>%
     as.matrix() %>%
     t()
@@ -2394,16 +2412,27 @@ calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_co
 }
 
 # Main function to process the draws and calculate R2 for both a and b
-process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE) {
+process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE, xylem = FALSE) {
+  # draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_dh)
+  # x <- tar_read(stan_data_noxylem_log_dh)$xk
   draws_cleaned <- draws %>%
     janitor::clean_names()
 
-  if (sp_level) {
-    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1", "beta_a_2", "A_species_1_", x)
-    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1", "beta_b_2", "A_species_2_", x)
-  } else {
-    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1_1", "beta_a_2_1", "a_hat_1_", x)
-    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1_1", "beta_b_2_1", "a_hat_2_", x)
+  if (sp_level & xylem) {
+    # sp xylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_1", "gamma_2", "alpha_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_3", "gamma_4", "alpha_2", x)
+  } else if (!sp_level & xylem) {
+    # seg xylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_1", "gamma_2", "A_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_3", "gamma_4", "A_2", x)
+  } else if (sp_level & !xylem) {
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_1", "beta_2_1", "beta_hat_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_2", "beta_2_2", "beta_hat_2", x)
+  } else if (!sp_level & !xylem) {
+    # seg noxylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1", "beta_2", "A_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_3", "beta_4", "A_2", x)
   }
 
   return(list(a_r2 = a_r2_q, b_r2 = b_r2_q))
