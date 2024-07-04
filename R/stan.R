@@ -532,15 +532,35 @@ generate_sap_traits_no_xylem_stan_data <- function(data, remove_abnormal_values 
   stan_data
 }
 
-generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
-  d <- read_csv(data)
-  d <- d |>
-    filter(!is.na(wood_density)) |>
-    filter(!is.na(swc)) |>
-    filter(!is.na(dh)) |>
-    filter(!is.na(vaf)) |>
-    filter(!is.na(vf)) |>
-    filter(!is.na(ks))
+generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abnormal_values = FALSE, upper_pressure = FALSE, remove_all = TRUE) {
+
+  # library(tidyverse)
+  # library(targets)
+  # data <- tar_read(fd_k_traits_csv)
+  # trait_name <- "log_vaf"
+  # remove_abnormal_values <- TRUE
+
+  d <- read_csv(data) |>
+    mutate(
+      log_dh = log(dh),
+      log_swc = log(swc),
+      log_vaf = log(vaf),
+      log_vf = log(vf),
+      log_ks = log(ks)
+    )
+
+  if(remove_all) {
+    d <- d |>
+      filter(!is.na(wood_density)) |>
+      filter(!is.na(swc)) |>
+      filter(!is.na(dh)) |>
+      filter(!is.na(vaf)) |>
+      filter(!is.na(vf)) |>
+      filter(!is.na(ks))
+  } else {
+    d <- d |>
+      filter(!is.na(!!sym(trait_name)))
+  }
 
   if (remove_abnormal_values) {
     d <- d |>
@@ -556,11 +576,11 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
     group_by(species) |>
     summarize(
       wood_density = mean(wood_density),
-      log_dh = mean(log(dh)),
-      log_swc = mean(log(swc)),
-      log_vaf = mean(log(vaf)),
-      log_vf = mean(log(vf)),
-      log_ks = mean(log(ks))
+      log_dh = mean(log_dh),
+      log_swc = mean(log_swc),
+      log_vaf = mean(log_vaf),
+      log_vf = mean(log_vf),
+      log_ks = mean(log_ks)
     )
 
   tmp <- d |>
@@ -639,6 +659,7 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
     x = cbind(1, log(d$k)),
     y = log(d$fd),
     xj = xj,
+    xk = xk,
     T = ncol(xj)
   )
   stan_data
