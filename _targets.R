@@ -43,7 +43,8 @@ tar_option_set(packages = c(
   "gtable",
   "ggrepel",
   "viridis",
-  "ggpointdensity"
+  "ggpointdensity",
+  "nlstools"
 ))
 
 tar_option_set(

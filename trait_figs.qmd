@@ -303,6 +303,52 @@ generate_trait_fig_data(
   "log_vaf", no_xylem = FALSE, single_trait = TRUE, sp_level = FALSE)
 ```
 
+## Noxylem effect with colors
+
+![](`r here::here("figs/traits_sp_points_main.png")`)
+
+### Xylem
+
+```{r, echo = FALSE}
+render_eq <- function(summary, x, sp = FALSE) {
+  beta_coef <- summary |>
+    filter(str_detect(variable, "beta")) |>
+    pull(q50)
+  str_glue("a = {exp(beta_coef[1]) |> round(2)} {x}^{beta_coef[2] |> round(3)}") |> print()
+  str_glue("b = {beta_coef[3] |> round(2)} + {beta_coef[4] |> round(3)} ln {x}") |> print()
+}
+
+# tmp <- tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# beta_coef <- tmp |>
+#   filter(str_detect(variable, "beta")) |>
+#   pull(q50)
+# str_glue("a = {exp(beta_coef[1]) |> round(2)} Ks^{beta_coef[2] |> round(3)}")
+# tr_glue("b = {beta_coef[3] |> round(2)} + {beta_coef[4] |> round(3)} ln Ks")
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf) |> render_eq("VAF")
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_simple_log_ks) |> render_eq("Ks")
+```
+
+### Species
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf) |> render_eq("VAF", sp = TRUE)
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_ks) |> render_eq("Ks", sp = TRUE)
+```
+
+```{r, include=FALSE}
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_ks)
+tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
+tar_read(fit2_summary_segments_xylem_traits_simple_log_ks)
+```
 
 
 

@@ -1189,15 +1189,56 @@ ab_points_model4_prepare_df <- function(data, a_values, b_values) {
 ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   base_plot <- ggplot() +
     scale_x_log10() +
-    # ggtitle(title) +
-    my_theme() +
+    theme_minimal() +  # Adjusted theme for simplicity
     labs(col = "", x = "Co-a", y = "Co-b") +
     theme(legend.position = "none")
+
   if (with_pub) {
+    pub_df2 <- pub_df %>%
+      filter(b < 2.5) %>%
+      mutate(x = log(a)) %>%
+      mutate(y = b) %>%
+      as.data.frame()
+
+    fit <- nls(y ~ a * x^b / (k + x^b),
+               start = list(a = 2, b = 3, k = 150),
+               data = pub_df2)
+
+    x <- pub_df2 %>% pull(x)
+    y <- pub_df2 %>% pull(y)
+
+    # Function to refit model for bootstrapping
+    refit_model <- function(data, indices) {
+      boot_data <- data[indices, ]
+      tryCatch({
+        boot_fit <- nls(y ~ a * x^b / (k + x^b),
+                        start = coef(fit),
+                        data = boot_data)
+        predict(boot_fit, newdata = data.frame(x = x))
+      }, error = function(e) {
+        rep(NA, length(x))
+      })
+    }
+
+    # Perform bootstrapping
+    set.seed(123)
+    boot_results <- boot::boot(pub_df2, refit_model, R = 1000)
+
+    # Calculate 95% confidence intervals
+    ci_lower <- apply(boot_results$t, 2, quantile, probs = 0.025, na.rm = TRUE)
+    ci_upper <- apply(boot_results$t, 2, quantile, probs = 0.975, na.rm = TRUE)
+
+    # Create a data frame with original data, predicted values, and confidence intervals
+    pred_df <- data.frame(x = x, y = y)
+    pred_df$y_pred <- predict(fit, newdata = data.frame(x = x))
+    pred_df$ci_lower <- ci_lower
+    pred_df$ci_upper <- ci_upper
+
     base_plot +
-      geom_point(data = pub_df, aes(x = a, y = b), pch = 1, color = "grey20") +
+      geom_point(data = pub_df, aes(x = a, y = b, color = type)) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      geom_ribbon(data = pred_df, aes(x = exp(x), ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+      geom_line(data = pred_df, aes(x = exp(x), y = y_pred)) +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
   } else {
     base_plot +
@@ -1291,12 +1332,6 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
   # pub_df <- read_csv("data-raw/pub_ab.csv") |>
     janitor::clean_names()
 
-  # sp_df2 <- sp_df |>
-  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
-  #     a_q50, b_q50, a_q97_5, b_q97_5)
-  # seg_df2 <- seg_df |>
-  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
-  #     a_q50, b_q50, a_q97_5, b_q97_5)
   # Create plots
   p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)
   p2 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = TRUE)
