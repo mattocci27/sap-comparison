@@ -1195,28 +1195,40 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
 
   if (with_pub) {
     pub_df2 <- pub_df %>%
-      filter(b < 2.5) %>%
-      mutate(x = log(a)) %>%
+      filter(b < 2) %>%
+      # filter(!str_detect(references, "Dix")) |>
+      mutate(log_x = log(a)) %>%
       mutate(y = b) %>%
       as.data.frame()
 
-    fit <- nls(y ~ a * x^b / (k + x^b),
-               start = list(a = 2, b = 3, k = 150),
-               data = pub_df2)
+    pub_df3 <- pub_df %>%
+      # filter(str_detect(references, "Dix")) |>
+      filter(b >= 2) %>%
+      mutate(log_x = log(a)) %>%
+      mutate(y = b)
 
-    x <- pub_df2 %>% pull(x)
+    # fit <- nls(y ~ a * x^b / (k + x^b),
+    #            start = list(a = 2, b = 3, k = 150),
+    #            data = pub_df2)
+
+    fit <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
+                  #  start = list(log_a = 1, b = 0.5, k = 2),
+                   start = list(log_a = 1, b = 5, k = 800),
+                   data = pub_df2)
+
+    log_x <- pub_df2 %>% pull(log_x)
     y <- pub_df2 %>% pull(y)
 
     # Function to refit model for bootstrapping
     refit_model <- function(data, indices) {
       boot_data <- data[indices, ]
       tryCatch({
-        boot_fit <- nls(y ~ a * x^b / (k + x^b),
+        boot_fit <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
                         start = coef(fit),
                         data = boot_data)
-        predict(boot_fit, newdata = data.frame(x = x))
+        predict(boot_fit, newdata = data.frame(log_x = log_x))
       }, error = function(e) {
-        rep(NA, length(x))
+        rep(NA, length(log_x))
       })
     }
 
@@ -1229,17 +1241,18 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     ci_upper <- apply(boot_results$t, 2, quantile, probs = 0.975, na.rm = TRUE)
 
     # Create a data frame with original data, predicted values, and confidence intervals
-    pred_df <- data.frame(x = x, y = y)
-    pred_df$y_pred <- predict(fit, newdata = data.frame(x = x))
+    pred_df <- data.frame(log_x = log_x, y = y)
+    pred_df$log_y_pred <- predict(fit, newdata = data.frame(log_x = log_x))
     pred_df$ci_lower <- ci_lower
     pred_df$ci_upper <- ci_upper
 
     base_plot +
-      geom_point(data = pub_df, aes(x = a, y = b, color = type)) +
+      geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
+      geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-      geom_ribbon(data = pred_df, aes(x = exp(x), ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
-      geom_line(data = pred_df, aes(x = exp(x), y = y_pred)) +
-      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+      geom_ribbon(data = pred_df, aes(x = exp(log_x), ymin = exp(ci_lower), ymax = exp(ci_upper)), alpha = 0.2) +
+      geom_line(data = pred_df, aes(x = exp(log_x), y = exp(log_y_pred)))# +
+      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
   } else {
     base_plot +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +

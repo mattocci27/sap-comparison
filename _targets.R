@@ -44,7 +44,7 @@ tar_option_set(packages = c(
   "ggrepel",
   "viridis",
   "ggpointdensity",
-  "nlstools"
+  "boot"
 ))
 
 tar_option_set(
