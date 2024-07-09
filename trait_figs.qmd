@@ -343,47 +343,63 @@ tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf) |> render_eq("VA
 tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_ks) |> render_eq("Ks", sp = TRUE)
 ```
 
-```{r, include=FALSE}
-tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
-tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_ks)
-tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
-tar_read(fit2_summary_segments_xylem_traits_simple_log_ks)
+## Co-a vs Co-b
+
+```{r, echo=FALSE}
+library(scales)
+# Create a sample data frame
+data <- data.frame(
+  x = rep(1:6, each = 3),
+  y = runif(18, 1, 10),
+  group = factor(rep(1:6, each = 3))
+)
+
+# Create a ggplot
+p <- ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point(size = 4) +
+  theme_minimal() +
+  labs(title = "Plot with 6 Default Colors",
+       x = "X Axis",
+       y = "Y Axis",
+       color = "Group")
+
+# Print the plot
+print(p)
+
+# Print color codes
+# print(default_colors)
+```
+```{r}
+hue_pal()(6)
 ```
 
+```{r, echo=FALSE}
+# Create a sample data frame
+data <- data.frame(
+  x = rep(1:4, each = 3),
+  y = runif(12, 1, 10),
+  group = factor(rep(1:4, each = 3))
+)
 
+# Create a ggplot
+p <- ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point(size = 4) +
+  theme_minimal() +
+  labs(title = "Plot with 4 Default Colors",
+       x = "X Axis",
+       y = "Y Axis",
+       color = "Group")
 
+# Print the plot
+print(p)
 
-```{r, eval=FALSE, include=FALSE}
-trait_data_noxylem <- expand_grid(
-  level = c("traits_simple", "traits_sp_simple"),
-  type = c("diagnostics", "summary"),
-  traits =
-     c("log_dh", "log_vf", "wood_density",
-     "log_ks", "log_vaf", "log_swc")) |>
-  mutate(name = str_glue("fit_{type}_segments_noxylem_{level}_{traits}"))
+# Extract default colors
+default_colors <- hue_pal()(4)
 
-trait_data_xylem <- trait_data_noxylem |>
-  mutate(name = str_replace(name, "noxylem", "xylem")) |>
-  mutate(name = str_replace(name, "fit", "fit2"))
+# Print color codes
+# print(default_colors)
+```
 
-bind_rows()
-
-
-
-tmp$name[[1]] |> tar_read()
-
-tar_read("fit_diagnostics_segments_noxylem_traits_simple_log_ks") |> div_check()
-
-tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_ks) |> div_check()
-tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_ks) |> div_check()
-tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_ks) |> div_check()
-tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_ks) |> div_check()
-
-tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_vaf) |> div_check()
-tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_vaf) |> div_check()
-tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_vaf) |> div_check()
-tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_vaf) |> div_check()
-
-tar_read(fit_summary_segments_noxylem_traits_simple_log_ks) |> summary()
-tar_read(fit2_summary_segments_xylem_traits_simple_log_ks) |> summary()
+```{r}
+hue_pal()(4)
 ```

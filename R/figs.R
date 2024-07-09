@@ -1195,21 +1195,16 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
 
   if (with_pub) {
     pub_df2 <- pub_df %>%
-      filter(b < 2) %>%
-      # filter(!str_detect(references, "Dix")) |>
+      filter(b < 2.5) |>
+      filter(b < 2 | !str_detect(references, "Dix")) %>%
       mutate(log_x = log(a)) %>%
       mutate(y = b) %>%
       as.data.frame()
 
     pub_df3 <- pub_df %>%
-      # filter(str_detect(references, "Dix")) |>
-      filter(b >= 2) %>%
+      filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) %>%
       mutate(log_x = log(a)) %>%
       mutate(y = b)
-
-    # fit <- nls(y ~ a * x^b / (k + x^b),
-    #            start = list(a = 2, b = 3, k = 150),
-    #            data = pub_df2)
 
     fit <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
                   #  start = list(log_a = 1, b = 0.5, k = 2),
