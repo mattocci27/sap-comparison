@@ -1189,9 +1189,21 @@ ab_points_model4_prepare_df <- function(data, a_values, b_values) {
 ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   base_plot <- ggplot() +
     scale_x_log10() +
-    theme_minimal() +  # Adjusted theme for simplicity
-    labs(col = "", x = "Co-a", y = "Co-b") +
+    my_theme() +  # Adjusted theme for simplicity
+    # labs(col = "", x = "Co-a", y = "Co-b") +
+    labs(col = "",
+      x = expression(paste("Co-", italic(a))),
+      y = expression(paste("Co-", italic(b)))) +
     theme(legend.position = "none")
+
+  h7 <- scales::hue_pal()(7)
+  h4 <- scales::hue_pal()(4)
+
+  my_col <- h7
+  my_col[1] <- h4[1]
+  my_col[3] <- h4[2]
+  my_col[4] <- h4[3]
+  my_col[6] <- h4[4]
 
   if (with_pub) {
     pub_df2 <- pub_df %>%
@@ -1206,10 +1218,9 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       mutate(log_x = log(a)) %>%
       mutate(y = b)
 
-    fit <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
-                  #  start = list(log_a = 1, b = 0.5, k = 2),
-                   start = list(log_a = 1, b = 5, k = 800),
-                   data = pub_df2)
+    fit <- nls(y ~ a * (1 - b^log_x) + c,
+            start = list(a = 4, b = 0.5, c = 1),
+            data = pub_df2)
 
     log_x <- pub_df2 %>% pull(log_x)
     y <- pub_df2 %>% pull(y)
@@ -1218,7 +1229,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     refit_model <- function(data, indices) {
       boot_data <- data[indices, ]
       tryCatch({
-        boot_fit <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
+        boot_fit <- nls(y ~ a * (1 - b^log_x) + c,
                         start = coef(fit),
                         data = boot_data)
         predict(boot_fit, newdata = data.frame(log_x = log_x))
@@ -1241,13 +1252,27 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     pred_df$ci_lower <- ci_lower
     pred_df$ci_upper <- ci_upper
 
+    # Levels: Ba DP He Li NP Pa RP
+    # Levels: DP L Pa RP
     base_plot +
       geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
       geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-      geom_ribbon(data = pred_df, aes(x = exp(log_x), ymin = exp(ci_lower), ymax = exp(ci_upper)), alpha = 0.2) +
-      geom_line(data = pred_df, aes(x = exp(log_x), y = exp(log_y_pred)))# +
-      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+      geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
+      geom_ribbon(data = pred_df, aes(x = exp(log_x), ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+      geom_line(data = pred_df, aes(x = exp(log_x), y = log_y_pred)) +
+      scale_colour_manual(
+        values = c(
+          DP = my_col[1],
+          RP = my_col[3],
+          Pa = my_col[4],
+          Li = my_col[6],
+          L = my_col[6],
+          Ba = my_col[2],
+          NP = my_col[5],
+          He = my_col[7]
+        )
+      )
+
   } else {
     base_plot +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +

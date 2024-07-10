@@ -345,18 +345,101 @@ tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_ks) |> render_eq("Ks"
 
 ## Co-a vs Co-b
 
+```{r}
+pub_df <- read_csv("data-raw/pub_ab.csv") |>
+   janitor::clean_names()
+
+pub_df2 <- pub_df %>%
+  filter(b < 2.5) |>
+  filter(b < 2 | !str_detect(references, "Dix")) %>%
+  mutate(log_x = log(a)) %>%
+  mutate(y = b) %>%
+  as.data.frame()
+```
+
+### log-scale
+
+```{r}
+fit_lm <- lm(log(y) ~ log(log_x), data = pub_df2)
+
+fit_gmm <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
+               start = list(log_a = 1, b = 5, k = 800),
+               data = pub_df2)
+
+fit_weibull <- nls(log(y) ~ log_a + log(1 - exp(-b * log_x^k)),
+               start = list(log_a = 1, b = 0.1, k = 1),
+               data = pub_df2)
+
+AIC(fit_lm, fit_gmm, fit_weibull)
+```
+
+### nonlog-scale
+
+```{r}
+fit_nl <- nls(y ~ a * (1 - b^log_x) + c,
+  start = list(a = 4, b = 0.5, c = 1),
+  data = pub_df2)
+
+fit_nl2 <- nls(y ~ a * (1 - b^log_x),
+  start = list(a = 2, b = 0.5),
+  data = pub_df2)
+
+fit_gmm2 <- nls(y ~ a * log_x^b / (k + log_x^b),
+  start = list(a = 1.5, b = 5, k = 400),
+  data = pub_df2)
+
+AIC(fit_nl, fit_nl2, fit_gmm2)
+```
+
+`fit_nl` is the best model.
+
+```{r, echo=FALSE}
+aa <- coef(fit_nl)[1] |> round(2)
+bb <- coef(fit_nl)[2] |> round(2)
+cc <- coef(fit_nl)[3] |> round(2)
+```
+
+y = `r aa` * (1 - `r bb`^ln_x)  `r cc`
+
+```{r}
+summary(fit_nl)
+```
+
+```{r}
+# Extract the fitted values
+fitted_values <- fitted(fit_nl)
+
+# Extract the actual values (log-transformed)
+actual_values <- pub_df2$y
+
+# Calculate the residuals
+residuals <- actual_values - fitted_values
+
+# Calculate the total sum of squares (SST)
+sst <- sum((actual_values - mean(actual_values))^2)
+
+# Calculate the residual sum of squares (SSR)
+ssr <- sum(residuals^2)
+
+# Calculate R^2
+r_squared <- 1 - (ssr / sst)
+
+# Print the R^2 value
+print(r_squared)
+```
+
 ```{r, echo=FALSE}
 library(scales)
 # Create a sample data frame
 data <- data.frame(
-  x = rep(1:6, each = 3),
-  y = runif(18, 1, 10),
-  group = factor(rep(1:6, each = 3))
+  x = rep(1:7, each = 3),
+  y = rep(1, 21),
+  group = factor(rep(1:7, each = 3))
 )
 
 # Create a ggplot
 p <- ggplot(data, aes(x = x, y = y, color = group)) +
-  geom_point(size = 4) +
+  geom_point(size = 12) +
   theme_minimal() +
   labs(title = "Plot with 6 Default Colors",
        x = "X Axis",
@@ -370,20 +453,20 @@ print(p)
 # print(default_colors)
 ```
 ```{r}
-hue_pal()(6)
+hue_pal()(7)
 ```
 
 ```{r, echo=FALSE}
 # Create a sample data frame
 data <- data.frame(
   x = rep(1:4, each = 3),
-  y = runif(12, 1, 10),
+  y = rep(1, 12),
   group = factor(rep(1:4, each = 3))
 )
 
 # Create a ggplot
 p <- ggplot(data, aes(x = x, y = y, color = group)) +
-  geom_point(size = 4) +
+  geom_point(size = 12) +
   theme_minimal() +
   labs(title = "Plot with 4 Default Colors",
        x = "X Axis",
@@ -403,3 +486,34 @@ default_colors <- hue_pal()(4)
 ```{r}
 hue_pal()(4)
 ```
+
+```{r,echo=FALSE}
+h7 <- scales::hue_pal()(7)
+h4 <- scales::hue_pal()(4)
+
+my_col <- h7
+my_col[1] <- h4[1]
+my_col[3] <- h4[2]
+my_col[4] <- h4[3]
+my_col[6] <- h4[4]
+
+DP = my_col[1]
+RP = my_col[3]
+Pa = my_col[4]
+Li = my_col[6]
+L = my_col[6]
+Ba = my_col[2]
+NP = my_col[5]
+He = my_col[7]
+```
+
+- DP: `r my_col[1]`
+- RP: `r my_col[3]`
+- Pa: `r my_col[4]`
+- Li and L: `r my_col[6]`
+- Ba: `r my_col[2]`
+- NP: `r my_col[5]`
+- He: `r my_col[7]`
+
+
+![](`r here::here("figs/ab_points_model4.png")`)
