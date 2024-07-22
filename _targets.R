@@ -1438,9 +1438,30 @@ impute_mapped <- tar_map(
     }
     ),
   tar_target(
+    new_data, {
+      miss_n <- cleaned_df_missforest |>
+        filter(is.na(k)) |>
+        nrow()
+      total_n <- cleaned_df_missforest |>
+        nrow()
+
+      miss_id <- sample(1:total_n, miss_n)
+      imputed_df %>%
+        mutate(tmp = 1:nrow(.)) |>
+        mutate(k = if_else(tmp %in% miss_id, NA, k)) |>
+        as.data.frame()
+       }
+    ),
+  tar_target(
+    imputed_new_data, {
+      missForest::missForest(new_data,
+        parallelize = "forests")
+    }
+  ),
+  tar_target(
     nramse,
     imputed_data$OOBerror[1]
-    ),
+  ),
   tar_target(
     imputed_df_btrans,
     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)

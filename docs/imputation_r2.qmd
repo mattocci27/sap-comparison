@@ -1,0 +1,88 @@
+---
+title: ""
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r}
+renv::install("adletaw/captioner")
+renv::repair()
+library(targets)
+library(tidyverse)
+```
+
+```{r}
+source("R/data_clean.R")
+source("R/stan.R")
+source("R/figs.R")
+source("R/tables.R")
+source("R/scale.R")
+source("R/traits.R")
+```
+
+```{r}
+
+cleaned_df_missforest <- clean_for_missForest(
+  csv = tar_read(rubber_raw_data_csv),
+  year = 2015,
+  month = 1
+)
+
+# Register the parallel backend
+n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
+# cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
+cl <- 8
+doParallel::registerDoParallel(cl)  # Register the parallel backend
+
+
+imputed_data <-
+      missForest::missForest(cleaned_df_missforest,
+        parallelize = "forests")
+
+```
+
+```{r}
+miss_n <- cleaned_df_missforest |>
+  filter(is.na(k)) |>
+  nrow()
+total_n <- cleaned_df_missforest |>
+  nrow()
+
+miss_id <- sample(1:total_n, miss_n)
+
+imputed_df <- tar_read(imputed_df_2015_1)
+new_data <- imputed_df %>%
+  mutate(tmp = 1:nrow(.)) |>
+  mutate(k = if_else(tmp %in% miss_id, NA, k)) |>
+  as.data.frame()
+
+tic()
+imputed_new_data <-
+      missForest::missForest(new_data,
+        parallelize = "forests")
+toc()
+
+tar_read(new_data_2015_1)
+```
