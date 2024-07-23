@@ -44,7 +44,8 @@ tar_option_set(packages = c(
   "ggrepel",
   "viridis",
   "ggpointdensity",
-  "boot"
+  "boot",
+  "ggpubr"
 ))
 
 tar_option_set(
@@ -1459,6 +1460,18 @@ impute_mapped <- tar_map(
     }
   ),
   tar_target(
+    imputed_k2_df, {
+      d_new <- imputed_new_data$ximp |> as_tibble()
+
+      cleaned_df_missforest |> as_tibble() |>
+        rename(k_ori = k) |>
+        mutate(k_new_with_na = new_data$k) |>
+        mutate(k_new_without_na = imputed_df$k) |>
+        mutate(k_imp = d_new$k)
+    }
+  ),
+
+  tar_target(
     nramse,
     imputed_data$OOBerror[1]
   ),
@@ -1471,6 +1484,18 @@ impute_mapped <- tar_map(
 tar_combined_imputed_data <- tar_combine(
   combined_imputed_mapped,
   impute_mapped[["imputed_df_btrans"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_imputed_k_data <- tar_combine(
+  combined_imputed_k_mapped,
+  impute_mapped[["imputed_k2_df"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_cleaned_df_missforest_data <- tar_combine(
+  combined_cleaned_df_missforest_mapped,
+  impute_mapped[["cleaned_df_missforest"]],
   command = dplyr::bind_rows(!!!.x)
 )
 
@@ -1533,6 +1558,8 @@ tar_impute <- list(
   impute_rest_mapped,
   tar_combined_imputed_rest_data,
   tar_combined_nrmse_rest,
+  tar_combined_cleaned_df_missforest_data,
+  tar_combined_imputed_k_data,
   tar_target(
     nrmse_df, {
       tmp1 <- combined_nrmse |>
@@ -1560,6 +1587,19 @@ tar_impute <- list(
   tar_target(
     nonimputed_full_df,
     make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
+  tar_target(
+    imp_r2_plot, {
+      p <- imp_r2_scatter(combined_imputed_k_mapped)
+      my_ggsave(
+        "figs/imp_r2",
+        p,
+        dpi = 600,
+        width = 4.33,
+        height = 4.33
+      )
+    },
+    format = "file"
   ),
   NULL
   )

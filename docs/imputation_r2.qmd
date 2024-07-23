@@ -34,55 +34,59 @@ library(tidyverse)
 ```
 
 ```{r}
-source("R/data_clean.R")
-source("R/stan.R")
-source("R/figs.R")
-source("R/tables.R")
-source("R/scale.R")
-source("R/traits.R")
+source(here::here("R/data_clean.R"))
+source(here::here("R/stan.R"))
+source(here::here("R/figs.R"))
+source(here::here("R/tables.R"))
+source(here::here("R/scale.R"))
+source(here::here("R/traits.R"))
 ```
-
 ```{r}
-
-cleaned_df_missforest <- clean_for_missForest(
-  csv = tar_read(rubber_raw_data_csv),
-  year = 2015,
-  month = 1
-)
-
-# Register the parallel backend
-n_cores <- parallel::detectCores(logical = FALSE)  # Detect the number of available CPU cores
-# cl <- parallel::makeCluster(n_cores - 1)  # Create a cluster with one less core than available
-cl <- 8
-doParallel::registerDoParallel(cl)  # Register the parallel backend
-
-
-imputed_data <-
-      missForest::missForest(cleaned_df_missforest,
-        parallelize = "forests")
-
-```
-
-```{r}
-miss_n <- cleaned_df_missforest |>
-  filter(is.na(k)) |>
-  nrow()
-total_n <- cleaned_df_missforest |>
-  nrow()
-
-miss_id <- sample(1:total_n, miss_n)
-
-imputed_df <- tar_read(imputed_df_2015_1)
-new_data <- imputed_df %>%
-  mutate(tmp = 1:nrow(.)) |>
-  mutate(k = if_else(tmp %in% miss_id, NA, k)) |>
-  as.data.frame()
-
+# tmp <- tar_read(cleaned_df_missforest_2015_1) |> as_tibble()
+# tar_read(new_data_2015_1) |> as_tibble()
+# tar_read(imputed_new_data_2015_1)$ximp |> as_tibble()
+# tar_read(imputed_df_2015_1) |> as_tibble()
+library(tictoc)
 tic()
-imputed_new_data <-
-      missForest::missForest(new_data,
-        parallelize = "forests")
+tmp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(combined_imputed_k_mapped))
 toc()
 
-tar_read(new_data_2015_1)
+
+tmp2 <- tmp |>
+  filter(is.na(k_new_with_na)) |>
+  head(1000)
+
+tmp2 |> pull(k_imp) |> length()
+tmp2 |> pull(k_new_without_na) |> length()
+
+fit <- lm(k_imp ~ k_new_without_na, data = tmp2)
+cor.test(tmp$k_imp, tmp$k_new_without_na)
+
+fit <- lm(k_imp ~ k_ori, data = tmp2)
+summary(fit)
+
+```
+
+```{r, eval=TRUE}
+tic()
+# ggplot(tmp2, aes(x = k_new_without_na, y = k_imp)) +
+ggplot(tmp2, aes(x = k_ori, y = k_imp)) +
+  geom_point(alpha = 0.1) +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  labs(x = "Original", y = "Imputed")
+toc()
+```
+
+
+```{r}
+library(viridis)
+
+tic()
+tmp2 |>
+  ggplot(aes(x = k_ori, y = k_imp)) +
+        geom_bin2d(bins = 70) +
+        scale_fill_viridis(option = "inferno", direction = -1) +
+        theme_minimal()
+toc()
 ```
