@@ -48,10 +48,10 @@ tar_option_set(packages = c(
   "ggpubr"
 ))
 
-tar_option_set(
-  garbage_collection = TRUE,
-  memory = "transient"
-)
+# tar_option_set(
+#   garbage_collection = TRUE,
+#   memory = "transient"
+# )
 
 pg <- c(seq(0.02, 0.08, by = 0.01), 0.025, 0.035)
 

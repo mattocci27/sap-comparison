@@ -67,6 +67,7 @@ rsconnect/
 *.html
 *.fdb_latexmk
 *.jpg
+*.tiff
 
 # cache from quarto
 *_files/

@@ -263,6 +263,16 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
         "mm", "px"), height = NA, width = NA, dpi = 300, ...) {
 
   ggsave(
+    filename = paste0(filename, ".tiff"),
+    plot = plot,
+    height = height,
+    width = width,
+    units = units,
+    dpi = dpi,
+    ...
+  )
+
+  ggsave(
     filename = paste0(filename, ".png"),
     plot = plot,
     height = height,
@@ -282,7 +292,7 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
     ...
   )
 
-  paste0(filename, c(".png", ".pdf"))
+  paste0(filename, c(".png", ".pdf", ".tiff"))
 }
 
 
