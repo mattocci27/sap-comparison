@@ -2103,11 +2103,12 @@ tr_example_panel <- function(tr_example_list) {
 
 imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
   df <- data |>
-    filter(is.na(k_new_with_na))
+    filter(is.na(k_new_with_na)) #|>
+    # filter(k_imp < 0.1 & k_new_without_na < 0.01)
 
   ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
     geom_point(alpha = 0.05) +
-    # geom_bin2d(bins = 30) +
+    # geom_bin2d(bins = 15) +
     # scale_fill_viridis(option = "inferno", direction = -1) +
     geom_abline(intercept = 0, slope = 1, linetype = 2) +
     geom_smooth(method = "lm", se = FALSE) +
@@ -2117,6 +2118,6 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     ) +
     labs(
       x = expression(Imputed~and~observed~italic(K)),
-      y = expression(Re-imputed~italic(K))) +
+      y = expression(Re*"-"*imputed~italic(K))) +
     my_theme()
 }
