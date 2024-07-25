@@ -1601,6 +1601,24 @@ tar_impute <- list(
     },
     format = "file"
   ),
+  tar_target(
+    imp2_df,
+    prepare_imp2_df(rubber_raw_data_csv, combined_imputed_k_mapped)
+  ),
+  tar_target(
+    imp_points2_plot, {
+      p <- imp_points2(imp2_df)
+      my_ggsave(
+        "figs/imp_ponits2",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   NULL
   )
 

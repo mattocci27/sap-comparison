@@ -1643,6 +1643,72 @@ clean_raw_df_tmp <- function(rubber_raw_data_csv, year, month, day, tree_id) {
     mutate(model = "Raw")
 }
 
+prepare_imp2_df <- function(rubber_raw_data_csv, combined_imputed_k_mapped) {
+  d <- read_csv(rubber_raw_data_csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(!(year == 2016 & (month == 12 | month == 10 | month == 9))) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    dplyr::select(year, month, day, time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "k") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+  d |>
+    rename(k_ori = k) |>
+    mutate(k_1st_imputed = combined_imputed_k_mapped$k_new_without_na) |>
+    mutate(k_1st_imputed_with_na = combined_imputed_k_mapped$k_new_with_na) |>
+    mutate(k_2nd_imputed = combined_imputed_k_mapped$k_imp)
+}
+
+
+imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, dep = 2, dir = "S", tree = "t11") {
+  imp2_df_re <- imp2_df |>
+    filter(year == {{year}}) |>
+    filter(month == {{month}}) |>
+    filter(tree == {{tree}}) |>
+    filter(dir == {{dir}}) |>
+    filter(dep == {{dep}}) |>
+    filter(is.na(k_1st_imputed_with_na)) |>
+    mutate(date = mdy_hm(paste(month, day, year, time %/% 60, time %% 60))) |>
+    mutate(date_time = as.POSIXct(date)) |>
+    pivot_longer(c(k_ori, k_2nd_imputed), names_to = "model", values_to = "k") |>
+    mutate(model = case_when(
+      model == "k_ori" ~ "Observed",
+      model == "k_2nd_imputed" ~ "Re-imputed"
+    )) |>
+    filter(day <=10)
+
+  ggplot(imp2_df_re, aes(x = date_time, y = k, col = as.factor(model))) +
+    geom_line() +
+    geom_point(size = 1) +
+    theme_bw() +
+    guides(col = guide_legend(title=NULL)) +
+    theme(legend.position = "bottom") +
+    labs(x = "Date", y = expression(italic(K))) +
+    scale_x_datetime(date_labels = "%b %d\n%Y", date_breaks = "1 days")  # Use scale_x_datetime for POSIXct
+}
+
 imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day_1,
                        imputed_df_2, rubber_raw_data_csv_2, year_2, month_2, day_2) {
 
