@@ -2109,9 +2109,15 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     # filter(k_imp < 0.1 & k_new_without_na < 0.01)
 
   ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
-    geom_point(alpha = 0.05) +
-    # geom_bin2d(bins = 15) +
-    # scale_fill_viridis(option = "inferno", direction = -1) +
+    # geom_point(alpha = 0.05) +
+    geom_bin2d(bins = 15) +
+    # scale_fill_viridis(option = "D", direction = 1) +
+    scale_fill_viridis_c(
+      option = "D",
+      direction = 1,
+      name = "Number of data"  # Change the label
+      # labels = label_10e5 # Use 10^5 notation
+    ) +
     geom_abline(intercept = 0, slope = 1, linetype = 2) +
     geom_smooth(method = "lm", se = FALSE) +
     stat_cor(
@@ -2121,5 +2127,6 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     labs(
       x = expression(Observed~italic(K)),
       y = expression(Re*"-"*imputed~italic(K))) +
-    my_theme()
+    my_theme() +
+    coord_fixed()
 }

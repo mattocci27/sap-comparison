@@ -1596,7 +1596,7 @@ tar_impute <- list(
         p,
         dpi = 600,
         width = 4.33,
-        height = 4.33
+        height = 3.1
       )
     },
     format = "file"
