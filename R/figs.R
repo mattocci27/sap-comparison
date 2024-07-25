@@ -260,7 +260,7 @@ coef_density_sd <- function(draws) {
 }
 
 my_ggsave <- function(filename, plot, units = c("in", "cm",
-        "mm", "px"), height = NA, width = NA, dpi = 300, ...) {
+        "mm", "px"), height = NA, width = NA, dpi = 600, ...) {
 
   ggsave(
     filename = paste0(filename, ".tiff"),
@@ -269,6 +269,7 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
     width = width,
     units = units,
     dpi = dpi,
+    compression = "lzw",
     ...
   )
 
@@ -2103,7 +2104,8 @@ tr_example_panel <- function(tr_example_list) {
 
 imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
   df <- data |>
-    filter(is.na(k_new_with_na)) #|>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
     # filter(k_imp < 0.1 & k_new_without_na < 0.01)
 
   ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
@@ -2117,7 +2119,7 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
       show.legend = FALSE
     ) +
     labs(
-      x = expression(Imputed~and~observed~italic(K)),
+      x = expression(Observed~italic(K)),
       y = expression(Re*"-"*imputed~italic(K))) +
     my_theme()
 }

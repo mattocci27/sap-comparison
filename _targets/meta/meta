@@ -4,18 +4,18 @@ ab_comp_four_models_points|function|3b27ee0450c1744a|||||||||||||||
 ab_comp_points|function|ddd934d0cd9a050d|||||||||||||||
 ab_csv|stem|5e2c4ade036182fb|87c18c55e4acbe33|83013a5c9e03842a|1264026888|data/all_ab.csv|t19884.2557111566s|8cec1e16817904b5|10200|file|local|vector|||1.567|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 ab_example|function|016d07a20404534e|||||||||||||||
-ab_example_panel_plot|stem|fd6198445deed54a|5b7634c0ae47937d|a4bc03d72bde3b41|-292841170|figs/ab_example_panel.png*figs/ab_example_panel.pdf*figs/ab_example_panel.tiff|t19928.0523371729s|d5972e5f61814570|36676780|file|local|vector|||178.565|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.|
+ab_example_panel_plot|stem|5613903e3a5e249a|5b7634c0ae47937d|221b5abcd105468b|-292841170|figs/ab_example_panel.png*figs/ab_example_panel.pdf*figs/ab_example_panel.tiff|t19928.6801811519s|c697b65a194b3212|2529990|file|local|vector|||59.569|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 1549934 rows containing nonfinite values stat_bin.|
 ab_granier_summarized_df|stem|c83b2329660e8e2c|440f37626717e2a4|661b55b87abf4932|788959031||t19884.2556231447s|dd5db50a8149e5ce|152|rds|local|vector|||0.015||
 ab_granier_uncertainty_combined_df|stem|fc08557c30408607|9591f55837f2652f|254cddabb5ec2bb8|-1899469966||t19884.2556231447s|4b46e8ae20ede711|198|rds|local|vector|||0.003||
 ab_granier_uncertainty_df|stem|3500a9aa5fbc5143|d6937c811171c85c|4240ac6924ee4d1d|-1544295270||t19884.2556231447s|5088284eb8bba72c|498|rds|local|vector|||20.577||
 ab_pg_ribbon|function|85ff3bb7fdfd9004|||||||||||||||
 ab_pg_summary_bars|function|cc30da461851b318|||||||||||||||
-ab_pg_summary_bars_plot|stem|9c9a57ed2d7898a6|cdb58a2a535e4c33|4d6cb04d4da5c049|-100425880|figs/ab_pg_summary_bars.png*figs/ab_pg_summary_bars.pdf*figs/ab_pg_summary_bars.tiff|t19928.0504540895s|7286801d5b963ede|5352233|file|local|vector|||16.878|Values from alpha_1_1 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_2 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_3 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_4 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_5 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_6 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Va|
-ab_points_four_models_plot|stem|58d6ee75ea653c08|5c805cab1df717ba|3d436b7a10c9e4f5|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf*figs/ab_points_four_models.tiff|t19928.0505642762s|3f4b5523e673d1b0|30845252|file|local|vector|||22.755||
-ab_points_four_models_plot_all|stem|9bdf7dcdc1a75500|9c01fd54f38d81ed|3d436b7a10c9e4f5|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf*figs/ab_points_four_models_all.tiff|t19928.0506879817s|df16d55e44b5b7f3|30817086|file|local|vector|||9.956||
+ab_pg_summary_bars_plot|stem|e527e4d3a5062c9d|cdb58a2a535e4c33|510e00a79a9e878d|-100425880|figs/ab_pg_summary_bars.png*figs/ab_pg_summary_bars.pdf*figs/ab_pg_summary_bars.tiff|t19928.6796626694s|cdf41af13aad9f35|419453|file|local|vector|||19.206|Values from alpha_1_1 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_2 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_3 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_4 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_5 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_6 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Va|
+ab_points_four_models_plot|stem|c66fa86ae81b519d|5c805cab1df717ba|d0f98f90617c0ea3|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf*figs/ab_points_four_models.tiff|t19928.6795592878s|50c38bb9b88d9636|1314402|file|local|vector|||11.4||
+ab_points_four_models_plot_all|stem|1101a70538a44783|9c01fd54f38d81ed|d0f98f90617c0ea3|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf*figs/ab_points_four_models_all.tiff|t19928.6796171593s|b9171ee5ebbeb27f|1179328|file|local|vector|||12.463||
 ab_points_model4|function|65fc8c15837c9a7b|||||||||||||||
 ab_points_model4_create_plot|function|6bca3bca212eeb7e|||||||||||||||
-ab_points_model4_plot|stem|bce25ee3b5108f40|a008175cff87f256|2c30d5d54401df3d|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t19928.0471415467s|27e0773061b3140d|26345029|file|local|vector|||37.037|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.|
+ab_points_model4_plot|stem|363094b640dadf9f|a008175cff87f256|b14014303fb27bae|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t19928.6791917805s|103777f5b210032a|727027|file|local|vector|||43.308|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.|
 ab_points_model4_prepare_df|function|180e71306cae66ff|||||||||||||||
 ab_points_model4_sma|function|71241816a18ff8f9|||||||||||||||
 ab_points_model4_sma_list|stem|6acff07432df02b7|128d63ab8317c8ff|cd9573f9b6a699fe|-1498962017||t19912.4087264752s|b10cdebd77c5151e|134272|rds|local|vector|||0.193||
@@ -82,7 +82,7 @@ ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.05|stem|da5349
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.06|stem|af0e12664843aba3|4b9c90e75583b719|24eb37939cbd10ac|-1016916500||t19884.2556230984s|910d031edbef46e1|248260|rds|local|vector|||965.526||
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.07|stem|253b0035a72450b0|cdc27d374820e6a1|e2d4ab168e53fc3f|-1347148033||t19884.2556231447s|48ffab0a8fd188ec|248223|rds|local|vector|||856.617||
 ab_uncertainty_df_species_xylem_post_ab_fit_draws_species_xylem_0.08|stem|a16dcf3f9c2f767d|586919d50a7dccf4|8e5df26100500e51|1952204512||t19884.2556231447s|ade5f7b00ea23540|248282|rds|local|vector|||1134.714||
-ab_uncertainty_points_plot|stem|041375637d64dd61|8007de5b18e16b57|0ec9ad4987d77ee8|2109165859|figs/ab_uncertainty_points.png*figs/ab_uncertainty_points.pdf*figs/ab_uncertainty_points.tiff|t19928.0499967682s|2e0b64d16ec33f0e|12609209|file|local|vector|||1.764||
+ab_uncertainty_points_plot|stem|10439743f43f3635|8007de5b18e16b57|ff16f6be5c149a0c|2109165859|figs/ab_uncertainty_points.png*figs/ab_uncertainty_points.pdf*figs/ab_uncertainty_points.tiff|t19928.6793331259s|9af1b3802b644ad9|1529341|file|local|vector|||0.739||
 add_lines|function|ca3f8e620e788d8f|||||||||||||||
 add_t16|function|39c9529e3853d8de|||||||||||||||
 anova_data_log|stem|dfa9f6d366210cb3|1b6f948e63581fe1|504a599689c2823b|1684342624||t19884.2556237002s|15a3751d344e39a8|1455|rds|local|vector|||0.224||
@@ -141,13 +141,13 @@ cmdstan_path|object|f9d551927707594a|||||||||||||||
 coef_ab_vpart|function|94ec929333b84747|||||||||||||||
 coef_cor|function|babe69355bce119d|||||||||||||||
 coef_density|function|ce3a32c84135ea5c|||||||||||||||
-coef_density_plot|stem|8f9b467544ed692d|f3de3283e834bad4|e473f807607ab6d7|1741760878|figs/coef_density.png*figs/coef_density.pdf*figs/coef_density.tiff|t19928.046203018s|852d23ed3939bad6|37701407|file|local|vector|||37.359||
+coef_density_plot|stem|8f1cba938ed778e7|f3de3283e834bad4|f309d0b0d095d3a1|1741760878|figs/coef_density.png*figs/coef_density.pdf*figs/coef_density.tiff|t19928.6790102491s|86f8322f9725a5e0|1863333|file|local|vector|||34.954||
 coef_density_sd|function|5c87a1bd8ba1bb09|||||||||||||||
 coef_intervals_diff|function|9bfca47eb89dc430|||||||||||||||
 coef_intervals_logistic|function|c92747b090d61c39|||||||||||||||
-coef_intervals_logistic_plot|stem|6200d152b151127b|76d8b4e50fc0548c|09071e8c17e77574|2136227468|figs/coef_intervals_logistic.png*figs/coef_intervals_logistic.pdf*figs/coef_intervals_logistic.tiff|t19928.0508673362s|e4a12ed4ef58faf2|22876653|file|local|vector|||2.335|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
+coef_intervals_logistic_plot|stem|e5a0da09d3b66318|76d8b4e50fc0548c|4585e72e6b2aecef|2136227468|figs/coef_intervals_logistic.png*figs/coef_intervals_logistic.pdf*figs/coef_intervals_logistic.tiff|t19928.6795177592s|be33bc538b042804|303685|file|local|vector|||3.235|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
 coef_intervals_mean|function|86a3105600308b79|||||||||||||||
-coef_intervals_pres_tens_plot|stem|201ef76e85e34200|e783e80e1d5408cf|397a8211b0e33a1b|308576084|figs/coef_intervals_pres_tens.png*figs/coef_intervals_pres_tens.pdf*figs/coef_intervals_pres_tens.tiff|t19928.0513167872s|a5fe7332b026f9d6|50338996|file|local|vector|||6.085||
+coef_intervals_pres_tens_plot|stem|1b63281195adf1ab|e783e80e1d5408cf|9db0cec65039036a|308576084|figs/coef_intervals_pres_tens.png*figs/coef_intervals_pres_tens.pdf*figs/coef_intervals_pres_tens.tiff|t19928.6795279909s|7ec87187d608e3dc|546704|file|local|vector|||2.351|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
 coef_intervals_sd|function|eafb0ed70b9bcd48|||||||||||||||
 coef_sd|function|eafb0ed70b9bcd48|||||||||||||||
 combine_fit_summary|function|df3a587c88d659a0|||||||||||||||
@@ -169,7 +169,7 @@ create_stan_tab|function|d23d841ad0c22173|||||||||||||||
 dbh_imp_df|stem|b7895e5d883e301f|324b81d0e7234e85|3c8297a1dc950e65|569809201||t19884.2556232372s|11c48bd13ccce883|73683|rds|local|vector|||2.519||
 dbh_imp_df2|stem|899d3df696a94722|ea51559474629e47|169a2e27785946e2|433441771||t19884.255623191s|5b6ac952b19e5060|79194|rds|local|vector|||1.278||
 dbh_points|function|ef70c464b32157f9|||||||||||||||
-dbh_points_plot|stem|7b11291fabf755ae|70b0367b88559ddb|cef0bffff5926290|1707947675|figs/dbh_points.png*figs/dbh_points.pdf*figs/dbh_points.tiff|t19928.0403664888s|d422823611cc01c5|20744690|file|local|vector|||1.166|Ignoring unknown parameters width. Removed 16 rows containing missing values geom_text_repel.. Removed 16 rows containing missing values geom_text_repel.. Removed 16 rows containing missing values geom_text_repel.|
+dbh_points_plot|stem|48bcd5db339fa24b|70b0367b88559ddb|cafcf5202f58ce34|1707947675|figs/dbh_points.png*figs/dbh_points.pdf*figs/dbh_points.tiff|t19928.6780056922s|20572ef271db01cc|965950|file|local|vector|||7.405|Ignoring unknown parameters width. Removed 16 rows containing missing values geom_text_repel.. Removed 16 rows containing missing values geom_text_repel.. Removed 16 rows containing missing values geom_text_repel.|
 dbh_sap_stan_data|stem|68bd8a1990240d58|2a7b123ce099cd8d|7fadfb025d49bec8|1124467390||t19884.255623191s|9a3f6414cc146813|740|rds|local|vector|||0.247||
 dh_r2|stem|24705e6d269de5b8|e63f4fc2a88118a5|bdf61a17c2ebc75d|-1905830665||t19908.5882055887s|af2f698bb96276c8|148|rds|local|vector|||3.706||
 dh_sp_r2|stem|cdb9e2907c0a276e|d91a727ba783e182|dfc8b324dfdacba7|-360355514||t19908.5876626164s|ae3ca543e47cf4fd|166|rds|local|vector|||1.479||
@@ -746,16 +746,16 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t19884.255711064s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|f86b28b59f55ff80|||||||||||||||
-granier_update_list|object|e1cd8b280c71f86f|||||||||||||||
-granier_with_traits_mapped|object|7f3081c050ac4e84|||||||||||||||
-granier_without_traits_mapped|object|e66434e1bfcd7126|||||||||||||||
+granier_list|object|a4101fab0e48851d|||||||||||||||
+granier_update_list|object|d0bc02717891658f|||||||||||||||
+granier_with_traits_mapped|object|200647649c287e6c|||||||||||||||
+granier_without_traits_mapped|object|56e4e2ce664d0bd2|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
-imp_points_plot|stem|afa48d1fd0a38425|144f602e4ec1f549|7f570c05c916d9a8|-2106294414|figs/imp_points.png*figs/imp_points.pdf*figs/imp_points.tiff|t19928.0406290867s|02a28a34158f86bd|51516979|file|local|vector|||31.904|Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.|
-imp_r2_plot|stem|47aeec02eac4a497|67873c3bfc699ba0|80ad06cd139ab276|-1279179073|figs/imp_r2.png*figs/imp_r2.pdf*figs/imp_r2.tiff|t19928.1117149845s|0bb8a888dcdfb5d2|74528134|file|local|vector|||106.667|The dotdot notation ..rr.label.. was deprecated in ggplot2 3.4.0.ℹ Please use after_statrr.label instead.|
-imp_r2_scatter|function|aa69862872185e6b|||||||||||||||
-impute_mapped|object|416a6715a5a0de24|||||||||||||||
-impute_rest_mapped|object|5c3f17df46620ccb|||||||||||||||
+imp_points_plot|stem|78d994f63a6207f4|144f602e4ec1f549|0a4d455cc1b8196e|-2106294414|figs/imp_points.png*figs/imp_points.pdf*figs/imp_points.tiff|t19928.6782231039s|8a646a4f83315612|2638811|file|local|vector|||27.018|Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.. Removed 165 rows containing missing values geom_point.. Removed 1035 rows containing missing values geom_point.|
+imp_r2_plot|stem|9caa0b523a0f13fd|67873c3bfc699ba0|d873f1db9fb6501b|-1279179073|figs/imp_r2.png*figs/imp_r2.pdf*figs/imp_r2.tiff|t19928.6791359923s|32c729725a74129e|32824737|file|local|vector|||83.002|The dotdot notation ..rr.label.. was deprecated in ggplot2 3.4.0.ℹ Please use after_statrr.label instead.|
+imp_r2_scatter|function|252e4b472bebae18|||||||||||||||
+impute_mapped|object|c6f297fb880d6ad4|||||||||||||||
+impute_rest_mapped|object|cdc9e436f14439f1|||||||||||||||
 impute_rubber|function|a712d7cca38bf757|||||||||||||||
 imputed_data_2015_1|stem|2035097a253b7057|efa37b4b3e95a211|4ece19e4900b831e|229974829||t19884.2556185612s|4c4b0502362743ab|1089907|rds|local|vector|||42998.45||
 imputed_data_2015_10|stem|af45c2865100ab13|4b75d7cfd2e7d229|5fb1264abf170775|1814555672||t19884.2556184223s|8f8921bc0ae7c7c0|1249640|rds|local|vector|||11744.842||
@@ -877,7 +877,7 @@ k_range|stem|89b4267ad1baa66e|bc6ca2b0fb3189be|d6882ec790719b0d|1335732488||t198
 knn_impute|function|6566d85c53719f9b|||||||||||||||
 ks_bars|function|1ffc68245cc35275|||||||||||||||
 ks_box|function|56ff075e37e089df|||||||||||||||
-ks_box_plot|stem|5e1cfe75c7d6c206|0e1858dcf5a52b64|7866832325213e46|654652285|figs/ks_box.png*figs/ks_box.pdf*figs/ks_box.tiff|t19928.0401393083s|96e5e48bc32eaef6|13966311|file|local|vector|||12.751|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+ks_box_plot|stem|7e3aa3de5e7296c3|0e1858dcf5a52b64|be7600e0bfbded4f|654652285|figs/ks_box.png*figs/ks_box.pdf*figs/ks_box.tiff|t19928.6779249499s|d539d354b922810f|493291|file|local|vector|||6.364|Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 ks_box2|function|1f17b33f5d25bcb0|||||||||||||||
 ks_five_spp_csv|stem|49ad0f4be76f4e78|c8ca3219a79d86e9|ef46db3751d8e999|2105412473|data-raw/ks_pres_tens_five_spp.csv|t19884.255711064s|a9458198ac48eede|1579|file|local|vector|||1.175||
 ks_five_trees_raw_csv|stem|04b80edf4750b95a|a7dbdc2b72006ed1|ef46db3751d8e999|-1887582396|data-raw/ks_pres_tens_trees_raw.csv|t19884.255711064s|e3b663f73242eb85|3994|file|local|vector|||1.412||
@@ -886,11 +886,11 @@ ks_sp_r2|stem|fcb31f82f051a703|ebd27f1d024b7074|9527ddadc1828196|-483776712||t19
 ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-101813440|data/ks_pres_tens_spp_err.csv|t19884.2557112029s|dbf852b7f874f1df|3842|file|local|vector|||2.105||
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-246611207|data/ks_pres_tens_trees.csv|t19884.2557112029s|a86c3ec47ea93832|7649|file|local|vector|||0.478||
 label_func|function|5053ea2f60a68238|||||||||||||||
-like_check_list|object|ffee7e74224d3339|||||||||||||||
+like_check_list|object|9a4c0358a9d432bc|||||||||||||||
 line_pg_multi|function|12e9853d95fb7576|||||||||||||||
 line_pool_multi|function|f9bcbadf6dba2f4e|||||||||||||||
 logistic|function|85b2eccc2fdb02b5|||||||||||||||
-logistic_sp_plot|stem|62c6fa17ebdaad3d|c4d05f279c6e88a7|0bda180d93b5001f|-273867338|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf*figs/count_pressure_quadratic.tiff|t19928.0509477077s|16688ed0a2f31977|10736857|file|local|vector|||7.164|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
+logistic_sp_plot|stem|339ccf5369846cba|c4d05f279c6e88a7|bc69a84aba2eb038|-273867338|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf*figs/count_pressure_quadratic.tiff|t19928.6795756307s|9940635309a3fce3|1325907|file|local|vector|||8.381|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
 logit|function|85b2eccc2fdb02b5|||||||||||||||
 loo_anova|stem|bfe95d8f13d45113|769bb86112e2daea|9d781f64dc0c44e6|627861828||t19884.2556458305s|5d835b1a34883270|8376|rds|local|vector|||7.319|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.|
 loo_dh|stem|5797cacc7255d163|b2a77565ab805f21|e92d12a573c89fd2|-1169426688||t19908.3506283475s|8159630e76c2f92a|123564|rds|local|vector|||12.968|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
@@ -899,7 +899,7 @@ loo_swc|stem|c2c7f2cb6b646380|4c86ba4d418b6c16|b38a81f62043396d|-839249926||t199
 loo_vaf|stem|829bea525bb67ad4|95bbb0069409bb38|d7934d5abe554c65|-2129840403||t19908.3471045861s|78a4ff4c5212bf55|123533|rds|local|vector|||8.471|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_vf|stem|948bac9cb62cf686|b4ffba32a715f217|6c43be480c081e20|-1755599891||t19908.3517073004s|ccfa159114f80e82|123500|rds|local|vector|||8.104|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_wd|stem|3c09bd6d72d26f45|b006f97eea5746e6|f5cebb26246c5266|-41513080||t19908.350710247s|2ce2b46d88ff7332|123507|rds|local|vector|||8.898|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|d4ce22aede7ccf32|||||||||||||||
+main_list|object|dc6473e4d30db865|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -911,7 +911,7 @@ missForest_long|function|b24f9793c07a785c|||||||||||||||
 missForest_long2|function|2ea398ba19dd0355|||||||||||||||
 model1_like_file|stem|22e36cd928bed412|89dd7c60c469b89c|d08213f484b3e9b9|-802415668|stan/model1_like.stan|t19884.2557155086s|cbf56f6cdb70b748|540|file|local|vector|||1.624||
 model2_like_file|stem|9af4743909e0652c|6b5173963bae7c90|d08213f484b3e9b9|-753871096|stan/model2_like.stan|t19884.2557155086s|f0b0e221c50278b5|1028|file|local|vector|||12.756||
-my_ggsave|function|679af40d11a2295f|||||||||||||||
+my_ggsave|function|3731321a4aef4b32|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
 my_theme|function|63e26270112a0b32|||||||||||||||
 my_write_csv|function|46eaaee704021b09|||||||||||||||
@@ -988,9 +988,9 @@ os_info|object|9074f741f95d61d5|||||||||||||||
 os_release|object|c1d6537a11de6285|||||||||||||||
 parse_variable|function|0726787b7bb4e1bf|||||||||||||||
 pg|object|e438912ecb782f69|||||||||||||||
-pg_multi_plot|stem|e3b61e0e7ea355b7|df08bda66047ae46|4700865d9057b513|1212464739|figs/pg_multi.png*figs/pg_multi.pdf*figs/pg_multi.tiff|t19928.0462623242s|46b75dd24b151cd3|106058094|file|local|vector|||9.842||
-pg_ribbon_a|stem|c90544828abebe50|63dbdecb3bd22033|ca20e7074a9b12a1|-1535362916|figs/pg_ribbon_a.png*figs/pg_ribbon_a.pdf*figs/pg_ribbon_a.tiff|t19928.0478844258s|963cba078769f54f|104856237|file|local|vector|||15.872||
-pg_ribbon_b|stem|6c89e8722d8603f9|bfe48180b8669a5c|ca20e7074a9b12a1|624863334|figs/pg_ribbon_b.png*figs/pg_ribbon_b.pdf*figs/pg_ribbon_b.tiff|t19928.0478218787s|635ed4b38c6f13f9|104934503|file|local|vector|||9.398||
+pg_multi_plot|stem|ae034e8fd9261a75|df08bda66047ae46|05a3348a468fe728|1212464739|figs/pg_multi.png*figs/pg_multi.pdf*figs/pg_multi.tiff|t19928.6787889021s|c308ee964dc97ce8|5141572|file|local|vector|||15.058||
+pg_ribbon_a|stem|a22d386ee726087e|63dbdecb3bd22033|0694e4dba05355a1|-1535362916|figs/pg_ribbon_a.png*figs/pg_ribbon_a.pdf*figs/pg_ribbon_a.tiff|t19928.6790464998s|e527395681f3b292|2863243|file|local|vector|||19.755||
+pg_ribbon_b|stem|e89e0d32e7a047eb|bfe48180b8669a5c|0694e4dba05355a1|624863334|figs/pg_ribbon_b.png*figs/pg_ribbon_b.pdf*figs/pg_ribbon_b.tiff|t19928.6790443702s|2a2f806e23d41b98|2958045|file|local|vector|||19.544||
 piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|aabc13817806840c|459680194||t19884.2556232372s|257b15927dfb4d82|1372|qs|local|vector|||0.001||
 piecewise_logistic_diagnostics_piecewise_logistic|stem|5756b2588b75f513|8a0b2bb054593c22|33564317f78fbfda|-1925623686||t19884.255650414s|f323781e1c4ae924|141837|fst_tbl|local|vector|||0.002||
 piecewise_logistic_draws_piecewise_logistic|stem|27a93b6c3ecddbf5|f74a4223fdf17c7b|33564317f78fbfda|1271845215||t19884.2556503677s|9e3351d8c1c93ed0|33847373|fst_tbl|local|vector|||0.399||
@@ -1000,7 +1000,7 @@ piecewise_logistic_stan_data|stem|08699092689d29bb|b2aa112298155cc8|4c30d28298f7
 piecewise_logistic_summary_piecewise_logistic|stem|a08aa4db89f398de|701588cdfc8d1f36|496fcc9404f78377|540951481||t19884.2556523122s|26fc239018322958|41054|fst_tbl|local|vector|||14.901||
 plot_data|function|520093bb05b6d18d|||||||||||||||
 plot_logistic_sp|function|b1e72171f9d1e5e5|||||||||||||||
-pool_multi_plot|stem|5d226023bd6e6d0b|f1e0bd93a36701d6|ffb3aa508512c130|824557771|figs/pool_multi.png*figs/pool_multi.pdf*figs/pool_multi.tiff|t19928.0498385716s|db353af95c4cc2ab|105775072|file|local|vector|||24.8||
+pool_multi_plot|stem|cab45fcad5b4f03d|f1e0bd93a36701d6|eb1be7d5ea07998c|824557771|figs/pool_multi.png*figs/pool_multi.pdf*figs/pool_multi.tiff|t19928.6791154827s|d0030a564124c36b|4149788|file|local|vector|||8.029||
 post_1000_dep_only|stem|5794a10558fa98b1|6f50ee7522d6dcc2|43361d1427b8cc14|452485231||t19884.2556206446s|cb724bc336e57e9e|60305|rds|local|vector|||1.412||
 post_1000_dir_dep|stem|bd2b81c8960383a8|575c232bc83dd7a4|43361d1427b8cc14|313426233||t19884.2556206446s|5f0b518e162a6e8f|79465|rds|local|vector|||1.409||
 post_1000_dir_only|stem|83c167ae4d2a107d|ed7e8e98164f3554|43361d1427b8cc14|919220029||t19884.2556206446s|9bbf0e3d4642cd17|66790|rds|local|vector|||1.604||
@@ -1046,11 +1046,11 @@ quad_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d4|
 quad_logistic_mcmc_hierarchical_logistic|stem|b5ad7e1c96e5dc40|45e6244cbbcf2e71|6073903ce1abe275|104680815||t19884.2556267096s|7c30f9f40699841b|70380614|qs|local|vector|||160.228||
 quad_logistic_summary_hierarchical_logistic|stem|a245311370b8465a|ce41f99b7031f54f|05b0c854ad196142|1864898247||t19884.2556310153s|3ac1e03c0d49d902|57815|fst_tbl|local|vector|||5.388||
 quiet|function|7a0df942450ddbd2|||||||||||||||
-raw_data_list|object|a585646f77cf0c5d|||||||||||||||
+raw_data_list|object|1ef6ebc34a471f4b|||||||||||||||
 rel_bar|function|8089bbc3dbf21061|||||||||||||||
 rel_bar_csv|stem|89821212a50d1f16|4e99aa2d21b57d8b|8bac9caadba56faf|2111134678|data/rel_bar.csv|t19884.2557112029s|e5ecb9637a311588|732|file|local|vector|||0.003||
 rel_bar_df|stem|1aecbc4626a36889|815a177fdd4e8f6b|7262a39f0a40778d|49481938||t19884.255623191s|5b1027f2a4ed5890|597|rds|local|vector|||0.032||
-rel_bar_plot|stem|628f9fbe6cc15df6|8af4c37859720844|c5cb966ae0b31a5c|1574575681|figs/rel_bar.png*figs/rel_bar.pdf*figs/rel_bar.tiff|t19928.0481085952s|d34dad12cef4a749|20374084|file|local|vector|||0.884||
+rel_bar_plot|stem|3e6d370ca7bfc5c8|8af4c37859720844|05d06cee1daa5000|1574575681|figs/rel_bar.png*figs/rel_bar.pdf*figs/rel_bar.tiff|t19928.6789301086s|02a3c7fb728f5fac|315092|file|local|vector|||6.111||
 rel_bar_wide|function|e4f59d51aa224101|||||||||||||||
 rubber_impute|function|a712d7cca38bf757|||||||||||||||
 rubber_raw_data_csv|stem|710c81835d2dc441|d278a607e2846a03|ef46db3751d8e999|1121404123|data-raw/rubber_raw_data.csv|t19884.2557111566s|2f94788ee24636ab|30518306|file|local|vector|||1.214||
@@ -1064,7 +1064,7 @@ sap_all_clean_0.06|stem|f84258ea5fda792d|4e45769f4dad740f|c4cdf6a0a64dfd2e|-1358
 sap_all_clean_0.07|stem|47123c4d199d3219|f5fbcf8747288977|c4cdf6a0a64dfd2e|-537449788||t19884.2556236539s|f3bfbec55691b0b4|12671|rds|local|vector|||2.949||
 sap_all_clean_0.08|stem|8a23d747d581c10f|84827977f488d818|c4cdf6a0a64dfd2e|283397307||t19884.2556236539s|ff8e507ecce0c186|12682|rds|local|vector|||2.521||
 sap_dbh_points|function|a792b028214bb28a|||||||||||||||
-sap_dbh_points_plot|stem|eab24e22a4be1cbc|623182b1a3634266|1292e8034c56f08b|765931304|figs/sap_dbh_points.png*figs/sap_dbh_points.pdf*figs/sap_dbh_points.tiff|t19928.0424336601s|e371fc545214ebec|20430161|file|local|vector|||0.869||
+sap_dbh_points_plot|stem|9e37ff1c53e4455b|623182b1a3634266|5015a3f0053cbe7f|765931304|figs/sap_dbh_points.png*figs/sap_dbh_points.pdf*figs/sap_dbh_points.tiff|t19928.6782985684s|9d5d486212e57a4d|412215|file|local|vector|||9.076||
 sap_sp_clean_0.02|stem|2cb0f6430e80c7d8|ef975656436fdd13|95c44b80c071635c|1363507441||t19884.2556458305s|32e24f57a64bedc7|19383|rds|local|vector|||1.524||
 sap_sp_clean_0.025|stem|8e20d9fb86fcfac1|106fc9c9707491a6|95c44b80c071635c|555061744||t19884.2556236539s|ed5a144a7cd55bc7|24863|rds|local|vector|||3.33||
 sap_sp_clean_0.03|stem|757835b0dc841e79|645e37ff5f8fe0a3|95c44b80c071635c|-1561135801||t19884.2556458305s|ebb055fc596bbae8|29661|rds|local|vector|||1.958||
@@ -1078,7 +1078,7 @@ sap_sp_clean_like|stem|a970e67ed6610d01|d156c842982d8187|95c44b80c071635c|126518
 sap_stan_data|stem|7f7c9c412bcb345b|c8127929c0ff9131|c4cdf6a0a64dfd2e|904733965||t19884.2556237002s|55ef2a4487051c7f|8880|rds|local|vector|||2.636||
 sap_table|stem|719cb77e7a62713c|73a1309407c2ecaa|bc8d89a5470befa3|2023484207|data/dbh_sapwood_post.csv|t19884.2557112029s|ff026697d66e9a9f|75|file|local|vector|||0.139|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, 2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
 sapwood_depth_csv|stem|e94d547ae146209c|0e367d6c80cbbba1|ef46db3751d8e999|661467636|data-raw/sapwood_depth.csv|t19884.255711064s|01d717670daa253d|1008|file|local|vector|||0||
-sapwood_list|object|b78cdc9e7236657e|||||||||||||||
+sapwood_list|object|2371ce34d5fb47df|||||||||||||||
 sarea_df|stem|5ddd8a48b081d505|d14dbcac8f6f9693|b0b8b7362a05ef06|-1618876795||t19884.2556197186s|5749696207a3dfac|399014|rds|local|vector|||0.005||
 sarea_map|function|2fa5f4441225ff1c|||||||||||||||
 sarea_summarized_df|stem|9d897c90dedc2ee3|316888071f4523d8|f0b62637d4e14ad4|729611981||t19884.2556231447s|300ce67d453b2292|10188|rds|local|vector|||0.019||
@@ -1106,13 +1106,13 @@ segments_inclusive_post_ab_0.05|stem|ad6941a6954f8883|0e7c1555dc98a22b|633fd2c59
 segments_inclusive_post_ab_0.06|stem|189465202da88cba|e2a0d8b2f7a7c0b0|586be337b4f755d8|-1646808215||t19884.2556497658s|5ead5e4e100a70b7|19821|rds|local|vector|||0.224|Dropping draws_df class as required metadata was removed.|
 segments_inclusive_post_ab_0.07|stem|34fe4e713109d7d2|29d355eb764d7998|012ddc37694dee52|2018178478||t19884.2556497658s|2e24e937956fd7b7|19832|rds|local|vector|||0.004|Dropping draws_df class as required metadata was removed.|
 segments_inclusive_post_ab_0.08|stem|dc2f7c725fe12931|90c21d1ec0abf347|4ee21d0ea9d35ade|1453459694||t19884.2556497658s|3b8f3903a4682577|19780|rds|local|vector|||0.007|Dropping draws_df class as required metadata was removed.|
-segments_noxylem_traits_post_ab_mapped|object|1d3061bdf9fc46cf|||||||||||||||
+segments_noxylem_traits_post_ab_mapped|object|36bb6b1fe925018d|||||||||||||||
 segments_noxylem_traits_table_combined|stem|147432570afea9fb|a0b7d9720f559e68|8e2062803cef3b4f|-469705359||t19907.2592575626s|421f2bf3db544da2|20712|rds|local|vector|||0.001||
 segments_xylem_csv|stem|cc2306630254a51c|8930d73b43c8fa59|7148ffe5533485eb|-459459170|data/segments_xylem_post.csv|t19884.2557112029s|a9b50106810f6aca|379651|file|local|vector|||0.18||
 segments_xylem_df_combined|stem|6e3922d89beed960|d956f09e23c03cb4|47e2ecd554f7c0c6|1811691249||t19884.2556696275s|8af42f49e7742f89|52646|rds|local|vector|||0.001||
-segments_xylem_df_mapped|object|cd71e74e26f9515c|||||||||||||||
+segments_xylem_df_mapped|object|9cf5c08b79eeb313|||||||||||||||
 segments_xylem_draws_combined|stem|00a709250eb2ce83|7ed74bd8ddd5bc9c|491a3fa3dfee3e11|2061331247||t19884.2556694887s|7ed85c5c0f751e54|22309417|rds|local|vector|||0.027||
-segments_xylem_draws_mapped|object|3f65e1719f7cff0b|||||||||||||||
+segments_xylem_draws_mapped|object|6e69abd00bb7d052|||||||||||||||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.02|stem|b447cbeaf7c633d5|eff5eaebcfeaffde|abac5ce69bd48855|-1146210505||t19884.2556506455s|db70e8dff8a71e30|20656|rds|local|vector|||0.215||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.025|stem|9c62f02e7012f4d3|683d797b69fa5f11|008faa3c6c036ba9|1602612826||t19884.2556579142s|ad53eef568f106d1|20370|rds|local|vector|||2.21||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.03|stem|8aab3fb251ce0661|27248d25cbbeb2a4|73004dcb9fd09a50|369691605||t19884.2556628218s|f6ff2ce6da013e3a|19731|rds|local|vector|||0.548||
@@ -1122,9 +1122,9 @@ segments_xylem_post_ab_fit_draws_segments_xylem_0.05|stem|498798a0ba84e079|3f3f7
 segments_xylem_post_ab_fit_draws_segments_xylem_0.06|stem|1f5fe13b3e289c77|4d8edb8b98483612|f64265fa2d34b57a|-1765025993||t19884.2556659237s|36ed7f157c43be0d|19502|rds|local|vector|||0.266||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.07|stem|f1e2bfb1bf357135|e883f01869a1b545|8a0502947dda679f|-1694761565||t19884.2556691183s|e2503014e9694ff0|19459|rds|local|vector|||0.732||
 segments_xylem_post_ab_fit_draws_segments_xylem_0.08|stem|bde618d52e7e5f9a|aaebdcf9dbb4297e|4aa19225a4b3626b|1429140096||t19884.2556669886s|fe1afb39d0aec830|19571|rds|local|vector|||0.443||
-segments_xylem_post_ab_mapped|object|39cae3f8091e0b6e|||||||||||||||
+segments_xylem_post_ab_mapped|object|6456b4690dacd44f|||||||||||||||
 segments_xylem_summary_combined|stem|fe07a0ff968d31c8|cc1658a7d86105ef|3aada5193bfa76dc|-2008709097||t19884.2556696275s|93798b964b044b8f|782401|rds|local|vector|||0.003||
-segments_xylem_traits_post_ab_mapped|object|bef6a7df91783325|||||||||||||||
+segments_xylem_traits_post_ab_mapped|object|6e6698cac51280b4|||||||||||||||
 segments_xylem_traits_table_combined|stem|4b9bf0cbc1ab383a|15db985b84bb0c85|1ec44271bb2b0b6a|-1490405177||t19907.2757849765s|0fca9774ac8cd6b9|21339|rds|local|vector|||0.003||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-137319773||t19884.2556236539s|b83e223494d999b0|1459|qs|local|vector|||1.314||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e8efe8fd19803f5f|711a40d59f022606|8520978eb27fd561|-415342224||t19884.2556245336s|c6bcafc3ee4fbf1c|159686|fst_tbl|local|vector|||0.001||
@@ -1133,7 +1133,7 @@ simple_logistic_file_hierarchical_logistic|stem|5ba890bbbab54835|b6eec3be33ee34d
 simple_logistic_mcmc_hierarchical_logistic|stem|d7476155657538d1|499b0f7a2bfe2bd3|68bcdffdbd3d3720|1466532140||t19884.2556373117s|2f5252cf3d25f6fb|69343211|qs|local|vector|||85.095||
 simple_logistic_summary_hierarchical_logistic|stem|6d1aa979a7840470|8cdaadf5cffca266|e17386bb9153306c|-338022842||t19884.2556245336s|e7032a646f14ab85|55824|fst_tbl|local|vector|||5.071||
 sma_ks|function|60e74f04d3c06c2b|||||||||||||||
-sma_ks_plot|stem|a99a18bea1cb82de|d9b08a0382189f7d|d8944d2564b3297f|866016498|figs/sma_ks.png*figs/sma_ks.pdf*figs/sma_ks.tiff|t19928.0416196622s|5160b490dc8844fd|32847810|file|local|vector|||49.646|The dotdot notation ..rr.label.. was deprecated in ggplot2 3.4.0.ℹ Please use after_statrr.label instead.. Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
+sma_ks_plot|stem|cbe63d95be02ed60|d9b08a0382189f7d|425c7765461c546e|866016498|figs/sma_ks.png*figs/sma_ks.pdf*figs/sma_ks.tiff|t19928.6787857076s|3044f518135c34af|1006918|file|local|vector|||67.158|The dotdot notation ..rr.label.. was deprecated in ggplot2 3.4.0.ℹ Please use after_statrr.label instead.. Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.. Removed 1 rows containing nonfinite values stat_boxplot.. Removed 1 rows containing missing values geom_point.|
 sma_ks2|function|9f3768e15b017bfd|||||||||||||||
 sma_scatter|function|62942711b2459e09|||||||||||||||
 sma_scatter_ks_log_plot|stem|5baaac68a1f50696|fca86bc0db0e8ac7|a26a67131ba89213|453600317||t19884.255623191s|0e43d803b96b4119|174274|rds|local|vector|||1.176||
@@ -1163,7 +1163,7 @@ species_only_post_ab_0.07|stem|4158ecd078c80308|29d355eb764d7998|012ddc37694dee5
 species_only_post_ab_0.08|stem|6fb6154160f620fc|90c21d1ec0abf347|4ee21d0ea9d35ade|709220246||t19884.2556497195s|acd22222dde66332|19779|rds|local|vector|||0.008|Dropping draws_df class as required metadata was removed.|
 species_xylem_csv|stem|2ae1428d6956f2fd|70743c79b17def98|c1c416eee73ea729|606055635|data/species_xylem_post.csv|t19884.2557112029s|9b92d579c5aadb11|62625|file|local|vector|||0.073||
 species_xylem_df_combined|stem|04646098e735bcbf|c483e367198b3d77|5d2fd0657b3020ac|2098948151||t19884.2556474972s|c2794d3211353af0|9522|rds|local|vector|||0.002||
-species_xylem_df_mapped|object|7f0fb1afa6d9ff04|||||||||||||||
+species_xylem_df_mapped|object|14df286e1af279e1|||||||||||||||
 species_xylem_post_ab_fit_draws_species_xylem_0.02|stem|152f32dcdd3832e0|ca366a60c1b75d82|3637701f40f0b2c6|1238843038||t19884.2556319412s|5856416105585795|20666|rds|local|vector|||0.138||
 species_xylem_post_ab_fit_draws_species_xylem_0.025|stem|6370879ab2163ed1|860933f66d4f4f56|053f1e966ef88471|1722053199||t19884.2556323116s|ea6c7626c73052e8|20519|rds|local|vector|||0.127||
 species_xylem_post_ab_fit_draws_species_xylem_0.03|stem|ffedde4063caab9e|91841cb06f4d70f3|f52de1cb5ac0e80c|-943218006||t19884.2556335153s|b03cb9232f122012|20428|rds|local|vector|||0.338||
@@ -1173,7 +1173,7 @@ species_xylem_post_ab_fit_draws_species_xylem_0.05|stem|cf9f00e81858e594|1f45c4e
 species_xylem_post_ab_fit_draws_species_xylem_0.06|stem|99f1e0da44a5a556|732101355d0b32bb|b4351b19d5f5ecc5|-81944133||t19884.2556451824s|1763d8cda6664751|20078|rds|local|vector|||0.229||
 species_xylem_post_ab_fit_draws_species_xylem_0.07|stem|efee744356eec84d|d0845ff25ce57ea1|79d3e8167ba66658|1821525901||t19884.2556451824s|956e2eab70db8ece|20046|rds|local|vector|||0.384||
 species_xylem_post_ab_fit_draws_species_xylem_0.08|stem|7cfa5bfb920661b9|339f6c32713d537c|4276f210245c01c0|-1306819983||t19884.2556451824s|9f865488bd1270a8|20094|rds|local|vector|||0.217||
-species_xylem_post_ab_mapped|object|b3b15e7a53697255|||||||||||||||
+species_xylem_post_ab_mapped|object|6b71b250c043495f|||||||||||||||
 species_xylem_summary_combined|stem|0956af31847583a0|1b0fd40e0fe9ffa9|58a8369d1006f6ef|1719585443||t19884.2556449046s|5f85db7e4d62ddf1|160133|rds|local|vector|||0.001||
 stan_data_noxylem_log_dh|stem|0426cf401043ea48|bcd9eb2ca286b0df|65efed7d326d084e|1430891488||t19884.2556236539s|4a26097ba98ec1f6|10633|rds|local|vector|||2.911||
 stan_data_noxylem_log_ks|stem|8a16825cc715f05b|b1118a9c141b4704|65efed7d326d084e|-78671032||t19884.2556236539s|5f8a7b2969116aac|10648|rds|local|vector|||2.562||
@@ -1232,8 +1232,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t19884.2556474972s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t19884.2556474972s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t19884.2556474972s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|7a5535209a5cfbc1|||||||||||||||
-tar_impute|object|821ca53ce2ef45ce|||||||||||||||
+tar_dir_dep|object|f4c798e3c95be76d|||||||||||||||
+tar_impute|object|422480b55ed532a9|||||||||||||||
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
 test_mapped2|object|dcd9eec253da9ce7|||||||||||||||
@@ -1251,10 +1251,10 @@ tr_bar_ab_csv|stem|99d15e70abc0a21e|b8894e0d5640d425|20d1bf8d8a72abc3|457437814|
 tr_bar_ab_df|stem|274f0e51552ec046|1469866718c156c1|8f93ded8b84014dc|1106007853||t19884.255623191s|257b15927dfb4d82|1372|rds|local|vector|||1.353||
 tr_bar_all_csv|stem|9199615e1bc45e2b|98edd268fcf82b80|6422f65208f711a3|1088570646|data/tr_bar_all.csv|t19884.2557112029s|4764b896dcd0d132|527|file|local|vector|||0.399||
 tr_bar_all_df|stem|7f14c4fce7b2a6ca|d02c5b2fea015aef|7ae657633d75bad2|884943266||t19884.255623191s|990f4e6f76416b38|452|rds|local|vector|||0.019||
-tr_bar_comb_plot|stem|6c43df05413824e8|50361c6fc3f012eb|4f6e7e631d8c3293|-896525161|figs/tr_bar_comb.png*figs/tr_bar_comb.pdf*figs/tr_bar_comb.tiff|t19928.0515141512s|2eece0749119a561|50464518|file|local|vector|||10.481||
+tr_bar_comb_plot|stem|de7091c2a6ec9ba1|50361c6fc3f012eb|25bf33195bef9395|-896525161|figs/tr_bar_comb.png*figs/tr_bar_comb.pdf*figs/tr_bar_comb.tiff|t19928.6795745195s|982dc50f6d0f73ab|1212394|file|local|vector|||4.713||
 tr_example_list|stem|11e65eb419f66c0a|0612bf6f73488c58|b51543a66dec15e1|72105163||t19884.2556217557s|a26d2f7a95ec6bdd|219902698|rds|local|vector|||20.767||
 tr_example_panel|function|3a03bfbda3dc8704|||||||||||||||
-tr_example_panel_plot|stem|bd9fbc2456723a88|ea68b623f29ac351|c8806c77712d2b71|-628575549|figs/tr_example_panel_plot.png*figs/tr_example_panel_plot.pdf*figs/tr_example_panel_plot.tiff|t19928.0536252947s|bb93313804f1487c|61539520|file|local|vector|||293.89|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.|
+tr_example_panel_plot|stem|5e6e2f8042202b75|ea68b623f29ac351|7fd62bd673fed2d3|-628575549|figs/tr_example_panel_plot.png*figs/tr_example_panel_plot.pdf*figs/tr_example_panel_plot.tiff|t19928.6807658857s|58d39ef8b11bc3ec|59769460|file|local|vector|||112.363|Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.. Removed 1549934 rows containing nonfinite values stat_bin.. Removed 139659 rows containing missing values geom_point.|
 tr_scaled_bars|function|ec6193a952754d70|||||||||||||||
 tr_scaled_bars2|function|4e99d245a37379a8|||||||||||||||
 trait_data_noxylem|object|027fd8c301dad788|||||||||||||||
@@ -1269,24 +1269,24 @@ traits_noxylem_table_csv|stem|63e9e8333e135e32|140509156cde4a23|1e15b072be4b13a0
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
 traits_points_each|function|04b7b40cb1846aa2|||||||||||||||
 traits_points_main|function|38b7841ba4fbfe51|||||||||||||||
-traits_points_main_plot|stem|64b143d311d79166|29e1bd21d56ab9c5|72ee8ffbc3214b87|-1362562509|figs/traits_points_main.png*figs/traits_points_main.pdf*figs/traits_points_main.tiff|t19928.048031372s|5d1dc3b65f9d6cc0|20743971|file|local|vector|||6.512||
+traits_points_main_plot|stem|2c7aa961199a08f5|29e1bd21d56ab9c5|e07beae49c50a381|-1362562509|figs/traits_points_main.png*figs/traits_points_main.pdf*figs/traits_points_main.tiff|t19928.6789033026s|1b4a3326f9d807f8|1795195|file|local|vector|||5.782||
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
-traits_points_main_re_plot|stem|ee70bca24f5899ce|74ed42cc0f98bb1c|acdba971e7d5fdc2|1829268526|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf*figs/traits_points_main_re.tiff|t19928.0506857595s|176df37a50cd5652|27874943|file|local|vector|||3.055||
+traits_points_main_re_plot|stem|6cac3e9cc9e0dfca|74ed42cc0f98bb1c|e43e5e492a10144c|1829268526|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf*figs/traits_points_main_re.tiff|t19928.6794640081s|3516e4fff4d5f0bd|2231235|file|local|vector|||2.965||
 traits_points_si|function|e1ad5434f86f559d|||||||||||||||
-traits_points_si_plot|stem|a58aa0f38bf584a6|4c8c363d4354c02d|21b53a26d525ef86|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t19928.0511186361s|e64e697345773545|22333820|file|local|vector|||8.722|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
+traits_points_si_plot|stem|a853348cb7549af6|4c8c363d4354c02d|13b421512af5955c|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t19928.6795755844s|74da52d7e8b5c2a6|2439028|file|local|vector|||9.069|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
 traits_seg_points_si|function|426c74414e84c66d|||||||||||||||
-traits_seg_points_si_plot|stem|adfa13fbe65c90ec|9178fe58186a1f77|55f06b88cf35f4ef|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t19928.0477616928s|54dc81c594476d7e|33061664|file|local|vector|||8.562||
+traits_seg_points_si_plot|stem|ceccf73802473631|9178fe58186a1f77|4e8eaf823ccae233|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t19928.6789992767s|fba72bcec7a2c932|3070118|file|local|vector|||15.959||
 traits_sp_points_main|function|4ac8b531729b9591|||||||||||||||
-traits_sp_points_main_plot|stem|199b4c87dfb85644|ee7f6258426c2a94|afdb8261420a5a2c|257327165|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf*figs/traits_sp_points_main.tiff|t19928.0519546208s|0fabd98be4a29b03|32744207|file|local|vector|||20.037||
-traits_sp_points_si_plot|stem|704d06db4493587f|4410a82a83f942ad|21bdb43b6644ef63|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t19928.0518246188s|79494513769044fa|32396696|file|local|vector|||8.386||
+traits_sp_points_main_plot|stem|f7c6e44b06320f79|ee7f6258426c2a94|e6f42cd00263ef59|257327165|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf*figs/traits_sp_points_main.tiff|t19928.6796302151s|0c1f0c2b64300fbd|2246053|file|local|vector|||5.738||
+traits_sp_points_si_plot|stem|832aa121d0407e34|4410a82a83f942ad|5627635e62fca71d|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t19928.6796108166s|3173cc20482f334c|1368570|file|local|vector|||4.05||
 traits_xylem_table|stem|08ee32ae14c210e9|9485d282f232ceaa|32d001f99172f421|862930669||t19907.2757653002s|b6e1ce3594a776de|6340|rds|local|vector|||0.215||
 traits_xylem_table_csv|stem|d8e3a4e39c58fccc|510b1b5af374e20d|316798036d0cdc71|1610101359|data/traits_xylem_post.csv|t19907.2757982639s|c78995f0e143ccc3|185307|file|local|vector|||0.112||
-uncertainty_ab_mapped|object|e7b8646654fd3699|||||||||||||||
-uncertainty_dir_dep_mapped|object|5a12668dc762dd4f|||||||||||||||
+uncertainty_ab_mapped|object|dea278e9fbf372a5|||||||||||||||
+uncertainty_dir_dep_mapped|object|3975208b18c359d5|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|630fc411a8fac20b|||||||||||||||
+uncertainty_figs_list|object|efe292718c347231|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
-uncertainty_list|object|d1987bc2cc865132|||||||||||||||
+uncertainty_list|object|6a3bcb1bc274c22b|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
 uncertainty_mapped|object|f43ca3100edaf723|||||||||||||||
 vaf_r2|stem|38921b7fca6ed5e1|ee586db436d4514d|d9a16d2e91b936ef|940795264||t19908.5883114701s|53d67a509bd209ee|171|rds|local|vector|||3.884||
