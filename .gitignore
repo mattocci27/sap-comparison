@@ -63,7 +63,7 @@ rsconnect/
 *.png
 *.docx
 *.pptx
-*.xslx
+*.xlsx
 *.html
 *.fdb_latexmk
 *.jpg
@@ -79,3 +79,8 @@ rsconnect/
 test.R
 log/*
 sftp.sh
+
+.bash_history
+.radian_history
+.env
+*.afdesign
