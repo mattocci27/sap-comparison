@@ -1609,7 +1609,7 @@ tar_impute <- list(
     imp_points2_plot, {
       p <- imp_points2(imp2_df)
       my_ggsave(
-        "figs/imp_ponits2",
+        "figs/imp_points2",
         p,
         dpi = 600,
         width = 173,

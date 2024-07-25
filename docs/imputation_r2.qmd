@@ -26,67 +26,50 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-renv::install("adletaw/captioner")
-renv::repair()
+```{r, echo=FALSE}
+# renv::install("adletaw/captioner")
+# renv::repair()
 library(targets)
 library(tidyverse)
 ```
 
-```{r}
-source(here::here("R/data_clean.R"))
-source(here::here("R/stan.R"))
-source(here::here("R/figs.R"))
-source(here::here("R/tables.R"))
-source(here::here("R/scale.R"))
-source(here::here("R/traits.R"))
-```
-```{r}
-# tmp <- tar_read(cleaned_df_missforest_2015_1) |> as_tibble()
-# tar_read(new_data_2015_1) |> as_tibble()
-# tar_read(imputed_new_data_2015_1)$ximp |> as_tibble()
-# tar_read(imputed_df_2015_1) |> as_tibble()
-library(tictoc)
-tic()
-tmp <- withr::with_dir(rprojroot::find_root('_targets.R'),
+
+![](`r paste0("file://", here::here("figs/imp_r2.png"))`)
+
+Fig. SX: Observed vs. re-imputed *K*.
+The density of overlapping points is reflected by a colour gradient ranging from blue (low point density) to yellow (high point density).
+The dashed line represents the 1:1 line.
+The solid blue line represents a linear regression.
+The correlation is significant (*P* < 0.001).
+
+![](`r paste0("file://", here::here("figs/imp_points2.png"))`)
+
+Fig. SX: An example of *K* value re-imputations for tree ID 11, measured at 2 cm depth from the south direction in February 2015.
+
+```{r, echo=FALSE}
+library(lubridate)
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
   targets::tar_read(combined_imputed_k_mapped))
-toc()
 
+n_all <- nrow(d) |>
+  format(big.mark = ",")
 
-tmp2 <- tmp |>
+n_miss <- d |>
+  filter(is.na(k_ori)) |>
+  nrow() |>
+  format(big.mark = ",")
+
+n_r2 <- d |>
   filter(is.na(k_new_with_na)) |>
-  head(1000)
-
-tmp2 |> pull(k_imp) |> length()
-tmp2 |> pull(k_new_without_na) |> length()
-
-fit <- lm(k_imp ~ k_new_without_na, data = tmp2)
-cor.test(tmp$k_imp, tmp$k_new_without_na)
-
-fit <- lm(k_imp ~ k_ori, data = tmp2)
-summary(fit)
-
-```
-
-```{r, eval=TRUE}
-tic()
-# ggplot(tmp2, aes(x = k_new_without_na, y = k_imp)) +
-ggplot(tmp2, aes(x = k_ori, y = k_imp)) +
-  geom_point(alpha = 0.1) +
-  geom_abline(intercept = 0, slope = 1, color = "red") +
-  labs(x = "Original", y = "Imputed")
-toc()
+  filter(!is.na(k_ori)) |>
+  nrow() |>
+  format(big.mark = ",")
 ```
 
 
-```{r}
-library(viridis)
+# Method for SI
 
-tic()
-tmp2 |>
-  ggplot(aes(x = k_ori, y = k_imp)) +
-        geom_bin2d(bins = 70) +
-        scale_fill_viridis(option = "inferno", direction = -1) +
-        theme_minimal()
-toc()
-```
+To assess the accuracy of the imputation, we randomly removed values (*n* = `r n_miss`) from the imputed dataset, excluding data from September, October, and December 2015 due to their excessive missing values, to create a new dataset with additional missing values.
+This step was necessary because `missForest` does not store imputed values for non-missing entries; it only imputes missing data.
+The missing values in this new dataset were then re-imputed.
+Finally, we calculated the *R^2^* between the re-imputed values and the original non-missing values (*n* = `r n_r2`).
