@@ -2173,26 +2173,66 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     filter(is.na(k_new_with_na)) |>
     filter(!is.na(k_ori))
     # filter(k_imp < 0.1 & k_new_without_na < 0.01)
+  # fit <- lm(k_imp ~ k_new_without_na, data = df)
+  r2 <- round(cor(df$k_imp, df$k_new_without_na)^2, 2)
+  n <- nrow(df)
 
-  ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
+  p1 <- ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
     # geom_point(alpha = 0.05) +
-    geom_bin2d(bins = 15) +
+    geom_bin2d(bins = 100) +
     # scale_fill_viridis(option = "D", direction = 1) +
     scale_fill_viridis_c(
       option = "D",
       direction = 1,
       name = "Number of data"  # Change the label
-      # labels = label_10e5 # Use 10^5 notation
+    ) +
+   annotate(
+      "text",
+      label = paste("italic(R)^2 == ", r2, "*','~italic(N) == ", n),
+      x = 0, y = 1.2,
+      size = 3,
+      hjust = 0,
+      vjust = 0,
+      parse = TRUE
     ) +
     geom_abline(intercept = 0, slope = 1, linetype = 2) +
-    geom_smooth(method = "lm", se = FALSE) +
-    stat_cor(
-      aes(label = paste(..rr.label.., ..n.label.., sep = "~`,`~")),
-      show.legend = FALSE
+    # geom_smooth(method = "lm", se = FALSE) +
+    # stat_cor(
+    #   aes(label = paste(..rr.label.., ..n.label.., sep = "~`,`~")),
+    #   show.legend = FALSE
+    # ) +
+    labs(
+      x = expression(Observed~italic(K)),
+      y = expression(Re*"-"*imputed~italic(K))) +
+    my_theme()
+
+  p2 <- ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
+    geom_bin2d(bins = 100) +
+    scale_fill_viridis_c(
+      option = "D",
+      direction = 1,
+      name = "Number of data"  # Change the label
     ) +
+    geom_abline(intercept = 0, slope = 1, linetype = 2) +
+    # geom_smooth(method = "lm", se = FALSE) +
     labs(
       x = expression(Observed~italic(K)),
       y = expression(Re*"-"*imputed~italic(K))) +
     my_theme() +
-    coord_fixed()
+    coord_cartesian(xlim = c(0, 0.1), ylim = c(0, 0.1)) +
+    theme(
+      legend.position = "none",
+      axis.text.y = element_text(size = 6),
+      axis.text.x = element_text(size = 6, angle = 60),
+      axis.title = element_blank())
+
+  p1 +
+    annotation_custom(ggplotGrob(p2),
+                    xmin = 0.8, xmax = 1.4,
+                    ymin = -0.1, ymax = 0.45)
 }
+
+# p2 <- p1 +
+#   annotation_custom(ggplotGrob(p_slope),
+#                     xmin = 0.3, xmax = 1.05,
+#                     ymin = 0.4, ymax = 1.05)
