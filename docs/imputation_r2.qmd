@@ -34,17 +34,17 @@ library(tidyverse)
 ```
 
 
-![](`r paste0("file://", here::here("figs/imp_r2.png"))`)
+![](`r paste0("file://", here::here("figs/imp_r2_comb.png"))`)
 
-Fig. SX: Observed vs. re-imputed *K*.
+**Fig. SX: Validations of the imputed *K* values.**
+**a** Observed vs. re-imputed *K*.
 The density of overlapping points is reflected by a colour gradient ranging from blue (low point density) to yellow (high point density).
 The dashed line represents the 1:1 line.
 The solid blue line represents a linear regression.
 The correlation is significant (*P* < 0.001).
-
-![](`r paste0("file://", here::here("figs/imp_points2.png"))`)
-
-Fig. SX: An example of *K* value re-imputations for tree ID 11, measured at 2 cm depth from the south direction in February 2015.
+The inset plot magnifies the lower range of *K* values because most of the values are concentrated in this range.
+**b** An example of *K* value re-imputations for tree ID 11, measured at 2 cm depth from the south direction in February 2015.
+Only the pairs of re-imputed values and the original non-missing values are shown.
 
 ```{r, echo=FALSE}
 library(lubridate)

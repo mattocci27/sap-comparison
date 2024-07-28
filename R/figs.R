@@ -1705,8 +1705,8 @@ imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, days = 10, dep
     theme_bw() +
     guides(col = guide_legend(title=NULL)) +
     theme(legend.position = "bottom") +
-    labs(x = "Date", y = expression(italic(K))) +
-    scale_x_datetime(date_labels = "%b %d\n%Y", date_breaks = "1 days")  # Use scale_x_datetime for POSIXct
+    labs(x = "Feburary 2015", y = expression(italic(K))) # +
+    # scale_x_datetime(date_labels = "%b %d\n%Y", date_breaks = "1 days")  # Use scale_x_datetime for POSIXct
 }
 
 imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day_1,
@@ -2229,7 +2229,7 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
   p1 +
     annotation_custom(ggplotGrob(p2),
                     xmin = 0.8, xmax = 1.4,
-                    ymin = -0.1, ymax = 0.45)
+                    ymin = -0.1, ymax = 0.5)
 }
 
 # p2 <- p1 +
