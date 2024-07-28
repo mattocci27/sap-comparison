@@ -1619,6 +1619,26 @@ tar_impute <- list(
     },
     format = "file"
   ),
+  tar_target(
+    imp_r2_comb, {
+      p1 <- imp_r2_scatter(combined_imputed_k_mapped)
+      p2 <- imp_points2(imp2_df, days = 5) +
+        theme(legend.position = "right")
+      p <- p1 / p2 +
+        plot_annotation(tag_levels = "a") &
+        theme(plot.tag = element_text(face = "bold"))
+
+      my_ggsave(
+        "figs/imp_r2_comb",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 150,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   NULL
   )
 

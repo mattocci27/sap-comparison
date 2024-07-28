@@ -1682,7 +1682,7 @@ prepare_imp2_df <- function(rubber_raw_data_csv, combined_imputed_k_mapped) {
 }
 
 
-imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, dep = 2, dir = "S", tree = "t11") {
+imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, days = 10, dep = 2, dir = "S", tree = "t11") {
   imp2_df_re <- imp2_df |>
     filter(year == {{year}}) |>
     filter(month == {{month}}) |>
@@ -1697,7 +1697,7 @@ imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, dep = 2, dir =
       model == "k_ori" ~ "Observed",
       model == "k_2nd_imputed" ~ "Re-imputed"
     )) |>
-    filter(day <=10)
+    filter(day <= {{days}} - {{day}} + 1)
 
   ggplot(imp2_df_re, aes(x = date_time, y = k, col = as.factor(model))) +
     geom_line() +
@@ -2223,7 +2223,7 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     theme(
       legend.position = "none",
       axis.text.y = element_text(size = 6),
-      axis.text.x = element_text(size = 6, angle = 60),
+      axis.text.x = element_text(size = 6, angle = 60, margin = margin(t = 5)),
       axis.title = element_blank())
 
   p1 +

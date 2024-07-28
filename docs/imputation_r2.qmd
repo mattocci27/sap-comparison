@@ -69,7 +69,7 @@ n_r2 <- d |>
 
 # Method for SI
 
-To assess the accuracy of the imputation, we randomly removed values (*n* = `r n_miss`) from the imputed dataset to create a new dataset with additional missing values, excluding data from September, October, and December 2015 due to their excessive missing values.
+To assess the accuracy of the imputation, we randomly removed values (*n* = `r n_miss`) from the imputed dataset to create a new dataset with additional missing values, excluding data from September, October, and December 2016 due to their excessive missing values.
 This step was necessary because `missForest` does not store imputed values for non-missing entries; it only imputes missing data.
 The missing values in this new dataset were then re-imputed.
 Finally, we calculated the *R^2^* between the re-imputed values and the original non-missing values (*n* = `r n_r2`).
