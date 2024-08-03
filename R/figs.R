@@ -1293,6 +1293,73 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   }
 }
 
+# Helper function to create plots
+ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
+  base_plot <- ggplot() +
+    scale_x_log10() +
+    my_theme() +  # Adjusted theme for simplicity
+    labs(col = "",
+      x = expression(paste("Co-", italic(a))),
+      y = expression(paste("Co-", italic(b))))  +
+    theme(
+      legend.background = element_rect(fill = "transparent", color = NA)
+    )
+
+  h7 <- scales::hue_pal()(7)
+  h4 <- scales::hue_pal()(4)
+
+  my_col <- h7
+  my_col[1] <- h4[1]
+  my_col[3] <- h4[2]
+  my_col[4] <- h4[3]
+  my_col[6] <- h4[4]
+
+  df <- df |>
+    mutate(xylem_type = ifelse(xylem_type == "L", "Li", xylem_type)) |>
+    mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
+
+  if (with_pub) {
+    pub_df2 <- pub_df |>
+      filter(b < 2.5) |>
+      filter(b < 2 | !str_detect(references, "Dix")) |>
+      mutate(log_x = log(a)) |>
+      mutate(y = b)
+
+    pub_df3 <- pub_df |>
+      filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) |>
+      mutate(log_x = log(a)) |>
+      mutate(y = b)
+
+    # Levels: Ba DP He Li NP Pa RP
+    # Levels: DP L Pa RP
+    base_plot +
+      geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
+      geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
+      geom_sma(data = pub_df2, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+      scale_colour_manual(
+        values = c(
+          DP = my_col[1],
+          RP = my_col[3],
+          Pa = my_col[4],
+          Li = my_col[6],
+          # L = my_col[6],
+          Ba = my_col[2],
+          NP = my_col[5],
+          He = my_col[7]
+        )
+      ) +
+      theme(legend.position = c(0.1, 0.7))
+  } else {
+    base_plot +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_fct)) +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
+      theme(legend.position = c(0.15, 0.75))
+  }
+}
 
 # post hoc
 ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
@@ -1322,10 +1389,14 @@ ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_pat
   pub_df <- read_csv(pub_ab_path) |>
     janitor::clean_names()
 
+  pub_df2 <- pub_df |>
+    filter(b < 2.5) |>
+    filter(b < 2 | !str_detect(references, "Dix"))
+
   # Linear models and equations
   fit_sp <- smatr::sma(b_q50 ~ log(a_q50), data = sp_df)
   fit_seg <- smatr::sma(b_q50 ~ log(a_q50), data = seg_df)
-  fit_pub <- smatr::sma(b ~ log(a), data = pub_df)
+  fit_pub <- smatr::sma(b ~ log(a), data = pub_df2)
 
   list(
     fit_sp,
@@ -1381,7 +1452,8 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
   p2 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = TRUE)
 
   # Combine plots
-  p1 + p2 + plot_annotation(tag_levels = "a")
+  p1 + p2 + plot_annotation(tag_levels = "a") &
+    theme(plot.tag = element_text(face = "bold"))
 }
 
 ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab, rm_dip = TRUE) {

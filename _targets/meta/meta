@@ -13,12 +13,12 @@ ab_pg_summary_bars|function|cc30da461851b318|||||||||||||||
 ab_pg_summary_bars_plot|stem|e527e4d3a5062c9d|cdb58a2a535e4c33|510e00a79a9e878d|-100425880|figs/ab_pg_summary_bars.png*figs/ab_pg_summary_bars.pdf*figs/ab_pg_summary_bars.tiff|t19928.6820546327s|cdf41af13aad9f35|419453|file|local|vector|||19.206|Values from alpha_1_1 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_2 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_3 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_4 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_5 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_6 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Va|
 ab_points_four_models_plot|stem|c66fa86ae81b519d|5c805cab1df717ba|d0f98f90617c0ea3|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf*figs/ab_points_four_models.tiff|t19928.6821297165s|50c38bb9b88d9636|1314402|file|local|vector|||11.4||
 ab_points_four_models_plot_all|stem|1101a70538a44783|9c01fd54f38d81ed|d0f98f90617c0ea3|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf*figs/ab_points_four_models_all.tiff|t19928.682091359s|b9171ee5ebbeb27f|1179328|file|local|vector|||12.463||
-ab_points_model4|function|65fc8c15837c9a7b|||||||||||||||
-ab_points_model4_create_plot|function|6bca3bca212eeb7e|||||||||||||||
-ab_points_model4_plot|stem|363094b640dadf9f|a008175cff87f256|b14014303fb27bae|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t19928.6821653105s|103777f5b210032a|727027|file|local|vector|||43.308|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.|
+ab_points_model4|function|a0d3c23392508680|||||||||||||||
+ab_points_model4_create_plot|function|7c68e5f57a949000|||||||||||||||
+ab_points_model4_plot|stem|13ae8c03b57052cb|a008175cff87f256|9f08b0ff328048b5|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t19938.0579383627s|a393184bc01b171c|809430|file|local|vector|||11.024|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.|
 ab_points_model4_prepare_df|function|180e71306cae66ff|||||||||||||||
-ab_points_model4_sma|function|71241816a18ff8f9|||||||||||||||
-ab_points_model4_sma_list|stem|6acff07432df02b7|128d63ab8317c8ff|cd9573f9b6a699fe|-1498962017||t19919.0730439815s|b10cdebd77c5151e|134272|rds|local|vector|||0.193||
+ab_points_model4_sma|function|b332f3c1743db91b|||||||||||||||
+ab_points_model4_sma_list|stem|3957d838af36aba6|128d63ab8317c8ff|ad07a82805abd21a|-1498962017||t19938.0579399392s|db92c8c1fe15bbbb|133838|rds|local|vector|||0.123||
 ab_scaled_df_segments_inclusive_post_ab_0.08|stem|c45043cf056a30e3|db83b0ffadd734bf|b3d10d7b5b1fa02e|1611737254||t19919.0730555556s|f0ef80e5f0ea82e1|224|rds|local|vector|||0.004||
 ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.02|stem|b5582d94d9f43e8a|32be8bcfbca6ceaf|b5ccc04529784cf8|-661691512||t19919.0730671296s|b87462683b64d887|223|rds|local|vector|||3.736||
 ab_scaled_df_segments_xylem_post_ab_fit_draws_segments_xylem_0.025|stem|89986a0012650a76|83ffd894e69ced3a|7a5acf011827715b|1702669726||t19919.0730787037s|6afa6e1fd73417a7|225|rds|local|vector|||1.303||
@@ -746,8 +746,8 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t19600.1669212963s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|e3ce1ab93e4c3d77|||||||||||||||
-granier_update_list|object|df67a13698a241e7|||||||||||||||
+granier_list|object|26e9161e34cb06c9|||||||||||||||
+granier_update_list|object|473d037c5aa24939|||||||||||||||
 granier_with_traits_mapped|object|b407d4dc1f4dc496|||||||||||||||
 granier_without_traits_mapped|object|38618662a9b5ec10|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -890,7 +890,7 @@ ks_sp_r2|stem|fcb31f82f051a703|ebd27f1d024b7074|9527ddadc1828196|-483776712||t19
 ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-101813440|data/ks_pres_tens_spp_err.csv|t19600.1615740741s|dbf852b7f874f1df|3842|file|local|vector|||2.105||
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-246611207|data/ks_pres_tens_trees.csv|t19600.1616435185s|a86c3ec47ea93832|7649|file|local|vector|||0.478||
 label_func|function|5053ea2f60a68238|||||||||||||||
-like_check_list|object|ad42ee5746fcb43e|||||||||||||||
+like_check_list|object|bde5500f3c38d282|||||||||||||||
 line_pg_multi|function|12e9853d95fb7576|||||||||||||||
 line_pool_multi|function|f9bcbadf6dba2f4e|||||||||||||||
 logistic|function|85b2eccc2fdb02b5|||||||||||||||
@@ -903,7 +903,7 @@ loo_swc|stem|c2c7f2cb6b646380|4c86ba4d418b6c16|b38a81f62043396d|-839249926||t199
 loo_vaf|stem|829bea525bb67ad4|95bbb0069409bb38|d7934d5abe554c65|-2129840403||t19919.1337731481s|78a4ff4c5212bf55|123533|rds|local|vector|||8.471|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_vf|stem|948bac9cb62cf686|b4ffba32a715f217|6c43be480c081e20|-1755599891||t19919.1337847222s|ccfa159114f80e82|123500|rds|local|vector|||8.104|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_wd|stem|3c09bd6d72d26f45|b006f97eea5746e6|f5cebb26246c5266|-41513080||t19919.1337847222s|2ce2b46d88ff7332|123507|rds|local|vector|||8.898|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|e4eec7764a1f6137|||||||||||||||
+main_list|object|e15ea4bf18d683d8|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1237,8 +1237,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t19919.136412037s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t19919.1364236111s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t19919.1364351852s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|3db95acda556caa4|||||||||||||||
-tar_impute|object|86e2ad85fbe17010|||||||||||||||
+tar_dir_dep|object|0ecf57691fdfb082|||||||||||||||
+tar_impute|object|02ce2e5006e7d3e7|||||||||||||||
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
 test_mapped2|object|dcd9eec253da9ce7|||||||||||||||
@@ -1289,7 +1289,7 @@ traits_xylem_table_csv|stem|d8e3a4e39c58fccc|510b1b5af374e20d|316798036d0cdc71|1
 uncertainty_ab_mapped|object|1302301b2962f25f|||||||||||||||
 uncertainty_dir_dep_mapped|object|da795b272a9475fe|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|79cd8e35650eda7e|||||||||||||||
+uncertainty_figs_list|object|57491ca70bba2c06|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|72615c68fe8315ae|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
