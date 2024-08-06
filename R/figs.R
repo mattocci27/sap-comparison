@@ -1319,24 +1319,24 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
 
   if (with_pub) {
-    pub_df2 <- pub_df |>
-      filter(b < 2.5) |>
-      filter(b < 2 | !str_detect(references, "Dix")) |>
-      mutate(log_x = log(a)) |>
-      mutate(y = b)
+    # pub_df2 <- pub_df |>
+    #   filter(b < 2.5) |>
+    #   filter(b < 2 | !str_detect(references, "Dix")) |>
+    #   mutate(log_x = log(a)) |>
+    #   mutate(y = b)
 
-    pub_df3 <- pub_df |>
-      filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) |>
-      mutate(log_x = log(a)) |>
-      mutate(y = b)
+    # pub_df3 <- pub_df |>
+    #   filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) |>
+    #   mutate(log_x = log(a)) |>
+    #   mutate(y = b)
 
     # Levels: Ba DP He Li NP Pa RP
     # Levels: DP L Pa RP
     base_plot +
-      geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
-      geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
+      geom_point(data = pub_df, aes(x = a, y = b, color = type), shape = 1) +
+      # geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
-      geom_sma(data = pub_df2, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
       # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
       scale_colour_manual(
         values = c(
@@ -1389,14 +1389,14 @@ ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_pat
   pub_df <- read_csv(pub_ab_path) |>
     janitor::clean_names()
 
-  pub_df2 <- pub_df |>
-    filter(b < 2.5) |>
-    filter(b < 2 | !str_detect(references, "Dix"))
+  # pub_df2 <- pub_df |>
+  #   filter(b < 2.5) |>
+  #   filter(b < 2 | !str_detect(references, "Dix"))
 
   # Linear models and equations
   fit_sp <- smatr::sma(b_q50 ~ log(a_q50), data = sp_df)
   fit_seg <- smatr::sma(b_q50 ~ log(a_q50), data = seg_df)
-  fit_pub <- smatr::sma(b ~ log(a), data = pub_df2)
+  fit_pub <- smatr::sma(b ~ log(a), data = pub_df)
 
   list(
     fit_sp,

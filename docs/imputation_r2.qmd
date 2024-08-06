@@ -33,6 +33,19 @@ library(targets)
 library(tidyverse)
 ```
 
+```{r}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  targets::tar_read(imp2_df))
+
+d2 <- d |>
+    filter(is.na(k_1st_imputed_with_na)) |>
+    filter(!is.na(k_ori))
+
+library(smatr)
+fit <- sma(k_2nd_imputed ~ k_1st_imputed, d2)
+summary(fit)
+```
+
 
 ![](`r paste0("file://", here::here("figs/imp_r2_comb.png"))`)
 
