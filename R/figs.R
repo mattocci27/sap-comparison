@@ -1337,7 +1337,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       # geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
       geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
-      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
       scale_colour_manual(
         values = c(
           DP = my_col[1],
