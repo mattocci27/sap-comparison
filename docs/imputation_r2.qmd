@@ -47,8 +47,7 @@ summary(fit)
 ```
 
 
-```{r}
-# library(viridis)
+```{r, echo=FALSE}
 # Create a vector with 70% 1s and 30% NAs
 set.seed(1234)  # Setting seed for reproducibility
 total_n <- 10
@@ -118,7 +117,6 @@ n_r2 <- d |>
   nrow() |>
   format(big.mark = ",")
 ```
-
 
 # Method for SI
 
