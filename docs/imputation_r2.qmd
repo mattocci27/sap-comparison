@@ -47,6 +47,46 @@ summary(fit)
 ```
 
 
+```{r}
+# library(viridis)
+# Create a vector with 70% 1s and 30% NAs
+set.seed(1234)  # Setting seed for reproducibility
+total_n <- 10
+obs_n <- round(total_n * 0.7)
+miss_n <- total_n - obs_n
+
+ori_k <- sample(c(rep("K_original", obs_n), rep("Missing", miss_n)))
+imp_k <- ori_k
+imp_k[ori_k == "Missing"] <- "K_imputed"
+
+re_k <- imp_k
+re_k[sample(total_n, miss_n)] <- "Artificial Gap"
+
+ori_k_df <- tibble(k = ori_k, data = "Original", id = 1:total_n)
+imp_k_df <- tibble(k = imp_k, data = "1st Imputed", id = 1:total_n)
+re_k_df <- tibble(k = re_k, data = "Artificial Gap", id = 1:total_n)
+
+df <- bind_rows(ori_k_df, imp_k_df, re_k_df) |>
+  mutate(k = factor(k, levels = c("K_original", "K_imputed", "Artificial Gap", "Missing")))
+
+# Plot the data to resemble a barcode
+ggplot(df, aes(y = id, x = data, fill = k)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_d(option = "D") +
+  scale_y_continuous(breaks = 1:10) +
+  theme_minimal() +
+  theme(
+    #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        panel.grid = element_blank(),
+        axis.title = element_blank()) +
+  labs(fill = "Category")
+```
+
+
 ![](`r paste0("file://", here::here("figs/imp_r2_comb.png"))`)
 
 **Fig. SX: Validations of the imputed *K* values.**
