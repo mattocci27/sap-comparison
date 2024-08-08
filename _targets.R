@@ -1648,10 +1648,10 @@ tar_impute <- list(
     reimp_bin_plot, {
       p <- reimp_bin_bar(reimp_bin_df)
       my_ggsave(
-        "figs/reimp_bn_bar",
+        "figs/reimp_bin_bar",
         p,
         dpi = 600,
-        width = 173,
+        width = 110,
         height = 80,
         units = "mm"
       )
