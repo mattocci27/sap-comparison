@@ -2347,10 +2347,70 @@ generate_reimp_bin_df <- function(combined_imputed_k_mapped, draws) {
     mutate(relative_difference = total_flux_reimp / total_flux_obs)
 }
 
+generate_reimp_bin_ci_list <- function(reimp_bin_df, combined_imputed_k_mapped, draws) {
+  df <- combined_imputed_k_mapped |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
+  post_ab <- as.data.frame(draws)
+
+  calculate_relative_difference <- function(i) {
+    df <- df |>
+      mutate(
+        log_fd_ori = post_ab[i, "log_a"] + post_ab[i, "b"] * log(k_ori),
+        log_fd_reimp = post_ab[i, "log_a"] + post_ab[i, "b"] * log(k_imp),
+        flux_obs = exp(log_fd_ori),
+        flux_reimp = exp(log_fd_reimp)
+      )
+
+    bins <- seq(min(df$flux_obs, na.rm = TRUE), max(df$flux_obs, na.rm = TRUE), length.out = 21)
+
+    # Calculate total flux in each interval
+    df |>
+      mutate(interval = cut(flux_obs, breaks = bins, include.lowest = TRUE)) |>
+      group_by(interval) |>
+      summarise(
+        total_flux_obs = sum(flux_obs, na.rm = TRUE),
+        total_flux_reimp = sum(flux_reimp, na.rm = TRUE),
+        avg_flux_obs = mean(flux_obs, na.rm = TRUE),
+        n = n(),
+        .groups = 'drop'
+      ) |>
+      mutate(relative_difference = total_flux_reimp / total_flux_obs) #|>
+      # pull(relative_difference)
+  }
+
+  # Use map to iterate over the posterior samples and calculate relative differences
+
+  nd <- tibble(data = map(1:nrow(post_ab), calculate_relative_difference)) |>
+    mutate(rel_diff = map(data, pull, relative_difference)) |>
+    mutate(total_changes = map_dbl(data, \(x) {
+      total_flux_reimp <- x |> pull(total_flux_reimp) |> sum()
+      total_flux_obs <- x |> pull(total_flux_obs) |> sum()
+      tmp <- 1 - (total_flux_reimp / total_flux_obs)
+      tmp * 100
+    }))
+
+
+  rel_diff_mat <- nd$rel_diff %>%
+    map(~ as.numeric(.)) %>%  # Ensure each element is numeric
+    reduce(cbind)
+
+  total_changes <- nd |>
+    pull(total_changes) |>
+    quantile(c(0.025, 0.5, 0.975))
+
+  # Calculate quantiles for each interval
+  tmp <- apply(rel_diff_mat, 1, quantile, c(0.025, 0.5, 0.975)) |> t() |> as_tibble() |> janitor::clean_names()
+  list(reimp_bin_ci_df = bind_cols(reimp_bin_df, tmp), total_changes = total_changes)
+
+}
+
+
 reimp_bin_bar <- function(reimp_bin_df) {
   # Plot the differences
   ggplot(reimp_bin_df, aes(x = avg_flux_obs, y = relative_difference)) +
     geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2) +
     geom_hline(yintercept = 1, linetype = "dashed") +
     labs(
       # x = "Midpoint of average observed flux bins",

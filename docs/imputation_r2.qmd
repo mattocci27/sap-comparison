@@ -125,7 +125,7 @@ The estimated sap flux values are divided into 20 equal intervals.
 The y-axis represents the relative difference between re-imputed and observed sap flux density, calculated as (re-imputed / observed).
 The dashed line at *y* = 1 indicates where the re-imputed values match the observed values.
 Values above this line indicate overestimation by the re-imputation, while values below indicate underestimation.
-Because most of the values are concentrated in the lower range of sap flux density (Fig SX?), the relative difference between the sum of observed sap flux and the sum of re-imputed sap flux across all the range is only `r rel_diff`%.
+Because most of the values are concentrated in the lower range of sap flux density (Fig SX?), the sum of re-imputed sap flux across all the range is only `r rel_diff`% smaller than the sum of the sap flux calculated from the observed *K* values.
 
 
 ```{r, echo=FALSE}
