@@ -1639,6 +1639,25 @@ tar_impute <- list(
     },
     format = "file"
   ),
+  tar_target(
+    reimp_bin_df,
+    generate_reimp_bin_df(combined_imputed_k_mapped,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+  ),
+  tar_target(
+    reimp_bin_plot, {
+      p <- reimp_bin_bar(reimp_bin_df)
+      my_ggsave(
+        "figs/reimp_bn_bar",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   NULL
   )
 

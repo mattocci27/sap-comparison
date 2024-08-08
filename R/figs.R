@@ -2308,3 +2308,53 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
 #   annotation_custom(ggplotGrob(p_slope),
 #                     xmin = 0.3, xmax = 1.05,
 #                     ymin = 0.4, ymax = 1.05)
+
+generate_reimp_bin_df <- function(combined_imputed_k_mapped, draws) {
+  df <- combined_imputed_k_mapped |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
+
+  post_ab <- draws |> apply(2, median)
+
+  df <- df  |>
+    mutate(log_fd_ori = post_ab["log_a"] + post_ab["b"] * log(k_ori)) |>
+    mutate(log_fd_reimp = post_ab["log_a"] + post_ab["b"] * log(k_imp)) |>
+    mutate(flux_obs = exp(log_fd_ori)) |>
+    mutate(flux_reimp = exp(log_fd_reimp))
+
+  # pdf_obs <- ggplot(df, aes(x = flux_obs)) +
+  #   geom_density() +
+  #   labs(title = "Observed Flux PDF")
+
+  # pdf_reimp <- ggplot(df, aes(x = flux_reimp)) +
+  #   geom_density() +
+  #   labs(title = "Re-imputed Flux PDF")
+
+  # Define intervals (bins)
+  bins <- seq(min(df$flux_obs), max(df$flux_obs), length.out = 21)
+
+  # Calculate total flux in each interval
+  df |>
+    mutate(interval = cut(flux_obs, breaks = bins, include.lowest = TRUE)) |>
+    group_by(interval) |>
+    summarise(
+      total_flux_obs = sum(flux_obs),
+      total_flux_reimp = sum(flux_reimp),
+      avg_flux_obs = mean(flux_obs),
+      n = n()
+    ) |>
+    # mutate(difference = total_flux_obs - total_flux_reimp)
+    mutate(relative_difference = total_flux_reimp / total_flux_obs)
+}
+
+reimp_bin_bar <- function(reimp_bin_df) {
+  # Plot the differences
+  ggplot(reimp_bin_df, aes(x = avg_flux_obs, y = relative_difference)) +
+    geom_bar(stat = "identity") +
+    geom_hline(yintercept = 1, linetype = "dashed") +
+    labs(
+      # x = "Midpoint of average observed flux bins",
+      x = expression("Sap flux density bins "(g~m^{-2}~s^{-1})),
+      y = "Relative difference\n(re-imputed / observed)") +
+    theme_bw()
+}
