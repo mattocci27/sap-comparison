@@ -1645,6 +1645,11 @@ tar_impute <- list(
       segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
   ),
   tar_target(
+    reimp_bin_granier_df,
+    generate_reimp_bin_df(combined_imputed_k_mapped,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08, granier = TRUE)
+  ),
+  tar_target(
     reimp_bin_ci_list,
     generate_reimp_bin_ci_list(
       reimp_bin_df,
@@ -1656,6 +1661,20 @@ tar_impute <- list(
       p <- reimp_bin_bar(reimp_bin_ci_list$reimp_bin_ci_df)
       my_ggsave(
         "figs/reimp_bin_bar",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    reimp_bin_granier_plot, {
+      p <- reimp_bin_bar(reimp_bin_granier_df, error = FALSE)
+      my_ggsave(
+        "figs/reimp_bin_bar_granier",
         p,
         dpi = 600,
         width = 110,

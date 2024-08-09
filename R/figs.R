@@ -2309,26 +2309,23 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
 #                     xmin = 0.3, xmax = 1.05,
 #                     ymin = 0.4, ymax = 1.05)
 
-generate_reimp_bin_df <- function(combined_imputed_k_mapped, draws) {
+generate_reimp_bin_df <- function(combined_imputed_k_mapped, draws, granier = FALSE) {
   df <- combined_imputed_k_mapped |>
     filter(is.na(k_new_with_na)) |>
     filter(!is.na(k_ori))
 
   post_ab <- draws |> apply(2, median)
 
+  if (granier) {
+    post_ab[1] <- log(119)
+    post_ab[2] <- 1.231
+  }
+
   df <- df  |>
     mutate(log_fd_ori = post_ab["log_a"] + post_ab["b"] * log(k_ori)) |>
     mutate(log_fd_reimp = post_ab["log_a"] + post_ab["b"] * log(k_imp)) |>
     mutate(flux_obs = exp(log_fd_ori)) |>
     mutate(flux_reimp = exp(log_fd_reimp))
-
-  # pdf_obs <- ggplot(df, aes(x = flux_obs)) +
-  #   geom_density() +
-  #   labs(title = "Observed Flux PDF")
-
-  # pdf_reimp <- ggplot(df, aes(x = flux_reimp)) +
-  #   geom_density() +
-  #   labs(title = "Re-imputed Flux PDF")
 
   # Define intervals (bins)
   bins <- seq(min(df$flux_obs), max(df$flux_obs), length.out = 21)
@@ -2406,15 +2403,22 @@ generate_reimp_bin_ci_list <- function(reimp_bin_df, combined_imputed_k_mapped, 
 }
 
 
-reimp_bin_bar <- function(reimp_bin_df) {
+reimp_bin_bar <- function(reimp_bin_df, error = TRUE) {
   # Plot the differences
-  ggplot(reimp_bin_df, aes(x = avg_flux_obs, y = relative_difference)) +
+  p <- ggplot(reimp_bin_df, aes(x = avg_flux_obs, y = relative_difference)) +
     geom_bar(stat = "identity") +
-    geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2) +
+    # geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2) +
     geom_hline(yintercept = 1, linetype = "dashed") +
+    coord_cartesian(ylim = c(0, 1.35)) +
     labs(
       # x = "Midpoint of average observed flux bins",
       x = expression("Sap flux density bins "(g~m^{-2}~s^{-1})),
       y = "Relative difference\n(re-imputed / observed)") +
     theme_bw()
+
+  if (error) {
+    p + geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2)
+  } else {
+    p
+  }
 }

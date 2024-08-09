@@ -106,7 +106,15 @@ The correlation is significant (*P* < 0.001).
 SMA (standardized major axis) slope = `r fit$coef[[1]][2,1] |> round(3)` (95% CI: `r fit$coef[[1]][2,2] |> round(3)`, `r fit$coef[[1]][2,3] |> round(3)`).
 SMA intercept = `r fit$coef[[1]][1,1] |> round(4)` (95% CI: `r fit$coef[[1]][1,2] |> round(4)`, `r fit$coef[[1]][1,3] |> round(4)`).
 The inset plot magnifies the lower range of *K* values because most of the values are concentrated in this range.
-**b** An example of *K* value re-imputations for tree ID 11, measured at 2 cm depth from the south direction in February 2015.
+**b** Relative difference in sap flux density estimated from observed and re-imputed *K* values.
+The sap flux density was calculated using the median coefficients *a* and *b* from Model 4 with *P~g~* = 0.08.
+The estimated sap flux values are divided into 20 equal intervals.
+The y-axis represents the relative difference between re-imputed and observed sap flux density, calculated as (re-imputed / observed).
+The dashed line at *y* = 1 indicates where the re-imputed values match the observed values.
+Values above this line indicate overestimation by the re-imputation, while values below indicate underestimation.
+Because most of the values are concentrated in the lower range of sap flux density (Fig SX?), the sum of re-imputed sap flux across all the range is only `#r rel_diff`% smaller than the sum of the sap flux calculated from the observed *K* values.
+
+An example of *K* value re-imputations for tree ID 11, measured at 2 cm depth from the south direction in February 2015.
 Only the pairs of re-imputed values and the original non-missing values are shown.
 
 ```{r, echo=FALSE}
@@ -120,12 +128,6 @@ rel_diff <- round(tmp * 100, 2)
 ![](`r paste0("file://", here::here("figs/reimp_bin_bar.png"))`)
 
 **Fig. SX: Relative difference in sap flux density estimated from observed and re-imputed *K* values**
-The sap flux density was calculated using the median coefficients *a* and *b* from Model 4 with *P~g~* = 0.08.
-The estimated sap flux values are divided into 20 equal intervals.
-The y-axis represents the relative difference between re-imputed and observed sap flux density, calculated as (re-imputed / observed).
-The dashed line at *y* = 1 indicates where the re-imputed values match the observed values.
-Values above this line indicate overestimation by the re-imputation, while values below indicate underestimation.
-Because most of the values are concentrated in the lower range of sap flux density (Fig SX?), the sum of re-imputed sap flux across all the range is only `r rel_diff`% smaller than the sum of the sap flux calculated from the observed *K* values.
 
 
 ```{r, echo=FALSE}
