@@ -949,13 +949,15 @@ granier_list <- list(
     generate_xylem_lab(fd_k_traits_csv)
   ),
   tar_target(
-    traits_xylem_table_csv,
-    my_write_csv(segments_xylem_traits_table_combined, "data/traits_xylem_post.csv"),
+    #traits_xylem_table_csv,
+    model4_with_traits_posterior_csv,
+    my_write_csv(segments_xylem_traits_table_combined, "data/model4_traits_with_xylem_posteriors.csv"),
     format = "file"
   ),
   tar_target(
-    traits_noxylem_table_csv,
-    my_write_csv(segments_noxylem_traits_table_combined, "data/traits_noxylem_post.csv"),
+    # traits_noxylem_table_csv,
+    model4_without_traits_posterior_csv,
+    my_write_csv(segments_noxylem_traits_table_combined, "data/model4_traits_without_xylem_posteriors.csv.csv"),
     format = "file"
   ),
 
