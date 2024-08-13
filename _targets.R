@@ -890,13 +890,14 @@ granier_list <- list(
     }
   ),
   tar_target(
-    segments_inclusive_ab_csv,
-    generate_species_segments_ab_csv(segments_ab_table_combined, "data/segments_inclusive_ab.csv"),
+   #segments_inclusive_ab_csv,
+    model2_posteriors_csv,
+    generate_species_segments_ab_csv(segments_ab_table_combined, "data/model2_posteriors.csv"),
     format = "file"
   ),
   tar_target(
-    species_only_ab_csv,
-    generate_species_segments_ab_csv(species_ab_table_combined, "data/species_only_ab.csv"),
+    model1_posteriors_csv,
+    generate_species_segments_ab_csv(species_ab_table_combined, "data/model1_posteriors.csv"),
     format = "file"
   ),
   segments_xylem_df_mapped,
@@ -904,20 +905,22 @@ granier_list <- list(
   tar_combined_segments_xylem_df,
   tar_combined_species_xylem_df,
   tar_target(
-    segments_xylem_csv, {
+    # segments_xylem_csv, {
+    model4_csv, {
        segments_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
        dplyr::select(-id) |>
-       my_write_csv("data/segments_xylem_post.csv")
+       my_write_csv("data/model4_posteriors.csv")
     },
     format = "file"
   ),
   tar_target(
-    species_xylem_csv, {
+    #species_xylem_csv, {
+    model3_csv, {
        species_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
        dplyr::select(-id) |>
-       my_write_csv("data/species_xylem_post.csv")
+       my_write_csv("data/model3_posteriors.csv")
     },
     format = "file"
   ),

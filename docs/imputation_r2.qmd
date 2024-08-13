@@ -22,20 +22,21 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = FALSE,
   fig.align = "center",
-  fig.show = "hold"
-)
+  fig.show = "hold",
+  root.dir = "/workspaces/sap-comparison-dev"
+  )
 ```
-
-```{r, echo=FALSE}
+```{r library, echo=FALSE}
 # renv::install("adletaw/captioner")
 # renv::repair()
 library(targets)
 library(tidyverse)
 ```
 
-```{r, echo=FALSE}
+```{r test, echo=FALSE}
 d <- withr::with_dir(rprojroot::find_root('_targets.R'),
-  targets::tar_read(imp2_df))
+   targets::tar_read(imp2_df))
+# d <- tar_read(imp2_df)
 
 d2 <- d |>
     filter(is.na(k_1st_imputed_with_na)) |>
@@ -83,6 +84,13 @@ ggplot(df, aes(y = id, x = data, fill = k)) +
         panel.grid = element_blank(),
         axis.title = element_blank()) +
   labs(fill = "Category")
+```
+
+```{r, echo=FALSE}
+d <- withr::with_dir(rprojroot::find_root('_targets.R'),
+  tar_read(reimp_bin_granier_df))
+
+(1 - sum(d$total_flux_reimp) / sum(d$total_flux_obs))  * 100
 ```
 
 **Not for the manuscript**.

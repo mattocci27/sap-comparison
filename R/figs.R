@@ -2256,7 +2256,18 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     scale_fill_viridis_c(
       option = "D",
       direction = 1,
-      name = "Number of data"  # Change the label
+      breaks = c(1, 100000),  # Only two breaks, similar to the map legend
+      labels = c("1", "100,000"),
+      name = "Number of data",  # Change the label
+      guide = guide_colorbar(
+        barwidth = 8,
+        barheight = 0.5,
+        title.position = "top",
+        label.position = "top",
+        title.hjust = 0.5,
+        label.vjust = 2,  # Adjust vertical position to avoid overlap
+        label.theme = element_text(size = 8, angle = 0)  # Fine-tune text size and angle
+     )
     ) +
    annotate(
       "text",
@@ -2276,7 +2287,12 @@ imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
     labs(
       x = expression(Observed~italic(K)),
       y = expression(Re*"-"*imputed~italic(K))) +
-    my_theme()
+    my_theme() +
+    theme(
+      legend.position = "top",
+      legend.margin = margin(t = -10, unit = "pt"),  # Reduce space between legend and plot
+      plot.margin = margin(t = 0, r = 5, b = 5, l = 5, unit = "pt")  # Adjust plot margins as needed
+    )
 
   p2 <- ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
     geom_bin2d(bins = 100) +
