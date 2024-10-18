@@ -45,7 +45,8 @@ tar_option_set(packages = c(
   "viridis",
   "ggpointdensity",
   "boot",
-  "ggpubr"
+  "ggpubr",
+  "MASS"
 ))
 
 # tar_option_set(
@@ -1598,6 +1599,19 @@ tar_impute <- list(
       p <- imp_r2_scatter(combined_imputed_k_mapped)
       my_ggsave(
         "figs/imp_r2",
+        p,
+        dpi = 600,
+        width = 4.33,
+        height = 3.1
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    imp_r2_plot2, {
+      p <- imp_r2_scatter2(combined_imputed_k_mapped, segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+      my_ggsave(
+        "figs/imp_r2_2",
         p,
         dpi = 600,
         width = 4.33,

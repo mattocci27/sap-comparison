@@ -2240,6 +2240,40 @@ tr_example_panel <- function(tr_example_list) {
   p1 + p2 + p3
 }
 
+imp_r2_scatter2 <- function(data = combined_imputed_k_mapped, draws, granier = FALSE) {
+  # library(targets)
+  # library(tidyverse)
+  # data <- tar_read(combined_imputed_k_mapped)
+  # draws <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+
+  post_ab <- draws |> apply(2, median)
+
+  if (granier) {
+    post_ab[1] <- log(119)
+    post_ab[2] <- 1.231
+  }
+
+  df <- data |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori)) |>
+    mutate(log_fd_ori = post_ab["log_a"] + post_ab["b"] * log(k_ori)) |>
+    mutate(log_fd_reimp = post_ab["log_a"] + post_ab["b"] * log(k_imp)) |>
+    mutate(flux_obs = exp(log_fd_ori)) |>
+    mutate(flux_reimp = exp(log_fd_reimp))
+
+  dens <- with(df, kde2d(flux_obs, flux_reimp, n = 500))
+  ix <- findInterval(df$flux_obs, dens$x)
+  iy <- findInterval(df$flux_reimp, dens$y)
+  df$density <- dens$z[cbind(ix, iy)]
+
+  p <- ggplot(df, aes(x = flux_obs, y = flux_reimp, col = density)) +
+    geom_point(alpha = 0.01) +
+    scale_color_viridis_c(option = "D") +
+    geom_abline(intercept = 0, slope = 1, linetype = 2) +
+    theme_bw()
+  p
+}
+
 imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
   df <- data |>
     filter(is.na(k_new_with_na)) |>

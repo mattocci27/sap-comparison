@@ -1,7 +1,7 @@
 # Create a function to prepare the data
 prepare_plot_data <- function(data, value_prefix) {
   data |>
-    select(-contains(setdiff(c("a_", "b_"), value_prefix))) |>
+    dplyr::select(-contains(setdiff(c("a_", "b_"), value_prefix))) |>
     rename_with(~ sub(value_prefix, "", .x)) |>
     mutate(ab = substr(value_prefix, 1, 1))  |>
     mutate(
