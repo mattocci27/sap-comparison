@@ -75,7 +75,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 \newpage
 
-## Model 4a (Model 4 with segement-leve traits)
+## Model 4a (Model 4 with segement-level traits)
 
 ```{stan, size="small", file="../stan-ms/segments_xylem_traits_simple.stan", echo=TRUE, eval=FALSE, output.var="segment-xylem-traits-simple"}
 ```
