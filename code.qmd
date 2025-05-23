@@ -1,0 +1,80 @@
+---
+title: "Codes"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+  docx:
+    toc: true
+    number-sections: true
+    highlight-style: github
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+
+# Stan codes
+
+## Pressure- vs. tensin-induced flow
+
+```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
+```
+
+
+## Model 1, species-only model: pooled fitting for separate species
+
+```{stan, file=here::here('stan/species_only.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```
+
+## Model 2, segment-inclusive model: multilevel fitting for separate species
+
+```{stan, file=here::here('stan/segments_inclusive.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```
+
+## Model 3, species-xylem model: pooled fitting for pooled species
+
+```{stan, file=here::here('stan/species_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
+```
+
+## Model 4, segment-xylem model: multilevel fitting for pooled species
+
+```{stan, file=here::here('stan/segments_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
+```
+
+## Model 4a, segment-xylem model with traits
+
+```{stan, file=here::here('stan/segments_xylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
+```
+
+## Model 4b, segment-xylem model with traits without xylem-type variation
+
+```{stan, file=here::here('stan/segments_noxylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```
+
+## The effect of Depth and direction on *K*
+
+```{stan, file=here::here('stan/dir_dep.stan'), echo=TRUE, eval=FALSE, output.var="amam"}
+```
+
+## The relationship between sapwood length and DBH
+
+```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
+```
