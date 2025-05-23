@@ -13,8 +13,8 @@ format:
     standalone: true
     embed-resources: true
   docx:
-    toc: true
-    number-sections: true
+    toc: false
+    number-sections: false
     highlight-style: github
 ---
 
@@ -30,8 +30,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-# Stan codes
 
 ## Pressure- vs. tensin-induced flow
 
