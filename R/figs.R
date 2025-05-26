@@ -1448,7 +1448,9 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
     janitor::clean_names()
 
   # Create plots
-  p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)
+  p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)  #+
+      # annotate("point", x = 119, y = 1.231, colour = "red", size = 3)
+
   p2 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = TRUE)
 
   # Combine plots

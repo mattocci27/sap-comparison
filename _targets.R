@@ -1690,6 +1690,20 @@ tar_impute <- list(
     format = "file"
   ),
   tar_target(
+    reimp_bin_plot2, {
+      p <- reimp_bin_bar(reimp_bin_df, error = FALSE)
+      my_ggsave(
+        "figs/reimp_bin_bar2",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
     reimp_bin_granier_plot, {
       p <- reimp_bin_bar(reimp_bin_granier_df, error = FALSE)
       my_ggsave(
