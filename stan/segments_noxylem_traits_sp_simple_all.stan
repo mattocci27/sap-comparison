@@ -8,18 +8,17 @@ data {
   matrix[N, 2] x;
   matrix[K, T] xk; // trait - species
   matrix[K, J] uj;
-  matrix[T, K] uk;
 }
 
 parameters {
   real<lower=0> sigma;
-  matrix[2*T, T] beta;
+  matrix[2, T] beta;
   matrix[2, J] zj;
   matrix[2, K] zk;
   cholesky_factor_corr[2] L_Omega_j;
-  cholesky_factor_corr[2*T] L_Omega_k;
+  cholesky_factor_corr[2] L_Omega_k;
   vector<lower=0>[2] tau_j;
-  vector<lower=0>[2*T] tau_k;
+  vector<lower=0>[2] tau_k;
 }
 
 // simple

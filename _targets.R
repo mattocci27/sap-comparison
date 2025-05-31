@@ -2389,7 +2389,8 @@ mul_reg_list <- list(
   ),
   tar_stan_mcmc(
     fit_all,
-    "stan/segments_noxylem_traits_simple_all.stan",
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
     data = stan_data_noxylem_all,
     refresh = 0,
     chains = 1,
