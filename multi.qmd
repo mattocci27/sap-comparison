@@ -1,0 +1,458 @@
+---
+title: ""
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(targets)
+```
+
+
+# Species‐level R² for xk
+
+```{r R2}
+s <- tar_read(fit_all_summary_segments_noxylem_traits_sp_simple_all)
+tar_load(fit_all_draws_segments_noxylem_traits_sp_simple_all)
+
+stan_data <- tar_read(stan_data_noxylem_all)
+str(stan_data)
+```
+
+```{r}
+library(dplyr)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 0) Pull in your posterior‐draws tibble and the species‐covariate matrix xk
+# ────────────────────────────────────────────────────────────────────────────────
+draws_df <- fit_all_draws_segments_noxylem_traits_sp_simple_all  # your posterior draws
+xk        <- stan_data$xk   # should be K×T, exactly as given to Stan
+K         <- nrow(xk)
+T         <- ncol(xk)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 1) Extract β rows 1 and 2 into M×T matrices: beta1_mat, beta2_mat
+# ────────────────────────────────────────────────────────────────────────────────
+beta1_mat <- draws_df %>%
+  select(matches("^beta\\[1,[0-9]+\\]$")) %>%
+  as.matrix()
+stopifnot(ncol(beta1_mat) == T)  # sanity check
+
+beta2_mat <- draws_df %>%
+  select(matches("^beta\\[2,[0-9]+\\]$")) %>%
+  as.matrix()
+stopifnot(ncol(beta2_mat) == T)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 2) Extract τ_k (species‐level SDs) into M×2: tau_k_mat
+# ────────────────────────────────────────────────────────────────────────────────
+tau_k_mat <- draws_df %>%
+  select(matches("^tau_k\\[[12]\\]$")) %>%
+  as.matrix()
+stopifnot(ncol(tau_k_mat) == 2)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 3) Extract L_Omega_k (2×2 Cholesky for species) into an (M × 2 × 2) array
+#    Stan only stores L_Omega_k[1,1], L_Omega_k[2,1], and L_Omega_k[2,2].
+# ────────────────────────────────────────────────────────────────────────────────
+L11_k <- draws_df %>% pull(`L_Omega_k[1,1]`)  # length M
+L21_k <- draws_df %>% pull(`L_Omega_k[2,1]`)  # length M
+L22_k <- draws_df %>% pull(`L_Omega_k[2,2]`)  # length M
+
+M <- nrow(draws_df)  # total number of posterior draws
+
+Lk_array <- array(0.0, dim = c(M, 2, 2))  # (draw × 2 × 2)
+Lk_array[, 1, 1] <- L11_k
+Lk_array[, 1, 2] <- 0
+Lk_array[, 2, 1] <- L21_k
+Lk_array[, 2, 2] <- L22_k
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 4) Extract zk (the non-centered 2×K “species‐noise” standard normals) into (M × 2 × K)
+# ────────────────────────────────────────────────────────────────────────────────
+zk1_mat <- draws_df %>%
+  select(matches("^zk\\[1,[0-9]+\\]$")) %>%
+  as.matrix()   # M × K
+zk2_mat <- draws_df %>%
+  select(matches("^zk\\[2,[0-9]+\\]$")) %>%
+  as.matrix()   # M × K
+stopifnot(ncol(zk1_mat) == K, ncol(zk2_mat) == K)
+
+zk_array <- array(0.0, dim = c(M, 2, K))  # (draw × 2 × K)
+zk_array[, 1, ] <- zk1_mat
+zk_array[, 2, ] <- zk2_mat
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 5) Reconstruct the species‐level “noise” for each draw m (2×K): species_noise_array
+#    species_noise_array[m, , k] = ( Lk_array[m,, ] %*% diag(tau_k_mat[m, ]) ) %*% zk_array[m,, k]
+# ────────────────────────────────────────────────────────────────────────────────
+species_noise_array <- array(0.0, dim = c(M, 2, K))
+
+for (m in seq_len(M)) {
+  Dm  <- diag(tau_k_mat[m, ], 2, 2)     # diag( tau_k[m,1], tau_k[m,2] )
+  LkD <- Lk_array[m, , ] %*% Dm         # (2×2) × (2×2)  →  2×2
+  species_noise_array[m, , ] <- LkD %*% zk_array[m, , ]  # (2×2) × (2×K) = 2×K
+}
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 6) Extract τ_j (tree‐level SDs) into M×2: tau_j_mat
+# ────────────────────────────────────────────────────────────────────────────────
+tau_j_mat <- draws_df %>%
+  select(matches("^tau_j\\[[12]\\]$")) %>%
+  as.matrix()
+stopifnot(ncol(tau_j_mat) == 2)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 7) Extract L_Omega_j (2×2 Cholesky for tree) into an (M × 2 × 2) array
+# ────────────────────────────────────────────────────────────────────────────────
+L11_j <- draws_df %>% pull(`L_Omega_j[1,1]`)  # length M
+L21_j <- draws_df %>% pull(`L_Omega_j[2,1]`)  # length M
+L22_j <- draws_df %>% pull(`L_Omega_j[2,2]`)  # length M
+
+Lj_array <- array(0.0, dim = c(M, 2, 2))  # (draw × 2 × 2)
+Lj_array[, 1, 1] <- L11_j
+Lj_array[, 1, 2] <- 0
+Lj_array[, 2, 1] <- L21_j
+Lj_array[, 2, 2] <- L22_j
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 8) Extract zj (the non-centered 2×J “tree‐noise” standard normals) into (M × 2 × J)
+# ────────────────────────────────────────────────────────────────────────────────
+zj1_mat <- draws_df %>%
+  select(matches("^zj\\[1,[0-9]+\\]$")) %>%
+  as.matrix()  # M × J
+zj2_mat <- draws_df %>%
+  select(matches("^zj\\[2,[0-9]+\\]$")) %>%
+  as.matrix()  # M × J
+stopifnot(ncol(zj1_mat) == stan_data$J, ncol(zj2_mat) == stan_data$J)
+
+zj_array <- array(0.0, dim = c(M, 2, stan_data$J))  # (draw × 2 × J)
+zj_array[, 1, ] <- zj1_mat
+zj_array[, 2, ] <- zj2_mat
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 9) Now loop over each draw m to build:
+#      (a) beta_hat_fixed_species[m, , ]  = beta[m,, ] × t(xk)  (2×T) × (T×K) = 2×K
+#      (b) beta_hat_total_species[m, , ]  = beta_hat_fixed_species + species_noise_array[m,, ]  (2×K)
+#      (c) A_fixed[m, , ] = beta_hat_fixed_species[m,, ] × uj  (2×K) × (K×J) = 2×J
+#      (d) A_total[m, , ] = beta_hat_total_species[m,, ] × uj + tree_noise[m,, ] (2×J)
+#
+#    Finally compute:
+#      R2_intercept[m] = Var_j( A_fixed[m, 1, j] ) / Var_j( A_total[m, 1, j] )
+#      R2_slope[m]     = Var_j( A_fixed[m, 2, j] ) / Var_j( A_total[m, 2, j] )
+# ────────────────────────────────────────────────────────────────────────────────
+J <- stan_data$J
+
+# Pre‐allocate arrays:
+beta_hat_fixed_species  <- array(0.0, dim = c(M, 2, K))
+beta_hat_total_species  <- array(0.0, dim = c(M, 2, K))
+A_fixed_array           <- array(0.0, dim = c(M, 2, J))
+A_total_array           <- array(0.0, dim = c(M, 2, J))
+
+R2_intercept <- numeric(M)
+R2_slope     <- numeric(M)
+
+for (m in seq_len(M)) {
+  # --- (a) Build beta_hat_fixed_species[m,, ] = beta[m,, ] × t(xk):
+  #     First extract beta[m,, ] from draws_df:
+  beta1_m <- beta1_mat[m, ]      # length T = row 1 of beta on draw m
+  beta2_m <- beta2_mat[m, ]      # length T = row 2 of beta on draw m
+  beta_m  <- rbind(beta1_m, beta2_m)  # 2×T
+
+  #    Multiply: (2×T) × (T×K) → 2×K
+  beta_hat_fixed_species[m, , ] <- beta_m %*% t(xk)
+
+  # --- (b) Add species noise:
+  beta_hat_total_species[m, , ] <- beta_hat_fixed_species[m, , ] + species_noise_array[m, , ]
+  #             (2×K)                               (2×K)
+
+  # --- (c) Push species→tree (fixed only):  (2×K) × (K×J) → 2×J
+  A_fixed_array[m, , ] <- beta_hat_fixed_species[m, , ] %*% stan_data$uj
+  #                                                        (K×J stored in stan_data$uj)
+
+  # --- (d) Push species→tree + add tree noise (total):
+  A_species_total   <- beta_hat_total_species[m, , ] %*% stan_data$uj  # 2×J
+  tree_noise_2xJ    <- (Lj_array[m, , ] %*% diag(tau_j_mat[m, ], 2, 2)) %*% zj_array[m, , ]
+  # (2×2) × (2×J) = 2×J
+  A_total_array[m, , ] <- A_species_total + tree_noise_2xJ
+  #                       (2×J)          +   (2×J)
+
+  # --- (e) Now compute R2 for draw m:
+  #     Intercept = row 1, Slope = row 2
+  intercept_fixed_m <- A_fixed_array[m, 1, ]  # length J
+  intercept_total_m <- A_total_array[m, 1, ]  # length J
+  slope_fixed_m     <- A_fixed_array[m, 2, ]
+  slope_total_m     <- A_total_array[m, 2, ]
+
+  var_fit0 <- var(intercept_fixed_m)
+  var_tot0 <- var(intercept_total_m)
+  R2_intercept[m] <- if (var_tot0 > 0) var_fit0 / var_tot0 else NA_real_
+
+  var_fit1 <- var(slope_fixed_m)
+  var_tot1 <- var(slope_total_m)
+  R2_slope[m] <- if (var_tot1 > 0) var_fit1 / var_tot1 else NA_real_
+}
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 10) Summarize both R2_intercept and R2_slope over M draws
+# ────────────────────────────────────────────────────────────────────────────────
+R2_int_mean   <- mean(R2_intercept, na.rm = TRUE)
+R2_int_med    <- median(R2_intercept, na.rm = TRUE)
+R2_int_ci     <- quantile(R2_intercept, c(0.025, 0.975), na.rm = TRUE)
+
+R2_slope_mean <- mean(R2_slope, na.rm = TRUE)
+R2_slope_med  <- median(R2_slope, na.rm = TRUE)
+R2_slope_ci   <- quantile(R2_slope, c(0.025, 0.975), na.rm = TRUE)
+
+cat("=== Posterior R² for the *intercept* A[1,⋅] (explained by xk) ===\n")
+cat("  Posterior‐mean  R²_intercept = ", round(R2_int_mean,   3), "\n")
+cat("  Posterior‐median R²_intercept = ", round(R2_int_med,    3), "\n")
+cat("  95% CI for R²_intercept = [", round(R2_int_ci[1], 3),
+    ", ", round(R2_int_ci[2], 3), "]\n\n")
+
+cat("=== Posterior R² for the *slope* A[2,⋅] (explained by xk) ===\n")
+cat("  Posterior‐mean  R²_slope     = ", round(R2_slope_mean, 3), "\n")
+cat("  Posterior‐median R²_slope     = ", round(R2_slope_med,  3), "\n")
+cat("  95% CI for R²_slope = [", round(R2_slope_ci[1], 3),
+    ", ", round(R2_slope_ci[2], 3), "]\n")
+```
+
+# Segment‐level R² for xj
+
+```{r}
+library(dplyr)
+library(stringr)
+
+tar_load(fit_all_draws_segments_noxylem_traits_simple_all)
+# ────────────────────────────────────────────────────────────────────────────────
+# 0) Grab your posterior‐draws tibble and stan_data:
+# ────────────────────────────────────────────────────────────────────────────────
+draws_df <- fit_all_draws_segments_noxylem_traits_simple_all
+xj        <- stan_data$xj    # J × T matrix of tree‐level predictors
+uj        <- stan_data$uj    # K × J species→tree one‐hot
+J         <- stan_data$J
+K         <- stan_data$K
+T         <- stan_data$T     # number of tree‐level traits
+
+M <- nrow(draws_df)          # total posterior draws
+
+cat("\n>>> STEP 0: Check how many columns your tibble has and list the first 200 names.\n")
+all_names <- colnames(draws_df)
+cat("Total columns in draws_df: ", length(all_names), "\n")
+cat("First 200 column names:\n")
+print(all_names[1:min(200, length(all_names))])
+cat("\n(Scroll up to see how the B[1,*] and B[2,*] columns are actually spelled.)\n\n")
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 1) Find all column names that look like B[1,•] and B[2,•], allowing an optional space
+#    between the comma and the index.  For example, "B[1,1]" or "B[1, 1]".
+# ────────────────────────────────────────────────────────────────────────────────
+pat1_loose <- "^B\\[1, *[0-9]+\\]$"
+pat2_loose <- "^B\\[2, *[0-9]+\\]$"
+
+b1_cols <- grep(pat1_loose, all_names, value = TRUE)
+b2_cols <- grep(pat2_loose, all_names, value = TRUE)
+
+cat("Columns matching ^B\\[1, *[0-9]+\\]$ :\n")
+print(b1_cols)
+cat(" length(b1_cols) = ", length(b1_cols), "  (expected T = ", T, ")\n\n")
+
+cat("Columns matching ^B\\[2, *[0-9]+\\]$ :\n")
+print(b2_cols)
+cat(" length(b2_cols) = ", length(b2_cols), "  (expected T = ", T, ")\n\n")
+
+if (length(b1_cols) != T || length(b2_cols) != T) {
+  stop(paste0(
+    "❌ We did not find exactly T=", T, " columns for B[1,*] or B[2,*].\n",
+    "   length(b1_cols) = ", length(b1_cols), "\n",
+    "   length(b2_cols) = ", length(b2_cols), "\n\n",
+    "Please inspect the printed column names above and adjust the regex.\n",
+    "For example, if you see \"B[1,1]\" spelled as \"B[1, 1]\" (with a space), our pattern above \n",
+    "already allows that. But if it’s named something like \"Beta1_1\" or \"b1_1\", adapt the pattern accordingly.\n"
+  ))
+}
+
+cat("✅ Successfully found exactly T columns for B[1,*] and B[2,*].\n\n")
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 2) Build beta1_mat (M × T) and beta2_mat (M × T)
+# ────────────────────────────────────────────────────────────────────────────────
+beta1_mat <- draws_df %>% select(all_of(b1_cols)) %>% as.matrix()
+stopifnot(ncol(beta1_mat) == T)
+
+beta2_mat <- draws_df %>% select(all_of(b2_cols)) %>% as.matrix()
+stopifnot(ncol(beta2_mat) == T)
+
+cat("✅ Built beta1_mat and beta2_mat (each has T columns).\n\n")
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 3) Reconstruct the species‐level “noise” θ_centered exactly as in Stan:
+#    (a) tau_k[1], tau_k[2] → tau_k_mat (M × 2)
+#    (b) L_Omega_k[1,1], [2,1], [2,2] → Lk_array (M × 2 × 2)
+#    (c) zk[1,1..K], zk[2,1..K] → zk_array (M × 2 × K)
+#    (d) species_noise_array[m, , ] = (Lk_array[m,, ] %*% diag(tau_k_mat[m, ])) %*% zk_array[m,, ]
+# ────────────────────────────────────────────────────────────────────────────────
+
+# 3a) tau_k:
+tau_k_mat <- draws_df %>% select(matches("^tau_k\\[[12]\\]$")) %>% as.matrix()
+stopifnot(ncol(tau_k_mat) == 2)
+
+# 3b) L_Omega_k → Lk_array (M × 2 × 2):
+L11_k <- draws_df %>% pull(`L_Omega_k[1,1]`)
+L21_k <- draws_df %>% pull(`L_Omega_k[2,1]`)
+L22_k <- draws_df %>% pull(`L_Omega_k[2,2]`)
+
+Lk_array <- array(0.0, dim = c(M, 2, 2))
+Lk_array[,1,1] <- L11_k
+Lk_array[,1,2] <- 0.0
+Lk_array[,2,1] <- L21_k
+Lk_array[,2,2] <- L22_k
+
+# 3c) zk[1,1..K], zk[2,1..K] → zk_array (M × 2 × K):
+zk1_mat <- draws_df %>% select(matches("^zk\\[1,[0-9]+\\]$")) %>% as.matrix()  # M × K
+zk2_mat <- draws_df %>% select(matches("^zk\\[2,[0-9]+\\]$")) %>% as.matrix()  # M × K
+stopifnot(ncol(zk1_mat) == K, ncol(zk2_mat) == K)
+
+zk_array <- array(0.0, dim = c(M, 2, K))
+zk_array[,1, ] <- zk1_mat
+zk_array[,2, ] <- zk2_mat
+
+# 3d) Build species_noise_array (M × 2 × K):
+species_noise_array <- array(0.0, dim = c(M, 2, K))
+for (m in seq_len(M)) {
+  Dk   <- diag(tau_k_mat[m, ], 2, 2)        # 2×2 diag(tau_k[m, ])
+  LkD  <- Lk_array[m, , ] %*% Dk            # (2×2) × (2×2)
+  species_noise_array[m, , ] <- LkD %*% zk_array[m, , ]  # (2×2) × (2×K) = 2×K
+}
+cat("✅ Reconstructed species_noise_array (M × 2 × K).\n\n")
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 4) Reconstruct the tree‐level “noise” exactly as in Stan:
+#    (a) tau_j[1], tau_j[2] → tau_j_mat (M × 2)
+#    (b) L_Omega_j[1,1], [2,1], [2,2] → Lj_array (M × 2 × 2)
+#    (c) zj[1,1..J], zj[2,1..J] → zj_array (M × 2 × J)
+#    (d) tree_noise_array[m, , ] = (Lj_array[m,, ] %*% diag(tau_j_mat[m, ])) %*% zj_array[m,, ]
+# ────────────────────────────────────────────────────────────────────────────────
+
+# 4a) tau_j:
+tau_j_mat <- draws_df %>% select(matches("^tau_j\\[[12]\\]$")) %>% as.matrix()
+stopifnot(ncol(tau_j_mat) == 2)
+
+# 4b) L_Omega_j → Lj_array (M × 2 × 2):
+L11_j <- draws_df %>% pull(`L_Omega_j[1,1]`)
+L21_j <- draws_df %>% pull(`L_Omega_j[2,1]`)
+L22_j <- draws_df %>% pull(`L_Omega_j[2,2]`)
+
+Lj_array <- array(0.0, dim = c(M, 2, 2))
+Lj_array[,1,1] <- L11_j
+Lj_array[,1,2] <- 0.0
+Lj_array[,2,1] <- L21_j
+Lj_array[,2,2] <- L22_j
+
+# 4c) zj[1,1..J], zj[2,1..J] → zj_array (M × 2 × J):
+zj1_mat <- draws_df %>% select(matches("^zj\\[1,[0-9]+\\]$")) %>% as.matrix()  # M × J
+zj2_mat <- draws_df %>% select(matches("^zj\\[2,[0-9]+\\]$")) %>% as.matrix()  # M × J
+stopifnot(ncol(zj1_mat) == J, ncol(zj2_mat) == J)
+
+zj_array <- array(0.0, dim = c(M, 2, J))
+zj_array[,1, ] <- zj1_mat
+zj_array[,2, ] <- zj2_mat
+
+# 4d) Build tree_noise_array (M × 2 × J):
+tree_noise_array <- array(0.0, dim = c(M, 2, J))
+for (m in seq_len(M)) {
+  Dj   <- diag(tau_j_mat[m, ], 2, 2)
+  LjD  <- Lj_array[m, , ] %*% Dj
+  tree_noise_array[m, , ] <- LjD %*% zj_array[m, , ]
+}
+cat("✅ Reconstructed tree_noise_array (M × 2 × J).\n\n")
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 5) Now loop over each posterior draw m to build “A” (2×J) and compute R²_intercept & R²_slope
+#    - θ_centered[:, k] = species_noise_array[m, , k]
+#    - α_species_tree[:, j] = θ_centered %*% uj      (2×K × K×J → 2×J)
+#    - α_trait_tree[:, j]   = B[m, , ] %*% t(xj)      (2×T × T×J → 2×J)
+#    - tree_noise[:, j]     = tree_noise_array[m, , ] (2×J)
+#    → A[:, j] = α_species_tree[:, j] + α_trait_tree[:, j] + tree_noise[:, j]
+#
+#    Then:
+#      R²_intercept[m] = Var_j( α_trait_tree[1, j] ) / Var_j( A[1, j] )
+#      R²_slope[m]     = Var_j( α_trait_tree[2, j] ) / Var_j( A[2, j] )
+# ────────────────────────────────────────────────────────────────────────────────
+R2_intercept <- numeric(M)
+R2_slope     <- numeric(M)
+
+for (m in seq_len(M)) {
+  # (5a) θ_centered = species_noise_array[m, , ]  (2×K)
+  theta_c <- species_noise_array[m, , ]   # row=intercept/slope; col=species
+
+  # (5b) α_species_tree (2×J) = theta_c (2×K) × uj (K×J)
+  alpha_species_tree <- theta_c %*% uj  # 2×J
+
+  # (5c) α_trait_tree (2×J) = B[m, , ] (2×T) × t(xj) (T×J)
+  Bm               <- rbind(beta1_mat[m, ], beta2_mat[m, ])  # 2×T
+  alpha_trait_tree <- Bm %*% t(xj)                            # 2×J
+
+  # (5d) tree_noise (2×J) = tree_noise_array[m, , ]
+  tree_noise <- tree_noise_array[m, , ]  # 2×J
+
+  # (5e) Full A (2×J):
+  A_m <- alpha_species_tree + alpha_trait_tree + tree_noise  # 2×J
+
+  # (5f) R²_intercept[m] = var_j( alpha_trait_tree[1, ] ) / var_j( A_m[1, ] )
+  vfit0      <- var(alpha_trait_tree[1, ])
+  vtotal_int <- var(A_m[1, ])
+  R2_intercept[m] <- if (vtotal_int > 0) vfit0 / vtotal_int else NA_real_
+
+  # (5g) R²_slope[m] = var_j( alpha_trait_tree[2, ] ) / var_j( A_m[2, ] )
+  vfit1      <- var(alpha_trait_tree[2, ])
+  vtotal_sl  <- var(A_m[2, ])
+  R2_slope[m] <- if (vtotal_sl > 0) vfit1 / vtotal_sl else NA_real_
+}
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 6) Summarize posterior R²_intercept  and  R²_slope
+# ────────────────────────────────────────────────────────────────────────────────
+R2_int_mean   <- mean(R2_intercept,   na.rm = TRUE)
+R2_int_median <- median(R2_intercept, na.rm = TRUE)
+R2_int_ci     <- quantile(R2_intercept, probs = c(0.025, 0.975), na.rm = TRUE)
+
+R2_sl_mean   <- mean(R2_slope,   na.rm = TRUE)
+R2_sl_median <- median(R2_slope, na.rm = TRUE)
+R2_sl_ci     <- quantile(R2_slope, probs = c(0.025, 0.975), na.rm = TRUE)
+
+cat("=== Posterior R² for the *intercept* A[1,·] (explained by xj) ===\n")
+cat("  Posterior‐mean  R²_intercept = ", round(R2_int_mean,   3), "\n")
+cat("  Posterior‐median R²_intercept = ", round(R2_int_median, 3), "\n")
+cat("  95% CI for R²_intercept = [", round(R2_int_ci[1], 3),
+    ", ", round(R2_int_ci[2], 3), "]\n\n")
+
+cat("=== Posterior R² for the *slope* A[2,·] (explained by xj) ===\n")
+cat("  Posterior‐mean  R²_slope     = ", round(R2_sl_mean, 3), "\n")
+cat("  Posterior‐median R²_slope     = ", round(R2_sl_median, 3), "\n")
+cat("  95% CI for R²_slope = [", round(R2_sl_ci[1], 3),
+    ", ", round(R2_sl_ci[2], 3), "]\n")
+```
