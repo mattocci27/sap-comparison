@@ -2380,6 +2380,39 @@ granier_update_list <- list(
   NULL
 )
 
+mul_reg_list <- list(
+  tar_target(
+    stan_data_noxylem_all,
+    generate_sap_each_trait_no_xylem_stan_data_all(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE)
+  ),
+  tar_stan_mcmc(
+    fit_all,
+    "stan/segments_noxylem_traits_simple_all.stan",
+    data = stan_data_noxylem_all,
+    refresh = 0,
+    chains = 1,
+    parallel_chains = 1,
+    iter_warmup = 2,
+    iter_sampling = 1,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
+  NULL
+)
+
 append(raw_data_list, main_list) |>
   append(granier_list) |>
   append(tar_impute) |>
@@ -2388,4 +2421,5 @@ append(raw_data_list, main_list) |>
   append(uncertainty_list) |>
   append(uncertainty_figs_list) |>
   append(like_check_list) |>
-  append(granier_update_list)
+  append(granier_update_list) |>
+  append(mul_reg_list)

@@ -666,7 +666,11 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
 }
 
 generate_sap_each_trait_no_xylem_stan_data_all <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
-  d <- read_csv(data) |>
+  library(tidyverse)
+  library(targets)
+  data <- tar_read(fd_k_traits_csv)
+  d <- read_csv(data)
+  d <- d |>
     filter(!is.na(wood_density)) |>
     filter(!is.na(swc)) |>
     filter(!is.na(dh)) |>
@@ -745,7 +749,8 @@ generate_sap_each_trait_no_xylem_stan_data_all <- function(data, remove_abnormal
     arrange(species)
 
   kk <- unique(d$species) |> length()
-  uk <- matrix(rep(1, kk * ncol(xj)), ncol = kk)
+  uk <- matrix(rep(1, kk), ncol = kk)
+
 
   stan_data <- list(
     N = nrow(d),
