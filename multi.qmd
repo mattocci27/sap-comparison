@@ -131,9 +131,6 @@ r2_sp_log_swc
 r2_sp_wood_density
 ```
 
-```{r}
-knitr::knit_exit()
-```
 
 
 # Segment‐level R² for xj (segments-level traits)
@@ -142,14 +139,108 @@ knitr::knit_exit()
 - all2: VAF + Ks
 - all3: VAF + Ks + Dh
 
+```{r R2_seg}
+s <- tar_read(fit_all_draws_segments_noxylem_traits_simple_all)
+s2 <- tar_read(fit_all2_draws_segments_noxylem_traits_simple_all)
+s3 <- tar_read(fit_all3_draws_segments_noxylem_traits_simple_all)
+
+s_log_ks2 <- tar_read(fit_ks_draws_segments_noxylem_traits_simple_all)
+stan_data_noxylem_ks <- tar_read(stan_data_noxylem_ks)
+
+s_log_ks <- tar_read(fit_draws_segments_noxylem_traits_simple_log_ks)
+s_log_vaf <- tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf)
+s_log_vf <- tar_read(fit_draws_segments_noxylem_traits_simple_log_vf)
+s_log_dh <- tar_read(fit_draws_segments_noxylem_traits_simple_log_dh)
+s_log_swc <- tar_read(fit_draws_segments_noxylem_traits_simple_log_swc)
+s_wood_density <- tar_read(fit_draws_segments_noxylem_traits_simple_wood_density)
+```
+
+```{r}
+r2_all <- compute_segments_all_r2(s, stan_data)
+r2_all2 <- compute_segments_all_r2(s2, stan_data2)
+r2_all3 <- compute_segments_all_r2(s3, stan_data3)
+
+r2_log_ks2 <- compute_segments_all_r2(s_log_ks2, stan_data_noxylem_ks)
+
+r2_log_ks <- compute_segments_single_r2(s_log_ks, stan_data_log_ks)
+r2_log_vaf <- compute_segments_single_r2(s_log_vaf, stan_data_log_vaf)
+r2_log_vf <- compute_segments_single_r2(s_log_vf, stan_data_log_vf)
+r2_log_dh <- compute_segments_single_r2(s_log_dh, stan_data_log_dh)
+r2_log_swc <- compute_segments_single_r2(s_log_swc, stan_data_log_swc)
+r2_wood_density <- compute_segments_single_r2(s_wood_density, stan_data_wood_density)
+```
+
+## all: the six traits
+
+- intercept: Co-a
+- slope: Co-b
+
+```{r}
+r2_all
+```
+
+## all2: VAF + Ks
+
+```{r}
+r2_all2
+```
+
+## all3: VAF + Ks + Dh
+```{r}
+r2_all3
+```
+
+## ks
+
+```{r}
+r2_log_ks2
+r2_log_ks
+```
+
+## vaf
+
+```{r}
+r2_log_vaf
+```
+
+## vf
+
+```{r}
+r2_log_vf
+```
+
+## dh
+
+```{r}
+r2_log_dh
+```
+## swc
+
+```{r}
+r2_log_swc
+```
+
+## wood_density
+
+```{r}
+r2_wood_density
+```
+```{r}
+knitr::knit_exit()
+```
+
 ```{r}
 ss <- tar_read(fit_all_draws_segments_noxylem_traits_simple_all)
+
+draws_df <- ss
+
+
 ss2 <- tar_read(fit_all2_draws_segments_noxylem_traits_simple_all)
 ss3 <- tar_read(fit_all3_draws_segments_noxylem_traits_simple_all)
-r2_all <- compute_segment_r2(ss, stan_data)
-r2_all2 <- compute_segment_r2(ss2, stan_data2)
-r2_all3 <- compute_segment_r2(ss3, stan_data3)
 
+r2_all <- compute_segment_r2(ss, stan_data)
+2_all2 <- compute_segment_r2(ss2, stan_data2)
+r2_all3 <- compute_segment_r2(ss3, stan_data3)
 ```
 
 ## all: the six traits
@@ -235,6 +326,14 @@ process_draws_and_calculate_trait_r2
 ```
 
 ```{r, include=FALSE, eval=FALSE}
+s_log_vf <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vf) |> janitor::clean_names()
+s_log_dh <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_dh) |> janitor::clean_names()
+s_log_swc <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_swc) |> janitor::clean_names()
+s_wood_density <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_wood_density) |> janitor::clean_names()
+
+
+s_log_dh
+s_log_vf
 
 xk <- tar_read(stan_data_noxylem_log_dh)$xk
 dim(xk)
