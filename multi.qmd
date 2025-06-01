@@ -41,13 +41,36 @@ source("R/r2.R")
 s <- tar_read(fit_all_draws_segments_noxylem_traits_sp_simple_all)
 s2 <- tar_read(fit_all2_draws_segments_noxylem_traits_sp_simple_all)
 s3 <- tar_read(fit_all3_draws_segments_noxylem_traits_sp_simple_all)
+s_ks <- tar_read(fit_ks_draws_segments_noxylem_traits_sp_simple_all)
+s_log_ks <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_ks)
+s_log_vaf <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf)
+s_log_vf <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vf)
+s_log_dh <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_dh)
+s_log_swc <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_swc)
+s_wood_density <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_wood_density)
+
 stan_data <- tar_read(stan_data_noxylem_all)
 stan_data2 <- tar_read(stan_data_noxylem_all2)
 stan_data3 <- tar_read(stan_data_noxylem_all3)
+stan_data_ks <- tar_read(stan_data_noxylem_ks)
+stan_data_log_ks <- tar_read(stan_data_noxylem_log_ks)
+stan_data_log_vaf <- tar_read(stan_data_noxylem_log_vaf)
+stan_data_log_vf <- tar_read(stan_data_noxylem_log_vf)
+stan_data_log_dh <- tar_read(stan_data_noxylem_log_dh)
+stan_data_log_swc <- tar_read(stan_data_noxylem_log_swc)
+stan_data_wood_density <- tar_read(stan_data_noxylem_wood_density)
 
-r2_sp_all <- compute_species_r2(s, stan_data)
-r2_sp_all2 <- compute_species_r2(s2, stan_data2)
-r2_sp_all3 <- compute_species_r2(s3, stan_data3)
+r2_sp_all <- compute_species_all_r2(s, stan_data)
+r2_sp_all2 <- compute_species_all_r2(s2, stan_data2)
+r2_sp_all3 <- compute_species_all_r2(s3, stan_data3)
+# r2_sp_ks <- compute_species_single_r2(s_logYks, stan_data_ks)
+r2_sp_log_ks <- compute_species_single_r2(s_log_ks, stan_data_log_ks)
+r2_sp_log_vaf <- compute_species_single_r2(s_log_vaf, stan_data_log_vaf)
+r2_sp_log_vf <- compute_species_single_r2(s_log_vf, stan_data_log_vf)
+r2_sp_log_dh <- compute_species_single_r2(s_log_dh, stan_data_log_dh)
+r2_sp_log_swc <- compute_species_single_r2(s_log_swc, stan_data_log_swc)
+r2_sp_wood_density <- compute_species_single_r2(s_wood_density, stan_data_wood_density)
+
 ```
 
 ## all: the six traits
@@ -56,21 +79,60 @@ r2_sp_all3 <- compute_species_r2(s3, stan_data3)
 - slope: Co-b
 
 ```{r}
-r2_sp_all$r2_intercept
-r2_sp_all$r2_slope
+r2_sp_all
 ```
 
 ## all2: VAF + Ks
 
 ```{r}
-r2_sp_all2$r2_intercept
-r2_sp_all2$r2_slope
+r2_sp_all2
 ```
 
 ## all3: VAF + Ks + Dh
 ```{r}
-r2_sp_all3$r2_intercept
-r2_sp_all3$r2_slope
+r2_sp_all3
+```
+
+## ks
+```{r}
+# r2_sp_ks
+```
+
+```{r}
+r2_sp_log_ks
+```
+
+## vaf
+
+```{r}
+r2_sp_log_vaf
+```
+
+## vf
+
+```{r}
+r2_sp_log_vf
+```
+
+## dh
+
+```{r}
+r2_sp_log_dh
+```
+## swc
+
+```{r}
+r2_sp_log_swc
+```
+
+## wood_density
+
+```{r}
+r2_sp_wood_density
+```
+
+```{r}
+knitr::knit_exit()
 ```
 
 
@@ -108,4 +170,131 @@ r2_all2$r2_slope
 ```{r}
 r2_all3$r2_intercept
 r2_all3$r2_slope
+```
+
+# Old R2 function
+
+```{r, include=FALSE, eval=FALSE}
+
+draws <- tar_read(fit_all_draws_segments_noxylem_traits_sp_simple_all)
+# draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_ks)
+beta_int_col <- "beta_1"
+beta_slope_col <- "beta_2"
+
+
+draws_cleaned <- draws %>%
+  janitor::clean_names()
+
+xk <- tar_read(stan_data_noxylem_all)$xk
+
+beta_int_pred <- draws_cleaned %>%
+  select(matches(beta_int_col)) |>
+  as.matrix()
+
+beta_slope_pred <- draws_cleaned %>%
+  select(matches(beta_slope_col)) |>
+  as.matrix()
+
+log_int_pred <- xk %*% t(beta_int_pred)
+log_slope_pred <- xk %*% t(beta_slope_pred)
+
+log_int_obs <- draws_cleaned %>%
+  select(starts_with("beta_hat_1")) %>%
+  as.matrix() %>%
+  t()
+
+log_slope_obs <- draws_cleaned %>%
+  select(starts_with("beta_hat_2")) %>%
+  as.matrix() %>%
+  t()
+
+dim(log_int_pred)
+dim(log_int_obs)
+
+r2_int <- apply(log_int_pred, 2, var) / (apply(log_int_pred, 2, var) + apply(log_int_obs - log_int_pred, 2, var))
+r2_int_q <- quantile(r2_int, c(0.025, 0.5, 0.975)) |> round(3)
+
+r2_slope <- apply(log_slope_pred, 2, var) / (apply(log_slope_pred, 2, var) + apply(log_slope_obs - log_slope_pred, 2, var))
+r2_slope_q <- quantile(r2_slope, c(0.025, 0.5, 0.975)) |> round(3)
+
+r2_int_q
+r2_slope_q
+
+
+dim(beta_int_pred)
+dim(xk)
+
+dim(pred_a)
+dim(beta_hat_1)
+
+
+
+stan_data_noxylem_log_ks$xj)
+
+process_draws_and_calculate_trait_r2
+```
+
+```{r, include=FALSE, eval=FALSE}
+
+xk <- tar_read(stan_data_noxylem_log_dh)$xk
+dim(xk)
+draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_dh)
+draws_cleaned <- draws %>%
+  janitor::clean_names()
+
+# beta_int_col <- "beta_1"
+# beta_slope_col <- "beta_2"
+
+draws_cleaned %>%
+  select(matches("beta"))
+
+beta_int_pred <- draws_cleaned %>%
+  select(beta_1_1, beta_2_1) |>
+  as.matrix()
+
+dim(beta_int_pred)
+
+beta_slope_pred <- draws_cleaned %>%
+  select(beta_1_2 beta_2_2) |>
+  as.matrix()
+
+log_int_pred <- xk %*% t(beta_int_pred)
+log_slope_pred <- xk %*% t(beta_slope_pred)
+
+log_int_obs <- draws_cleaned %>%
+  select(starts_with("beta_hat_1")) %>%
+  as.matrix() %>%
+  t()
+
+log_slope_obs <- draws_cleaned %>%
+  select(starts_with("beta_hat_2")) %>%
+  as.matrix() %>%
+  t()
+
+dim(log_int_pred)
+dim(log_int_obs)
+
+r2_int <- apply(log_int_pred, 2, var) / (apply(log_int_pred, 2, var) + apply(log_int_obs - log_int_pred, 2, var))
+r2_int_q <- quantile(r2_int, c(0.025, 0.5, 0.975)) |> round(3)
+
+r2_slope <- apply(log_slope_pred, 2, var) / (apply(log_slope_pred, 2, var) + apply(log_slope_obs - log_slope_pred, 2, var))
+r2_slope_q <- quantile(r2_slope, c(0.025, 0.5, 0.975)) |> round(3)
+
+r2_int_q
+r2_slope_q
+
+mean(r2_slope)
+
+
+dim(beta_int_pred)
+dim(xk)
+
+dim(pred_a)
+dim(beta_hat_1)
+
+
+
+stan_data_noxylem_log_ks$xj)
+
+process_draws_and_calculate_trait_r2
 ```

@@ -877,6 +877,107 @@ generate_sap_each_trait_no_xylem_stan_data_all2 <- function(data, remove_abnorma
   stan_data
 }
 
+generate_sap_each_trait_no_xylem_stan_data_ks <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  d <- read_csv(data)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  d_sp <- d |>
+    group_by(species) |>
+    summarize(
+      wood_density = mean(wood_density),
+      log_swc = mean(log(swc)),
+      log_dh = mean(log(dh)),
+      log_vaf = mean(log(vaf)),
+      log_vf = mean(log(vf)),
+      log_ks = mean(log(ks))
+    )
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  seg_to_sp <- tmp |> pull(species) |> as.factor() |> as.numeric()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(int = 1) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  tmp <- tmp0 |>
+    dplyr::select(log_ks)
+
+  tmp2 <- apply(tmp, 2, scale)
+  xj <- cbind(1, tmp2)
+
+
+  tmp_sp <- d_sp |>
+    dplyr::select(log_ks)
+
+  tmp2_sp <- apply(tmp_sp, 2, scale)
+  xk <- cbind(1, tmp2_sp)
+
+  # intercept only model
+  if (is.nan(xj[1, 2])) {
+    xj <- xj[, 1]
+    xk <- xk[, 1]
+    xj <- as.matrix(xj, ncol = 1)
+    xk <- as.matrix(xk, ncol = 1)
+  }
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  kk <- unique(d$species) |> length()
+  uk <- matrix(rep(1, kk), ncol = kk)
+
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    uj = t(uj),
+    uk = uk,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj),
+    kk = seg_to_sp,
+    xk = xk
+  )
+  stan_data
+}
+
 generate_sap_each_trait_no_xylem_stan_data <- function(data, trait_name, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
   d <- read_csv(data)
   d <- d |>
@@ -2599,11 +2700,11 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
 
 # Function to calculate R2
 calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
-  # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_vaf)
-  # beta_int_col <- "beta_1"
-  # beta_slope_col <- "beta_2"
+  # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_ks)
+  # beta_int_col <- "beta_1_1"
+  # beta_slope_col <- "beta_2_1"
   # xj <- tar_read(stan_data_noxylem_log_vaf)$xj
-  # obs_start_col <- "mu_a"
+  # obs_start_col <- "beta_hat_1"
 
   draws_cleaned <- draws %>%
     janitor::clean_names()

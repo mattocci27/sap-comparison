@@ -2472,6 +2472,36 @@ mul_reg_list <- list(
       posterior::default_convergence_measures()
       )
    ),
+  tar_target(
+    stan_data_noxylem_ks,
+    generate_sap_each_trait_no_xylem_stan_data_ks(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE)
+  ),
+  tar_stan_mcmc(
+    fit_ks,
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
+    data = stan_data_noxylem_ks,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
   NULL
 )
 
