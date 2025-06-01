@@ -222,12 +222,71 @@ r2_log_swc
 
 ## wood_density
 
+
+# sig check
+
+## ks
 ```{r}
-r2_wood_density
+check_sig <- function(x) {
+  x %>%
+    janitor::clean_names() |>
+    filter(str_detect(variable, "beta\\[1,2|beta\\[2,2")) |>
+    filter(q2_5 *  q97_5 > 0)
+}
+
+check_sig2 <- function(x) {
+  x %>%
+    janitor::clean_names() |>
+    filter(str_detect(variable, "beta\\[2|beta\\[4")) |>
+    filter(q2_5 *  q97_5 > 0)
+}
+
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_ks) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_ks) |> check_sig()
+
+tar_read(fit_summary_segments_noxylem_traits_simple_log_ks) |> check_sig2()
+tar_read(fit2_summary_segments_xylem_traits_simple_log_ks) |> check_sig2()
 ```
+
+## vaf
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf) |> check_sig()
+tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf) |> check_sig2()
+```
+
+## vf
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vf) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vf) |> check_sig()
+tar_read(fit_summary_segments_noxylem_traits_simple_log_vf) |> check_sig2()
+```
+
+## dh
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_dh) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_dh) |> check_sig()
+tar_read(fit_summary_segments_noxylem_traits_simple_log_dh) |> check_sig2()
+```
+
+## swc
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_swc) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_swc) |> check_sig()
+tar_read(fit_summary_segments_noxylem_traits_simple_log_swc) |> check_sig2()
+```
+
+## wd
+```{r}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_wood_density) |> check_sig()
+tar_read(fit2_summary_segments_xylem_traits_sp_simple_wood_density) |> check_sig()
+tar_read(fit_summary_segments_noxylem_traits_simple_wood_density) |> check_sig2()
+```
+
 ```{r}
 knitr::knit_exit()
 ```
+
 
 ```{r}
 ss <- tar_read(fit_all_draws_segments_noxylem_traits_simple_all)
@@ -326,10 +385,6 @@ process_draws_and_calculate_trait_r2
 ```
 
 ```{r, include=FALSE, eval=FALSE}
-s_log_vf <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vf) |> janitor::clean_names()
-s_log_dh <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_dh) |> janitor::clean_names()
-s_log_swc <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_swc) |> janitor::clean_names()
-s_wood_density <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_wood_density) |> janitor::clean_names()
 
 
 s_log_dh
@@ -395,5 +450,10 @@ dim(beta_hat_1)
 
 stan_data_noxylem_log_ks$xj)
 
+
 process_draws_and_calculate_trait_r2
+
+tar_read(trait_pred_data_noxylem_sp_combined)
+
+
 ```
