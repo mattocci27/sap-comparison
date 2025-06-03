@@ -163,7 +163,7 @@ compile_stan_models|object|25d8f760d7db2ebf|||||||||||||||
 cond_count_csv|stem|57e9eabf90c08b40|ba3403c0e17c5871|eba47c1af4058cb4|-1297878786|data/cond_count.csv|t19884.2557112029s|b37f5599f3f5b913|7478|file|local|vector|||0.176||
 cond_count_raw_csv|stem|afa1d7fa864c4e3c|3e1e21b3c7839bc2|ef46db3751d8e999|1113861532|data-raw/cond_count_raw.csv|t19884.255711064s|4a676e8324a82310|3598|file|local|vector|||1.297||
 create_line|function|2569ca6ad9f4adf0|||||||||||||||
-create_line2|function|d6d9d55663578e61|||||||||||||||
+create_line2|function|2d1d4042fda12860|||||||||||||||
 create_single_fold|function|10dd97c0adfaee1e|||||||||||||||
 create_stan_tab|function|d23d841ad0c22173|||||||||||||||
 dbh_imp_df|stem|b7895e5d883e301f|324b81d0e7234e85|3c8297a1dc950e65|569809201||t19884.2556232372s|11c48bd13ccce883|73683|rds|local|vector|||2.519||
@@ -215,7 +215,7 @@ fit_all_diagnostics_segments_noxylem_traits_sp_simple_all|stem|3b07fd4a4b234b64|
 fit_all_draws_segments_noxylem_traits_simple_all|stem|37b6b1a1730c97ac|9cd8a0a00d4a8821|54b8399877499c80|1655088212||t20240.4105091592s|534bae563c338022|185050243|fst_tbl|local|vector|||1.093||
 fit_all_draws_segments_noxylem_traits_sp_simple_all|stem|cb0e1a85352c3e1d|884e85445f0df158|8203823cdf0aacac|-1009850779||t20239.5283352735s|85dd6234d485e07f|134084305|fst_tbl|local|vector|||0.479||
 fit_all_file_segments_noxylem_traits_simple|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|240058025|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0.001||
-fit_all_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-1996470128|stan/segments_noxylem_traits_simple_all.stan|t20240.4072839784s|dcbb3028af3327fd|6467|file|local|vector|||0||
+fit_all_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-1996470128|stan/segments_noxylem_traits_simple_all.stan|t20240.4114962623s|dcbb3028af3327fd|6467|file|local|vector|||0||
 fit_all_file_segments_noxylem_traits_sp_simple_all|stem|676f9d431a7fe794|3a89c2d0964d6037|ef46db3751d8e999|-791507513|stan/segments_noxylem_traits_sp_simple_all.stan|t20239.4073530691s|166cb8fe18782198|1340|file|local|vector|||0||
 fit_all_mcmc_segments_noxylem_traits_simple|stem||bda4fcf76b352bad|6db0a0fe559251e5|-614330980||t20238.6207089174s||0|qs|local|vector|||0.286|Chain 1 finished unexpectedly. Chain 2 finished unexpectedly. Chain 3 finished unexpectedly. Chain 4 finished unexpectedly. All chains finished unexpectedly Use the outputchain_id method for more information.. Use read_cmdstan_csv to read the results of the failed chains.. No chains finished successfully. Unable to retrieve the fit.|No chains finished successfully. Unable to retrieve the draws.
 fit_all_mcmc_segments_noxylem_traits_simple_all|stem|7e0422bf758183a2|09e52707599af923|a1b2885055a2ad79|-80782516||t20240.4093995999s|2ee8280c89701aa5|189940226|qs|local|vector|||101.577||
@@ -227,7 +227,7 @@ fit_all2_diagnostics_segments_noxylem_traits_simple_all|stem|fb3c567b52847658|0b
 fit_all2_diagnostics_segments_noxylem_traits_sp_simple_all|stem|3ebad55b761e3075|126f11cb5aa2a4fc|6f487a404d9a53d4|-919693025||t20239.6160229483s|4090aa7aeabd3ade|158404|fst_tbl|local|vector|||0.002||
 fit_all2_draws_segments_noxylem_traits_simple_all|stem|f2a2d57227beed89|d4a0c09b3223d8b2|5446d802f62d700b|1190250545||t20240.4101105286s|00876fef7bf4b135|184536249|fst_tbl|local|vector|||1.014||
 fit_all2_draws_segments_noxylem_traits_sp_simple_all|stem|23f5599dc3a3b562|b7d35ece798db5e1|6f487a404d9a53d4|-670479326||t20239.6160496618s|853ed59bc78e344f|133569020|fst_tbl|local|vector|||0.845||
-fit_all2_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-1859603397|stan/segments_noxylem_traits_simple_all.stan|t20240.4072839784s|dcbb3028af3327fd|6467|file|local|vector|||0||
+fit_all2_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-1859603397|stan/segments_noxylem_traits_simple_all.stan|t20240.4114962623s|dcbb3028af3327fd|6467|file|local|vector|||0||
 fit_all2_file_segments_noxylem_traits_sp_simple_all|stem|676f9d431a7fe794|3a89c2d0964d6037|ef46db3751d8e999|1988547171|stan/segments_noxylem_traits_sp_simple_all.stan|t20239.4073530691s|166cb8fe18782198|1340|file|local|vector|||0||
 fit_all2_mcmc_segments_noxylem_traits_simple_all|stem|1ccf8c14d622f730|84771d041c101602|46afbc63788c3e5f|-2115564483||t20240.4081857791s|6399ff040d5861c6|189227178|qs|local|vector|||36.866||
 fit_all2_mcmc_segments_noxylem_traits_sp_simple_all|stem|93ce3cd4ae29580f|f070114699fac540|413f822ca5ae3b5c|606875093||t20239.6159976469s|5f80ac231df26622|154381774|qs|local|vector|||57.356||
@@ -238,7 +238,7 @@ fit_all3_diagnostics_segments_noxylem_traits_simple_all|stem|b146169a3c821569|c9
 fit_all3_diagnostics_segments_noxylem_traits_sp_simple_all|stem|775859c26c392bec|8dc80dfbd80e16c6|d371894ddbf14b3f|563111852||t20239.6159223676s|31e218a2b5888826|164105|fst_tbl|local|vector|||0.005||
 fit_all3_draws_segments_noxylem_traits_simple_all|stem|7810b0b2541eb0f8|1ca36ac77d6e5ab7|ce63bcead95c33ae|1069874872||t20240.410736224s|cc766d2b9b7998da|184664630|fst_tbl|local|vector|||0.63||
 fit_all3_draws_segments_noxylem_traits_sp_simple_all|stem|4a6cf5f242ddd5ea|138d762b179c0bd5|d371894ddbf14b3f|807773960||t20239.6159151799s|1b0eb1dc16ba6ce2|133698533|fst_tbl|local|vector|||0.397||
-fit_all3_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-479104100|stan/segments_noxylem_traits_simple_all.stan|t20240.4072839784s|dcbb3028af3327fd|6467|file|local|vector|||0||
+fit_all3_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|-479104100|stan/segments_noxylem_traits_simple_all.stan|t20240.4114962623s|dcbb3028af3327fd|6467|file|local|vector|||0||
 fit_all3_file_segments_noxylem_traits_sp_simple_all|stem|676f9d431a7fe794|3a89c2d0964d6037|ef46db3751d8e999|963091958|stan/segments_noxylem_traits_sp_simple_all.stan|t20239.4073530691s|166cb8fe18782198|1340|file|local|vector|||0||
 fit_all3_mcmc_segments_noxylem_traits_simple_all|stem|2794c7767227b8f8|bcf8177ed20aafc4|01fb61116d30ca0f|-1903965210||t20240.410694869s|df5d0aa18f9cf30e|186307260|qs|local|vector|||24.899||
 fit_all3_mcmc_segments_noxylem_traits_sp_simple_all|stem|e2d8186c7ed763f9|d4caacdd7908644e|3d1b8437a338e6a0|300475963||t20239.6158723202s|0397b64c460db368|154574970|qs|local|vector|||47.336||
@@ -385,12 +385,12 @@ fit_file_segments_noxylem_traits_log_ks|stem|0972d802a1a94710|319e20305d235f04|e
 fit_file_segments_noxylem_traits_log_swc|stem|0972d802a1a94710|319e20305d235f04|ef46db3751d8e999|-810245885|stan/segments_noxylem_traits.stan|t19884.255715416s|555b2b440bac0f49|2486|file|local|vector|||0||
 fit_file_segments_noxylem_traits_log_vaf|stem|0972d802a1a94710|319e20305d235f04|ef46db3751d8e999|-1506146234|stan/segments_noxylem_traits.stan|t19884.255715416s|555b2b440bac0f49|2486|file|local|vector|||0||
 fit_file_segments_noxylem_traits_log_vf|stem|0972d802a1a94710|319e20305d235f04|ef46db3751d8e999|-450781651|stan/segments_noxylem_traits.stan|t19884.255715416s|555b2b440bac0f49|2486|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_log_dh|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-1410959876|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_log_ks|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|1980055174|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_log_swc|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-1040631536|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_log_vaf|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-800037832|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_log_vf|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-816225094|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
-fit_file_segments_noxylem_traits_simple_wood_density|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|783074403|stan/segments_noxylem_traits_simple.stan|t19908.3761991511s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_log_dh|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-1410959876|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_log_ks|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|1980055174|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_log_swc|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-1040631536|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_log_vaf|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-800037832|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_log_vf|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|-816225094|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
+fit_file_segments_noxylem_traits_simple_wood_density|stem|1445a79c5b5ab134|1aa7bd2f26d204f7|ef46db3751d8e999|783074403|stan/segments_noxylem_traits_simple.stan|t20240.5377155735s|9bd045cf5c09d995|1721|file|local|vector|||0||
 fit_file_segments_noxylem_traits_sp_simple_log_dh|stem|8ab05b7c4f56ee5a|081bc5a78d93ce20|ef46db3751d8e999|369439083|stan/segments_noxylem_traits_sp_simple.stan|t20239.4014626195s|8aa43b90b12dd3b1|1359|file|local|vector|||0||
 fit_file_segments_noxylem_traits_sp_simple_log_ks|stem|8ab05b7c4f56ee5a|081bc5a78d93ce20|ef46db3751d8e999|-625993632|stan/segments_noxylem_traits_sp_simple.stan|t20239.4014626195s|8aa43b90b12dd3b1|1359|file|local|vector|||0.001||
 fit_file_segments_noxylem_traits_sp_simple_log_swc|stem|8ab05b7c4f56ee5a|081bc5a78d93ce20|ef46db3751d8e999|1144725876|stan/segments_noxylem_traits_sp_simple.stan|t20239.4014626195s|8aa43b90b12dd3b1|1359|file|local|vector|||0||
@@ -421,7 +421,7 @@ fit_ks_diagnostics_segments_noxylem_traits_simple_all|stem|8bab5b92c9c33290|ccb5
 fit_ks_diagnostics_segments_noxylem_traits_sp_simple_all|stem|d0c08e7547144066|20a61bdee9680a52|1dbefb18b9afa3ce|138873613||t20240.10146611s|423ccc3d5db247f5|158649|fst_tbl|local|vector|||0.002||
 fit_ks_draws_segments_noxylem_traits_simple_all|stem|a883cb3fe7f6c384|52be92f8b206f8a4|f802d8cc9d5037ab|-678235536||t20240.4109400359s|b6033e011a4fa556|184407298|fst_tbl|local|vector|||0.573||
 fit_ks_draws_segments_noxylem_traits_sp_simple_all|stem|826efd5b585b6a14|9a9dc6c83ec7711e|1dbefb18b9afa3ce|2048650843||t20240.1014850687s|45157367dee407d3|133440466|fst_tbl|local|vector|||0.545||
-fit_ks_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|580886624|stan/segments_noxylem_traits_simple_all.stan|t20240.4072839784s|dcbb3028af3327fd|6467|file|local|vector|||0||
+fit_ks_file_segments_noxylem_traits_simple_all|stem|9db8372eb928a9a6|baf676b91869023a|ef46db3751d8e999|580886624|stan/segments_noxylem_traits_simple_all.stan|t20240.4114962623s|dcbb3028af3327fd|6467|file|local|vector|||0||
 fit_ks_file_segments_noxylem_traits_sp_simple_all|stem|676f9d431a7fe794|3a89c2d0964d6037|ef46db3751d8e999|71353075|stan/segments_noxylem_traits_sp_simple_all.stan|t20239.4073530691s|166cb8fe18782198|1340|file|local|vector|||0||
 fit_ks_mcmc_segments_noxylem_traits_simple_all|stem|304ae2afc297f68d|86028dc1659e1add|94caf415d51f1be9|1169170246||t20240.4109031486s|60a201822f1e8697|185835790|qs|local|vector|||23.628||
 fit_ks_mcmc_segments_noxylem_traits_sp_simple_all|stem|7b68c0c381446db5|e7a359fa51f65dc8|db6883b4a4ed7377|543379041||t20240.1014458087s|fa0151da5722c88b|154237093|qs|local|vector|||24.581||
@@ -799,8 +799,8 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t19884.255711064s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|8ddc9b99bb5c3717|||||||||||||||
-granier_update_list|object|b49747ec9b239b2a|||||||||||||||
+granier_list|object|9d89022fd78398ff|||||||||||||||
+granier_update_list|object|4914ef121b8804cc|||||||||||||||
 granier_with_traits_mapped|object|a0715661dc57f9ba|||||||||||||||
 granier_without_traits_mapped|object|d0eafb73711ca148|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -945,7 +945,7 @@ ks_sp_r2|stem|fcb31f82f051a703|ebd27f1d024b7074|9527ddadc1828196|-483776712||t19
 ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-101813440|data/ks_pres_tens_spp_err.csv|t19884.2557112029s|dbf852b7f874f1df|3842|file|local|vector|||2.105||
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-246611207|data/ks_pres_tens_trees.csv|t19884.2557112029s|a86c3ec47ea93832|7649|file|local|vector|||0.478||
 label_func|function|5053ea2f60a68238|||||||||||||||
-like_check_list|object|2afee70ab8581b36|||||||||||||||
+like_check_list|object|7aa14989276e87ea|||||||||||||||
 line_pg_multi|function|12e9853d95fb7576|||||||||||||||
 line_pool_multi|function|f9bcbadf6dba2f4e|||||||||||||||
 logistic|function|85b2eccc2fdb02b5|||||||||||||||
@@ -958,7 +958,7 @@ loo_swc|stem|c2c7f2cb6b646380|4c86ba4d418b6c16|84bd528d29fd8630|-839249926||t202
 loo_vaf|stem|829bea525bb67ad4|95bbb0069409bb38|9b72eae95fd70752|-2129840403||t20239.4118565358s|78a4ff4c5212bf55|123533|rds|local|vector|||7.204|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_vf|stem|948bac9cb62cf686|b4ffba32a715f217|1197fecc2f1e8904|-1755599891||t20239.4105337786s|ccfa159114f80e82|123500|rds|local|vector|||8.034|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_wd|stem|3c09bd6d72d26f45|b006f97eea5746e6|e677bbef65bade8b|-41513080||t20239.412383259s|2ce2b46d88ff7332|123507|rds|local|vector|||7.977|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|2e8f3af6e278bfc4|||||||||||||||
+main_list|object|e1ba06b92a767d15|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1311,8 +1311,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t19884.2556474972s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t19884.2556474972s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t19884.2556474972s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|11eabc928479c674|||||||||||||||
-tar_impute|object|01af89236321c5b4|||||||||||||||
+tar_dir_dep|object|1c6d394166d0c965|||||||||||||||
+tar_impute|object|ab5ff2ac917026b3|||||||||||||||
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
 test_mapped2|object|dcd9eec253da9ce7|||||||||||||||
@@ -1351,19 +1351,19 @@ traits_points_main|function|38b7841ba4fbfe51|||||||||||||||
 traits_points_main_plot|stem|2c7aa961199a08f5|29e1bd21d56ab9c5|e07beae49c50a381|-1362562509|figs/traits_points_main.png*figs/traits_points_main.pdf*figs/traits_points_main.tiff|t19928.6789033026s|1b4a3326f9d807f8|1795195|file|local|vector|||5.782||
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
 traits_points_main_re_plot|stem|6cac3e9cc9e0dfca|74ed42cc0f98bb1c|e43e5e492a10144c|1829268526|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf*figs/traits_points_main_re.tiff|t19928.6794640081s|3516e4fff4d5f0bd|2231235|file|local|vector|||2.965||
-traits_points_si|function|a4957919fb5de24e|||||||||||||||
-traits_points_si_plot|stem|c61442e8fc76b2e0|4c8c363d4354c02d|bc24e81d6fb1c580|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t20014.1402504232s|74da52d7e8b5c2a6|2439028|file|local|vector|||1.324|Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
+traits_points_si|function|aef1dd3c2e9953bd|||||||||||||||
+traits_points_si_plot|stem|83389d68dc27f8bb|4c8c363d4354c02d|b97c751bd7862287|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t20240.6151741782s|74da52d7e8b5c2a6|2439028|file|local|vector|||3.242|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
 traits_seg_points_si|function|432ab22303678767|||||||||||||||
-traits_seg_points_si_plot|stem|27721eb8ef264967|9178fe58186a1f77|ece4e2c12af8e891|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t20014.1401978748s|fba72bcec7a2c932|3070118|file|local|vector|||1.549||
+traits_seg_points_si_plot|stem|0451e01a706e5802|9178fe58186a1f77|2e3b9609bed5945e|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t20240.6153704666s|fba72bcec7a2c932|3070118|file|local|vector|||2.774|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
 traits_sp_points_main|function|52b44284d294eac7|||||||||||||||
 traits_sp_points_main_plot|stem|7d7043d1424d9df3|ee7f6258426c2a94|1f933b57da83f5ff|257327165|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf*figs/traits_sp_points_main.tiff|t20014.1402348786s|0c1f0c2b64300fbd|2246053|file|local|vector|||1.711||
-traits_sp_points_si_plot|stem|c30053141ffa326d|4410a82a83f942ad|3994ce3894f936ec|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t20014.1402150398s|3173cc20482f334c|1368570|file|local|vector|||1.477||
+traits_sp_points_si_plot|stem|321111b036522ebd|4410a82a83f942ad|102e17bc6ce9b122|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t20240.6149406668s|6b956a958c9c1d0b|1163889|file|local|vector|||2.855|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
 traits_xylem_table|stem|08ee32ae14c210e9|9485d282f232ceaa|32d001f99172f421|862930669||t19907.2757653002s|b6e1ce3594a776de|6340|rds|local|vector|||0.215||
 traits_xylem_table_csv|stem|d8e3a4e39c58fccc|510b1b5af374e20d|316798036d0cdc71|1610101359|data/traits_xylem_post.csv|t19907.2757982639s|c78995f0e143ccc3|185307|file|local|vector|||0.112||
 uncertainty_ab_mapped|object|b8652f2bc4aab22b|||||||||||||||
 uncertainty_dir_dep_mapped|object|cec3740b0ba5f240|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|381c13865ef18d02|||||||||||||||
+uncertainty_figs_list|object|5555faa4c32b6948|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|49a2273bf9d7c57e|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||

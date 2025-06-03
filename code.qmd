@@ -90,7 +90,7 @@ knitr::opts_chunk$set(
 
 **Method S8** Model 4a: segment-xylem model with traits
 
-```{stan, file=here::here('stan/segments_xylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
+```{stan, file=here::here('stan/segments_xylem_traits_simple.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
 ```
 
 \newpage
@@ -98,7 +98,14 @@ knitr::opts_chunk$set(
 
 **Method S9** Model 4b: segment-xylem model with traits without xylem-type variation
 
-```{stan, file=here::here('stan/segments_noxylem_traits.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```{stan, file=here::here('stan/segments_noxylem_traits_simple.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```
+
+\newpage
+
+**Method SX** Model 4c: species-level trait model without xylem-type variation
+
+```{stan, file=here::here('stan/segments_noxylem_traits_sp_simple_all.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
 ```
 
 \newpage
@@ -121,3 +128,5 @@ knitr::opts_chunk$set(
 
 ```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
 ```
+
+
