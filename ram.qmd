@@ -1,0 +1,130 @@
+---
+title: ""
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r}
+library(tidyverse)
+library(targets)
+```
+
+```{r}
+ab_df <- read_csv("data/model4_posteriors.csv")
+
+ab_df2 <- ab_df |>
+  filter(level == "species") |>
+  dplyr::select(target, variable_meaning:q97.5, max_pg) |>
+  rename(
+    coef = variable_meaning,
+    species_name = target
+    )
+
+ab_df2
+
+write_csv(ab_df2, "ab.csv")
+```
+
+```{r}
+d <- read_csv("data-raw/calibration_raw_data.csv") |>
+  janitor::clean_names()
+
+d2 <- d |>
+  filter(is.na(removed_k)) |>
+  filter(is.na(removed_fd)) |>
+  filter(!is.na(fd)) |>
+  filter(!is.na(k))
+
+thresholds <- c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)
+
+p_all <- map_dfr(thresholds, function(thresh) {
+  d2 |>
+    filter(p_g <= thresh) |>
+    group_by(species_name) |>
+    summarise(
+      ks = mean(ks),
+      fd = mean(fd),
+      .groups = "drop"
+    ) |>
+    mutate(max_pg = thresh)
+})
+
+p002 <- p_all |>
+  filter(max_pg == 0.02)
+
+# d2 |>
+#   filter(species_name == "Acacia pennata") |>
+#   dplyr::select(sample_number, ks, mean_ks, p, p_g, fd) |>
+#   kable()
+
+# Define the function
+summarize_by_range <- function(data, lower, upper) {
+  data |>
+    filter(p_g > lower, p_g <= upper) |>
+    group_by(species_name) |>
+    summarise(
+      ks = mean(ks),
+      fd = mean(fd),
+      .groups = "drop"
+    ) |>
+    mutate(min_pg = lower, max_pg = upper)
+}
+
+# Apply it with your dataset `d2` — make sure d2 is defined!
+p_all2 <- map2_dfr(
+  thresholds[-length(thresholds)],    # lower
+  thresholds[-1],                     # upper
+  ~summarize_by_range(d2, .x, .y)     # pass d2 explicitly
+) |>
+  dplyr::select(-min_pg)
+
+p_all3 <- p_all |>
+  dplyr::select(-ks, -fd) |>
+  full_join(p_all2, by = c("species_name", "max_pg")) |>
+  filter(max_pg != 0.02) |>
+  dplyr::select(species_name, ks, fd, max_pg)
+
+
+p_df <- bind_rows(p002, p_all2) |>
+  arrange(max_pg, species_name)
+
+```
+
+
+```{r}
+right_join(ab_df2, p_df, by = c("species_name", "max_pg")) |>
+  dplyr::select(
+    species_name, coef,
+    q2.5:q97.5,
+    ks, fd,
+    max_pg
+  ) |>
+  filter(!is.na(coef)) |>
+  arrange(max_pg, species_name) |>
+  write_csv("ab_ks_df.csv")
+```
+
+
+
