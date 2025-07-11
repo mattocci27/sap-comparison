@@ -49,7 +49,15 @@ write_csv(ab_df2, "ab.csv")
 
 ```{r}
 d <- read_csv("data-raw/calibration_raw_data.csv") |>
-  janitor::clean_names()
+  janitor::clean_names() |>
+  mutate(
+    species_name = case_when(
+      species_name == "Bauhinia  tenuiflor" ~ "Bauhinia tenuiflor",
+      species_name == "Dypsis  lutescen" ~ "Dypsis lutescen",
+      TRUE ~ species_name
+    )
+  )
+
 
 d2 <- d |>
   filter(is.na(removed_k)) |>
@@ -57,7 +65,7 @@ d2 <- d |>
   filter(!is.na(fd)) |>
   filter(!is.na(k))
 
-thresholds <- c(0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.025, 0.035)
+thresholds <- c(0.02, 0.025, 0.03, 0.035, 0.04, 0.05, 0.06, 0.07, 0.08)
 
 p_all <- map_dfr(thresholds, function(thresh) {
   d2 |>
@@ -73,6 +81,10 @@ p_all <- map_dfr(thresholds, function(thresh) {
 
 p002 <- p_all |>
   filter(max_pg == 0.02)
+
+p_all |>
+  filter(max_pg > 0.02) |>
+  filter(max_pg <= 0.025)
 
 # d2 |>
 #   filter(species_name == "Acacia pennata") |>
@@ -109,7 +121,6 @@ p_all3 <- p_all |>
 
 p_df <- bind_rows(p002, p_all2) |>
   arrange(max_pg, species_name)
-
 ```
 
 
@@ -117,14 +128,24 @@ p_df <- bind_rows(p002, p_all2) |>
 right_join(ab_df2, p_df, by = c("species_name", "max_pg")) |>
   dplyr::select(
     species_name, coef,
-    q2.5:q97.5,
+    q2.5, q50, q97.5,
     ks, fd,
     max_pg
   ) |>
-  filter(!is.na(coef)) |>
+  # filter(!is.na(coef)) |>
   arrange(max_pg, species_name) |>
   write_csv("ab_ks_df.csv")
 ```
 
+```{r}
+ab_df2 |>
+  pull(species_name) |>
+  unique()
 
+d |>
+  pull(species_name) |>
+  unique()
 
+```
+"Bauhinia tenuiflor"
+"Bauhinia  tenuiflor"
