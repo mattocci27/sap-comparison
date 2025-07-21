@@ -532,15 +532,35 @@ generate_sap_traits_no_xylem_stan_data <- function(data, remove_abnormal_values 
   stan_data
 }
 
-generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
-  d <- read_csv(data)
-  d <- d |>
-    filter(!is.na(wood_density)) |>
-    filter(!is.na(swc)) |>
-    filter(!is.na(dh)) |>
-    filter(!is.na(vaf)) |>
-    filter(!is.na(vf)) |>
-    filter(!is.na(ks))
+generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abnormal_values = FALSE, upper_pressure = FALSE, remove_all = TRUE) {
+
+  # library(tidyverse)
+  # library(targets)
+  # data <- tar_read(fd_k_traits_csv)
+  # trait_name <- "log_vaf"
+  # remove_abnormal_values <- TRUE
+
+  d <- read_csv(data) |>
+    mutate(
+      log_dh = log(dh),
+      log_swc = log(swc),
+      log_vaf = log(vaf),
+      log_vf = log(vf),
+      log_ks = log(ks)
+    )
+
+  if(remove_all) {
+    d <- d |>
+      filter(!is.na(wood_density)) |>
+      filter(!is.na(swc)) |>
+      filter(!is.na(dh)) |>
+      filter(!is.na(vaf)) |>
+      filter(!is.na(vf)) |>
+      filter(!is.na(ks))
+  } else {
+    d <- d |>
+      filter(!is.na(!!sym(trait_name)))
+  }
 
   if (remove_abnormal_values) {
     d <- d |>
@@ -556,11 +576,11 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
     group_by(species) |>
     summarize(
       wood_density = mean(wood_density),
-      log_dh = mean(log(dh)),
-      log_swc = mean(log(swc)),
-      log_vaf = mean(log(vaf)),
-      log_vf = mean(log(vf)),
-      log_ks = mean(log(ks))
+      log_dh = mean(log_dh),
+      log_swc = mean(log_swc),
+      log_vaf = mean(log_vaf),
+      log_vf = mean(log_vf),
+      log_ks = mean(log_ks)
     )
 
   tmp <- d |>
@@ -639,7 +659,321 @@ generate_sap_each_trait_xylem_stan_data <- function(data, trait_name, remove_abn
     x = cbind(1, log(d$k)),
     y = log(d$fd),
     xj = xj,
+    xk = xk,
     T = ncol(xj)
+  )
+  stan_data
+}
+
+generate_sap_each_trait_no_xylem_stan_data_all <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  d <- read_csv(data) |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  d_sp <- d |>
+    group_by(species) |>
+    summarize(
+      wood_density = mean(wood_density),
+      log_swc = mean(log(swc)),
+      log_dh = mean(log(dh)),
+      log_vaf = mean(log(vaf)),
+      log_vf = mean(log(vf)),
+      log_ks = mean(log(ks))
+    )
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  seg_to_sp <- tmp |> pull(species) |> as.factor() |> as.numeric()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(int = 1) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  tmp <- tmp0 |>
+    dplyr::select(wood_density, log_swc, log_dh, log_vaf, log_vf, log_ks)
+
+  tmp2 <- apply(tmp, 2, scale)
+  xj <- cbind(1, tmp2)
+
+  tmp_sp <- d_sp |>
+    mutate(int = 1) |>
+    dplyr::select(wood_density, log_swc, log_dh, log_vaf, log_vf, log_ks)
+
+  tmp2_sp <- apply(tmp_sp, 2, scale)
+  xk <- cbind(1, tmp2_sp)
+
+  # intercept only model
+  if (is.nan(xj[1, 2])) {
+    xj <- xj[, 1]
+    xk <- xk[, 1]
+    xj <- as.matrix(xj, ncol = 1)
+    xk <- as.matrix(xk, ncol = 1)
+  }
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  kk <- unique(d$species) |> length()
+  uk <- matrix(rep(1, kk * ncol(xj)), ncol = kk)
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    uj = t(uj),
+    uk = uk,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj),
+    kk = seg_to_sp,
+    xk = xk
+  )
+  stan_data
+}
+
+generate_sap_each_trait_no_xylem_stan_data_all2 <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE, two_traits = TRUE) {
+  d <- read_csv(data)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  d_sp <- d |>
+    group_by(species) |>
+    summarize(
+      wood_density = mean(wood_density),
+      log_swc = mean(log(swc)),
+      log_dh = mean(log(dh)),
+      log_vaf = mean(log(vaf)),
+      log_vf = mean(log(vf)),
+      log_ks = mean(log(ks))
+    )
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  seg_to_sp <- tmp |> pull(species) |> as.factor() |> as.numeric()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(int = 1) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  if (two_traits) {
+    tmp <- tmp0 |>
+      dplyr::select(log_vaf, log_ks)
+  } else {
+    tmp <- tmp0 |>
+      dplyr::select(log_vaf, log_ks, log_dh)
+  }
+
+  tmp2 <- apply(tmp, 2, scale)
+  xj <- cbind(1, tmp2)
+
+
+  if (two_traits) {
+    tmp_sp <- d_sp |>
+      mutate(int = 1) |>
+      dplyr::select(log_vaf, log_ks)
+  } else {
+    tmp_sp <- d_sp |>
+      mutate(int = 1) |>
+      dplyr::select(log_vaf, log_ks, log_dh)
+  }
+
+  tmp2_sp <- apply(tmp_sp, 2, scale)
+  xk <- cbind(1, tmp2_sp)
+
+  # intercept only model
+  if (is.nan(xj[1, 2])) {
+    xj <- xj[, 1]
+    xk <- xk[, 1]
+    xj <- as.matrix(xj, ncol = 1)
+    xk <- as.matrix(xk, ncol = 1)
+  }
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  kk <- unique(d$species) |> length()
+  uk <- matrix(rep(1, kk), ncol = kk)
+
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    uj = t(uj),
+    uk = uk,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj),
+    kk = seg_to_sp,
+    xk = xk
+  )
+  stan_data
+}
+
+generate_sap_each_trait_no_xylem_stan_data_ks <- function(data, remove_abnormal_values = FALSE, upper_pressure = FALSE) {
+  d <- read_csv(data)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  if (remove_abnormal_values) {
+    d <- d |>
+      filter(is.na(removed_k))
+  }
+
+  if (upper_pressure) {
+   d <- d |>
+     filter(p_g <= upper_pressure)
+  }
+
+  d_sp <- d |>
+    group_by(species) |>
+    summarize(
+      wood_density = mean(wood_density),
+      log_swc = mean(log(swc)),
+      log_dh = mean(log(dh)),
+      log_vaf = mean(log(vaf)),
+      log_vf = mean(log(vf)),
+      log_ks = mean(log(ks))
+    )
+
+  tmp <- d |>
+    group_by(sample_id, species) |>
+    nest() |>
+    ungroup() |>
+    arrange(sample_id)
+
+  seg_to_sp <- tmp |> pull(species) |> as.factor() |> as.numeric()
+
+  uj <- model.matrix(~ species, tmp)
+  uj[apply(uj, 1, sum) == 2, 1] <- 0
+
+  tmp0 <- d |>
+    mutate(int = 1) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE)
+
+  tmp <- tmp0 |>
+    dplyr::select(log_ks)
+
+  tmp2 <- apply(tmp, 2, scale)
+  xj <- cbind(1, tmp2)
+
+
+  tmp_sp <- d_sp |>
+    dplyr::select(log_ks)
+
+  tmp2_sp <- apply(tmp_sp, 2, scale)
+  xk <- cbind(1, tmp2_sp)
+
+  # intercept only model
+  if (is.nan(xj[1, 2])) {
+    xj <- xj[, 1]
+    xk <- xk[, 1]
+    xj <- as.matrix(xj, ncol = 1)
+    xk <- as.matrix(xk, ncol = 1)
+  }
+
+  tmp <- d |>
+    group_by(species, xylem_type) |>
+    nest() |>
+    ungroup() |>
+    arrange(xylem_type) |>
+    arrange(species)
+
+  kk <- unique(d$species) |> length()
+  uk <- matrix(rep(1, kk), ncol = kk)
+
+
+  stan_data <- list(
+    N = nrow(d),
+    J = unique(d$sample_id) |> length(),
+    K = unique(d$species) |> length(),
+    jj = as.factor(d$sample_id) |> as.numeric(),
+    uj = t(uj),
+    uk = uk,
+    x = cbind(1, log(d$k)),
+    y = log(d$fd),
+    xj = xj,
+    T = ncol(xj),
+    kk = seg_to_sp,
+    xk = xk
   )
   stan_data
 }
@@ -1672,13 +2006,28 @@ write_ab_csv <- function(d, summary_full_pool, summary_full_segments, summary_sp
 
 
 generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
-# summary_data <- tar_read(fit3_summary_segments_noxylem_traits_sp_log_vaf)
-# draws <- tar_read(fit3_draws_segments_noxylem_traits_sp_log_vaf)
-  if (sp_level) {
+# summary_data <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf)
+
+# summary_data <- tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
+# tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# draws <- tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf)
+# trait_name <- "log_vaf"
+
+# species or segment-level coef
+  if (sp_level & no_xylem) {
     a_mat <- summary_data |>
-        filter(str_detect(variable, "^A_species\\[1"))
+      filter(str_detect(variable, "^beta_hat\\[1"))
     b_mat <- summary_data |>
-        filter(str_detect(variable, "^A_species\\[2"))
+      filter(str_detect(variable, "^beta_hat\\[2"))
+  } else if (sp_level & !no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_a"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_b"))
   } else {
     a_mat <- summary_data |>
       filter(str_detect(variable, "^A\\[1"))
@@ -1728,33 +2077,27 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
 
   if (no_xylem) {
     if (sp_level) {
-      ga <- paste("beta_a", tmp, sep = "_")
-      gb <- paste("beta_b", tmp, sep = "_")
       coef_a <- draws |>
-        dplyr::select(beta_a_1, {{ga}}) |>
+        dplyr::select(beta_1_1, beta_2_1) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_b_1, {{gb}}) |>
+        dplyr::select(beta_1_2, beta_2_2) |>
         as.matrix()
     } else {
-      ga <- paste("beta_a", tmp, "1", sep = "_")
-      gb <- paste("beta_b", tmp, "1", sep = "_")
       coef_a <- draws |>
-        dplyr::select(beta_a_1_1, {{ga}}) |>
+        dplyr::select(beta_1, beta_2) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_b_1_1, {{gb}}) |>
+        dplyr::select(beta_3, beta_4) |>
         as.matrix()
     }
   } else {
-    ga <- paste("gamma_a", tmp, "1", sep = "_")
-    gb <- paste("gamma_b", tmp, "1", sep = "_")
-    coef_a <- draws |>
-      dplyr::select(gamma_a_1_1, {{ga}}) |>
-      as.matrix()
-    coef_b <- draws |>
-      dplyr::select(gamma_b_1_1, {{gb}}) |>
-      as.matrix()
+      coef_a <- draws |>
+        dplyr::select(gamma_1, gamma_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(gamma_3, gamma_4) |>
+        as.matrix()
   }
 
   # trait_name <- "log_ks"
@@ -2357,11 +2700,20 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
 
 # Function to calculate R2
 calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
-  beta_int_pred <- draws %>% pull(beta_int_col)
-  beta_slope_pred <- draws %>% pull(beta_slope_col)
+  # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_ks)
+  # beta_int_col <- "beta_1_1"
+  # beta_slope_col <- "beta_2_1"
+  # xj <- tar_read(stan_data_noxylem_log_vaf)$xj
+  # obs_start_col <- "beta_hat_1"
+
+  draws_cleaned <- draws %>%
+    janitor::clean_names()
+
+  beta_int_pred <- draws_cleaned %>% pull(beta_int_col)
+  beta_slope_pred <- draws_cleaned %>% pull(beta_slope_col)
   log_pred <- xj %*% rbind(beta_int_pred, beta_slope_pred)
 
-  log_obs <- draws %>%
+  log_obs <- draws_cleaned %>%
     select(starts_with(obs_start_col)) %>%
     as.matrix() %>%
     t()
@@ -2373,16 +2725,27 @@ calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_co
 }
 
 # Main function to process the draws and calculate R2 for both a and b
-process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE) {
+process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE, xylem = FALSE) {
+  # draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_dh)
+  # x <- tar_read(stan_data_noxylem_log_dh)$xk
   draws_cleaned <- draws %>%
     janitor::clean_names()
 
-  if (sp_level) {
-    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1", "beta_a_2", "A_species_1_", x)
-    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1", "beta_b_2", "A_species_2_", x)
-  } else {
-    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_a_1_1", "beta_a_2_1", "a_hat_1_", x)
-    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_b_1_1", "beta_b_2_1", "a_hat_2_", x)
+  if (sp_level & xylem) {
+    # sp xylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_1", "gamma_2", "alpha_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_3", "gamma_4", "alpha_2", x)
+  } else if (!sp_level & xylem) {
+    # seg xylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_1", "gamma_2", "A_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_3", "gamma_4", "A_2", x)
+  } else if (sp_level & !xylem) {
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_1", "beta_2_1", "beta_hat_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_2", "beta_2_2", "beta_hat_2", x)
+  } else if (!sp_level & !xylem) {
+    # seg noxylem
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1", "beta_2", "A_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_3", "beta_4", "A_2", x)
   }
 
   return(list(a_r2 = a_r2_q, b_r2 = b_r2_q))

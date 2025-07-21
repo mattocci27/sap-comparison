@@ -43,7 +43,10 @@ tar_option_set(packages = c(
   "gtable",
   "ggrepel",
   "viridis",
-  "ggpointdensity"
+  "ggpointdensity",
+  "boot",
+  "ggpubr",
+  "MASS"
 ))
 
 # tar_option_set(
@@ -75,6 +78,8 @@ compile_stan_models <- tar_map(
     }
   )
 )
+
+
 
 # list(compile_stan_models)
 
@@ -715,14 +720,16 @@ tar_combined_species_xylem_summary <- tar_combine(
     ),
     tar_stan_mcmc(
       fit,
-      "stan/segments_noxylem_traits.stan",
+      c("stan/segments_noxylem_traits.stan",
+      "stan/segments_noxylem_traits_simple.stan",
+      "stan/segments_noxylem_traits_sp_simple.stan"),
       data = stan_data_noxylem,
       refresh = 0,
       chains = 4,
       parallel_chains = 4,
       iter_warmup = 2000,
       iter_sampling = 2000,
-      adapt_delta = 0.95,
+      adapt_delta = 0.99,
       max_treedepth = 15,
       seed = 123,
       return_draws = TRUE,
@@ -738,12 +745,14 @@ tar_combined_species_xylem_summary <- tar_combine(
      ),
    tar_stan_mcmc(
       fit2,
-      "stan/segments_xylem_traits.stan",
+      c("stan/segments_xylem_traits.stan",
+      "stan/segments_xylem_traits_simple.stan",
+      "stan/segments_xylem_traits_sp_simple.stan"),
       data = stan_data_xylem,
       refresh = 0,
       chains = 4,
       parallel_chains = 4,
-      iter_warmup = 4000,
+      iter_warmup = 2000,
       iter_sampling = 2000,
       adapt_delta = 0.99,
       max_treedepth = 15,
@@ -882,13 +891,14 @@ granier_list <- list(
     }
   ),
   tar_target(
-    segments_inclusive_ab_csv,
-    generate_species_segments_ab_csv(segments_ab_table_combined, "data/segments_inclusive_ab.csv"),
+   #segments_inclusive_ab_csv,
+    model2_posteriors_csv,
+    generate_species_segments_ab_csv(segments_ab_table_combined, "data/model2_posteriors.csv"),
     format = "file"
   ),
   tar_target(
-    species_only_ab_csv,
-    generate_species_segments_ab_csv(species_ab_table_combined, "data/species_only_ab.csv"),
+    model1_posteriors_csv,
+    generate_species_segments_ab_csv(species_ab_table_combined, "data/model1_posteriors.csv"),
     format = "file"
   ),
   segments_xylem_df_mapped,
@@ -896,20 +906,22 @@ granier_list <- list(
   tar_combined_segments_xylem_df,
   tar_combined_species_xylem_df,
   tar_target(
-    segments_xylem_csv, {
+    # segments_xylem_csv, {
+    model4_csv, {
        segments_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
        dplyr::select(-id) |>
-       my_write_csv("data/segments_xylem_post.csv")
+       my_write_csv("data/model4_posteriors.csv")
     },
     format = "file"
   ),
   tar_target(
-    species_xylem_csv, {
+    #species_xylem_csv, {
+    model3_csv, {
        species_xylem_df_combined |>
        mutate(max_pg = str_extract(id, "\\d+\\.\\d+")) |>
        dplyr::select(-id) |>
-       my_write_csv("data/species_xylem_post.csv")
+       my_write_csv("data/model3_posteriors.csv")
     },
     format = "file"
   ),
@@ -938,13 +950,15 @@ granier_list <- list(
     generate_xylem_lab(fd_k_traits_csv)
   ),
   tar_target(
-    traits_xylem_table_csv,
-    my_write_csv(segments_xylem_traits_table_combined, "data/traits_xylem_post.csv"),
+    #traits_xylem_table_csv,
+    model4_with_traits_posterior_csv,
+    my_write_csv(segments_xylem_traits_table_combined, "data/model4_traits_with_xylem_posteriors.csv"),
     format = "file"
   ),
   tar_target(
-    traits_noxylem_table_csv,
-    my_write_csv(segments_noxylem_traits_table_combined, "data/traits_noxylem_post.csv"),
+    # traits_noxylem_table_csv,
+    model4_without_traits_posterior_csv,
+    my_write_csv(segments_noxylem_traits_table_combined, "data/model4_traits_without_xylem_posteriors.csv.csv"),
     format = "file"
   ),
 
@@ -1070,23 +1084,68 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
-    # tar_read(trait_fig_data_combined)
+    trait_pred_data_noxylem_sp_combined,
+    generate_combined_trait_fig_data(
+      summary = list(
+        fit_summary_segments_noxylem_traits_sp_simple_log_vaf,
+        fit_summary_segments_noxylem_traits_sp_simple_log_ks,
+        fit_summary_segments_noxylem_traits_sp_simple_wood_density,
+        fit_summary_segments_noxylem_traits_sp_simple_log_swc,
+        fit_summary_segments_noxylem_traits_sp_simple_log_dh,
+        fit_summary_segments_noxylem_traits_sp_simple_log_vf),
+      draws = list(
+        fit_draws_segments_noxylem_traits_sp_simple_log_vaf,
+        fit_draws_segments_noxylem_traits_sp_simple_log_ks,
+        fit_draws_segments_noxylem_traits_sp_simple_wood_density,
+        fit_draws_segments_noxylem_traits_sp_simple_log_swc,
+        fit_draws_segments_noxylem_traits_sp_simple_log_dh,
+        fit_draws_segments_noxylem_traits_sp_simple_log_vf),
+      fd_k_traits_csv,
+      xylem_lab,
+      no_xylem = TRUE,
+      single_trait = TRUE,
+      sp_level = TRUE)
+  ),
+  tar_target(
+    trait_pred_data_xylem_sp_combined,
+    generate_combined_trait_fig_data(
+      summary = list(
+        fit2_summary_segments_xylem_traits_sp_simple_log_vaf,
+        fit2_summary_segments_xylem_traits_sp_simple_log_ks,
+        fit2_summary_segments_xylem_traits_sp_simple_wood_density,
+        fit2_summary_segments_xylem_traits_sp_simple_log_swc,
+        fit2_summary_segments_xylem_traits_sp_simple_log_dh,
+        fit2_summary_segments_xylem_traits_sp_simple_log_vf),
+      draws = list(
+        fit2_draws_segments_xylem_traits_sp_simple_log_vaf,
+        fit2_draws_segments_xylem_traits_sp_simple_log_ks,
+        fit2_draws_segments_xylem_traits_sp_simple_wood_density,
+        fit2_draws_segments_xylem_traits_sp_simple_log_swc,
+        fit2_draws_segments_xylem_traits_sp_simple_log_dh,
+        fit2_draws_segments_xylem_traits_sp_simple_log_vf),
+      fd_k_traits_csv,
+      xylem_lab,
+      no_xylem = FALSE,
+      single_trait = TRUE,
+      sp_level = TRUE)
+  ),
+  tar_target(
     trait_pred_data_noxylem_combined,
     generate_combined_trait_fig_data(
       summary = list(
-        fit_summary_segments_noxylem_traits_log_vaf,
-        fit_summary_segments_noxylem_traits_log_ks,
-        fit_summary_segments_noxylem_traits_wood_density,
-        fit_summary_segments_noxylem_traits_log_swc,
-        fit_summary_segments_noxylem_traits_log_dh,
-        fit_summary_segments_noxylem_traits_log_vf),
+        fit_summary_segments_noxylem_traits_simple_log_vaf,
+        fit_summary_segments_noxylem_traits_simple_log_ks,
+        fit_summary_segments_noxylem_traits_simple_wood_density,
+        fit_summary_segments_noxylem_traits_simple_log_swc,
+        fit_summary_segments_noxylem_traits_simple_log_dh,
+        fit_summary_segments_noxylem_traits_simple_log_vf),
       draws = list(
-        fit_draws_segments_noxylem_traits_log_vaf,
-        fit_draws_segments_noxylem_traits_log_ks,
-        fit_draws_segments_noxylem_traits_wood_density,
-        fit_draws_segments_noxylem_traits_log_swc,
-        fit_draws_segments_noxylem_traits_log_dh,
-        fit_draws_segments_noxylem_traits_log_vf),
+        fit_draws_segments_noxylem_traits_simple_log_vaf,
+        fit_draws_segments_noxylem_traits_simple_log_ks,
+        fit_draws_segments_noxylem_traits_simple_wood_density,
+        fit_draws_segments_noxylem_traits_simple_log_swc,
+        fit_draws_segments_noxylem_traits_simple_log_dh,
+        fit_draws_segments_noxylem_traits_simple_log_vf),
       fd_k_traits_csv,
       xylem_lab,
       no_xylem = TRUE,
@@ -1097,47 +1156,26 @@ granier_list <- list(
     trait_pred_data_xylem_combined,
     generate_combined_trait_fig_data(
       summary = list(
-        fit2_summary_segments_xylem_traits_log_vaf,
-        fit2_summary_segments_xylem_traits_log_ks,
-        fit2_summary_segments_xylem_traits_wood_density,
-        fit2_summary_segments_xylem_traits_log_swc,
-        fit2_summary_segments_xylem_traits_log_dh,
-        fit2_summary_segments_xylem_traits_log_vf),
+        fit2_summary_segments_xylem_traits_simple_log_vaf,
+        fit2_summary_segments_xylem_traits_simple_log_ks,
+        fit2_summary_segments_xylem_traits_simple_wood_density,
+        fit2_summary_segments_xylem_traits_simple_log_swc,
+        fit2_summary_segments_xylem_traits_simple_log_dh,
+        fit2_summary_segments_xylem_traits_simple_log_vf),
       draws = list(
-        fit2_draws_segments_xylem_traits_log_vaf,
-        fit2_draws_segments_xylem_traits_log_ks,
-        fit2_draws_segments_xylem_traits_wood_density,
-        fit2_draws_segments_xylem_traits_log_swc,
-        fit2_draws_segments_xylem_traits_log_dh,
-        fit2_draws_segments_xylem_traits_log_vf),
+        fit2_draws_segments_xylem_traits_simple_log_vaf,
+        fit2_draws_segments_xylem_traits_simple_log_ks,
+        fit2_draws_segments_xylem_traits_simple_wood_density,
+        fit2_draws_segments_xylem_traits_simple_log_swc,
+        fit2_draws_segments_xylem_traits_simple_log_dh,
+        fit2_draws_segments_xylem_traits_simple_log_vf),
       fd_k_traits_csv,
       xylem_lab,
       no_xylem = FALSE,
-      single_trait = TRUE)
-  ),
-  tar_target(
-    trait_pred_data_noxylem_sp_combined,
-    generate_combined_trait_fig_data(
-      summary = list(
-        fit3_summary_segments_noxylem_traits_sp_log_vaf,
-        fit3_summary_segments_noxylem_traits_sp_log_ks,
-        fit3_summary_segments_noxylem_traits_sp_wood_density,
-        fit3_summary_segments_noxylem_traits_sp_log_swc,
-        fit3_summary_segments_noxylem_traits_sp_log_dh,
-        fit3_summary_segments_noxylem_traits_sp_log_vf),
-      draws = list(
-        fit3_draws_segments_noxylem_traits_sp_log_vaf,
-        fit3_draws_segments_noxylem_traits_sp_log_ks,
-        fit3_draws_segments_noxylem_traits_sp_wood_density,
-        fit3_draws_segments_noxylem_traits_sp_log_swc,
-        fit3_draws_segments_noxylem_traits_sp_log_dh,
-        fit3_draws_segments_noxylem_traits_sp_log_vf),
-      fd_k_traits_csv,
-      xylem_lab,
-      no_xylem = TRUE,
       single_trait = TRUE,
-      sp_level = TRUE)
+      sp_level = FALSE)
   ),
+
   tar_target(
     traits_points_main_plot, {
       p <- traits_points_main(trait_pred_data_noxylem_combined)
@@ -1248,51 +1286,75 @@ granier_list <- list(
   ),
   tar_target(
     ks_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_ks, stan_data_noxylem_log_ks$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_log_ks,
+      stan_data_noxylem_log_ks$xj)
   ),
   tar_target(
     ks_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_ks, stan_data_noxylem_log_ks$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_log_ks,
+      stan_data_noxylem_log_ks$xk, sp_level = TRUE)
   ),
   tar_target(
     vaf_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_vaf, stan_data_noxylem_log_vaf$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_log_vaf,
+      stan_data_noxylem_log_vaf$xj)
   ),
   tar_target(
     vaf_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_vaf, stan_data_noxylem_log_vaf$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_log_vaf,
+      stan_data_noxylem_log_vaf$xk, sp_level = TRUE)
   ),
   tar_target(
     dh_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_dh, stan_data_noxylem_log_dh$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_log_dh,
+      stan_data_noxylem_log_dh$xj)
   ),
   tar_target(
     dh_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_dh, stan_data_noxylem_log_dh$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_log_dh,
+      stan_data_noxylem_log_dh$xk, sp_level = TRUE)
   ),
   tar_target(
     vf_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_vf, stan_data_noxylem_log_vf$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_log_vf,
+      stan_data_noxylem_log_vf$xj)
   ),
   tar_target(
     vf_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_vf, stan_data_noxylem_log_vf$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_log_vf,
+      stan_data_noxylem_log_vf$xk, sp_level = TRUE)
   ),
   tar_target(
     swc_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_log_swc, stan_data_noxylem_log_swc$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_log_swc,
+      stan_data_noxylem_log_swc$xj)
   ),
   tar_target(
     swc_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_log_swc, stan_data_noxylem_log_swc$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_log_swc,
+      stan_data_noxylem_log_swc$xk, sp_level = TRUE)
   ),
   tar_target(
     wd_r2,
-    process_draws_and_calculate_trait_r2(fit_draws_segments_noxylem_traits_wood_density, stan_data_noxylem_wood_density$xj)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_simple_wood_density,
+      stan_data_noxylem_wood_density$xj)
   ),
   tar_target(
     wd_sp_r2,
-    process_draws_and_calculate_trait_r2(fit3_draws_segments_noxylem_traits_sp_wood_density, stan_data_noxylem_wood_density$xk, sp_level = TRUE)
+    process_draws_and_calculate_trait_r2(
+      fit_draws_segments_noxylem_traits_sp_simple_wood_density,
+      stan_data_noxylem_wood_density$xk, sp_level = TRUE)
   ),
   tar_target(
     traits_points_si_plot, {
@@ -1383,9 +1445,42 @@ impute_mapped <- tar_map(
     }
     ),
   tar_target(
+    new_data, {
+      miss_n <- cleaned_df_missforest |>
+        filter(is.na(k)) |>
+        nrow()
+      total_n <- cleaned_df_missforest |>
+        nrow()
+
+      miss_id <- sample(1:total_n, miss_n)
+      imputed_df %>%
+        mutate(tmp = 1:nrow(.)) |>
+        mutate(k = if_else(tmp %in% miss_id, NA, k)) |>
+        as.data.frame()
+       }
+    ),
+  tar_target(
+    imputed_new_data, {
+      missForest::missForest(new_data,
+        parallelize = "forests")
+    }
+  ),
+  tar_target(
+    imputed_k2_df, {
+      d_new <- imputed_new_data$ximp |> as_tibble()
+
+      cleaned_df_missforest |> as_tibble() |>
+        rename(k_ori = k) |>
+        mutate(k_new_with_na = new_data$k) |>
+        mutate(k_new_without_na = imputed_df$k) |>
+        mutate(k_imp = d_new$k)
+    }
+  ),
+
+  tar_target(
     nramse,
     imputed_data$OOBerror[1]
-    ),
+  ),
   tar_target(
     imputed_df_btrans,
     backtransform_date(rubber_raw_data_csv, year, month, imputed_df)
@@ -1395,6 +1490,18 @@ impute_mapped <- tar_map(
 tar_combined_imputed_data <- tar_combine(
   combined_imputed_mapped,
   impute_mapped[["imputed_df_btrans"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_imputed_k_data <- tar_combine(
+  combined_imputed_k_mapped,
+  impute_mapped[["imputed_k2_df"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_cleaned_df_missforest_data <- tar_combine(
+  combined_cleaned_df_missforest_mapped,
+  impute_mapped[["cleaned_df_missforest"]],
   command = dplyr::bind_rows(!!!.x)
 )
 
@@ -1457,6 +1564,8 @@ tar_impute <- list(
   impute_rest_mapped,
   tar_combined_imputed_rest_data,
   tar_combined_nrmse_rest,
+  tar_combined_cleaned_df_missforest_data,
+  tar_combined_imputed_k_data,
   tar_target(
     nrmse_df, {
       tmp1 <- combined_nrmse |>
@@ -1484,6 +1593,129 @@ tar_impute <- list(
   tar_target(
     nonimputed_full_df,
     make_long_nonimputed_df(rubber_raw_data_csv)
+  ),
+  tar_target(
+    imp_r2_plot, {
+      p <- imp_r2_scatter(combined_imputed_k_mapped)
+      my_ggsave(
+        "figs/imp_r2",
+        p,
+        dpi = 600,
+        width = 4.33,
+        height = 3.1
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    imp_r2_plot2, {
+      p <- imp_r2_scatter2(combined_imputed_k_mapped, segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+      my_ggsave(
+        "figs/imp_r2_2",
+        p,
+        dpi = 600,
+        width = 4.33,
+        height = 3.1
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    imp2_df,
+    prepare_imp2_df(rubber_raw_data_csv, combined_imputed_k_mapped)
+  ),
+  tar_target(
+    imp_points2_plot, {
+      p <- imp_points2(imp2_df)
+      my_ggsave(
+        "figs/imp_points2",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    imp_r2_comb, {
+      p1 <- imp_r2_scatter(combined_imputed_k_mapped)
+      p2 <- imp_points2(imp2_df, days = 5) +
+        theme(legend.position = "right")
+      p <- p1 / p2 +
+        plot_annotation(tag_levels = "a") &
+        theme(plot.tag = element_text(face = "bold"))
+
+      my_ggsave(
+        "figs/imp_r2_comb",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 150,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    reimp_bin_df,
+    generate_reimp_bin_df(combined_imputed_k_mapped,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+  ),
+  tar_target(
+    reimp_bin_granier_df,
+    generate_reimp_bin_df(combined_imputed_k_mapped,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08, granier = TRUE)
+  ),
+  tar_target(
+    reimp_bin_ci_list,
+    generate_reimp_bin_ci_list(
+      reimp_bin_df,
+      combined_imputed_k_mapped,
+      segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+  ),
+  tar_target(
+    reimp_bin_plot, {
+      p <- reimp_bin_bar(reimp_bin_ci_list$reimp_bin_ci_df)
+      my_ggsave(
+        "figs/reimp_bin_bar",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    reimp_bin_plot2, {
+      p <- reimp_bin_bar(reimp_bin_df, error = FALSE)
+      my_ggsave(
+        "figs/reimp_bin_bar2",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    reimp_bin_granier_plot, {
+      p <- reimp_bin_bar(reimp_bin_granier_df, error = FALSE)
+      my_ggsave(
+        "figs/reimp_bin_bar_granier",
+        p,
+        dpi = 600,
+        width = 110,
+        height = 80,
+        units = "mm"
+      )
+    },
+    format = "file"
   ),
   NULL
   )
@@ -2055,6 +2287,224 @@ sapwood_list <- list(
   NULL
 )
 
+# trait-update -------------------------
+trait_data_noxylem <- expand_grid(
+  level = c("traits_simple", "traits_sp_simple"),
+  type = c("diagnostics"),
+  # type = c("diagnostics", "summary"),
+  traits =
+     c("log_dh", "log_vf", "wood_density",
+     "log_ks", "log_vaf", "log_swc")) |>
+  mutate(name = str_glue("fit_{type}_segments_noxylem_{level}_{traits}"))
+
+trait_data_xylem <- trait_data_noxylem |>
+  mutate(name = str_replace(name, "noxylem", "xylem")) |>
+  mutate(name = str_replace(name, "fit", "fit2"))
+
+trait_data2 <- bind_rows(trait_data_noxylem, trait_data_xylem)
+
+granier_update_list <- list(
+  # tar_map(
+  #   values = list(name = trait_data2$name),
+  #   tar_target(
+  #     test_div,
+  #     !!rlang::sym("name")
+  #   )
+  # ),
+  tar_target(
+    loo_ks,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_log_ks,
+           fit_mcmc_segments_noxylem_traits_sp_simple_log_ks,
+           fit2_mcmc_segments_xylem_traits_simple_log_ks,
+           fit2_mcmc_segments_xylem_traits_sp_simple_log_ks),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  tar_target(
+    loo_vaf,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_log_vaf,
+           fit_mcmc_segments_noxylem_traits_sp_simple_log_vaf,
+           fit2_mcmc_segments_xylem_traits_simple_log_vaf,
+           fit2_mcmc_segments_xylem_traits_sp_simple_log_vaf),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  tar_target(
+    loo_vf,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_log_vf,
+           fit_mcmc_segments_noxylem_traits_sp_simple_log_vf,
+           fit2_mcmc_segments_xylem_traits_simple_log_vf,
+           fit2_mcmc_segments_xylem_traits_sp_simple_log_vf),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  tar_target(
+    loo_dh,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_log_dh,
+           fit_mcmc_segments_noxylem_traits_sp_simple_log_dh,
+           fit2_mcmc_segments_xylem_traits_simple_log_dh,
+           fit2_mcmc_segments_xylem_traits_sp_simple_log_dh),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  tar_target(
+    loo_swc,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_log_swc,
+           fit_mcmc_segments_noxylem_traits_sp_simple_log_swc,
+           fit2_mcmc_segments_xylem_traits_simple_log_swc,
+           fit2_mcmc_segments_xylem_traits_sp_simple_log_swc),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  tar_target(
+    loo_wd,
+    lapply(
+      list(
+           fit_mcmc_segments_noxylem_traits_simple_wood_density,
+           fit_mcmc_segments_noxylem_traits_sp_simple_wood_density,
+           fit2_mcmc_segments_xylem_traits_simple_wood_density,
+           fit2_mcmc_segments_xylem_traits_sp_simple_wood_density),
+    \(x)x$loo(cores = 2)
+    )
+  ),
+  NULL
+)
+
+mul_reg_list <- list(
+  tar_target(
+    stan_data_noxylem_all,
+    generate_sap_each_trait_no_xylem_stan_data_all(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE)
+  ),
+  tar_stan_mcmc(
+    fit_all,
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
+    data = stan_data_noxylem_all,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
+  tar_target(
+    stan_data_noxylem_all2,
+    generate_sap_each_trait_no_xylem_stan_data_all2(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE)
+  ),
+  tar_target(
+    stan_data_noxylem_all3,
+    generate_sap_each_trait_no_xylem_stan_data_all2(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE,
+      two_traits = FALSE)
+  ),
+  tar_stan_mcmc(
+    fit_all2,
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
+    data = stan_data_noxylem_all2,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
+  tar_stan_mcmc(
+    fit_all3,
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
+    data = stan_data_noxylem_all3,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
+  tar_target(
+    stan_data_noxylem_ks,
+    generate_sap_each_trait_no_xylem_stan_data_ks(
+      fd_k_traits_csv,
+      remove_abnormal_values = TRUE)
+  ),
+  tar_stan_mcmc(
+    fit_ks,
+    c("stan/segments_noxylem_traits_simple_all.stan",
+    "stan/segments_noxylem_traits_sp_simple_all.stan"),
+    data = stan_data_noxylem_ks,
+    refresh = 0,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 2000,
+    iter_sampling = 2000,
+    adapt_delta = 0.9,
+    max_treedepth = 15,
+    seed = 123,
+    return_draws = TRUE,
+    return_diagnostics = TRUE,
+    return_summary = TRUE,
+    summaries = list(
+      mean = ~mean(.x),
+      sd = ~sd(.x),
+      mad = ~mad(.x),
+      ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+      posterior::default_convergence_measures()
+      )
+   ),
+  NULL
+)
+
 append(raw_data_list, main_list) |>
   append(granier_list) |>
   append(tar_impute) |>
@@ -2062,4 +2512,6 @@ append(raw_data_list, main_list) |>
   append(tar_dir_dep) |>
   append(uncertainty_list) |>
   append(uncertainty_figs_list) |>
-  append(like_check_list)
+  append(like_check_list) |>
+  append(granier_update_list) |>
+  append(mul_reg_list)

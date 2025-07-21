@@ -1,0 +1,120 @@
+---
+fontsize: 12pt
+geometry: margin=1in
+link-citations: true
+crossref:
+  fig-title: Fig.
+  fig-prefix: Fig.
+  eq-prefix: Eq.
+format:
+  pdf:
+    toc: false
+    keep-tex: true
+    pdf-engine: pdflatex
+    include-in-header:
+      text: |
+        \usepackage{xr}
+        \usepackage[default]{sourcesanspro}
+        \usepackage{sourcecodepro}
+        \usepackage{fancyhdr}
+        \usepackage{fvextra}
+        \usepackage{dcolumn}
+        \fancypagestyle{plain}{\pagestyle{fancy}}
+        \renewcommand{\headrulewidth}{0pt}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  html:
+    theme: spacelab #readable #sandstone #spacelab #flatly
+    toc: true
+    toc-depth: 2
+    toc-title: Contents
+    self-contained: true
+    smooth-scroll: true
+    highlight-style: github
+    embed-resources: true
+  docx:
+    toc: false
+    number-sections: false
+    highlight-style: github
+    html-math-method: katex
+---
+
+Stan codes for review.
+All Stan and R codes used in this study will be deposited in a public repository after the review process.
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+# Estimation of calibration coefficients Co-*a* and Co-*b*.
+
+## Model 1 (species-only model)
+
+```{stan, size="small", file="../stan-ms/species_only.stan", echo=TRUE, eval=FALSE, output.var="species-only"}
+```
+
+\newpage
+
+## Model 2 (segment-inclusive model)
+
+```{stan, size="small", file="../stan-ms/segments_inclusive.stan", echo=TRUE, eval=FALSE, output.var="segment-inclusive"}
+```
+
+\newpage
+
+## Model 3 (species-xylem model)
+
+```{stan, size="small", file="../stan-ms/species_xylem.stan", echo=TRUE, eval=FALSE, output.var="species-xylem"}
+```
+
+\newpage
+
+## Model 4 (segment-xylem model)
+
+```{stan, size="small", file="../stan-ms/segments_xylem.stan", echo=TRUE, eval=FALSE, output.var="segment-xylem"}
+```
+
+\newpage
+
+## Model 4a (Model 4 with segement-level traits)
+
+```{stan, size="small", file="../stan-ms/segments_xylem_traits_simple.stan", echo=TRUE, eval=FALSE, output.var="segment-xylem-traits-simple"}
+```
+
+
+\newpage
+
+## Model 4b (Model 4a without xylem)
+
+```{stan, size="small", file="../stan-ms/segments_noxylem_traits_simple.stan", echo=TRUE, eval=FALSE, output.var="segment-noxylem-tarits-simple"}
+```
+
+\newpage
+
+## Model 4c (Model 4a with sp-level traits)
+
+```{stan, size="small", file="../stan-ms/segments_xylem_traits_sp_simple.stan", echo=TRUE, eval=FALSE, output.var="segment-xylem-traits-sp-simple"}
+```
+
+
+\newpage
+
+## Model 4d (Model 4b with sp-level traits)
+
+```{stan, size="small", file="../stan-ms/segments_noxylem_traits_sp_simple.stan", echo=TRUE, eval=FALSE, output.var="segment-noxylem-tarits-sp-simple"}
+```
+
+\newpage
+
+# Application of calibration: Estimating transpiration in a plantation
+
+## Model for sapwood depth and DBH
+
+```{stan, size="small", file="../stan-ms/sap_dbh.stan", echo=TRUE, eval=FALSE, output.var="sap-dbh"}
+```
+
+\newpage
+
+## Model for the effect of direction on sapwood depth on K
+
+```{stan, size="small", file="../stan-ms/dir_dep.stan", echo=TRUE, eval=FALSE, output.var="dir-dep"}
+```

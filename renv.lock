@@ -1884,6 +1884,19 @@
       ],
       "Hash": "277c67a08f358f42b6a77826e4492f79"
     },
+    "nlstools": {
+      "Package": "nlstools",
+      "Version": "2.1-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "grDevices",
+        "graphics",
+        "stats",
+        "utils"
+      ],
+      "Hash": "07cda591104ce02de0b3c22c0eba7617"
+    },
     "nnet": {
       "Package": "nnet",
       "Version": "7.3-19",

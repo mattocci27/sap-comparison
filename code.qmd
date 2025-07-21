@@ -1,0 +1,132 @@
+---
+title: "Codes"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+  docx:
+    toc: false
+    number-sections: false
+    highlight-style: github
+    reference-doc: code_template.docx
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+**Method S4** Model 1: species-only model (pooled fitting for separate species)
+
+
+**Method S5** Mode 2: segment-inclusive model (multilevel fitting for separate species)
+
+
+**Method S6** Model 3: species-xylem model (pooled fitting for pooled species)
+
+
+**Method S7** Model 4: segment-xylem model (multilevel fitting for pooled species)
+
+
+
+**Method S8** Model 4a: segment-xylem model with traits
+
+
+**Method S9** Model 4b: segment-xylem model with traits without xylem-type variation
+
+
+**Method S10** Effects of Depth and direction on *K*
+
+
+**Method S11** Relationship between sapwood length and DBH
+
+
+**Method S12** Pressure- vs. tensin-induced flow
+
+
+**Method S4** Model 1: species-only model (pooled fitting for separate species)
+
+```{stan, file=here::here('stan/species_only.stan'), echo=TRUE, eval=FALSE, output.var="hoge2"}
+```
+
+\newpage
+
+**Method S5** Mode 2: segment-inclusive model (multilevel fitting for separate species)
+
+```{stan, file=here::here('stan/segments_inclusive.stan'), echo=TRUE, eval=FALSE, output.var="hoge3"}
+```
+
+\newpage
+
+**Method S6** Model 3: species-xylem model (pooled fitting for pooled species)
+
+```{stan, file=here::here('stan/species_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge4"}
+```
+
+\newpage
+
+**Method S7** Model 4: segment-xylem model (multilevel fitting for pooled species)
+
+```{stan, file=here::here('stan/segments_xylem.stan'), echo=TRUE, eval=FALSE, output.var="hoge5"}
+```
+
+\newpage
+
+
+**Method S8** Model 4a: segment-xylem model with traits
+
+```{stan, file=here::here('stan/segments_xylem_traits_simple.stan'), echo=TRUE, eval=FALSE, output.var="lkasd"}
+```
+
+\newpage
+
+
+**Method S9** Model 4b: segment-xylem model with traits without xylem-type variation
+
+```{stan, file=here::here('stan/segments_noxylem_traits_simple.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```
+
+\newpage
+
+**Method SX** Model 4c: species-level trait model without xylem-type variation
+
+```{stan, file=here::here('stan/segments_noxylem_traits_sp_simple_all.stan'), echo=TRUE, eval=FALSE, output.var="m;lkm"}
+```
+
+\newpage
+
+**Method S10** Effects of Depth and direction on *K*
+
+```{stan, file=here::here('stan/dir_dep.stan'), echo=TRUE, eval=FALSE, output.var="amam"}
+```
+
+\newpage
+
+**Method S11** Relationship between sapwood length and DBH
+
+```{stan, file=here::here('stan/sap_dbh.stan'), echo=TRUE, eval=FALSE, output.var="m;asjdf"}
+```
+
+\newpage
+
+**Method S12** Pressure- vs. tensin-induced flow
+
+```{stan, file=here::here('stan/anova_noint.stan'), echo=TRUE, eval=FALSE, output.var="alkdj"}
+```
+
+

@@ -1,0 +1,519 @@
+---
+title: ""
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r setup, include=FALSE}
+library(targets)
+library(tidyverse)
+library(loo)
+library(tictoc)
+source("R/stan.R")
+```
+
+# Model check
+
+loo order:
+
+- noxylem, segment-level
+- noxylem, species-level
+- xylem, segment-level
+- xylem, species-level
+
+## ks
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_ks) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_ks) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_ks) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_ks) |> div_check()
+```
+
+```{r}
+tar_load(loo_ks)
+loo_compare(loo_ks[[1]], loo_ks[[2]], loo_ks[[3]], loo_ks[[4]])
+```
+
+## vaf
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_vaf) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_vaf) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_vaf) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_vaf) |> div_check()
+```
+
+```{r}
+tar_load(loo_vaf)
+loo_compare(loo_vaf[[1]], loo_vaf[[2]], loo_vaf[[3]], loo_vaf[[4]])
+```
+
+## vf
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_vf) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_vf) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_vf) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_vf) |> div_check()
+```
+
+```{r}
+tar_load(loo_vf)
+loo_compare(loo_vf[[1]], loo_vf[[2]], loo_vf[[3]], loo_vf[[4]])
+```
+
+## dh
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_dh) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_dh) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_dh) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_dh) |> div_check()
+```
+
+```{r}
+tar_load(loo_dh)
+loo_compare(loo_dh[[1]], loo_dh[[2]], loo_dh[[3]], loo_dh[[4]])
+```
+
+## swc
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_log_swc) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_log_swc) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_log_swc) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_log_swc) |> div_check()
+```
+
+```{r}
+tar_load(loo_swc)
+loo_compare(loo_swc[[1]], loo_swc[[2]], loo_swc[[3]], loo_swc[[4]])
+```
+
+## wood density
+```{r}
+tar_read(fit_diagnostics_segments_noxylem_traits_simple_wood_density) |> div_check()
+tar_read(fit_diagnostics_segments_noxylem_traits_sp_simple_wood_density) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_simple_wood_density) |> div_check()
+tar_read(fit2_diagnostics_segments_xylem_traits_sp_simple_wood_density) |> div_check()
+```
+
+```{r}
+tar_load(loo_wd)
+loo_compare(loo_wd[[1]], loo_wd[[2]], loo_wd[[3]], loo_wd[[4]])
+```
+
+# Figure
+
+```{r}
+generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
+# summary_data <- tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# draws <- tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf)
+
+# summary_data <- tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf)
+# tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# draws <- tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf)
+# trait_name <- "log_vaf"
+
+# species or segment-level coef
+  if (sp_level & no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "^beta_hat\\[1"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "^beta_hat\\[2"))
+  } else if (sp_level & !no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_a"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_b"))
+  } else {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[1"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[2"))
+  }
+
+  # tar_load(fd_k_traits_csv)
+  d <- read_csv(fd_k_traits_csv)
+  d <- d |>
+    filter(!is.na(wood_density)) |>
+    filter(!is.na(swc)) |>
+    filter(!is.na(dh)) |>
+    filter(!is.na(vaf)) |>
+    filter(!is.na(vf)) |>
+    filter(!is.na(ks))
+
+  d <- d |>
+    filter(is.na(removed_k)) #|>
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id, xylem_type, species) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    ungroup() |>
+    dplyr::select(sample_id, xylem_type, species,
+     wood_density, log_dh, log_vaf, log_vf, log_ks, log_swc)
+
+  draws <- janitor::clean_names(draws)
+
+  tmp <- case_when(
+    trait_name == "wood_density" ~ "2",
+    trait_name == "log_dh" ~ "3",
+    trait_name == "log_vaf" ~ "4",
+    trait_name == "log_vf" ~ "5",
+    trait_name == "log_ks" ~ "6",
+  )
+
+  if (single_trait) {
+    tmp <- "2"
+  }
+
+  if (no_xylem) {
+    if (sp_level) {
+      coef_a <- draws |>
+        dplyr::select(beta_1_1, beta_2_1) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_1_2, beta_2_2) |>
+        as.matrix()
+    } else {
+      coef_a <- draws |>
+        dplyr::select(beta_1, beta_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_3, beta_4) |>
+        as.matrix()
+    }
+  } else {
+      coef_a <- draws |>
+        dplyr::select(gamma_1, gamma_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(gamma_3, gamma_4) |>
+        as.matrix()
+  }
+
+  # trait_name <- "log_ks"
+  if (sp_level) {
+    tmp0 <- tmp0 |>
+      group_by(species) |>
+      summarise_if(is.numeric, mean, na.rm = TRUE) |>
+      ungroup()
+  }
+  # trait_name <- "log_vaf"
+  trait <- tmp0 |> pull({{trait_name}})
+  ts <- scale(trait) |> range()
+  ts <- seq(ts[1], ts[2], length = 100)
+  xx <- sd(trait) * ts + mean(trait)
+
+  pred_a <- coef_a %*% t(cbind(1, ts))
+  pred_a_m <- apply(pred_a, 2, median)
+  pred_a_ll <- apply(pred_a, 2, quantile, 0.025)
+  pred_a_l <- apply(pred_a, 2, quantile, 0.25)
+  pred_a_h <- apply(pred_a, 2, quantile, 0.75)
+  pred_a_hh <- apply(pred_a, 2, quantile, 0.975)
+
+  pred_b <- coef_b %*% t(cbind(1, ts))
+  pred_b_m <- apply(pred_b, 2, median)
+  pred_b_ll <- apply(pred_b, 2, quantile, 0.025)
+  pred_b_l <- apply(pred_b, 2, quantile, 0.25)
+  pred_b_h <- apply(pred_b, 2, quantile, 0.75)
+  pred_b_hh <- apply(pred_b, 2, quantile, 0.975)
+
+  pred_line <- tibble(
+    pred_a_m, pred_a_ll, pred_a_l, pred_a_h, pred_a_hh,
+    pred_b_m, pred_b_ll, pred_b_l, pred_b_h, pred_b_hh, x = exp(xx))
+
+  pred_points <- tmp0 |>
+    mutate(a_mid = a_mat$q50) |>
+    mutate(a_lwr = a_mat$q2.5) |>
+    mutate(a_upr = a_mat$q97.5) |>
+    mutate(b_mid = b_mat$q50) |>
+    mutate(b_lwr = b_mat$q2.5) |>
+    mutate(b_upr = b_mat$q97.5)
+
+  xylem_lab2 <- xylem_lab |>
+    dplyr::select(species, xylem_long_fct)
+  pred_points <- left_join(pred_points, xylem_lab2)
+
+  list(pred_points = pred_points, pred_line = pred_line)
+}
+```
+
+```{r}
+tar_load(fd_k_traits_csv)
+tar_load(xylem_lab)
+```
+
+```{r a}
+generate_trait_fig_data(
+  tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf),
+  tar_read(fit_draws_segments_noxylem_traits_sp_simple_log_vaf),
+  fd_k_traits_csv, xylem_lab,
+  "log_vaf", no_xylem = TRUE, single_trait = TRUE, sp_level = TRUE)
+```
+
+```{r b}
+generate_trait_fig_data(
+  tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf),
+  tar_read(fit_draws_segments_noxylem_traits_simple_log_vaf),
+  fd_k_traits_csv, xylem_lab,
+  "log_vaf", no_xylem = TRUE, single_trait = TRUE, sp_level = FALSE)
+```
+
+```{r c}
+generate_trait_fig_data(
+  tar_read(fit2_summary_segments_xylem_traits_sp_simple_log_vaf),
+  tar_read(fit2_draws_segments_xylem_traits_sp_simple_log_vaf),
+  fd_k_traits_csv, xylem_lab,
+  "log_vaf", no_xylem = FALSE, single_trait = TRUE, sp_level = TRUE)
+```
+
+```{r d}
+generate_trait_fig_data(
+  tar_read(fit2_summary_segments_xylem_traits_simple_log_vaf),
+  tar_read(fit2_draws_segments_xylem_traits_simple_log_vaf),
+  fd_k_traits_csv, xylem_lab,
+  "log_vaf", no_xylem = FALSE, single_trait = TRUE, sp_level = FALSE)
+```
+
+## Noxylem effect with colors
+
+![](`r here::here("figs/traits_sp_points_main.png")`)
+
+### Xylem
+
+```{r, echo = FALSE}
+render_eq <- function(summary, x, sp = FALSE) {
+  beta_coef <- summary |>
+    filter(str_detect(variable, "beta")) |>
+    pull(q50)
+  str_glue("a = {exp(beta_coef[1]) |> round(2)} {x}^{beta_coef[2] |> round(3)}") |> print()
+  str_glue("b = {beta_coef[3] |> round(2)} + {beta_coef[4] |> round(3)} ln {x}") |> print()
+}
+
+# tmp <- tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf)
+# beta_coef <- tmp |>
+#   filter(str_detect(variable, "beta")) |>
+#   pull(q50)
+# str_glue("a = {exp(beta_coef[1]) |> round(2)} Ks^{beta_coef[2] |> round(3)}")
+# tr_glue("b = {beta_coef[3] |> round(2)} + {beta_coef[4] |> round(3)} ln Ks")
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_simple_log_vaf) |> render_eq("VAF")
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_simple_log_ks) |> render_eq("Ks")
+```
+
+### Species
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_vaf) |> render_eq("VAF", sp = TRUE)
+```
+
+```{r, echo = FALSE}
+tar_read(fit_summary_segments_noxylem_traits_sp_simple_log_ks) |> render_eq("Ks", sp = TRUE)
+```
+
+## Co-a vs Co-b
+
+```{r}
+pub_df <- read_csv("data-raw/pub_ab.csv") |>
+   janitor::clean_names()
+
+pub_df2 <- pub_df %>%
+  filter(b < 2.5) |>
+  filter(b < 2 | !str_detect(references, "Dix")) %>%
+  mutate(log_x = log(a)) %>%
+  mutate(y = b) %>%
+  as.data.frame()
+```
+
+### log-scale
+
+```{r}
+fit_lm <- lm(log(y) ~ log(log_x), data = pub_df2)
+
+fit_gmm <- nls(log(y) ~ log_a + b * log(log_x) - log(k + log_x^b),
+               start = list(log_a = 1, b = 5, k = 800),
+               data = pub_df2)
+
+fit_weibull <- nls(log(y) ~ log_a + log(1 - exp(-b * log_x^k)),
+               start = list(log_a = 1, b = 0.1, k = 1),
+               data = pub_df2)
+
+AIC(fit_lm, fit_gmm, fit_weibull)
+```
+
+### nonlog-scale
+
+```{r}
+fit_nl <- nls(y ~ a * (1 - b^log_x) + c,
+  start = list(a = 4, b = 0.5, c = 1),
+  data = pub_df2)
+
+fit_nl2 <- nls(y ~ a * (1 - b^log_x),
+  start = list(a = 2, b = 0.5),
+  data = pub_df2)
+
+fit_gmm2 <- nls(y ~ a * log_x^b / (k + log_x^b),
+  start = list(a = 1.5, b = 5, k = 400),
+  data = pub_df2)
+
+AIC(fit_nl, fit_nl2, fit_gmm2)
+```
+
+`fit_nl` is the best model.
+
+```{r, echo=FALSE}
+aa <- coef(fit_nl)[1] |> round(2)
+bb <- coef(fit_nl)[2] |> round(2)
+cc <- coef(fit_nl)[3] |> round(2)
+```
+
+y = `r aa` * (1 - `r bb`^ln_x)  `r cc`
+
+```{r}
+summary(fit_nl)
+```
+
+```{r}
+# Extract the fitted values
+fitted_values <- fitted(fit_nl)
+
+# Extract the actual values (log-transformed)
+actual_values <- pub_df2$y
+
+# Calculate the residuals
+residuals <- actual_values - fitted_values
+
+# Calculate the total sum of squares (SST)
+sst <- sum((actual_values - mean(actual_values))^2)
+
+# Calculate the residual sum of squares (SSR)
+ssr <- sum(residuals^2)
+
+# Calculate R^2
+r_squared <- 1 - (ssr / sst)
+
+# Print the R^2 value
+print(r_squared)
+```
+
+```{r, echo=FALSE}
+library(scales)
+# Create a sample data frame
+data <- data.frame(
+  x = rep(1:7, each = 3),
+  y = rep(1, 21),
+  group = factor(rep(1:7, each = 3))
+)
+
+# Create a ggplot
+p <- ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point(size = 12) +
+  theme_minimal() +
+  labs(title = "Plot with 6 Default Colors",
+       x = "X Axis",
+       y = "Y Axis",
+       color = "Group")
+
+# Print the plot
+print(p)
+
+# Print color codes
+# print(default_colors)
+```
+```{r}
+hue_pal()(7)
+```
+
+```{r, echo=FALSE}
+# Create a sample data frame
+data <- data.frame(
+  x = rep(1:4, each = 3),
+  y = rep(1, 12),
+  group = factor(rep(1:4, each = 3))
+)
+
+# Create a ggplot
+p <- ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point(size = 12) +
+  theme_minimal() +
+  labs(title = "Plot with 4 Default Colors",
+       x = "X Axis",
+       y = "Y Axis",
+       color = "Group")
+
+# Print the plot
+print(p)
+
+# Extract default colors
+default_colors <- hue_pal()(4)
+
+# Print color codes
+# print(default_colors)
+```
+
+```{r}
+hue_pal()(4)
+```
+
+```{r,echo=FALSE}
+h7 <- scales::hue_pal()(7)
+h4 <- scales::hue_pal()(4)
+
+my_col <- h7
+my_col[1] <- h4[1]
+my_col[3] <- h4[2]
+my_col[4] <- h4[3]
+my_col[6] <- h4[4]
+
+DP = my_col[1]
+RP = my_col[3]
+Pa = my_col[4]
+Li = my_col[6]
+L = my_col[6]
+Ba = my_col[2]
+NP = my_col[5]
+He = my_col[7]
+```
+
+- DP: `r my_col[1]`
+- RP: `r my_col[3]`
+- Pa: `r my_col[4]`
+- Li and L: `r my_col[6]`
+- Ba: `r my_col[2]`
+- NP: `r my_col[5]`
+- He: `r my_col[7]`
+
+
+![](`r here::here("figs/ab_points_model4.png")`)

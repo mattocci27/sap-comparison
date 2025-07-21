@@ -1,7 +1,7 @@
 # Create a function to prepare the data
 prepare_plot_data <- function(data, value_prefix) {
   data |>
-    select(-contains(setdiff(c("a_", "b_"), value_prefix))) |>
+    dplyr::select(-contains(setdiff(c("a_", "b_"), value_prefix))) |>
     rename_with(~ sub(value_prefix, "", .x)) |>
     mutate(ab = substr(value_prefix, 1, 1))  |>
     mutate(
@@ -127,8 +127,8 @@ create_line <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
 
 create_line2 <- function(pred_data, ymin_trans, ymax_trans, y_trans) {
   bind_rows(
-    pred_data[[5]]$pred_line |> mutate(trait = "log_dh"),
-    pred_data[[6]]$pred_line |> mutate(trait = "log_vf")
+    pred_data[[5]]$pred_line |> mutate(trait = "log_dh")
+    # pred_data[[6]]$pred_line |> mutate(trait = "log_vf")
   ) |>
     mutate(
       ymin = {{ymin_trans}},
@@ -340,6 +340,9 @@ traits_seg_points_si <- function(pred_data_seg, pred_data_sp) {
 traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp = FALSE) {
 # r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
 #Apply the data preparation function to spment data
+
+  # pred_data <- tar_read(trait_pred_data_noxylem_sp_combined)
+
   tmp_wd <- prepare_plot_data(pred_data[[3]]$pred_points, "a_") |> mutate(trait = "wood_density")
   tmp_wd_b <- prepare_plot_data(pred_data[[3]]$pred_points, "b_") |> mutate(trait = "wood_density")
   tmp_swc <- prepare_plot_data(pred_data[[4]]$pred_points, "a_") |> mutate(trait = "log_swc")
@@ -382,9 +385,11 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
 
   if (sp) {
     p1 <- add_lines(p1, data = line_a_sp) +
-      coord_cartesian(ylim = c(10, 15667))
+      # coord_cartesian(ylim = c(10, 15667))
+      coord_cartesian(ylim = c(10, 20000))
     p2 <- add_lines(p2, data = line_b_sp) +
-      coord_cartesian(ylim = c(0, 2.15))
+      # coord_cartesian(ylim = c(0, 2.15))
+      coord_cartesian(ylim = c(0, 4.3))
   }
 
 # Create a dummy plot which will be used only to extract the legend

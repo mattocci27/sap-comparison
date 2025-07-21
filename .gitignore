@@ -63,10 +63,11 @@ rsconnect/
 *.png
 *.docx
 *.pptx
-*.xslx
+*.xlsx
 *.html
 *.fdb_latexmk
 *.jpg
+*.tiff
 
 # cache from quarto
 *_files/
@@ -78,3 +79,8 @@ rsconnect/
 test.R
 log/*
 sftp.sh
+
+.bash_history
+.radian_history
+.env
+*.afdesign

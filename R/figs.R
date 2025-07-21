@@ -260,7 +260,18 @@ coef_density_sd <- function(draws) {
 }
 
 my_ggsave <- function(filename, plot, units = c("in", "cm",
-        "mm", "px"), height = NA, width = NA, dpi = 300, ...) {
+        "mm", "px"), height = NA, width = NA, dpi = 600, ...) {
+
+  ggsave(
+    filename = paste0(filename, ".tiff"),
+    plot = plot,
+    height = height,
+    width = width,
+    units = units,
+    dpi = dpi,
+    compression = "lzw",
+    ...
+  )
 
   ggsave(
     filename = paste0(filename, ".png"),
@@ -282,7 +293,7 @@ my_ggsave <- function(filename, plot, units = c("in", "cm",
     ...
   )
 
-  paste0(filename, c(".png", ".pdf"))
+  paste0(filename, c(".png", ".pdf", ".tiff"))
 }
 
 
@@ -1189,16 +1200,90 @@ ab_points_model4_prepare_df <- function(data, a_values, b_values) {
 ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   base_plot <- ggplot() +
     scale_x_log10() +
-    # ggtitle(title) +
-    my_theme() +
-    labs(col = "", x = "Co-a", y = "Co-b") +
+    my_theme() +  # Adjusted theme for simplicity
+    # labs(col = "", x = "Co-a", y = "Co-b") +
+    labs(col = "",
+      x = expression(paste("Co-", italic(a))),
+      y = expression(paste("Co-", italic(b)))) +
     theme(legend.position = "none")
+
+  h7 <- scales::hue_pal()(7)
+  h4 <- scales::hue_pal()(4)
+
+  my_col <- h7
+  my_col[1] <- h4[1]
+  my_col[3] <- h4[2]
+  my_col[4] <- h4[3]
+  my_col[6] <- h4[4]
+
   if (with_pub) {
+    pub_df2 <- pub_df %>%
+      filter(b < 2.5) |>
+      filter(b < 2 | !str_detect(references, "Dix")) %>%
+      mutate(log_x = log(a)) %>%
+      mutate(y = b) %>%
+      as.data.frame()
+
+    pub_df3 <- pub_df %>%
+      filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) %>%
+      mutate(log_x = log(a)) %>%
+      mutate(y = b)
+
+    fit <- nls(y ~ a * (1 - b^log_x) + c,
+            start = list(a = 4, b = 0.5, c = 1),
+            data = pub_df2)
+
+    log_x <- pub_df2 %>% pull(log_x)
+    y <- pub_df2 %>% pull(y)
+
+    # Function to refit model for bootstrapping
+    refit_model <- function(data, indices) {
+      boot_data <- data[indices, ]
+      tryCatch({
+        boot_fit <- nls(y ~ a * (1 - b^log_x) + c,
+                        start = coef(fit),
+                        data = boot_data)
+        predict(boot_fit, newdata = data.frame(log_x = log_x))
+      }, error = function(e) {
+        rep(NA, length(log_x))
+      })
+    }
+
+    # Perform bootstrapping
+    set.seed(123)
+    boot_results <- boot::boot(pub_df2, refit_model, R = 1000)
+
+    # Calculate 95% confidence intervals
+    ci_lower <- apply(boot_results$t, 2, quantile, probs = 0.025, na.rm = TRUE)
+    ci_upper <- apply(boot_results$t, 2, quantile, probs = 0.975, na.rm = TRUE)
+
+    # Create a data frame with original data, predicted values, and confidence intervals
+    pred_df <- data.frame(log_x = log_x, y = y)
+    pred_df$log_y_pred <- predict(fit, newdata = data.frame(log_x = log_x))
+    pred_df$ci_lower <- ci_lower
+    pred_df$ci_upper <- ci_upper
+
+    # Levels: Ba DP He Li NP Pa RP
+    # Levels: DP L Pa RP
     base_plot +
-      geom_point(data = pub_df, aes(x = a, y = b), pch = 1, color = "grey20") +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
-      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
+      geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
+      geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
+      geom_ribbon(data = pred_df, aes(x = exp(log_x), ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+      geom_line(data = pred_df, aes(x = exp(log_x), y = log_y_pred)) +
+      scale_colour_manual(
+        values = c(
+          DP = my_col[1],
+          RP = my_col[3],
+          Pa = my_col[4],
+          Li = my_col[6],
+          L = my_col[6],
+          Ba = my_col[2],
+          NP = my_col[5],
+          He = my_col[7]
+        )
+      )
+
   } else {
     base_plot +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
@@ -1208,6 +1293,73 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   }
 }
 
+# Helper function to create plots
+ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
+  base_plot <- ggplot() +
+    scale_x_log10() +
+    my_theme() +  # Adjusted theme for simplicity
+    labs(col = "",
+      x = expression(paste("Co-", italic(a))),
+      y = expression(paste("Co-", italic(b))))  +
+    theme(
+      legend.background = element_rect(fill = "transparent", color = NA)
+    )
+
+  h7 <- scales::hue_pal()(7)
+  h4 <- scales::hue_pal()(4)
+
+  my_col <- h7
+  my_col[1] <- h4[1]
+  my_col[3] <- h4[2]
+  my_col[4] <- h4[3]
+  my_col[6] <- h4[4]
+
+  df <- df |>
+    mutate(xylem_type = ifelse(xylem_type == "L", "Li", xylem_type)) |>
+    mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
+
+  if (with_pub) {
+    # pub_df2 <- pub_df |>
+    #   filter(b < 2.5) |>
+    #   filter(b < 2 | !str_detect(references, "Dix")) |>
+    #   mutate(log_x = log(a)) |>
+    #   mutate(y = b)
+
+    # pub_df3 <- pub_df |>
+    #   filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) |>
+    #   mutate(log_x = log(a)) |>
+    #   mutate(y = b)
+
+    # Levels: Ba DP He Li NP Pa RP
+    # Levels: DP L Pa RP
+    base_plot +
+      geom_point(data = pub_df, aes(x = a, y = b, color = type), shape = 1) +
+      # geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
+      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
+      scale_colour_manual(
+        values = c(
+          DP = my_col[1],
+          RP = my_col[3],
+          Pa = my_col[4],
+          Li = my_col[6],
+          # L = my_col[6],
+          Ba = my_col[2],
+          NP = my_col[5],
+          He = my_col[7]
+        )
+      ) +
+      theme(legend.position = c(0.1, 0.7))
+  } else {
+    base_plot +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_fct)) +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
+      theme(legend.position = c(0.15, 0.75))
+  }
+}
 
 # post hoc
 ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, rm_dip = TRUE) {
@@ -1236,6 +1388,10 @@ ab_points_model4_sma <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_pat
 
   pub_df <- read_csv(pub_ab_path) |>
     janitor::clean_names()
+
+  # pub_df2 <- pub_df |>
+  #   filter(b < 2.5) |>
+  #   filter(b < 2 | !str_detect(references, "Dix"))
 
   # Linear models and equations
   fit_sp <- smatr::sma(b_q50 ~ log(a_q50), data = sp_df)
@@ -1291,18 +1447,15 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
   # pub_df <- read_csv("data-raw/pub_ab.csv") |>
     janitor::clean_names()
 
-  # sp_df2 <- sp_df |>
-  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
-  #     a_q50, b_q50, a_q97_5, b_q97_5)
-  # seg_df2 <- seg_df |>
-  #   dplyr::select(xylem_long_fct, a_q2_5, b_q2_5,
-  #     a_q50, b_q50, a_q97_5, b_q97_5)
   # Create plots
-  p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)
+  p1 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = FALSE)  #+
+      # annotate("point", x = 119, y = 1.231, colour = "red", size = 3)
+
   p2 <- ab_points_model4_create_plot(sp_df, pub_df, with_pub = TRUE)
 
   # Combine plots
-  p1 + p2 + plot_annotation(tag_levels = "a")
+  p1 + p2 + plot_annotation(tag_levels = "a") &
+    theme(plot.tag = element_text(face = "bold"))
 }
 
 ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab, rm_dip = TRUE) {
@@ -1562,6 +1715,72 @@ clean_raw_df_tmp <- function(rubber_raw_data_csv, year, month, day, tree_id) {
     dplyr::select(date, k, dep, dir) |>
     mutate(date_time = as.POSIXct(date)) |>
     mutate(model = "Raw")
+}
+
+prepare_imp2_df <- function(rubber_raw_data_csv, combined_imputed_k_mapped) {
+  d <- read_csv(rubber_raw_data_csv) |>
+    janitor::clean_names() |>
+    mutate(date = mdy_hm(date)) |>
+    mutate(year = year(date)) |>
+    mutate(month = month(date)) |>
+    filter(!(year == 2016 & (month == 12 | month == 10 | month == 9))) |>
+    mutate(day = day(date)) |>
+    mutate(yday = yday(date)) |>
+    mutate(time = hour(date) * 60 + minute(date)) |>
+    dplyr::select(year, month, day, time,
+      vpd, par, t01_0_0:t16_0_0) |>
+    pivot_longer(c(t01_0_0:t16_0_0), names_to = "id", values_to = "k") |>
+    mutate(tree = str_split_fixed(id, "_", 3)[, 1]) |>
+    mutate(dir = str_split_fixed(id, "_", 3)[, 2]) |>
+    mutate(dep = str_split_fixed(id, "_", 3)[, 3]) |>
+    mutate(dir = case_when(
+      dir == "0" ~ "S",
+      dir == "1" ~ "E",
+      dir == "2" ~ "N",
+      dir == "3" ~ "W"
+    )) |>
+    mutate(dep = case_when(
+      dep == "0" ~ 2,
+      dep == "1" ~ 4,
+      dep == "2" ~ 6,
+    )) |>
+    mutate(tree = as.factor(tree)) |>
+    mutate(dir = as.factor(dir)) |>
+    dplyr::select(-id)
+
+  d |>
+    rename(k_ori = k) |>
+    mutate(k_1st_imputed = combined_imputed_k_mapped$k_new_without_na) |>
+    mutate(k_1st_imputed_with_na = combined_imputed_k_mapped$k_new_with_na) |>
+    mutate(k_2nd_imputed = combined_imputed_k_mapped$k_imp)
+}
+
+
+imp_points2 <- function(imp2_df, year = 2015, month = 2, day = 1, days = 10, dep = 2, dir = "S", tree = "t11") {
+  imp2_df_re <- imp2_df |>
+    filter(year == {{year}}) |>
+    filter(month == {{month}}) |>
+    filter(tree == {{tree}}) |>
+    filter(dir == {{dir}}) |>
+    filter(dep == {{dep}}) |>
+    filter(is.na(k_1st_imputed_with_na)) |>
+    mutate(date = mdy_hm(paste(month, day, year, time %/% 60, time %% 60))) |>
+    mutate(date_time = as.POSIXct(date)) |>
+    pivot_longer(c(k_ori, k_2nd_imputed), names_to = "model", values_to = "k") |>
+    mutate(model = case_when(
+      model == "k_ori" ~ "Observed",
+      model == "k_2nd_imputed" ~ "Re-imputed"
+    )) |>
+    filter(day <= {{days}} - {{day}} + 1)
+
+  ggplot(imp2_df_re, aes(x = date_time, y = k, col = as.factor(model))) +
+    geom_line() +
+    geom_point(size = 1) +
+    theme_bw() +
+    guides(col = guide_legend(title=NULL)) +
+    theme(legend.position = "bottom") +
+    labs(x = "Feburary 2015", y = expression(italic(K))) # +
+    # scale_x_datetime(date_labels = "%b %d\n%Y", date_breaks = "1 days")  # Use scale_x_datetime for POSIXct
 }
 
 imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day_1,
@@ -2021,4 +2240,237 @@ tr_example_panel <- function(tr_example_list) {
     theme_bw()
 
   p1 + p2 + p3
+}
+
+imp_r2_scatter2 <- function(data = combined_imputed_k_mapped, draws, granier = FALSE) {
+  # library(targets)
+  # library(tidyverse)
+  # data <- tar_read(combined_imputed_k_mapped)
+  # draws <- tar_read(segments_xylem_post_ab_fit_draws_segments_xylem_0.08)
+
+  post_ab <- draws |> apply(2, median)
+
+  if (granier) {
+    post_ab[1] <- log(119)
+    post_ab[2] <- 1.231
+  }
+
+  df <- data |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori)) |>
+    mutate(log_fd_ori = post_ab["log_a"] + post_ab["b"] * log(k_ori)) |>
+    mutate(log_fd_reimp = post_ab["log_a"] + post_ab["b"] * log(k_imp)) |>
+    mutate(flux_obs = exp(log_fd_ori)) |>
+    mutate(flux_reimp = exp(log_fd_reimp))
+
+  dens <- with(df, kde2d(flux_obs, flux_reimp, n = 500))
+  ix <- findInterval(df$flux_obs, dens$x)
+  iy <- findInterval(df$flux_reimp, dens$y)
+  df$density <- dens$z[cbind(ix, iy)]
+
+  p <- ggplot(df, aes(x = flux_obs, y = flux_reimp, col = density)) +
+    geom_point(alpha = 0.01) +
+    scale_color_viridis_c(option = "D") +
+    geom_abline(intercept = 0, slope = 1, linetype = 2) +
+    theme_bw()
+  p
+}
+
+imp_r2_scatter <- function(data = combined_imputed_k_mapped) {
+  df <- data |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
+    # filter(k_imp < 0.1 & k_new_without_na < 0.01)
+  # fit <- lm(k_imp ~ k_new_without_na, data = df)
+  r2 <- round(cor(df$k_imp, df$k_new_without_na)^2, 2)
+  n <- nrow(df)
+
+  p1 <- ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
+    # geom_point(alpha = 0.05) +
+    geom_bin2d(bins = 100) +
+    # scale_fill_viridis(option = "D", direction = 1) +
+    scale_fill_viridis_c(
+      option = "D",
+      direction = 1,
+      breaks = c(1, 100000),  # Only two breaks, similar to the map legend
+      labels = c("1", "100,000"),
+      name = "Number of data",  # Change the label
+      guide = guide_colorbar(
+        barwidth = 8,
+        barheight = 0.5,
+        title.position = "top",
+        label.position = "top",
+        title.hjust = 0.5,
+        label.vjust = 2,  # Adjust vertical position to avoid overlap
+        label.theme = element_text(size = 8, angle = 0)  # Fine-tune text size and angle
+     )
+    ) +
+   annotate(
+      "text",
+      label = paste("italic(R)^2 == ", r2, "*','~italic(N) == ", n),
+      x = 0, y = 1.2,
+      size = 3,
+      hjust = 0,
+      vjust = 0,
+      parse = TRUE
+    ) +
+    geom_abline(intercept = 0, slope = 1, linetype = 2) +
+    # geom_smooth(method = "lm", se = FALSE) +
+    # stat_cor(
+    #   aes(label = paste(..rr.label.., ..n.label.., sep = "~`,`~")),
+    #   show.legend = FALSE
+    # ) +
+    labs(
+      x = expression(Observed~italic(K)),
+      y = expression(Re*"-"*imputed~italic(K))) +
+    my_theme() +
+    theme(
+      legend.position = "top",
+      legend.margin = margin(t = -10, unit = "pt"),  # Reduce space between legend and plot
+      plot.margin = margin(t = 0, r = 5, b = 5, l = 5, unit = "pt")  # Adjust plot margins as needed
+    )
+
+  p2 <- ggplot(df, aes(x = k_new_without_na, y = k_imp)) +
+    geom_bin2d(bins = 100) +
+    scale_fill_viridis_c(
+      option = "D",
+      direction = 1,
+      name = "Number of data"  # Change the label
+    ) +
+    geom_abline(intercept = 0, slope = 1, linetype = 2) +
+    # geom_smooth(method = "lm", se = FALSE) +
+    labs(
+      x = expression(Observed~italic(K)),
+      y = expression(Re*"-"*imputed~italic(K))) +
+    my_theme() +
+    coord_cartesian(xlim = c(0, 0.1), ylim = c(0, 0.1)) +
+    theme(
+      legend.position = "none",
+      axis.text.y = element_text(size = 6),
+      axis.text.x = element_text(size = 6, angle = 60, margin = margin(t = 5)),
+      axis.title = element_blank())
+
+  p1 +
+    annotation_custom(ggplotGrob(p2),
+                    xmin = 0.8, xmax = 1.4,
+                    ymin = -0.1, ymax = 0.5)
+}
+
+# p2 <- p1 +
+#   annotation_custom(ggplotGrob(p_slope),
+#                     xmin = 0.3, xmax = 1.05,
+#                     ymin = 0.4, ymax = 1.05)
+
+generate_reimp_bin_df <- function(combined_imputed_k_mapped, draws, granier = FALSE) {
+  df <- combined_imputed_k_mapped |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
+
+  post_ab <- draws |> apply(2, median)
+
+  if (granier) {
+    post_ab[1] <- log(119)
+    post_ab[2] <- 1.231
+  }
+
+  df <- df  |>
+    mutate(log_fd_ori = post_ab["log_a"] + post_ab["b"] * log(k_ori)) |>
+    mutate(log_fd_reimp = post_ab["log_a"] + post_ab["b"] * log(k_imp)) |>
+    mutate(flux_obs = exp(log_fd_ori)) |>
+    mutate(flux_reimp = exp(log_fd_reimp))
+
+  # Define intervals (bins)
+  bins <- seq(min(df$flux_obs), max(df$flux_obs), length.out = 21)
+
+  # Calculate total flux in each interval
+  df |>
+    mutate(interval = cut(flux_obs, breaks = bins, include.lowest = TRUE)) |>
+    group_by(interval) |>
+    summarise(
+      total_flux_obs = sum(flux_obs),
+      total_flux_reimp = sum(flux_reimp),
+      avg_flux_obs = mean(flux_obs),
+      n = n()
+    ) |>
+    # mutate(difference = total_flux_obs - total_flux_reimp)
+    mutate(relative_difference = total_flux_reimp / total_flux_obs)
+}
+
+generate_reimp_bin_ci_list <- function(reimp_bin_df, combined_imputed_k_mapped, draws) {
+  df <- combined_imputed_k_mapped |>
+    filter(is.na(k_new_with_na)) |>
+    filter(!is.na(k_ori))
+  post_ab <- as.data.frame(draws)
+
+  calculate_relative_difference <- function(i) {
+    df <- df |>
+      mutate(
+        log_fd_ori = post_ab[i, "log_a"] + post_ab[i, "b"] * log(k_ori),
+        log_fd_reimp = post_ab[i, "log_a"] + post_ab[i, "b"] * log(k_imp),
+        flux_obs = exp(log_fd_ori),
+        flux_reimp = exp(log_fd_reimp)
+      )
+
+    bins <- seq(min(df$flux_obs, na.rm = TRUE), max(df$flux_obs, na.rm = TRUE), length.out = 21)
+
+    # Calculate total flux in each interval
+    df |>
+      mutate(interval = cut(flux_obs, breaks = bins, include.lowest = TRUE)) |>
+      group_by(interval) |>
+      summarise(
+        total_flux_obs = sum(flux_obs, na.rm = TRUE),
+        total_flux_reimp = sum(flux_reimp, na.rm = TRUE),
+        avg_flux_obs = mean(flux_obs, na.rm = TRUE),
+        n = n(),
+        .groups = 'drop'
+      ) |>
+      mutate(relative_difference = total_flux_reimp / total_flux_obs) #|>
+      # pull(relative_difference)
+  }
+
+  # Use map to iterate over the posterior samples and calculate relative differences
+
+  nd <- tibble(data = map(1:nrow(post_ab), calculate_relative_difference)) |>
+    mutate(rel_diff = map(data, pull, relative_difference)) |>
+    mutate(total_changes = map_dbl(data, \(x) {
+      total_flux_reimp <- x |> pull(total_flux_reimp) |> sum()
+      total_flux_obs <- x |> pull(total_flux_obs) |> sum()
+      tmp <- 1 - (total_flux_reimp / total_flux_obs)
+      tmp * 100
+    }))
+
+
+  rel_diff_mat <- nd$rel_diff %>%
+    map(~ as.numeric(.)) %>%  # Ensure each element is numeric
+    reduce(cbind)
+
+  total_changes <- nd |>
+    pull(total_changes) |>
+    quantile(c(0.025, 0.5, 0.975))
+
+  # Calculate quantiles for each interval
+  tmp <- apply(rel_diff_mat, 1, quantile, c(0.025, 0.5, 0.975)) |> t() |> as_tibble() |> janitor::clean_names()
+  list(reimp_bin_ci_df = bind_cols(reimp_bin_df, tmp), total_changes = total_changes)
+
+}
+
+
+reimp_bin_bar <- function(reimp_bin_df, error = TRUE) {
+  # Plot the differences
+  p <- ggplot(reimp_bin_df, aes(x = avg_flux_obs, y = relative_difference)) +
+    geom_bar(stat = "identity") +
+    # geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2) +
+    geom_hline(yintercept = 1, linetype = "dashed") +
+    coord_cartesian(ylim = c(0, 1.35)) +
+    labs(
+      # x = "Midpoint of average observed flux bins",
+      x = expression("Sap flux density bins "(g~m^{-2}~s^{-1})),
+      y = "Relative difference\n(re-imputed / observed)") +
+    theme_bw()
+
+  if (error) {
+    p + geom_errorbar(aes(ymin = x2_5_percent, ymax = x97_5_percent), linewidth = 0.25, width = 0.2)
+  } else {
+    p
+  }
 }
