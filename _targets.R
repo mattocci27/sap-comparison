@@ -383,22 +383,20 @@ main_list <- list(
       posterior::default_convergence_measures()
     )
   ),
-
-  tar_target(
-    logistic_sp_plot, {
-      p <- plot_logistic_sp(quad_logistic_draws_hierarchical_logistic, "data/cond_count.csv")
-      my_ggsave(
-        "figs/count_pressure_quadratic",
-        p,
-        dpi = 600,
-        width = 4.3,
-        height = 14,
-        units = "cm"
-      )
-    },
-    format = "file"
-  ),
-
+  # tar_target(
+  #   logistic_sp_plot, {
+  #     p <- plot_logistic_sp(quad_logistic_draws_hierarchical_logistic, "data/cond_count.csv")
+  #     my_ggsave(
+  #       "figs/count_pressure_quadratic",
+  #       p,
+  #       dpi = 600,
+  #       width = 4.3,
+  #       height = 14,
+  #       units = "cm"
+  #     )
+  #   },
+  #   format = "file"
+  # ),
   tar_target(
     coef_intervals_logistic_plot, {
       p <- coef_intervals_logistic(quad_logistic_draws_hierarchical_logistic)
@@ -443,44 +441,6 @@ main_list <- list(
     compile_model("stan/segments_inclusive.stan"),
     format = "file"
   ),
-  tar_target(
-    model1_like_file,
-    compile_model("stan/model1_like.stan"),
-    format = "file"
-  ),
-  tar_target(
-    model2_like_file,
-    compile_model("stan/model2_like.stan"),
-    format = "file"
-  ),
-
-
-#   tar_target(
-#     all_seg_table,
-#     generate_summary_trait_table(
-#       fit_abt_summary_granier_with_traits_sap_trait_clean_all,
-#       fd_k_traits_csv
-#     )
-#   ),
-
-#   tar_target(
-#    varpart_notrait_table,
-#    write_varpart_notrait_table(
-#      ab_var_clean_008,
-#      "data/varpart_notrait.csv"),
-#    format = "file"
-#   ),
-
-#   tar_target(
-#     d2015_imputed, {
-#     rubber_impute(rubber_raw_data_csv, y2015 = TRUE)
-#     }
-#   ),
-#   tar_target(
-#     d2016_imputed, {
-#     rubber_impute(rubber_raw_data_csv, y2015 = FALSE)
-#     }
-#   ),
   NULL
 )
 
@@ -555,43 +515,6 @@ granier_without_traits_mapped <- tar_map(
     )
   )
 
-like_check_list <- list(
-  tar_stan_mcmc(
-    fit_like,
-    c("stan/model3_like.stan",
-      "stan/model4_like.stan"),
-    data = sap_all_clean_0.08,
-    refresh = 0,
-    chains = 4,
-    parallel_chains = getOption("mc.cores", 4),
-    iter_warmup = 2000,
-    iter_sampling = 2000,
-    adapt_delta = 0.95,
-    max_treedepth = 15,
-    seed = 123,
-    return_draws = TRUE,
-    return_diagnostics = FALSE,
-    return_summary = FALSE
-  ),
-  tar_target(sap_sp_clean_like,
-    generate_sap_stan_data_sp(fd_k_traits_csv,
-      remove_abnormal_values = TRUE,
-      upper_pressure = 0.8)),
-  tar_target(
-    fit_each_like, {
-    sap_sp_clean_0.08 |>
-        mutate(fit_species = map(stan_data, fit_model,
-          model1_like_file,
-          adapt_delta = 0.95,
-          iter_warmup = 2000,
-          iter_sampling = 2000)) |>
-        mutate(fit_segments = map(stan_data, fit_model,
-          model2_like_file,
-          adapt_delta = 0.95,
-          iter_warmup = 2000,
-          iter_sampling = 2000))
-    })
-)
 
 segments_xylem_df_mapped <- tar_map(
   list(stan_summary =
@@ -2512,6 +2435,5 @@ append(raw_data_list, main_list) |>
   append(tar_dir_dep) |>
   append(uncertainty_list) |>
   append(uncertainty_figs_list) |>
-  append(like_check_list) |>
   append(granier_update_list) |>
   append(mul_reg_list)
