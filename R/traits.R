@@ -37,17 +37,20 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
     filter(ab == ab_value)
 
   if (!is.null(r2_list)) {
-    r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |> sapply("[[", 2)
+    r2 <- lapply(r2_list, "[[", ifelse(ab_value == "a", 1 , 2)) |>
+      sapply(function(x) format(round(x[[2]], 2), nsmall = 2))
+    r2_fmt <- paste0("italic(R^2) == \"", r2, "\"")
   } else {
-    r2 <- rep(NA, 4)
+    r2_fmt <- rep(NA, 4)
   }
+
   r2_data <- data |>
     group_by(trait) |>
     mutate(r2_x = max(exp(val)), tag_x = min(exp(val)), r2_y = min(mid)) |>
     ungroup() |>
     dplyr::select(trait, tag_x, r2_x, r2_y) |>
     distinct() |>
-    mutate(r2 = ifelse(is.na(r2), NA, paste0("italic(R^2) == ", round(r2, 2)))) |>
+    mutate(r2 = r2_fmt) |>
     mutate(r2_y = ifelse(ab_value == "a", 10, 0)) |>
     mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
     arrange(trait) |>
@@ -57,7 +60,6 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
     r2_data <- r2_data |>
       mutate(tag_y = ifelse(ab_value == "a", 8000, 2))
   }
-  # print(r2_data)
 
  p <- data |>
     ggplot() +
