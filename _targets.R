@@ -1305,53 +1305,53 @@ granier_list <- list(
     },
     format = "file"
   ),
-  # tar_target(
-  #   traits_seg_points_si_re_plot, {
-  #     p <- traits_points_si(
-  #       trait_pred_data_noxylem_combined_re,
-  #       r2_list = list(
-  #         wd_r2_re,
-  #         swc_r2_re,
-  #         dh_r2_re,
-  #         vf_r_re2
-  #       ),
-  #       title = "Segments"
-  #       )
-  #     my_ggsave(
-  #       "figs/traits_seg_points_si_re",
-  #       p,
-  #       dpi = 600,
-  #       width = 173,
-  #       height = 110,
-  #       units = "mm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
-  # tar_target(
-  #   traits_sp_points_si_re_plot, {
-  #     p <- traits_points_si(
-  #       trait_pred_data_noxylem_sp_combined_re,
-  #       r2_list = list(
-  #         wd_sp_r2_re,
-  #         swc_sp_r2_re,
-  #         dh_sp_r2_re,
-  #         vf_sp_r_re2
-  #       ),
-  #       title = "Species",
-  #       sp = TRUE
-  #       )
-  #     my_ggsave(
-  #       "figs/traits_sp_points_si_re",
-  #       p,
-  #       dpi = 600,
-  #       width = 173,
-  #       height = 110,
-  #       units = "mm"
-  #     )
-  #   },
-  #   format = "file"
-  # ),
+  tar_target(
+    traits_seg_points_si_re_plot, {
+      p <- traits_points_si(
+        trait_pred_data_noxylem_combined_re,
+        r2_list = list(
+          wd_r2_re,
+          swc_r2_re,
+          dh_r2_re,
+          vf_r2_re
+        ),
+        title = "Segments"
+        )
+      my_ggsave(
+        "figs/traits_seg_points_si_re",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_sp_points_si_re_plot, {
+      p <- traits_points_si(
+        trait_pred_data_noxylem_sp_combined_re,
+        r2_list = list(
+          wd_sp_r2_re,
+          swc_sp_r2_re,
+          dh_sp_r2_re,
+          vf_sp_r2_re
+        ),
+        title = "Species",
+        sp = TRUE
+        )
+      my_ggsave(
+        "figs/traits_sp_points_si_re",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
   tar_target(
     ks_r2,
     process_draws_and_calculate_trait_r2(
