@@ -2232,6 +2232,149 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
   list(pred_points = pred_points, pred_line = pred_line)
 }
 
+generate_trait_fig_data_re <- function(summary_data, draws, fd_k_traits_csv, xylem_lab, trait_name, no_xylem = FALSE, single_trait = FALSE, sp_level = FALSE) {
+# summary_data <- tar_read(fit5_summary_segments_noxylem_traits_sp_simple_log_vaf)
+# draws <- tar_read(fit5_draws_segments_noxylem_traits_sp_simple_log_vaf)
+# tar_load(fd_k_traits_csv)
+
+# no_xylem = TRUE
+# single_trait = TRUE
+# sp_level = TRUE
+
+# trait_name <- "log_vaf"
+
+# species or segment-level coef
+  if (sp_level & no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "^beta_hat\\[1"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "^beta_hat\\[2"))
+  } else if (sp_level & !no_xylem) {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_a"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "alpha_b"))
+  } else {
+    a_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[1"))
+    b_mat <- summary_data |>
+      filter(str_detect(variable, "^A\\[2"))
+  }
+
+  d <- read_csv(fd_k_traits_csv)
+
+  # d <- d |>
+  #   filter(!is.na(wood_density)) |>
+  #   filter(!is.na(swc)) |>
+  #   filter(!is.na(dh)) |>
+  #   filter(!is.na(vaf)) |>
+  #   filter(!is.na(vf)) |>
+  #   filter(!is.na(ks))
+
+  d <- d |>
+    filter(is.na(removed_k)) #|>
+
+  tmp0 <- d |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_dh = log(dh)) |>
+    mutate(log_vaf = log(vaf)) |>
+    mutate(log_swc = log(swc)) |>
+    mutate(log_vf = log(vf)) |>
+    mutate(log_ks = log(ks)) |>
+    group_by(sample_id, xylem_type, species) |>
+    summarise_if(is.numeric, mean, na.rm = TRUE) |>
+    ungroup() |>
+    dplyr::select(sample_id, xylem_type, species,
+     wood_density, log_dh, log_vaf, log_vf, log_ks, log_swc)
+
+  draws <- janitor::clean_names(draws)
+
+  tmp <- case_when(
+    trait_name == "wood_density" ~ "2",
+    trait_name == "log_dh" ~ "3",
+    trait_name == "log_vaf" ~ "4",
+    trait_name == "log_vf" ~ "5",
+    trait_name == "log_ks" ~ "6",
+  )
+
+  if (single_trait) {
+    tmp <- "2"
+  }
+
+  if (no_xylem) {
+    if (sp_level) {
+      coef_a <- draws |>
+        dplyr::select(beta_1_1, beta_2_1) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_1_2, beta_2_2) |>
+        as.matrix()
+    } else {
+      coef_a <- draws |>
+        dplyr::select(beta_1, beta_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(beta_3, beta_4) |>
+        as.matrix()
+    }
+  } else {
+      coef_a <- draws |>
+        dplyr::select(gamma_1, gamma_2) |>
+        as.matrix()
+      coef_b <- draws |>
+        dplyr::select(gamma_3, gamma_4) |>
+        as.matrix()
+  }
+
+  if (sp_level) {
+    tmp0 <- tmp0 |>
+      group_by(species) |>
+      summarise_if(is.numeric, mean, na.rm = TRUE) |>
+      ungroup()
+  }
+
+  trait <- tmp0 |> pull({{trait_name}})
+  trait <- trait[!is.na(trait)]
+  ts <- scale(trait) |> range()
+  ts <- seq(ts[1], ts[2], length = 100)
+  xx <- sd(trait) * ts + mean(trait)
+
+  pred_a <- coef_a %*% t(cbind(1, ts))
+  pred_a_m <- apply(pred_a, 2, median)
+  pred_a_ll <- apply(pred_a, 2, quantile, 0.025)
+  pred_a_l <- apply(pred_a, 2, quantile, 0.25)
+  pred_a_h <- apply(pred_a, 2, quantile, 0.75)
+  pred_a_hh <- apply(pred_a, 2, quantile, 0.975)
+
+  pred_b <- coef_b %*% t(cbind(1, ts))
+  pred_b_m <- apply(pred_b, 2, median)
+  pred_b_ll <- apply(pred_b, 2, quantile, 0.025)
+  pred_b_l <- apply(pred_b, 2, quantile, 0.25)
+  pred_b_h <- apply(pred_b, 2, quantile, 0.75)
+  pred_b_hh <- apply(pred_b, 2, quantile, 0.975)
+
+  pred_line <- tibble(
+    pred_a_m, pred_a_ll, pred_a_l, pred_a_h, pred_a_hh,
+    pred_b_m, pred_b_ll, pred_b_l, pred_b_h, pred_b_hh, x = exp(xx))
+
+  pred_points <- tmp0 |>
+    dplyr::select(species, {{trait_name}}) |>
+    drop_na() |>
+    mutate(a_mid = a_mat$q50) |>
+    mutate(a_lwr = a_mat$q2.5) |>
+    mutate(a_upr = a_mat$q97.5) |>
+    mutate(b_mid = b_mat$q50) |>
+    mutate(b_lwr = b_mat$q2.5) |>
+    mutate(b_upr = b_mat$q97.5)
+
+  xylem_lab2 <- xylem_lab |>
+    dplyr::select(species, xylem_long_fct)
+  pred_points <- left_join(pred_points, xylem_lab2)
+
+  list(pred_points = pred_points, pred_line = pred_line)
+}
+
+
 generate_combined_trait_fig_data <- function(
     summary = list(
       fit_summary_segments_noxylem_traits_log_vaf,
@@ -2269,6 +2412,49 @@ generate_combined_trait_fig_data <- function(
      fd_k_traits_csv, xylem_lab,
      "log_dh", no_xylem, single_trait, sp_level)
    vf <- generate_trait_fig_data(summary[[6]], draws[[6]],
+     fd_k_traits_csv, xylem_lab,
+     "log_vf", no_xylem, single_trait, sp_level)
+
+   list(vaf, ks, wd, swc, dh, vf)
+ }
+
+generate_combined_trait_fig_data_re <- function(
+    summary = list(
+      fit_summary_segments_noxylem_traits_log_vaf,
+      fit_summary_segments_noxylem_traits_log_ks,
+      fit_summary_segments_noxylem_traits_wood_density,
+      fit_summary_segments_noxylem_traits_log_swc,
+      fit_summary_segments_noxylem_traits_log_dh,
+      fit_summary_segments_noxylem_traits_log_vf),
+    draws = list(
+      fit_draws_segments_noxylem_traits_log_vaf,
+      fit_draws_segments_noxylem_traits_log_ks,
+      fit_draws_segments_noxylem_traits_wood_density,
+      fit_draws_segments_noxylem_traits_log_swc,
+      fit_draws_segments_noxylem_traits_log_dh,
+      fit_draws_segments_noxylem_traits_log_vf),
+    fd_k_traits_csv,
+    xylem_lab,
+    no_xylem = TRUE,
+    single_trait = TRUE,
+    sp_level = FALSE) {
+
+   vaf <- generate_trait_fig_data_re(summary[[1]], draws[[1]],
+     fd_k_traits_csv, xylem_lab,
+     "log_vaf", no_xylem, single_trait, sp_level)
+   ks <- generate_trait_fig_data_re(summary[[2]], draws[[2]],
+     fd_k_traits_csv, xylem_lab,
+     "log_ks", no_xylem, single_trait, sp_level)
+   wd <- generate_trait_fig_data_re(summary[[3]], draws[[3]],
+     fd_k_traits_csv, xylem_lab,
+     "wood_density", no_xylem, single_trait, sp_level)
+   swc <- generate_trait_fig_data_re(summary[[4]], draws[[4]],
+     fd_k_traits_csv, xylem_lab,
+     "log_swc", no_xylem, single_trait, sp_level)
+   dh <- generate_trait_fig_data_re(summary[[5]], draws[[5]],
+     fd_k_traits_csv, xylem_lab,
+     "log_dh", no_xylem, single_trait, sp_level)
+   vf <- generate_trait_fig_data_re(summary[[6]], draws[[6]],
      fd_k_traits_csv, xylem_lab,
      "log_vf", no_xylem, single_trait, sp_level)
 
@@ -2800,7 +2986,7 @@ calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_co
   log_pred <- xj %*% rbind(beta_int_pred, beta_slope_pred)
 
   log_obs <- draws_cleaned %>%
-    select(starts_with(obs_start_col)) %>%
+    dplyr::select(starts_with(obs_start_col)) %>%
     as.matrix() %>%
     t()
 
