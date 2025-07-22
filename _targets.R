@@ -745,30 +745,8 @@ tar_combined_species_xylem_summary <- tar_combine(
     ),
     tar_stan_mcmc(
       fit5,
-      "stan/segments_noxylem_traits_simple.stan",
-      data = stan_data_noxylem_re,
-      refresh = 0,
-      chains = 4,
-      parallel_chains = 4,
-      iter_warmup = 2000,
-      iter_sampling = 2000,
-      adapt_delta = 0.99,
-      max_treedepth = 15,
-      seed = 123,
-      return_draws = TRUE,
-      return_diagnostics = TRUE,
-      return_summary = TRUE,
-      summaries = list(
-        mean = ~mean(.x),
-        sd = ~sd(.x),
-        mad = ~mad(.x),
-        ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
-        posterior::default_convergence_measures()
-        )
-     ),
-    tar_stan_mcmc(
-      fit6,
-      "stan/segments_noxylem_traits_sp_simple.stan",
+      c("stan/segments_noxylem_traits_simple.stan",
+      "stan/segments_noxylem_traits_sp_simple.stan"),
       data = stan_data_noxylem_re,
       refresh = 0,
       chains = 4,
@@ -1081,6 +1059,29 @@ granier_list <- list(
       single_trait = TRUE,
       sp_level = TRUE)
   ),
+  # tar_target(
+  #   trait_pred_data_noxylem_sp_combined_re,
+  #   generate_combined_trait_fig_data(
+  #     summary = list(
+  #       fit6_summary_segments_noxylem_traits_sp_simple_log_vaf,
+  #       fit6_summary_segments_noxylem_traits_sp_simple_log_ks,
+  #       fit6_summary_segments_noxylem_traits_sp_simple_wood_density,
+  #       fit6_summary_segments_noxylem_traits_sp_simple_log_swc,
+  #       fit6_summary_segments_noxylem_traits_sp_simple_log_dh,
+  #       fit6_summary_segments_noxylem_traits_sp_simple_log_vf),
+  #     draws = list(
+  #       fit6_draws_segments_noxylem_traits_sp_simple_log_vaf,
+  #       fit6_draws_segments_noxylem_traits_sp_simple_log_ks,
+  #       fit6_draws_segments_noxylem_traits_sp_simple_wood_density,
+  #       fit6_draws_segments_noxylem_traits_sp_simple_log_swc,
+  #       fit6_draws_segments_noxylem_traits_sp_simple_log_dh,
+  #       fit6_draws_segments_noxylem_traits_sp_simple_log_vf),
+  #     fd_k_traits_csv,
+  #     xylem_lab,
+  #     no_xylem = true,
+  #     single_trait = true,
+  #     sp_level = true)
+  # ),
   tar_target(
     trait_pred_data_xylem_sp_combined,
     generate_combined_trait_fig_data(
