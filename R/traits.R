@@ -390,8 +390,8 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
       # coord_cartesian(ylim = c(10, 15667))
       coord_cartesian(ylim = c(10, 20000))
     p2 <- add_lines(p2, data = line_b_sp) +
-      # coord_cartesian(ylim = c(0, 2.15))
-      coord_cartesian(ylim = c(0, 4.3))
+      coord_cartesian(ylim = c(0, 2.15))
+      # coord_cartesian(ylim = c(0, 4.3))
   }
 
 # Create a dummy plot which will be used only to extract the legend

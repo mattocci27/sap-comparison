@@ -820,6 +820,49 @@ tar_combined_segments_xylem_traits_table <- tar_combine(
   command = dplyr::bind_rows(!!!.x)
 )
 
+# re
+segments_noxylem_traits_post_ab_mapped_re <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit5_summary_segments_noxylem_traits_simple_",
+      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
+    tar_target(
+      post,
+      generate_summary_trait_table(
+        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    )
+)
+
+# re
+segments_noxylem_traits_sp_post_ab_mapped_re <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit5_summary_segments_noxylem_traits_sp_simple_",
+      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
+    tar_target(
+      post,
+      generate_summary_trait_table(
+        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    )
+)
+
+tar_combined_segments_noxylem_traits_table_re <- tar_combine(
+  segments_noxylem_traits_table_combined_re,
+  segments_noxylem_traits_post_ab_mapped_re[["post"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_segments_noxylem_traits_sp_table_re <- tar_combine(
+  segments_noxylem_traits_sp_table_combined_re,
+  segments_noxylem_traits_sp_post_ab_mapped_re[["post"]],
+  command = dplyr::bind_rows(!!!.x)
+)
 
 # granier analysis -----------------------------------
 granier_list <- list(
@@ -833,7 +876,11 @@ granier_list <- list(
   segments_xylem_post_ab_mapped,
   segments_xylem_traits_post_ab_mapped,
   segments_noxylem_traits_post_ab_mapped,
+  segments_noxylem_traits_post_ab_mapped_re,
+  segments_noxylem_traits_sp_post_ab_mapped_re,
   tar_combined_segments_noxylem_traits_table,
+  tar_combined_segments_noxylem_traits_table_re,
+  tar_combined_segments_noxylem_traits_sp_table_re,
   tar_combined_segments_xylem_traits_table,
   segments_xylem_draws_mapped,
   tar_combined_segments_xylem_draws,
@@ -911,7 +958,19 @@ granier_list <- list(
   tar_target(
     # traits_noxylem_table_csv,
     model4_without_traits_posterior_csv,
-    my_write_csv(segments_noxylem_traits_table_combined, "data/model4_traits_without_xylem_posteriors.csv.csv"),
+    my_write_csv(segments_noxylem_traits_table_combined, "data/model4_traits_without_xylem_posteriors.csv"),
+    format = "file"
+  ),
+  tar_target(
+    # traits_noxylem_table_csv,
+    model4_without_traits_posterior_csv_re,
+    my_write_csv(segments_noxylem_traits_table_combined_re, "data/table_s11_1.csv"),
+    format = "file"
+  ),
+  tar_target(
+    # traits_noxylem_table_csv,
+    model4_without_traits_sp_posterior_csv_re,
+    my_write_csv(segments_noxylem_traits_sp_table_combined_re, "data/table_s11_2.csv"),
     format = "file"
   ),
 

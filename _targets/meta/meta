@@ -899,7 +899,7 @@ generate_species_segments_ab_csv|function|b1559f1836b19bc3|||||||||||||||
 generate_summary_non_trait_table|function|0701284926ad7cf3|||||||||||||||
 generate_summary_non_trait_table2|function|965c5bc5af707f59|||||||||||||||
 generate_summary_trait_noxylem_table|function|80005c178d9b0e2b|||||||||||||||
-generate_summary_trait_table|function|7f75854526aea64a|||||||||||||||
+generate_summary_trait_table|function|86b3837c1eab0e96|||||||||||||||
 generate_summary_trait_xylem_table|function|156f6e846f72e9a4|||||||||||||||
 generate_t16_df|function|82ed495520cf86f4|||||||||||||||
 generate_total_uncertainty|function|78429c25121e3961|||||||||||||||
@@ -919,8 +919,8 @@ get_tmp2|function|1b6b1d64c069cad6|||||||||||||||
 get_tmp2_chr|function|13b7b2ac946661f0|||||||||||||||
 gg_color_hue|function|d98b8de153055dde|||||||||||||||
 girth_increment_csv|stem|20be3edc95a755b8|618429c3eaa83c3f|ef46db3751d8e999|321450258|data-raw/girth_increment.csv|t20290.2970234566s|9ef5b03992486a66|1444|file|local|vector|||1.233||
-granier_list|object|a39cf8e2aef0e35d|||||||||||||||
-granier_update_list|object|15a1711fc6abcef8|||||||||||||||
+granier_list|object|9402c5182b5e1b5c|||||||||||||||
+granier_update_list|object|c7d6d3615885ba65|||||||||||||||
 granier_with_traits_mapped|object|54ecc9868e3be262|||||||||||||||
 granier_without_traits_mapped|object|416f2558d9661741|||||||||||||||
 imp_points|function|f1a09df980cd7221|||||||||||||||
@@ -1080,7 +1080,7 @@ loo_swc|stem|c2c7f2cb6b646380|4c86ba4d418b6c16|84bd528d29fd8630|-839249926||t202
 loo_vaf|stem|829bea525bb67ad4|95bbb0069409bb38|9b72eae95fd70752|-2129840403||t20290.2969237443s|78a4ff4c5212bf55|123533|rds|local|vector|||7.204|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_vf|stem|948bac9cb62cf686|b4ffba32a715f217|1197fecc2f1e8904|-1755599891||t20290.296923698s|ccfa159114f80e82|123500|rds|local|vector|||8.034|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
 loo_wd|stem|3c09bd6d72d26f45|b006f97eea5746e6|e677bbef65bade8b|-41513080||t20290.2969237558s|2ce2b46d88ff7332|123507|rds|local|vector|||7.977|Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.. Some Pareto k diagnostic values are too high. See helpparetokdiagnostic for details.|
-main_list|object|2cf1e63d7b50e6cd|||||||||||||||
+main_list|object|ce9008b1e53f15a4|||||||||||||||
 make_long_nonimputed_df|function|ffc06a324018c22a|||||||||||||||
 mapped|object|a7bd2f1c9edb4371|||||||||||||||
 missForest_all|function|91a64a9bb5800ab5|||||||||||||||
@@ -1096,8 +1096,10 @@ model2_like_file|stem|9af4743909e0652c|6b5173963bae7c90|d08213f484b3e9b9|-753871
 model2_posteriors_csv|stem|de8f9e96a2116683|8def6f88b049f528|6192f7c2af309a2a|729147233|data/model2_posteriors.csv|t20290.297023746s|e9273f3bffe8a848|403211|file|local|vector|||0.113||
 model3_csv|stem|2ae1428d6956f2fd|7d787fc94c1f1f3a|c1c416eee73ea729|1435960523|data/model3_posteriors.csv|t20290.297023746s|9b92d579c5aadb11|62625|file|local|vector|||0.02||
 model4_csv|stem|cc2306630254a51c|c898b5237998eade|7148ffe5533485eb|-1854421254|data/model4_posteriors.csv|t20290.2970237344s|a9b50106810f6aca|379651|file|local|vector|||0.146||
-model4_with_traits_posterior_csv|stem|d8e3a4e39c58fccc|347c547151eef481|316798036d0cdc71|-1270422730|data/model4_traits_with_xylem_posteriors.csv|t20290.297023746s|c78995f0e143ccc3|185307|file|local|vector|||0.049||
-model4_without_traits_posterior_csv|stem|63e9e8333e135e32|683190004ff1910f|1e15b072be4b13a0|350123352|data/model4_traits_without_xylem_posteriors.csv.csv|t20290.2970237344s|93ee010d0277abb6|175839|file|local|vector|||0.081||
+model4_with_traits_posterior_csv|stem|d8e3a4e39c58fccc|347c547151eef481|01e918087ef5570f|-1270422730|data/model4_traits_with_xylem_posteriors.csv|t20292.5751550051s|c78995f0e143ccc3|185307|file|local|vector|||0.04||
+model4_without_traits_posterior_csv|stem|63e9e8333e135e32|b7d7cc327d63cb53|1e15b072be4b13a0|350123352|data/model4_traits_without_xylem_posteriors.csv|t20292.5751545074s|93ee010d0277abb6|175839|file|local|vector|||0.038||
+model4_without_traits_posterior_csv_re|stem|20e54eb9ed7167d6|2729193b234adec5|b767ce770a898cdd|-1692424060|data/table_s11_1.csv|t20292.5779662959s|5ecc307e5ae2efdf|455065|file|local|vector|||0.151||
+model4_without_traits_sp_posterior_csv_re|stem|ad8aefbf24ffc122|bb8bf869e6779f6a|354d770bf9ea5aa9|-2004006452|data/table_s11_2.csv|t20292.592049046s|5880e5f1048908c6|166884|file|local|vector|||0.088||
 mul_reg_list|object|bd4c620d8d28615c|||||||||||||||
 my_ggsave|function|3731321a4aef4b32|||||||||||||||
 my_loo|function|0e3ce6a385106cbd|||||||||||||||
@@ -1200,16 +1202,27 @@ post_dep_only|stem|a775ebb79e87ebb1|d835e460329c4f11|43361d1427b8cc14|560258763|
 post_dir_dep|stem|e0a2a6bd5ce56cb5|bc3126a6a9ae4ee5|43361d1427b8cc14|-1292125653||t20290.2968519143s|fecedacc05bd4736|619899|rds|local|vector|||1.38||
 post_dir_dep_mid|stem|9e264653edf93abb|43b985d351a160eb|3308fcbcb7f2db04|-477134799||t20290.2968519259s|1a043faf0b3206cc|212|rds|local|vector|||0.002||
 post_dir_only|stem|17c2bd6e460375fb|855d08a7d92f6b2a|43361d1427b8cc14|-1543810800||t20290.2968519143s|62d47b2d2bbdfc22|520404|rds|local|vector|||0.051||
-post_fit_summary_segments_noxylem_traits_log_dh_log_dh|stem|a8911f166bbbe383|0b428ab8942c6f7f|158ff9fabe4b170d|-152639656||t20290.2969763841s|c079c530dc21e0db|6138|rds|local|vector|||0.113||
-post_fit_summary_segments_noxylem_traits_log_ks_log_ks|stem|3681d74896a79e12|00fe8f1dec9f9677|6524e40710d3ed7c|-1829506347||t20290.2970066624s|56e2ba487b01ccb7|6116|rds|local|vector|||0.299||
-post_fit_summary_segments_noxylem_traits_log_vaf_log_vaf|stem|d921db4242d70ee6|526e1448a78d875f|bd93fbda7ceca7cc|2114929044||t20290.2969527725s|fac35a891cdd2a22|6107|rds|local|vector|||0.368|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit_summary_segments_noxylem_traits_log_vf_log_vf|stem|1a650f96c391584e|aaf3872cb372a4aa|ab8d7818a907e315|-1359093243||t20290.296970539s|e1befc0c148a1c47|6144|rds|local|vector|||0.112||
-post_fit_summary_segments_noxylem_traits_wood_density_wood_density|stem|fa0b274111f71253|e9734ad37ec41523|bd63fe927650c9f9|2100874787||t20290.2969929237s|044e3d11ba4af67b|6194|rds|local|vector|||0.122||
-post_fit2_summary_segments_xylem_traits_log_dh_log_dh|stem|9055404e33fa86fc|156e8e0dd7af2c83|533620eab241eccd|2036711479||t20290.2969810716s|c2ae0f5b3ad2683b|6394|rds|local|vector|||0.385|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit2_summary_segments_xylem_traits_log_ks_log_ks|stem|a25a47f2bf73a3b2|219be6d8dfcf02bb|32d001f99172f421|722434678||t20290.297014637s|89723ca5cbff6064|6391|rds|local|vector|||0.444|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit2_summary_segments_xylem_traits_log_vaf_log_vaf|stem|8a28cc04e383b8b3|9d3cd5ce12a0be33|fcb11bf134a73d62|73057713||t20290.2970066624s|1460a2e03b18cca7|6426|rds|local|vector|||0.158||
-post_fit2_summary_segments_xylem_traits_log_vf_log_vf|stem|52871df1254f715b|ef32cb2b086d5de6|9eb6e38bd2f3f0b2|-611681438||t20290.2969975997s|360b04d7f39f1dc4|6445|rds|local|vector|||0.333|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
-post_fit2_summary_segments_xylem_traits_wood_density_wood_density|stem|f25600ba9b405854|723cdb9d8ea59dcf|cf7501bff24beb72|-106189267||t20290.2969680737s|bfda0e7a3fedd882|6481|rds|local|vector|||0.345|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit_summary_segments_noxylem_traits_log_dh_log_dh|stem|a8911f166bbbe383|0b428ab8942c6f7f|0b1c77362fcb99b1|-152639656||t20292.5751410465s|c079c530dc21e0db|6138|rds|local|vector|||0.065||
+post_fit_summary_segments_noxylem_traits_log_ks_log_ks|stem|3681d74896a79e12|00fe8f1dec9f9677|b343c740345a9629|-1829506347||t20292.5751478058s|56e2ba487b01ccb7|6116|rds|local|vector|||0.067||
+post_fit_summary_segments_noxylem_traits_log_vaf_log_vaf|stem|b1471d26e675cdd2|526e1448a78d875f|daafb9fd5e5136da|2114929044||t20292.5751418451s|e5fb2c6b6a3c4258|6093|rds|local|vector|||0.063||
+post_fit_summary_segments_noxylem_traits_log_vf_log_vf|stem|1a650f96c391584e|aaf3872cb372a4aa|c942729ff3fee39d|-1359093243||t20292.5751436391s|e1befc0c148a1c47|6144|rds|local|vector|||0.064||
+post_fit_summary_segments_noxylem_traits_wood_density_wood_density|stem|fa0b274111f71253|e9734ad37ec41523|401f4fcfc5839bd4|2100874787||t20292.5751486392s|044e3d11ba4af67b|6194|rds|local|vector|||0.063||
+post_fit2_summary_segments_xylem_traits_log_dh_log_dh|stem|df4ce85e4ebdad94|156e8e0dd7af2c83|b45d5e17b4d57dbc|2036711479||t20292.5751383612s|55e96bcb664feefb|6380|rds|local|vector|||0.238|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit2_summary_segments_xylem_traits_log_ks_log_ks|stem|a25a47f2bf73a3b2|219be6d8dfcf02bb|4a557974fe32c4e9|722434678||t20292.5751495883s|89723ca5cbff6064|6391|rds|local|vector|||0.078||
+post_fit2_summary_segments_xylem_traits_log_vaf_log_vaf|stem|55830926e1a1ae81|9d3cd5ce12a0be33|45e3b8b4de0882bf|73057713||t20292.5751402363s|388ad874fade4785|6412|rds|local|vector|||0.081||
+post_fit2_summary_segments_xylem_traits_log_vf_log_vf|stem|52871df1254f715b|ef32cb2b086d5de6|2e71f2edf0210344|-611681438||t20292.5751453058s|360b04d7f39f1dc4|6445|rds|local|vector|||0.082||
+post_fit2_summary_segments_xylem_traits_wood_density_wood_density|stem|8b6be7d195995c12|723cdb9d8ea59dcf|6438d1a5e8c33d43|-106189267||t20292.5751514633s|5f11779b026aa08c|6466|rds|local|vector|||0.079||
+post_fit5_summary_segments_noxylem_traits_log_vf_log_vf|stem||0a83400ef16699b4|98b1e31457355f3e|1264466068||t20292.4291757226s||0|rds|local|vector|||0.131||unused arguments species, xylem_type, sample_id
+post_fit5_summary_segments_noxylem_traits_simple_log_dh_log_dh|stem|0cfba26df5818d63|0664857a9127dcec|7143b0f3d26ed970|528760298||t20292.5751522967s|6483f59096082fb5|9231|rds|local|vector|||0.068||
+post_fit5_summary_segments_noxylem_traits_simple_log_ks_log_ks|stem|1cbd619279d103c3|3435a53c71949cb5|5efa5138d090fc6a|169129200||t20292.5751461391s|216ee2300f3d2ac4|11863|rds|local|vector|||0.066||
+post_fit5_summary_segments_noxylem_traits_simple_log_vaf_log_vaf|stem|3163918aaece1aa5|66de2e1d07221159|f26dbfa35857e333|-937836101||t20292.5751392524s|639dd5942a8f9f69|9144|rds|local|vector|||0.071||
+post_fit5_summary_segments_noxylem_traits_simple_log_vf_log_vf|stem|da4e8792d1ba3e0d|453ad141fae7f0c2|26b55f6782e66a6b|877483584||t20292.5751531416s|18ff99e4dc4866c4|9175|rds|local|vector|||0.065||
+post_fit5_summary_segments_noxylem_traits_simple_wood_density_wood_density|stem|ec549ccb67ea5fed|15d945358e9bb369|405091530b8f70eb|103089366||t20292.5751428405s|45b42bdd1faebac1|10778|rds|local|vector|||0.074||
+post_fit5_summary_segments_noxylem_traits_sp_simple_log_dh_log_dh|stem|26b9581ba1f6d782|7f47a7419009e54b|bc219b47e195ca17|-586875112||t20292.5909453903s|26763eb7590f5755|5539|rds|local|vector|||0.071||
+post_fit5_summary_segments_noxylem_traits_sp_simple_log_ks_log_ks|stem|d7866ca20efec4e4|c90388507576b3b9|a43ac7d850aef820|998634259||t20292.5909433996s|7a0374a011cb416c|7057|rds|local|vector|||0.071||
+post_fit5_summary_segments_noxylem_traits_sp_simple_log_vaf_log_vaf|stem|f9be39065bbfe81a|f1b6b501441a4919|ceb59a29b365bf19|510964093||t20292.5909424736s|a22b74d3e03437e3|5521|rds|local|vector|||0.225|There was 1 warning in mutate.ℹ In argument acrosswhereis.numeric, round, digits  2.Caused by warning The ... argument of across is deprecated as of dplyr 1.1.0.Supply arguments directly to .fns through an anonymous function instead.   Previously  acrossab, mean, na.rm  TRUE   Now  acrossab, \x meanx, na.rm  TRUE|
+post_fit5_summary_segments_noxylem_traits_sp_simple_log_vf_log_vf|stem|8cc0f2e3f785a9e0|ba19a4fb1e03d20e|f9f4390bd10d5191|3531726||t20292.5909441982s|af0ba57be7cbda7f|5554|rds|local|vector|||0.061||
+post_fit5_summary_segments_noxylem_traits_sp_simple_wood_density_wood_density|stem|0dce54d50f54c27c|2ab33a8f1f8224ed|cb35f658eace8231|-156793513||t20292.5909468024s|094f25b3b03407db|6316|rds|local|vector|||0.062||
 post_slen|stem|2e4b11094693a11d|bc45c7f57078a74a|a60ab6942e41c92d|1645883991||t20290.296851324s|b50a30e5c1d5f551|149808|rds|local|vector|||1.279||
 post_slen_1000|stem|24fdd600f8150119|8185bb7c856becc4|8a7be2a3d26275ab|-1049021730||t20290.296851324s|7315fa1bcfb675f7|21240|rds|local|vector|||0.003||
 post_slen_mid|stem|de6a16b1b3a735e4|6ffabbde983464e9|8a7be2a3d26275ab|177281895||t20290.296851324s|6556730b296d7213|119|rds|local|vector|||0.001||
@@ -1304,7 +1317,11 @@ segments_inclusive_post_ab_0.06|stem|189465202da88cba|e2a0d8b2f7a7c0b0|586be337b
 segments_inclusive_post_ab_0.07|stem|34fe4e713109d7d2|29d355eb764d7998|012ddc37694dee52|2018178478||t20290.2968722156s|2e24e937956fd7b7|19832|rds|local|vector|||0.004|Dropping draws_df class as required metadata was removed.|
 segments_inclusive_post_ab_0.08|stem|dc2f7c725fe12931|90c21d1ec0abf347|4ee21d0ea9d35ade|1453459694||t20290.2968722156s|3b8f3903a4682577|19780|rds|local|vector|||0.007|Dropping draws_df class as required metadata was removed.|
 segments_noxylem_traits_post_ab_mapped|object|62452f336f72a4f3|||||||||||||||
-segments_noxylem_traits_table_combined|stem|147432570afea9fb|a0b7d9720f559e68|8e2062803cef3b4f|-469705359||t20290.2970066624s|421f2bf3db544da2|20712|rds|local|vector|||0.001||
+segments_noxylem_traits_post_ab_mapped_re|object|785fecca1dae12fb|||||||||||||||
+segments_noxylem_traits_sp_post_ab_mapped_re|object|7823a5dc445ae5df|||||||||||||||
+segments_noxylem_traits_sp_table_combined_re|stem|714c1aae237ab141|77b7ab0909e378aa|ceb66369c1123c79|471618725||t20292.5920476571s|9a3bc1e295fc8a93|20230|rds|local|vector|||0||
+segments_noxylem_traits_table_combined|stem|147432570afea9fb|a0b7d9720f559e68|5608cd5f86ccf3fe|-469705359||t20292.5751535814s|421f2bf3db544da2|20712|rds|local|vector|||0||
+segments_noxylem_traits_table_combined_re|stem|7347c40d289c2311|9168c8d10be3fe05|99351d2ac92793e3|-317803494||t20292.5751537898s|8e168284142e64fc|34323|rds|local|vector|||0.001||
 segments_xylem_csv|stem|cc2306630254a51c|8930d73b43c8fa59|7148ffe5533485eb|-459459170|data/segments_xylem_post.csv|t19884.2557112029s|a9b50106810f6aca|379651|file|local|vector|||0.18||
 segments_xylem_df_combined|stem|6e3922d89beed960|d956f09e23c03cb4|47e2ecd554f7c0c6|1811691249||t20290.2968817759s|8af42f49e7742f89|52646|rds|local|vector|||0.001||
 segments_xylem_df_mapped|object|928fdbe4458edf75|||||||||||||||
@@ -1322,7 +1339,7 @@ segments_xylem_post_ab_fit_draws_segments_xylem_0.08|stem|bde618d52e7e5f9a|aaebd
 segments_xylem_post_ab_mapped|object|d0ec624c2d33ca87|||||||||||||||
 segments_xylem_summary_combined|stem|fe07a0ff968d31c8|cc1658a7d86105ef|3aada5193bfa76dc|-2008709097||t20290.2968817644s|93798b964b044b8f|782401|rds|local|vector|||0.003||
 segments_xylem_traits_post_ab_mapped|object|dc749c7c330504f4|||||||||||||||
-segments_xylem_traits_table_combined|stem|4b9bf0cbc1ab383a|15db985b84bb0c85|1ec44271bb2b0b6a|-1490405177||t20290.2969680737s|0fca9774ac8cd6b9|21339|rds|local|vector|||0.003||
+segments_xylem_traits_table_combined|stem|ab9a26e719560596|15db985b84bb0c85|555349af822d23d6|-1490405177||t20292.5751536624s|74a452309bf62380|21324|rds|local|vector|||0||
 simple_logistic_data|stem|5769dd34fdb2273c|71902b5ae9cdec19|0f05a3a92b4677ce|-137319773||t20290.2968546921s|b83e223494d999b0|1459|qs|local|vector|||1.314||
 simple_logistic_diagnostics_hierarchical_logistic|stem|e8efe8fd19803f5f|711a40d59f022606|8520978eb27fd561|-415342224||t20290.2968554792s|c6bcafc3ee4fbf1c|159686|fst_tbl|local|vector|||0.001||
 simple_logistic_draws_hierarchical_logistic|stem|1f4cdd30b3e74429|a7b7afd01490e75b|8520978eb27fd561|1201107057||t20290.2968556297s|faab16726fb50e85|31635395|fst_tbl|local|vector|||0.222||
@@ -1441,8 +1458,8 @@ table_re_fit_summary_species_xylem_0.05|stem|3f16f487700efc1f|64de0589f5615fa4|1
 table_re_fit_summary_species_xylem_0.06|stem|02cc1bdfba51e16a|926c3741d0bf4148|f5518669193e1f34|-706776411||t20290.2968699933s|d40b964692d80227|2048|rds|local|vector|||0.041||
 table_re_fit_summary_species_xylem_0.07|stem|5f14660e0fc6aeb1|c64bfc3f34a1b3fc|344e17361fbc8e8f|1615742434||t20290.2968699933s|4d980d806597c55b|2042|rds|local|vector|||0.042||
 table_re_fit_summary_species_xylem_0.08|stem|4672b8c2977d8c23|1be7384cd90e9981|5546b6e48ea18a68|-268750380||t20290.2968699933s|37212b9ac35b7c54|2041|rds|local|vector|||0.042||
-tar_dir_dep|object|089ef4e8d8efff63|||||||||||||||
-tar_impute|object|b4e516903566c05a|||||||||||||||
+tar_dir_dep|object|2582170adb9f2b75|||||||||||||||
+tar_impute|object|88d77feec4f28701|||||||||||||||
 test_fun|function|b24f9793c07a785c|||||||||||||||
 test_mapped|object|7da5ca9ff625793a|||||||||||||||
 test_mapped2|object|dcd9eec253da9ce7|||||||||||||||
@@ -1475,7 +1492,7 @@ trait_pred_data_noxylem_sp_combined|stem|65e23fa4b96cdeef|64957bce1bc59775|87198
 trait_pred_data_noxylem_sp_combined_re|stem|1ab95db681d7736a|423ed01467f9e711|a9e45f21e2f0f4ad|-1914181001||t20291.3114326021s|a7a2dae01a8f9f06|60915|rds|local|vector|||6.16||
 trait_pred_data_xylem_combined|stem|343071f5ecc2d9c4|a42b83312321b2a6|3c9f21041e6ccac8|-1933659661||t20290.2969477956s|320a1bbe69caa21e|94078|rds|local|vector|||4.757||
 trait_pred_data_xylem_sp_combined|stem|caeef7cee975dc5f|c8ce80d7351e0351|acbcd47383bfe18a|-1558542231||t20290.2969477956s|3dcb8ed16915ebd2|59831|rds|local|vector|||3.955||
-traits_noxylem_table|stem|faec479f353ea3d2|67eafd76d276de77|6524e40710d3ed7c|13741290||t20290.2970078661s|b68c3d9aec9560c9|6065|rds|local|vector|||0.121||
+traits_noxylem_table|stem|faec479f353ea3d2|67eafd76d276de77|b343c740345a9629|13741290||t20292.5751469378s|b68c3d9aec9560c9|6065|rds|local|vector|||0.064||
 traits_noxylem_table_csv|stem|63e9e8333e135e32|140509156cde4a23|1e15b072be4b13a0|1684041195|data/traits_noxylem_post.csv|t19907.2654352311s|93ee010d0277abb6|175839|file|local|vector|||0.104||
 traits_points|function|ab2941ae29b1ccf8|||||||||||||||
 traits_points_each|function|04b7b40cb1846aa2|||||||||||||||
@@ -1483,22 +1500,22 @@ traits_points_main|function|38b7841ba4fbfe51|||||||||||||||
 traits_points_main_plot|stem|2c7aa961199a08f5|29e1bd21d56ab9c5|e07beae49c50a381|-1362562509|figs/traits_points_main.png*figs/traits_points_main.pdf*figs/traits_points_main.tiff|t20290.2968495763s|1b4a3326f9d807f8|1795195|file|local|vector|||5.782||
 traits_points_main_re|function|a078b504844cffbe|||||||||||||||
 traits_points_main_re_plot|stem|6cac3e9cc9e0dfca|74ed42cc0f98bb1c|e43e5e492a10144c|1829268526|figs/traits_points_main_re.png*figs/traits_points_main_re.pdf*figs/traits_points_main_re.tiff|t20290.2968490092s|3516e4fff4d5f0bd|2231235|file|local|vector|||2.965||
-traits_points_si|function|3fd394dc211ab5b0|||||||||||||||
-traits_points_si_plot|stem|04df9a9102af0e5a|4c8c363d4354c02d|436f9534145b2385|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t20291.6132672767s|74da52d7e8b5c2a6|2439028|file|local|vector|||1.462|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
+traits_points_si|function|ad7ea322beab5b23|||||||||||||||
+traits_points_si_plot|stem|f5a88ff22cc42026|4c8c363d4354c02d|9bc4ce3469fc43cd|-1778138869|figs/traits_points_si.png*figs/traits_points_si.pdf*figs/traits_points_si.tiff|t20292.3967305806s|74da52d7e8b5c2a6|2439028|file|local|vector|||1.397|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.. Removed 4 rows containing missing values geom_text.|
 traits_seg_points_si|function|a598bfe6fd405790|||||||||||||||
-traits_seg_points_si_plot|stem|326046e0239f92ff|9178fe58186a1f77|1ee8b1e0417e9062|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t20291.6132288854s|fba72bcec7a2c932|3070118|file|local|vector|||1.446|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
-traits_seg_points_si_re_plot|stem|c3a6b04ff2b66f96|e25bf8f7e1a2cfed|4450d05b1b260925|1788716825|figs/traits_seg_points_si_re.png*figs/traits_seg_points_si_re.pdf*figs/traits_seg_points_si_re.tiff|t20291.6230499811s|9d3b212d8954542d|3275739|file|local|vector|||1.6|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
+traits_seg_points_si_plot|stem|a70f9df1cdbc2f13|9178fe58186a1f77|fd38709f2de2930c|1194936081|figs/traits_seg_points_si.png*figs/traits_seg_points_si.pdf*figs/traits_seg_points_si.tiff|t20292.396219853s|fba72bcec7a2c932|3070118|file|local|vector|||3.153|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
+traits_seg_points_si_re_plot|stem|fa69e6499f782101|e25bf8f7e1a2cfed|d855fa7a3156c21d|1788716825|figs/traits_seg_points_si_re.png*figs/traits_seg_points_si_re.pdf*figs/traits_seg_points_si_re.tiff|t20292.3963425753s|9d3b212d8954542d|3275739|file|local|vector|||1.5|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
 traits_sp_points_main|function|6b1baa3fa6532adb|||||||||||||||
 traits_sp_points_main_plot|stem|2c7c5d3d3a341de2|ee7f6258426c2a94|9b37fa4cb21f446a|257327165|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf*figs/traits_sp_points_main.tiff|t20291.613249985s|52333f3e62a76495|2248327|file|local|vector|||1.818||
 traits_sp_points_main_re_plot|stem|2da102b08f7b4973|d01d4302a38e7132|4034490c10a0a271|807161612|figs/traits_sp_points_main_re.png*figs/traits_sp_points_main_re.pdf*figs/traits_sp_points_main_re.tiff|t20291.6131963622s|71dc009e3ba1164f|2440004|file|local|vector|||1.929||
-traits_sp_points_si_plot|stem|48e4a4077adcb762|4410a82a83f942ad|95829935c3c0608f|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t20291.613212103s|b2b86b0f7a3a45e1|1164634|file|local|vector|||1.355|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
-traits_sp_points_si_re_plot|stem|40a8624f0bbeb6b3|21f415d295ed5fc4|5609408f64148fa9|-317632496|figs/traits_sp_points_si_re.png*figs/traits_sp_points_si_re.pdf*figs/traits_sp_points_si_re.tiff|t20291.6230649928s|8e7c255f471b2748|1218749|file|local|vector|||1.29|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
-traits_xylem_table|stem|08ee32ae14c210e9|9485d282f232ceaa|32d001f99172f421|862930669||t20290.2970146486s|b6e1ce3594a776de|6340|rds|local|vector|||0.215||
+traits_sp_points_si_plot|stem|c208205c4e1c496a|4410a82a83f942ad|a4ae684978349c90|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t20292.3968349807s|d3bd535d2f606ba3|1273727|file|local|vector|||1.347|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
+traits_sp_points_si_re_plot|stem|8318a0f5cd89b02c|21f415d295ed5fc4|15dcbf26779bc516|-317632496|figs/traits_sp_points_si_re.png*figs/traits_sp_points_si_re.pdf*figs/traits_sp_points_si_re.tiff|t20292.3963757125s|cc260c05980b8acc|1337296|file|local|vector|||2.986|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
+traits_xylem_table|stem|08ee32ae14c210e9|9485d282f232ceaa|4a557974fe32c4e9|862930669||t20292.5751504679s|b6e1ce3594a776de|6340|rds|local|vector|||0.073||
 traits_xylem_table_csv|stem|d8e3a4e39c58fccc|510b1b5af374e20d|316798036d0cdc71|1610101359|data/traits_xylem_post.csv|t19907.2757982639s|c78995f0e143ccc3|185307|file|local|vector|||0.112||
 uncertainty_ab_mapped|object|e9336f9af6868922|||||||||||||||
 uncertainty_dir_dep_mapped|object|c8a7df2c4f1ec37d|||||||||||||||
 uncertainty_each_mapped|object|d80c60f5044046ea|||||||||||||||
-uncertainty_figs_list|object|21d462ee99fd4b01|||||||||||||||
+uncertainty_figs_list|object|bc214112cbfde60d|||||||||||||||
 uncertainty_granier_mapped|object|dfd757de4335743c|||||||||||||||
 uncertainty_list|object|b59f0a3d0d9c6862|||||||||||||||
 uncertainty_list2|object|198d4693a864ca6e|||||||||||||||
