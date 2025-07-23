@@ -1,0 +1,98 @@
+---
+title: "Eqs. in Fig. 4"
+author: "Masatoshi Katabuchi"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+fontsize: 12pt
+format:
+  html:
+    theme: coderpro
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    smooth-scroll: true
+    standalone: true
+    embed-resources: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.show = "hold"
+)
+```
+
+```{r}
+library(targets)
+library(tidyverse)
+```
+
+```{r}
+vaf_sp <- tar_read(fit5_summary_segments_noxylem_traits_sp_simple_log_vaf) |>
+  filter(str_detect(variable, "beta\\[")) |>
+  pull("q50")
+vaf_seg <- tar_read(fit5_summary_segments_noxylem_traits_simple_log_vaf) |>
+  filter(str_detect(variable, "beta\\[")) |>
+  pull("q50")
+
+ks_sp <- tar_read(fit5_summary_segments_noxylem_traits_sp_simple_log_ks) |>
+  filter(str_detect(variable, "beta\\[")) |>
+  pull("q50")
+ks_seg <- tar_read(fit5_summary_segments_noxylem_traits_simple_log_ks) |>
+  filter(str_detect(variable, "beta\\[")) |>
+  pull("q50")
+
+vaf_sp_a_int <- vaf_sp[1] |> exp() |> round(2) |> format(nsmall = 2)
+vaf_sp_a_slope <- vaf_sp[2] |> round(3) |> format(nsmall = 3)
+vaf_sp_b_int  <- vaf_sp[3] |> round(3) |> format(nsmall = 3)
+vaf_sp_b_slope <- vaf_sp[4] |> round(3) |> format(nsmall = 3)
+
+vaf_seg_a_int <- vaf_seg[1] |> exp() |> round(2) |> format(nsmall = 2)
+vaf_seg_a_slope <- vaf_seg[3] |> round(3) |> format(nsmall = 3)
+vaf_seg_b_int  <- vaf_seg[2] |> round(3) |> format(nsmall = 3)
+vaf_seg_b_slope <- vaf_seg[4] |> round(3) |> format(nsmall = 3)
+
+ks_sp_a_int <- ks_sp[1] |> exp() |> round(2) |> format(nsmall = 2)
+ks_sp_a_slope <- ks_sp[2] |> round(3) |> format(nsmall = 3)
+ks_sp_b_int  <- ks_sp[3] |> round(3) |> format(nsmall = 3)
+ks_sp_b_slope <- ks_sp[4] |> round(3) |> format(nsmall = 3)
+
+ks_seg_a_int <- ks_seg[1] |> exp() |> round(2) |> format(nsmall = 2)
+ks_seg_a_slope <- ks_seg[3] |> round(3) |> format(nsmall = 3)
+ks_seg_b_int  <- ks_seg[2] |> round(3) |> format(nsmall = 3)
+ks_seg_b_slope <- ks_seg[4] |> round(3) |> format(nsmall = 3)
+```
+
+
+# Segments
+
+## VAF
+
+a = `r vaf_sp_a_int` VAF^ `r vaf_sp_a_slope`
+
+b = `r vaf_sp_b_int` + `r vaf_sp_b_slope` Ln VAF
+
+## Ks
+
+a = `r ks_sp_a_int` Ks^ `r ks_sp_a_slope`
+
+b = `r ks_sp_b_int` + `r ks_sp_b_slope` Ln Ks
+
+# Species
+
+## VAF
+
+a = `r vaf_seg_a_int` VAF^ `r vaf_seg_a_slope`
+
+b = `r vaf_seg_b_int` + `r vaf_seg_b_slope` Ln VAF
+
+## Ks
+
+a = `r ks_seg_a_int` Ks^ `r ks_seg_a_slope`
+
+b = `r ks_seg_b_int` + `r ks_seg_b_slope` Ln Ks
+
