@@ -3084,8 +3084,25 @@ generate_summary_trait_table_seg_re <- function(fit_summary, data) {
     rename(target = seg) |>
     mutate(target = as.character(target))
 
-  bind_rows(d_all, d_sp, d_seg)
-
+  bind_rows(d_all, d_sp, d_seg) |>
+    dplyr::select(variable,　level_name, target, param_name, q50, q2.5, q97.5, rhat, ess_bulk) |>
+    rename(
+      variable_name = variable,
+      level = level_name,
+      variable_meaning = param_name,
+      effective_sample_size = ess_bulk
+      ) |>
+    mutate(
+      across(
+        c(q50, q2.5, q97.5),
+        ~ ifelse(
+            variable_meaning %in% c("coefficient a", "intercept for coefficient a"),
+            exp(.x),
+            .x
+          )
+      ),
+      across(where(is.numeric), ~ format(round(.x, 2), nsmall = 2))
+   )
 }
 
 # Function to calculate R2

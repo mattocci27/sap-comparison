@@ -824,13 +824,17 @@ tar_combined_segments_xylem_traits_table <- tar_combine(
 segments_noxylem_traits_post_ab_mapped_re <- tar_map(
   list(stan_summary =
     rlang::syms(
-    str_c("fit5_summary_segments_noxylem_traits_simple_",
+    str_c("fit5_summary_segments_noxylem_traits_simple_", # nolint
       c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    stan_data =
+      rlang::syms(
+      str_c("stan_data_noxylem_re_",
+        c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
     key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
     tar_target(
       post,
-      generate_summary_trait_table(
-        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+      generate_summary_trait_table_seg_re(
+        stan_summary, stan_data) |>
           mutate(trait = key) |>
           dplyr::select(trait, everything())
     )
@@ -839,14 +843,18 @@ segments_noxylem_traits_post_ab_mapped_re <- tar_map(
 # re
 segments_noxylem_traits_sp_post_ab_mapped_re <- tar_map(
   list(stan_summary =
-    rlang::syms(
-    str_c("fit5_summary_segments_noxylem_traits_sp_simple_",
-      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+      rlang::syms(
+      str_c("fit5_summary_segments_noxylem_traits_sp_simple_",
+        c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    stan_data =
+      rlang::syms(
+      str_c("stan_data_noxylem_re_",
+        c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
     key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
     tar_target(
       post,
-      generate_summary_trait_table(
-        stan_summary, fd_k_traits_csv, xylem = FALSE) |>
+      generate_summary_trait_table_seg_re(
+        stan_summary, stan_data) |>
           mutate(trait = key) |>
           dplyr::select(trait, everything())
     )
