@@ -3002,6 +3002,19 @@ add_parameter_names_sp <- function(df){
     )
 }
 
+add_level_sp <- function(df){
+  df %>%
+    mutate(
+      level_name = case_when(
+        # explicit beta entries
+        str_detect(variable, "^beta\\[") ~ "overall",
+        str_detect(variable, "^beta_hat\\[") ~ "species",
+        str_detect(variable, "^A") ~ "segments",
+        TRUE ~ NA_character_
+      )
+    )
+}
+
 add_parameter_names_seg <- function(df){
   df %>%
     mutate(
@@ -3042,27 +3055,23 @@ add_level_seg <- function(df){
     )
 }
 
-add_target_seg <- function(df){
-  df %>%
-    mutate(
-      target_pre = case_when(
-        str_detect(variable, "^beta") ~ "overall",
-        str_detect(variable, "^alpha\\[") ~ "species",
-        str_detect(variable, "^alpha_") ~ "segments",
-        str_detect(variable, "^A") ~ "segments",
-        TRUE ~ NA_character_
-      )
-    )
-}
 
-generate_summary_trait_table_seg_re <- function(fit_summary, data) {
-
-  tmp <- fit_summary |>
-    filter(str_detect(variable, "^beta|alpha|alpha_a|alpha_b|A")) |>
-    mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
-    mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
-    add_parameter_names_seg() |>
-    add_level_seg()
+generate_summary_trait_table_re <- function(fit_summary, data, sp = FALSE) {
+  if (sp) {
+    tmp <- fit_summary |>
+      filter(str_detect(variable, "^beta|A")) |>
+      mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
+      mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
+      add_parameter_names_sp() |>
+      add_level_sp()
+  } else {
+    tmp <- fit_summary |>
+      filter(str_detect(variable, "^beta|alpha|alpha_a|alpha_b|A")) |>
+      mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
+      mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
+      add_parameter_names_seg() |>
+      add_level_seg()
+  }
 
   sp_index <- tibble(sp = data$sp_id, para2 = seq(1, data$K))
   seg_index <- tibble(seg = data$sample_id |> unique()) |>
