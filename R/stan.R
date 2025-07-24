@@ -1158,7 +1158,9 @@ generate_sap_each_trait_no_xylem_stan_data_re <- function(data, trait_name) {
     xj = xj,
     T = ncol(xj),
     kk = seg_to_sp,
-    xk = xk
+    xk = xk,
+    sample_id = as.factor(d$sample_id),
+    sp_id = unique(d$species) |> as.factor() |> sort()
   )
 
   stan_data
@@ -2881,7 +2883,16 @@ predictor_extractor <- function(para, var) {
     para == "1" ~ "intercept for",
     para == "2" ~ "effect of traits on"
   )
-  para3 <- ifelse(str_detect(var, "_a"), " coefficient a", "coefficient b")
+  para3 <- ifelse(str_detect(var, "_a"), " coefficient a", " coefficient b")
+  str_c(para2, para3)
+}
+
+predictor_extractor_sp <- function(para, var) {
+  para2 <- case_when(
+    para == "1" ~ "intercept for",
+    para == "2" ~ "effect of traits on"
+  )
+  para3 <- ifelse(str_detect(var, "_a"), " coefficient a", " coefficient b")
   str_c(para2, para3)
 }
 
@@ -2909,7 +2920,8 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
     mutate(level = "species", target = species)
 
   d_sp2 <- fit_summary %>%
-    filter(str_detect(variable, "^alpha")) %>%
+    # filter(str_detect(variable, "^alpha")) %>%
+    filter(str_detect(variable, "^beta")) %>%
     mutate(para = parse_variable(variable)[, 2]) %>%
     mutate(predictor = predictor_extractor(para, variable)) %>%
     mutate(k = parse_variable(variable)[, 3] |> as.numeric()) %>%
@@ -2968,6 +2980,112 @@ generate_summary_trait_table <- function(fit_summary, data, xylem = TRUE) {
     rename(variable_name = variable,
            variable_meaning = predictor,
            effecive_sample_size = ess_tail)
+}
+
+add_parameter_names_sp <- function(df){
+  df %>%
+    mutate(
+      param_name = case_when(
+        # explicit beta entries
+        variable == "beta[1,1]"           ~ "intercept for coefficient a",
+        variable == "beta[2,1]"           ~ "intercept for coefficient b",
+        variable == "beta[1,2]"           ~ "effect of traits on coefficient a",
+        variable == "beta[2,2]"           ~ "effect of traits on coefficient b",
+        # any beta_hat[i, …] → coefficient a/b
+        str_detect(variable, "^beta_hat\\[1,") ~ "coefficient a",
+        str_detect(variable, "^beta_hat\\[2,") ~ "coefficient b",
+        # any A[i, …] → coefficient a/b
+        str_detect(variable, "^A\\[1,")        ~ "coefficient a",
+        str_detect(variable, "^A\\[2,")        ~ "coefficient b",
+        TRUE ~ NA_character_
+      )
+    )
+}
+
+add_parameter_names_seg <- function(df){
+  df %>%
+    mutate(
+      param_name = case_when(
+        # explicit beta entries
+        variable == "beta[1]"           ~ "intercept for coefficient a",
+        variable == "beta[2]"           ~ "intercept for coefficient b",
+        variable == "beta[3]"           ~ "effect of traits on coefficient a",
+        variable == "beta[4]"           ~ "effect of traits on coefficient b",
+
+        str_detect(variable, "^alpha\\[1,") ~ "intercept for coefficient a",
+        str_detect(variable, "^alpha\\[2,") ~ "effect of traits on coefficient a",
+        str_detect(variable, "^alpha\\[3,") ~ "intercept for coefficient b",
+        str_detect(variable, "^alpha\\[4,") ~ "effect of traits on coefficient b",
+        str_detect(variable, "^alpha_a\\[1,") ~ "intercept for coefficient a",
+        str_detect(variable, "^alpha_a\\[2,") ~ "effect of traits on a",
+        str_detect(variable, "^alpha_b\\[1,") ~ "intercept for coefficient b",
+        str_detect(variable, "^alpha_b\\[2,") ~ "effect of traits on b",
+
+        str_detect(variable, "^A\\[1,")        ~ "coefficient a",
+        str_detect(variable, "^A\\[2,")        ~ "coefficient b",
+        TRUE ~ NA_character_
+      )
+    )
+}
+
+add_level_seg <- function(df){
+  df %>%
+    mutate(
+      level_name = case_when(
+        # explicit beta entries
+        str_detect(variable, "^beta\\[") ~ "overall",
+        str_detect(variable, "^alpha\\[") ~ "species",
+        str_detect(variable, "^alpha_") ~ "segments",
+        str_detect(variable, "^A") ~ "segments",
+        TRUE ~ NA_character_
+      )
+    )
+}
+
+add_target_seg <- function(df){
+  df %>%
+    mutate(
+      target_pre = case_when(
+        str_detect(variable, "^beta") ~ "overall",
+        str_detect(variable, "^alpha\\[") ~ "species",
+        str_detect(variable, "^alpha_") ~ "segments",
+        str_detect(variable, "^A") ~ "segments",
+        TRUE ~ NA_character_
+      )
+    )
+}
+
+generate_summary_trait_table_seg_re <- function(fit_summary, data) {
+
+  tmp <- fit_summary |>
+    filter(str_detect(variable, "^beta|alpha|alpha_a|alpha_b|A")) |>
+    mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
+    mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
+    add_parameter_names_seg() |>
+    add_level_seg()
+
+  sp_index <- tibble(sp = data$sp_id, para2 = seq(1, data$K))
+  seg_index <- tibble(seg = data$sample_id |> unique()) |>
+    mutate(para2 = as.numeric(seg))
+
+  d_all <- tmp |>
+    filter(level_name == "overall") |>
+    mutate(target = "overall")
+
+  d_sp <- tmp |>
+    filter(level_name == "species") |>
+    full_join(sp_index, by = "para2") |>
+    rename(target = sp) |>
+    mutate(target = as.character(target))
+
+  d_seg <- tmp |>
+    filter(level_name == "segments") |>
+    full_join(seg_index, by = "para2") |>
+    rename(target = seg) |>
+    mutate(target = as.character(target))
+
+  bind_rows(d_all, d_sp, d_seg)
+
 }
 
 # Function to calculate R2
