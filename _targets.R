@@ -647,6 +647,12 @@ tar_combined_species_xylem_summary <- tar_combine(
         fd_k_traits_csv,
         trait_name = trait_name)
     ),
+    tar_target(
+      stan_data_xylem_re,
+      generate_sap_each_trait_xylem_stan_data_re(
+        fd_k_traits_csv,
+        trait_name = trait_name)
+    ),
     tar_stan_mcmc(
       fit,
       c("stan/segments_noxylem_traits.stan",
@@ -766,7 +772,31 @@ tar_combined_species_xylem_summary <- tar_combine(
         ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
         posterior::default_convergence_measures()
         )
-     )
+     )#,
+    # tar_stan_mcmc(
+    #   fit6,
+    #   c("stan/segments_xylem_traits_simple.stan",
+    #   "stan/segments_xylem_traits_sp_simple.stan"),
+    #   data = stan_data_xylem_re,
+    #   refresh = 0,
+    #   chains = 4,
+    #   parallel_chains = 4,
+    #   iter_warmup = 2000,
+    #   iter_sampling = 2000,
+    #   adapt_delta = 0.99,
+    #   max_treedepth = 15,
+    #   seed = 123,
+    #   return_draws = TRUE,
+    #   return_diagnostics = TRUE,
+    #   return_summary = TRUE,
+    #   summaries = list(
+    #     mean = ~mean(.x),
+    #     sd = ~sd(.x),
+    #     mad = ~mad(.x),
+    #     ~posterior::quantile2(.x, probs = c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)),
+    #     posterior::default_convergence_measures()
+    #     )
+    #  )
   )
 
 tar_combined_species_ab_table <- tar_combine(
@@ -851,25 +881,6 @@ segments_noxylem_traits_post_ab_mapped_re <- tar_map(
     )
 )
 
-# re
-# segments_noxylem_traits_sp_post_ab_mapped_re <- tar_map(
-#   list(stan_summary =
-#       rlang::syms(
-#       str_c("fit5_summary_segments_noxylem_traits_sp_simple_",
-#         c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
-#     stan_data =
-#       rlang::syms(
-#       str_c("stan_data_noxylem_re_",
-#         c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
-#     key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
-#     tar_target(
-#       post,
-#       generate_summary_trait_table_seg_re(
-#         stan_summary, stan_data) |>
-#           mutate(trait = key) |>
-#           dplyr::select(trait, everything())
-#     )
-# )
 
 tar_combined_segments_noxylem_traits_table_re <- tar_combine(
   segments_noxylem_traits_table_combined_re,
