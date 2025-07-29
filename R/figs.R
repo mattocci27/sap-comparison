@@ -1572,7 +1572,7 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
     p <- data |>
       ggplot(aes(!!x_q50, !!y_q50, col = xylem_long_fct)) +
       geom_abline(slope = 1, intercept = 0, lty = 2) +
-      geom_point() +
+      geom_point(alpha = 0.5) +
       geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.5) +
       geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.5) +
       scale_color_manual(values = unname(okabe)) +

@@ -64,15 +64,20 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "a
 
  p <- data |>
     ggplot() +
-      geom_point(aes(y = mid, x = exp(val), color = xylem_long_fct), alpha = 0.5) +
       geom_errorbar(aes(x = exp(val), ymin = lwr, ymax = upr, color = xylem_long_fct), linewidth = 0.25) +
+      geom_point(aes(y = mid, x = exp(val),
+        fill = xylem_long_fct,
+        # color = xylem_long_fct,
+        shape = xylem_long_fct), color = "black", alpha = 0.5) +
       geom_text(data = r2_data, aes(x = r2_x, y = r2_y, label = r2),
         parse = TRUE, size = 3, hjust = 1, vjust = 0) +
       geom_text(data = r2_data, aes(x = tag_x, y = tag_y, label = inner_tag),
         parse = TRUE, size = 3, hjust = 0, vjust = -0.25) +
       facet_grid(. ~ trait, scales = "free") +
       scale_x_log10() +
-      scale_color_manual(values = unname(okabe)) +
+      scale_fill_manual(values = unname(okabe)) +
+      # scale_color_manual(values = unname(okabe)) +
+      scale_shape_manual(values = c(21, 22, 23, 24)) +
       my_theme() +
       theme(
         axis.title.x = element_blank(),
@@ -261,9 +266,20 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
     )
 
 # Create a dummy plot which will be used only to extract the legend
-  p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, color = xylem_long_fct)) +
+  p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, fill = xylem_long_fct)) +
     geom_point(alpha = 0.5) +
-    scale_color_manual(values = unname(okabe)) +
+    scale_fill_manual(values = unname(okabe)) +
+    guides(
+      fill = guide_legend(
+        override.aes = list(
+          shape = c(21, 22, 23, 24),
+          fill = unname(okabe),
+          color = rep("black", 4),
+          # size = c(rep(2.5, 4), rep(2, 3)),
+          alpha = rep(.5, 4)
+          )),
+       shape = "none"
+    ) +
     theme_void() +
     theme(
       legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
