@@ -445,7 +445,7 @@ line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
 
   # data <- tar_read(fd_k_traits_csv)
   xylem_lab2 <- xylem_lab |>
-    select(sp_short, sp_short_chr, xylem_long_fct)
+    dplyr::select(sp_short, sp_short_chr, xylem_long_fct)
   d <- read_csv(data) |>
     filter(is.na(removed_k)) |>
     rename(sp_short_chr = sp_short) |>
@@ -492,6 +492,16 @@ line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
     unnest(cols = c(data, log_xx, log_pred))
 
   my_cols <- gg_color_hue(4)
+  # my_cols <- viridis_pal(option = "E")(4)
+  # my_cols <- brewer.pal(n = 4, name = "Paired")
+
+#   my_cols <- c(
+#   "diffuse" = "#D55E00",   # Vermilion
+#   "ring"    = "#009E73",   # Bluish Green
+#   "palm"    = "#56B4E9",   # Sky Blue
+#   "liana"   = "#CC79A7"    # Reddish Purple
+# )
+
 
   ggplot() +
     geom_point(data = d |>
@@ -1201,103 +1211,6 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   base_plot <- ggplot() +
     scale_x_log10() +
     my_theme() +  # Adjusted theme for simplicity
-    # labs(col = "", x = "Co-a", y = "Co-b") +
-    labs(col = "",
-      x = expression(paste("Co-", italic(a))),
-      y = expression(paste("Co-", italic(b)))) +
-    theme(legend.position = "none")
-
-  h7 <- scales::hue_pal()(7)
-  h4 <- scales::hue_pal()(4)
-
-  my_col <- h7
-  my_col[1] <- h4[1]
-  my_col[3] <- h4[2]
-  my_col[4] <- h4[3]
-  my_col[6] <- h4[4]
-
-  if (with_pub) {
-    pub_df2 <- pub_df %>%
-      filter(b < 2.5) |>
-      filter(b < 2 | !str_detect(references, "Dix")) %>%
-      mutate(log_x = log(a)) %>%
-      mutate(y = b) %>%
-      as.data.frame()
-
-    pub_df3 <- pub_df %>%
-      filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) %>%
-      mutate(log_x = log(a)) %>%
-      mutate(y = b)
-
-    fit <- nls(y ~ a * (1 - b^log_x) + c,
-            start = list(a = 4, b = 0.5, c = 1),
-            data = pub_df2)
-
-    log_x <- pub_df2 %>% pull(log_x)
-    y <- pub_df2 %>% pull(y)
-
-    # Function to refit model for bootstrapping
-    refit_model <- function(data, indices) {
-      boot_data <- data[indices, ]
-      tryCatch({
-        boot_fit <- nls(y ~ a * (1 - b^log_x) + c,
-                        start = coef(fit),
-                        data = boot_data)
-        predict(boot_fit, newdata = data.frame(log_x = log_x))
-      }, error = function(e) {
-        rep(NA, length(log_x))
-      })
-    }
-
-    # Perform bootstrapping
-    set.seed(123)
-    boot_results <- boot::boot(pub_df2, refit_model, R = 1000)
-
-    # Calculate 95% confidence intervals
-    ci_lower <- apply(boot_results$t, 2, quantile, probs = 0.025, na.rm = TRUE)
-    ci_upper <- apply(boot_results$t, 2, quantile, probs = 0.975, na.rm = TRUE)
-
-    # Create a data frame with original data, predicted values, and confidence intervals
-    pred_df <- data.frame(log_x = log_x, y = y)
-    pred_df$log_y_pred <- predict(fit, newdata = data.frame(log_x = log_x))
-    pred_df$ci_lower <- ci_lower
-    pred_df$ci_upper <- ci_upper
-
-    # Levels: Ba DP He Li NP Pa RP
-    # Levels: DP L Pa RP
-    base_plot +
-      geom_point(data = pub_df2, aes(x = a, y = b, color = type), shape = 1) +
-      geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
-      geom_ribbon(data = pred_df, aes(x = exp(log_x), ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
-      geom_line(data = pred_df, aes(x = exp(log_x), y = log_y_pred)) +
-      scale_colour_manual(
-        values = c(
-          DP = my_col[1],
-          RP = my_col[3],
-          Pa = my_col[4],
-          Li = my_col[6],
-          L = my_col[6],
-          Ba = my_col[2],
-          NP = my_col[5],
-          He = my_col[7]
-        )
-      )
-
-  } else {
-    base_plot +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_long_fct)) +
-      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_long_fct), alpha = 0.5) +
-      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_long_fct), alpha = 0.5) +
-      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE)
-  }
-}
-
-# Helper function to create plots
-ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
-  base_plot <- ggplot() +
-    scale_x_log10() +
-    my_theme() +  # Adjusted theme for simplicity
     labs(col = "",
       x = expression(paste("Co-", italic(a))),
       y = expression(paste("Co-", italic(b))))  +
@@ -1306,35 +1219,46 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     )
 
   h7 <- scales::hue_pal()(7)
-  h4 <- scales::hue_pal()(4)
+  # h4 <- scales::hue_pal()(4)
+  h4 <- brewer.pal(n = 4, name = "Paired")
+
+  h4 <- c(
+  "diffuse" = "#D55E00",   # Vermilion
+  "ring"    = "#009E73",   # Bluish Green
+  "palm"    = "#56B4E9",   # Sky Blue
+  "liana"   = "#CC79A7"    # Reddish Purple
+  )
 
   my_col <- h7
+  my_col <- rep("black", 7)
   my_col[1] <- h4[1]
   my_col[3] <- h4[2]
   my_col[4] <- h4[3]
   my_col[6] <- h4[4]
+
+   # Define shapes
+  shapes <- c(
+    DP = 1,
+    RP = 1,
+    Pa = 1,
+    Li = 1,
+    Ba = 21,
+    He = 22,
+    NP = 23
+  )
 
   df <- df |>
     mutate(xylem_type = ifelse(xylem_type == "L", "Li", xylem_type)) |>
     mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
 
   if (with_pub) {
-    # pub_df2 <- pub_df |>
-    #   filter(b < 2.5) |>
-    #   filter(b < 2 | !str_detect(references, "Dix")) |>
-    #   mutate(log_x = log(a)) |>
-    #   mutate(y = b)
-
-    # pub_df3 <- pub_df |>
-    #   filter((b >= 2 & str_detect(references, "Dix")) | b >= 2.5) |>
-    #   mutate(log_x = log(a)) |>
-    #   mutate(y = b)
 
     # Levels: Ba DP He Li NP Pa RP
     # Levels: DP L Pa RP
     base_plot +
-      geom_point(data = pub_df, aes(x = a, y = b, color = type), shape = 1) +
-      # geom_point(data = pub_df3, aes(x = a, y = b), shape = 1) +
+      #geom_point(data = pub_df, aes(x = a, y = b, color = type), shape = 1) +
+      geom_point(data = pub_df, aes(x = a, y = b, color = type)) +
+      scale_shape_manual(values = shapes) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, color = xylem_fct)) +
       geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
@@ -1350,6 +1274,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
           He = my_col[7]
         )
       ) +
+      # scale_shape_manual(values = shapes) +
       theme(legend.position = c(0.1, 0.7))
   } else {
     base_plot +
@@ -1357,6 +1282,105 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
       geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
+      scale_colour_manual(
+        values = c(
+          DP = my_col[1],
+          RP = my_col[3],
+          Pa = my_col[4],
+          Li = my_col[6]
+        )
+      ) +
+      theme(legend.position = c(0.15, 0.75))
+  }
+}
+
+ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
+
+  pub_df <- pub_df |> mutate(source = "pub") |>
+    filter(references != "this study") |>
+    mutate(
+      type = factor(type, levels = c("DP", "RP", "Pa", "Li", "Ba", "He", "NP"))
+    )
+
+  df <- df |> mutate(source = "ours")
+  dp_df <- df |> filter(xylem_fct == "DP")
+  rp_df <- df |> filter(xylem_fct == "RP")
+  pa_df <- df |> filter(xylem_fct == "Pa")
+  li_df <- df |> filter(xylem_fct == "Li")
+
+  base_plot <- ggplot() +
+    scale_x_log10() +
+    my_theme() +
+    labs(
+      col = "",
+      x = expression(paste("Co-", italic(a))),
+      y = expression(paste("Co-", italic(b)))
+    ) +
+    theme(
+      legend.background = element_rect(fill = "transparent", color = NA)
+    )
+
+  # Color-blind safe palette for main groups
+  my_col <- c(
+    "diffuse" = "#D55E00",   # Vermilion
+    "ring"    = "#009E73",   # Bluish Green
+    "palm"    = "#56B4E9",   # Sky Blue
+    "liana"   = "#CC79A7"    # Reddish Purple
+  )
+
+  df <- df |>
+    mutate(xylem_type = ifelse(xylem_type == "L", "Li", xylem_type)) |>
+    mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
+
+  if (with_pub) {
+    base_plot +
+      geom_point(data = pub_df, aes(x = a, y = b, col = type, shape = type),
+        size = case_when(
+          pub_df$type == "NP" ~ 2,
+          pub_df$type == "Ba" ~ 2,
+          pub_df$type == "He" ~ 2,
+          TRUE ~ 2.5
+          )) +
+      scale_shape_manual(values = c(21, 22, 23, 24, 3, 4, 8)) +
+      scale_color_manual(values = c(unname(my_col), "black", "black", "black")) +
+      scale_x_log10() +
+      geom_point(data = dp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[1], shape = 21) +
+      geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22) +
+      geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23) +
+      geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24) +
+      # geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
+      guides(
+        color = guide_legend(
+          override.aes = list(
+            shape = c(21, 22, 23, 24, 3, 4, 8),
+            fill = c(my_col[1], my_col[2], my_col[3], my_col[4], "black", "black", "black"),
+            color = rep("black", 7),
+            size = c(rep(2.5, 4), rep(2, 3))
+            )),
+         shape = "none",
+      ) +
+      theme(legend.position = c(0.1, 0.7))
+
+  } else {
+    base_plot +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5) +
+      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
+      scale_fill_manual(values = unname(my_col)) +
+      scale_colour_manual(values = unname(my_col)) +
+      scale_shape_manual(values = c(21, 22, 23, 24)) +
+      guides(
+        fill = guide_legend(
+          override.aes = list(
+            shape = c(21, 22, 23, 24),
+            fill = c(my_col[1], my_col[2], my_col[3], my_col[4]),
+            color = rep("black", 4)
+            )),
+        shape = "none",
+        color = "none"
+      ) +
       theme(legend.position = c(0.15, 0.75))
   }
 }
@@ -1418,7 +1442,7 @@ ab_points_model4 <- function(summary, fd_k_traits_csv, xylem_lab, pub_ab_path, r
 
   sample_id <- read_csv(fd_k_traits_csv) |>
     filter(is.na(removed_k)) |>
-    select(species, sample_id) |>
+    dplyr::select(species, sample_id) |>
     distinct()
 
   # Create data frames
