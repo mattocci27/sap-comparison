@@ -31,7 +31,7 @@ prepare_line_data <- function(data, ab = "a") {
 }
 
 # Create a function for the repeated plotting code
-plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A", sp = FALSE) {
+plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "a", sp = FALSE) {
 
   data <- data |>
     filter(ab == ab_value)
@@ -54,7 +54,8 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
     mutate(r2_y = ifelse(ab_value == "a", 10, 0)) |>
     mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
     arrange(trait) |>
-    mutate(inner_tag = inner_tag)
+    # mutate(inner_tag = inner_tag)
+    mutate(inner_tag = paste0("bold(", inner_tag, ")"))
 
   if (sp) {
     r2_data <- r2_data |>
@@ -219,14 +220,15 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
   line_a_seg <- create_line(pred_data_seg, exp(pred_a_ll), exp(pred_a_hh), exp(pred_a_m))
   line_b_seg <- create_line(pred_data_seg, pred_b_ll, pred_b_hh, pred_b_m)
 
-  p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("A", "B"))
+  p1 <- plot_data(fig_data_seg, r2_list, "a", "Segments", inner_tag = c("a", "b"))
   p1 <- add_lines(p1, data = line_a_seg) +
     theme(
       axis.text.x = element_blank(),
       axis.text.y = element_text(size = 7)
     )
 
-  p2 <- plot_data(fig_data_seg, r2_list, "b", inner_tag = c("E", "F"))
+  p2 <- plot_data(fig_data_seg, r2_list, "b",
+    inner_tag = c("a* \"'\"", "b* \"'\""))
   p2 <- add_lines(p2, data = line_b_seg) +
     theme(
       # strip.text.x = element_blank()
@@ -234,7 +236,7 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
       axis.text.y = element_text(size = 7)
     )
 
-  p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("C", "D"))
+  p3 <- plot_data(fig_data_sp, r2_sp_list, "a", "Species", inner_tag = c("c", "d"))
   p3 <- add_lines(p3, data = line_a_sp) +
     theme(
       axis.text.x = element_blank(),
@@ -244,7 +246,8 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
       legend.text = element_text(size = 7),
     )
 
-  p4 <- plot_data(fig_data_sp, r2_sp_list, "b", inner_tag = c("G", "H"))
+  p4 <- plot_data(fig_data_sp, r2_sp_list, "b",
+    inner_tag = c("c* \"'\"", "d* \"'\""))
   p4 <- add_lines(p4, data = line_b_sp) +
     theme(
       axis.title.y = element_blank(),
