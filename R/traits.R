@@ -262,7 +262,7 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
 
 # Create a dummy plot which will be used only to extract the legend
   p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, color = xylem_long_fct)) +
-    geom_point() +
+    geom_point(alpha = 0.5) +
     scale_color_manual(values = unname(okabe)) +
     theme_void() +
     theme(
@@ -380,12 +380,12 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
   line_b_sp <- create_line2(pred_data, pred_b_ll, pred_b_hh, pred_b_m) |>
     filter(trait == "log_vf")
 
-  p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = LETTERS[1:4], sp = sp) +
+  p1 <- plot_data(fig_data, r2_list = r2_list, "a", title, inner_tag = letters[1:4], sp = sp) +
     theme(
       axis.text.x = element_blank(),
       strip.text.x = element_blank()
     )
-  p2 <- plot_data(fig_data, r2_list = r2_list, "b", inner_tag = LETTERS[5:8], sp = sp) +
+  p2 <- plot_data(fig_data, r2_list = r2_list, "b", inner_tag = letters[5:8], sp = sp) +
     theme(
       strip.text.x = element_blank()
     )
@@ -401,7 +401,8 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
 
 # Create a dummy plot which will be used only to extract the legend
   p3 <- ggplot(fig_data, aes(x = val, y = mid, color = xylem_long_fct)) +
-    geom_point() +
+    geom_point(alpha = 0.5) +
+    scale_color_manual(values = unname(okabe)) +
     theme_void() +
     theme(
       legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
