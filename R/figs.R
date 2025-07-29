@@ -1303,10 +1303,6 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     )
 
   df <- df |> mutate(source = "ours")
-  dp_df <- df |> filter(xylem_fct == "DP")
-  rp_df <- df |> filter(xylem_fct == "RP")
-  pa_df <- df |> filter(xylem_fct == "Pa")
-  li_df <- df |> filter(xylem_fct == "Li")
 
   base_plot <- ggplot() +
     scale_x_log10() +
@@ -1332,6 +1328,11 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
     mutate(xylem_type = ifelse(xylem_type == "L", "Li", xylem_type)) |>
     mutate(xylem_fct = factor(xylem_type, levels = c("DP", "RP", "Pa", "Li")))
 
+  dp_df <- df |> filter(xylem_fct == "DP")
+  rp_df <- df |> filter(xylem_fct == "RP")
+  pa_df <- df |> filter(xylem_fct == "Pa")
+  li_df <- df |> filter(xylem_fct == "Li")
+
   if (with_pub) {
     base_plot +
       geom_point(data = pub_df, aes(x = a, y = b, col = type, shape = type),
@@ -1348,8 +1349,8 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22) +
       geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23) +
       geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24) +
-      # geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
-      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
+      geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
       guides(
         color = guide_legend(
           override.aes = list(
@@ -1367,7 +1368,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
       geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
       geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5) +
-      # geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
+      geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
       scale_fill_manual(values = unname(my_col)) +
       scale_colour_manual(values = unname(my_col)) +
       scale_shape_manual(values = c(21, 22, 23, 24)) +
@@ -1381,7 +1382,7 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
         shape = "none",
         color = "none"
       ) +
-      theme(legend.position = c(0.15, 0.75))
+      theme(legend.position = c(0.15, 0.75), legend.title = element_blank())
   }
 }
 
