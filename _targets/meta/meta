@@ -13,9 +13,9 @@ ab_pg_summary_bars|function|cc30da461851b318|||||||||||||||
 ab_pg_summary_bars_plot|stem|e527e4d3a5062c9d|cdb58a2a535e4c33|510e00a79a9e878d|-100425880|figs/ab_pg_summary_bars.png*figs/ab_pg_summary_bars.pdf*figs/ab_pg_summary_bars.tiff|t20290.2968495995s|cdf41af13aad9f35|419453|file|local|vector|||19.206|Values from alpha_1_1 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_2 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_3 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_4 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_5 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Values from alpha_1_6 are not uniquely identified output will containlistcols. Use values_fn  list to suppress this warning. Use values_fn  summary_fun to summarise duplicates. Use the following dplyr code to identify duplicates.  data   dplyrsummarisen  dplyrn, .by  cmax_pg   dplyrfiltern  1L. Va|
 ab_points_four_models_plot|stem|c66fa86ae81b519d|5c805cab1df717ba|d0f98f90617c0ea3|-3682706|figs/ab_points_four_models.png*figs/ab_points_four_models.pdf*figs/ab_points_four_models.tiff|t20290.2968496458s|50c38bb9b88d9636|1314402|file|local|vector|||11.4||
 ab_points_four_models_plot_all|stem|1101a70538a44783|9c01fd54f38d81ed|d0f98f90617c0ea3|-2095380561|figs/ab_points_four_models_all.png*figs/ab_points_four_models_all.pdf*figs/ab_points_four_models_all.tiff|t20290.2968496689s|b9171ee5ebbeb27f|1179328|file|local|vector|||12.463||
-ab_points_model4|function|4880daacd8e66821|||||||||||||||
-ab_points_model4_create_plot|function|bea590523a02ba44|||||||||||||||
-ab_points_model4_plot|stem|5e1f4eebec84a30b|a008175cff87f256|1c37d5fa917adbfe|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t20298.1307959507s|5f13e4c5f92cf119|873459|file|local|vector|||10.601|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.|
+ab_points_model4|function|a809374b3427a31b|||||||||||||||
+ab_points_model4_create_plot|function|968e963a46e0a8bf|||||||||||||||
+ab_points_model4_plot|stem|0c3ac3bbfcd34916|a008175cff87f256|d630a891810a0846|-907390858|figs/ab_points_model4.png*figs/ab_points_model4.pdf*figs/ab_points_model4.tiff|t20298.148804254s|3e27f8ee8da9bf06|1039093|file|local|vector|||10.636|Using the size aesthetic with geom_ribbon was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Using the size aesthetic with geom_line was deprecated in ggplot2 3.4.0.ℹ Please use the linewidth aesthetic instead.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.. Removed 15 rows containing nonfinite values stat_sma.. Removed 15 rows containing missing values geom_point.|
 ab_points_model4_prepare_df|function|180e71306cae66ff|||||||||||||||
 ab_points_model4_sma|function|71241816a18ff8f9|||||||||||||||
 ab_points_model4_sma_list|stem|6acff07432df02b7|128d63ab8317c8ff|cd9573f9b6a699fe|-1498962017||t20290.2970228779s|b10cdebd77c5151e|134272|rds|local|vector|||0.129||
@@ -145,8 +145,8 @@ cleaned_df_missforest_2016_8|stem|d6bf1fd063f53d66|5bb10390859168ca|90dc07231e88
 cmdstan_path|object|f9d551927707594a|||||||||||||||
 coef_ab_vpart|function|94ec929333b84747|||||||||||||||
 coef_cor|function|babe69355bce119d|||||||||||||||
-coef_density|function|ce3a32c84135ea5c|||||||||||||||
-coef_density_plot|stem|8f1cba938ed778e7|f3de3283e834bad4|f309d0b0d095d3a1|1741760878|figs/coef_density.png*figs/coef_density.pdf*figs/coef_density.tiff|t20290.29684953s|86f8322f9725a5e0|1863333|file|local|vector|||34.954||
+coef_density|function|a5af4135ed0f4a33|||||||||||||||
+coef_density_plot|stem|22a2c9aa70d4b62b|f3de3283e834bad4|cc8e4b2e0fbee6e1|1741760878|figs/coef_density.png*figs/coef_density.pdf*figs/coef_density.tiff|t20298.139541753s|e897ae651fc0297d|1872750|file|local|vector|||4.219||
 coef_density_sd|function|5c87a1bd8ba1bb09|||||||||||||||
 coef_intervals_diff|function|9bfca47eb89dc430|||||||||||||||
 coef_intervals_logistic|function|c92747b090d61c39|||||||||||||||
@@ -1136,7 +1136,7 @@ ks_spp_err_csv|stem|db699141825cff82|9256dfaaf0642664|c50c29884e76aaa7|-10181344
 ks_trees_csv|stem|3060d16afabe9f01|e80f6b3bdd1329fb|644e6095bc4ecdcd|-246611207|data/ks_pres_tens_trees.csv|t20290.2970237344s|a86c3ec47ea93832|7649|file|local|vector|||0.478||
 label_func|function|5053ea2f60a68238|||||||||||||||
 like_check_list|object|ce5fef27c2c02ab3|||||||||||||||
-line_pg_multi|function|62be1fb586e23a35|||||||||||||||
+line_pg_multi|function|58aa2c1233552634|||||||||||||||
 line_pool_multi|function|f9bcbadf6dba2f4e|||||||||||||||
 logistic|function|85b2eccc2fdb02b5|||||||||||||||
 logistic_sp_plot|stem|339ccf5369846cba|c4d05f279c6e88a7|bc69a84aba2eb038|-273867338|figs/count_pressure_quadratic.png*figs/count_pressure_quadratic.pdf*figs/count_pressure_quadratic.tiff|t20290.2968495879s|9940635309a3fce3|1325907|file|local|vector|||8.381|Using size aesthetic for lines was deprecated in ggplot2 3.4.0.ℹ Please use linewidth instead.|
@@ -1242,11 +1242,12 @@ nramse_2016_7|stem|cba747f1ce724983|1bbd0502cd03453e|47460a017e8c0dad|-127809282
 nramse_2016_8|stem|927cc08e83c13e24|d6310e029253e171|3945d41fe26e26db|1552276831||t20290.2968504444s|b3654bf3682c79ca|86|rds|local|vector|||0.001||
 nramse_2016_9|stem|9fd869f0a9fe8455|405892b35edf2233|c30872b3520ef7a5|1178310027||t20290.2968508379s|b3654bf3682c79ca|86|rds|local|vector|||0.001||
 nrmse_df|stem|1d1f5f305d133f9e|ab5d98dca176d01c|c2cad1f8cda94a88|847420995||t20290.2968510694s|d66a5224e01e4f0c|425|rds|local|vector|||0.002||
+okabe|object|665b738b95cbc2c6|||||||||||||||
 os_info|object|9074f741f95d61d5|||||||||||||||
 os_release|object|c1d6537a11de6285|||||||||||||||
 parse_variable|function|0726787b7bb4e1bf|||||||||||||||
 pg|object|e438912ecb782f69|||||||||||||||
-pg_multi_plot|stem|2f125e7fb4de0258|df08bda66047ae46|e1e9299dd00effee|1212464739|figs/pg_multi.png*figs/pg_multi.pdf*figs/pg_multi.tiff|t20294.3655844536s|c308ee964dc97ce8|5141572|file|local|vector|||3.372||
+pg_multi_plot|stem|844ca31416c832dd|df08bda66047ae46|6adb3de26dd0168f|1212464739|figs/pg_multi.png*figs/pg_multi.pdf*figs/pg_multi.tiff|t20298.1365237153s|6342782cac1f81d8|5226302|file|local|vector|||3.294||
 pg_ribbon_a|stem|a22d386ee726087e|63dbdecb3bd22033|0694e4dba05355a1|-1535362916|figs/pg_ribbon_a.png*figs/pg_ribbon_a.pdf*figs/pg_ribbon_a.tiff|t20290.2968496689s|e527395681f3b292|2863243|file|local|vector|||19.755||
 pg_ribbon_b|stem|e89e0d32e7a047eb|bfe48180b8669a5c|0694e4dba05355a1|624863334|figs/pg_ribbon_b.png*figs/pg_ribbon_b.pdf*figs/pg_ribbon_b.tiff|t20290.2968494606s|2a2f806e23d41b98|2958045|file|local|vector|||19.544||
 piecewise_logistic_data|stem|9ec6139c101c9467|1af68b0fa7e8308a|aabc13817806840c|459680194||t20290.2968543565s|257b15927dfb4d82|1372|qs|local|vector|||0.001||

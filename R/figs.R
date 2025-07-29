@@ -17,6 +17,14 @@ gg_color_hue <- function(n) {
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
+# Color-blind safe palette for main groups
+okabe <- c(
+  "diffuse" = "#D55E00",   # Vermilion
+  "ring"    = "#009E73",   # Bluish Green
+  "palm"    = "#56B4E9",   # Sky Blue
+  "liana"   = "#CC79A7"    # Reddish Purple
+)
+
 # theme_set(my_theme)
 sma_scatter <- function(data, log = FALSE) {
 #  targets::tar_load(five_spp_csv)
@@ -505,13 +513,13 @@ line_pg_multi <- function(data, xylem_lab, k_range, fit_summary_combined) {
 
   ggplot() +
     geom_point(data = d |>
-      filter(xylem_type == "DP"), aes(x = k, y = fd), col = my_cols[1]) +
+      filter(xylem_type == "DP"), aes(x = k, y = fd), col = okabe[1]) +
     geom_point(data = d |>
-      filter(xylem_type == "RP"), aes(x = k, y = fd), col = my_cols[2]) +
+      filter(xylem_type == "RP"), aes(x = k, y = fd), col = okabe[2]) +
     geom_point(data = d |>
-      filter(xylem_type == "Pa"), aes(x = k, y = fd), col = my_cols[3]) +
+      filter(xylem_type == "Pa"), aes(x = k, y = fd), col = okabe[3]) +
     geom_point(data = d |>
-      filter(xylem_type == "L"), aes(x = k, y = fd), col = my_cols[4]) +
+      filter(xylem_type == "L"), aes(x = k, y = fd), col = okabe[4]) +
     # geom_point(data = d, aes(x = k, y = fd, col = xylem_long_fct)) +
     # geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), group = max_pg)) +
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred), col = as.numeric(max_pg), group = max_pg)) +
@@ -884,6 +892,7 @@ coef_density <- function(xylem_lab, draws) {
     scale_x_log10(
         breaks = c(10^2, 10^3, 10^4),
         labels = trans_format("log10", math_format(10^.x))) +
+    scale_fill_manual(values = unname(okabe)) +
     theme_bw() +
     theme(
       legend.position = "none",
@@ -900,6 +909,7 @@ coef_density <- function(xylem_lab, draws) {
   # my_col <- RColorBrewer::brewer.pal(4, "PuOr")
   p2 <- ggplot(data_b, aes(x = value, y = sp_short2, fill = xylem))  +
     facet_grid(group ~ ., scales = "free", space = "free") +
+    scale_fill_manual(values = unname(okabe)) +
     theme_bw() +
     theme(
      legend.position = "none",
@@ -1345,10 +1355,10 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       scale_shape_manual(values = c(21, 22, 23, 24, 3, 4, 8)) +
       scale_color_manual(values = c(unname(my_col), "black", "black", "black")) +
       scale_x_log10() +
-      geom_point(data = dp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[1], shape = 21) +
-      geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22) +
-      geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23) +
-      geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24) +
+      geom_point(data = dp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[1], shape = 21, alpha = 0.5) +
+      geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22, alpha = 0.5) +
+      geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23, alpha = 0.5) +
+      geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24, alpha = 0.5) +
       geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
       guides(
@@ -1357,17 +1367,17 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
             shape = c(21, 22, 23, 24, 3, 4, 8),
             fill = c(my_col[1], my_col[2], my_col[3], my_col[4], "black", "black", "black"),
             color = rep("black", 7),
-            size = c(rep(2.5, 4), rep(2, 3))
+            size = c(rep(2.5, 4), rep(2, 3)),
+            alpha = c(rep(.5, 4), rep(1, 3))
             )),
-         shape = "none",
+         shape = "none"
       ) +
       theme(legend.position = c(0.1, 0.7))
-
   } else {
     base_plot +
       geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
       geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5, alpha = 0.5) +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
       scale_fill_manual(values = unname(my_col)) +
       scale_colour_manual(values = unname(my_col)) +
