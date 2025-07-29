@@ -1570,12 +1570,14 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
     }
 
     p <- data |>
-      ggplot(aes(!!x_q50, !!y_q50, col = xylem_long_fct)) +
+      ggplot(aes(!!x_q50, !!y_q50, fill = xylem_long_fct, color = xylem_long_fct, shape = xylem_long_fct)) +
       geom_abline(slope = 1, intercept = 0, lty = 2) +
-      geom_point(alpha = 0.6) +
       geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.6) +
       geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.6) +
+      geom_point(alpha = 0.6, color = "black", stroke = 0.25, size = 2.5) +
+      scale_fill_manual(values = unname(okabe)) +
       scale_color_manual(values = unname(okabe)) +
+      scale_shape_manual(values = c(21, 22, 23, 24)) +
       xlab(x_label) +
       ylab(y_label) +
       my_theme() +
