@@ -1861,37 +1861,36 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
 
 
 # Define a function for the repeated ggplot elements
-tr_bar <- function(data, granier_df, x, y, fill, group) {
+tr_bar <- function(data, granier_df, x, y) {
 
   new_labels <- c(
-    "sarea" = "Sapwood area",
-    "total" = "Total",
-    "dir_only" = "Direction",
-    "dep_only" = "Depth",
-    "dir_dep" = "Direction and depth")
-
-  col_pal <- viridis::viridis(n = 7)
-  colors <- c("dir_only" = col_pal[2], "dir_dep" = col_pal[3], "dep_only" = col_pal[5], "sarea" = col_pal[6], "total" = col_pal[7])
-
-  granier_val <- granier_df |>
+    "dep_only"      = "Dep",
+    # "dir_dep"  = expression(Dep %*% Dir),      # × rendered via matrix product
+    "dir_dep"  = "Dep×Dir",      # × rendered via matrix product
+    "dir_only"      = "Dir",
+    "sapwood_aera"    = expression(A[s]),
+    "total"    = "Total"
+  )
+  # col_pal <- viridis::viridis(n = 7)
+  # colors <- c("dir_only" = col_pal[2], "dir_dep" = col_pal[3], "dep_only" = col_pal[5], "sarea" = col_pal[6], "total" = col_pal[7])
+  granier_val <- granier_df  |>
     pull(tr_m)
-  ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{fill}}, group = {{ group }})) +
-    geom_bar(stat = "identity", position = "dodge") +
-    # geom_bar(stat = "identity", position = "dodge", fill = "lightblue") +
+
+  ggplot(data, aes(x = {{ x }}, y = {{ y }})) +
+  # ggplot(data, aes(x = {{ x }}, y = {{ y }}, fill = {{fill}}, group = {{ group }})) +
+    geom_bar(stat = "identity", position = "dodge", fill = "lightblue") +
     geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
     scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
-    # scale_fill_viridis_d(option = "E") +
-    # scale_fill_viridis_d() +
-    scale_fill_manual(labels = new_labels, values = colors) +
-    # scale_fill_viridis_d(labels = new_labels, option = "D") +
+    scale_x_discrete(labels = new_labels) +
     labs(fill = "B) Source") +
     geom_hline(yintercept = granier_val, lty = 2) +
-    ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+    ylab(expression(paste("Transpiration (mm y"^-1~")"))) +
     xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
     theme_bw() +
     theme(
       legend.text = element_text(size = 8),
-      legend.key.size = unit(0.4, "cm")
+      legend.key.size = unit(0.4, "cm"),
+      plot.tag = element_text(face = "bold")
     )
 }
 
@@ -1906,11 +1905,8 @@ tr_bar_ab <- function(data, granier_df, x, y, fill, group, model4 = TRUE) {
       geom_bar(stat = "identity", position = "dodge", fill = col_pal[2]) +
       geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
-      # scale_fill_viridis_d(option = "G") +
-      # scale_fill_brewer(palette = "PuBr") +
-      # scale_fill_manual(values = rev(col_pal[-1])) +
       geom_hline(yintercept = granier_val, lty = 2) +
-      ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+      ylab(expression(paste("Transpiration (mm y"^-1~")"))) +
       xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
       theme_bw() +
       theme(
@@ -1921,12 +1917,13 @@ tr_bar_ab <- function(data, granier_df, x, y, fill, group, model4 = TRUE) {
       geom_bar(stat = "identity", position = "dodge") +
       geom_errorbar(aes(ymin = tr_l, ymax = tr_h), position = position_dodge(.9), width = 0.2) +
       scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) +
-      # scale_fill_viridis_d(option = "G") +
-      # scale_fill_brewer(palette = "PuBr") +
       scale_fill_manual(values = rev(col_pal[-1])) +
       geom_hline(yintercept = granier_val, lty = 2) +
-      ylab(expression(paste("Annual sap flux (Kg m"^-2~" year"^-1~")"))) +
+      ylab(expression(paste("Transpiration (mm y"^-1~")"))) +
       xlab(expression(Applied~italic(P[g])~(MPa~m^{-1}))) +
+      # xlab(expression(
+      #    atop("Statistical models", italic(P[g]) == 0.08 ~ "(" * "MPa m"^{-1} * ")")
+      #    )) +
       theme_bw() +
       theme(
         # legend.title = element_blank()

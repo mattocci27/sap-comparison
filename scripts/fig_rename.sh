@@ -6,6 +6,7 @@ do
   cp figs/coef_density.$ext figs/fig2.$ext;
   cp figs/ab_points_model4.$ext figs/fig3.$ext;
   cp figs/traits_sp_points_main_re.$ext figs/fig4.$ext;
+  cp figs/tr_bar_comb2.$ext figs/fig5.$ext;
 
   cp figs/pool_multi.$ext figs/fig_s4.$ext;
   cp figs/ab_points_four_models_all.$ext figs/fig_s5.$ext;

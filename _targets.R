@@ -881,6 +881,36 @@ segments_noxylem_traits_post_ab_mapped_re <- tar_map(
     )
 )
 
+segments_xylem_traits_post_ab_mapped_re <- tar_map(
+  list(stan_summary =
+    rlang::syms(
+    str_c("fit6_summary_segments_xylem_traits_simple_", # nolint
+      c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    stan_summary_sp =
+      rlang::syms(
+      str_c("fit6_summary_segments_xylem_traits_sp_simple_", # nolint
+        c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    stan_data =
+      rlang::syms(
+      str_c("stan_data_xylem_re_",
+        c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf"))),
+    key = c("log_dh", "log_vf", "wood_density", "log_ks", "log_vaf")),
+    tar_target(
+      post,
+      generate_summary_trait_table_re2(
+        stan_summary, stan_data, sp = FALSE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    ),
+    tar_target(
+      post2,
+      generate_summary_trait_table_re2(
+        stan_summary_sp, stan_data, sp = TRUE) |>
+          mutate(trait = key) |>
+          dplyr::select(trait, everything())
+    )
+)
+
 
 tar_combined_segments_noxylem_traits_table_re <- tar_combine(
   segments_noxylem_traits_table_combined_re,
@@ -891,6 +921,18 @@ tar_combined_segments_noxylem_traits_table_re <- tar_combine(
 tar_combined_segments_noxylem_traits_sp_table_re <- tar_combine(
   segments_noxylem_traits_sp_table_combined_re,
   segments_noxylem_traits_post_ab_mapped_re[["post2"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_segments_xylem_traits_table_re <- tar_combine(
+  segments_xylem_traits_table_combined_re,
+  segments_xylem_traits_post_ab_mapped_re[["post"]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+tar_combined_segments_xylem_traits_sp_table_re <- tar_combine(
+  segments_xylem_traits_sp_table_combined_re,
+  segments_xylem_traits_post_ab_mapped_re[["post2"]],
   command = dplyr::bind_rows(!!!.x)
 )
 
@@ -907,10 +949,13 @@ granier_list <- list(
   segments_xylem_traits_post_ab_mapped,
   segments_noxylem_traits_post_ab_mapped,
   segments_noxylem_traits_post_ab_mapped_re,
+  segments_xylem_traits_post_ab_mapped_re,
   # segments_noxylem_traits_sp_post_ab_mapped_re,
   tar_combined_segments_noxylem_traits_table,
   tar_combined_segments_noxylem_traits_table_re,
   tar_combined_segments_noxylem_traits_sp_table_re,
+  tar_combined_segments_xylem_traits_table_re,
+  tar_combined_segments_xylem_traits_sp_table_re,
   tar_combined_segments_xylem_traits_table,
   segments_xylem_draws_mapped,
   tar_combined_segments_xylem_draws,
@@ -982,7 +1027,7 @@ granier_list <- list(
   tar_target(
     #traits_xylem_table_csv,
     model4_with_traits_posterior_csv,
-    my_write_csv(segments_xylem_traits_table_combined, "data/model4_traits_with_xylem_posteriors.csv"),
+    my_write_csv(segments_xylem_traits_table_combined, "data/table_s11_x.csv"),
     format = "file"
   ),
   tar_target(
@@ -1001,6 +1046,18 @@ granier_list <- list(
     # traits_noxylem_table_csv,
     model4_without_traits_sp_posterior_csv_re,
     my_write_csv(segments_noxylem_traits_sp_table_combined_re, "data/table_s11_2.csv"),
+    format = "file"
+  ),
+  tar_target(
+    # traits_noxylem_table_csv,
+    model4_without_traits_posterior_csv_re2,
+    my_write_csv(segments_xylem_traits_table_combined_re, "data/table_s11_3.csv"),
+    format = "file"
+  ),
+  tar_target(
+    # traits_noxylem_table_csv,
+    model4_without_traits_sp_posterior_csv_re2,
+    my_write_csv(segments_xylem_traits_sp_table_combined_re, "data/table_s11_4.csv"),
     format = "file"
   ),
 
@@ -2149,6 +2206,7 @@ uncertainty_figs_list <- list(
       my_write_csv("data/tr_bar_ab.csv"),
     format = "file"
   ),
+
   # tar_target(
   #   tr_bar_ab_plot, {
   #     p <- tr_bar_ab(tr_bar_ab_df, pg, tr_m, fill = model, group = model)
@@ -2162,6 +2220,7 @@ uncertainty_figs_list <- list(
   #   },
   #   format = "file"
   # ),
+
   tar_target(
     tr_bar_all_df,
     generate_tr_bar_all_df(total_uncertainty_combined_df, sarea_uncertainty_combined_df, dir_dep_uncertainty_combined_df)
@@ -2212,84 +2271,56 @@ uncertainty_figs_list <- list(
   ),
   tar_target(
     tr_bar_comb_plot, {
-      tr_bar_all_df2 <- tr_bar_all_df |>
-        mutate(id = ifelse(id == "sapwood_aera", "sarea", id))
-      id_fct <- c(tr_bar_all_df2$id, as.character(rel_bar_df$id)) |>
-        unique() #|>
-        # as.factor()
-      id_fct <- factor(id_fct, levels = c("dir_only", "dir_dep", "dir_dep_cov", "dep_only", "sarea", "ab", "total"))
 
-      tr_bar_all_df2 <- tr_bar_all_df2 |>
-        mutate(id = factor(id, levels = c("dir_only", "dir_dep", "dep_only", "sarea", "total")))
-      tmp <- tr_bar_all_df2 |> sample_n(2) |> mutate(id = factor(c("dir_dep_cov", "ab"))) |>
-        mutate(across(where(is.numeric), ~ NA_real_))
-      # tr_bar_all_df2 <- bind_rows(tr_bar_all_df2, tmp) |>
-      #   mutate(id = factor(id, levels = id_fct))
-
-      rel_bar_df2 <- rel_bar_df |>
-        mutate(id = factor(id, levels = id_fct))
-      tmp <- rel_bar_df2 |> sample_n(1) |> mutate(id = factor(c("total"))) |>
-        mutate(across(where(is.numeric), ~ NA_real_))
-      rel_bar_df2 <- bind_rows(rel_bar_df2, tmp) |>
-        mutate(id = factor(id, levels = c("dir_only", "dir_dep_cov", "dep_only", "sarea", "ab")))
-
-      p1 <- tr_bar_ab(tr_bar_ab_df |> filter(pg == "0.08" | model == "Model 4"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
-        coord_cartesian(ylim = c(0, 1250))  +
+      p1 <- tr_bar_ab(tr_bar_ab_df |> filter(model == "Model 4") |> filter(pg != "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model) +
+        coord_cartesian(ylim = c(0, 1250)) +
+        # annotate("text", x = Inf, y = Inf, label = "A", hjust = -1, vjust = 1.1, size = 5) +
+        # annotate("text", x = 1, y = 1250, label = "a", hjust = -0.1, vjust = 0.5, size = 5) +
         scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
-        # annotate("text", x = 1, y = 1250, label = "B", hjust = -1, vjust = 0.5, size = 5) +
-        labs(fill = "A) Model") +
         theme(
           axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
-          # axis.text.y = element_text(size = 8,margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
-          # axis.title.y.left = element_blank(),
-          # axis.text.y.left = element_blank(),
+          axis.text.y = element_text(size = 8, margin = margin(t = 0, r = 0.5, b = 0, l = 0))
+        )
+
+      p2 <- tr_bar_ab(tr_bar_ab_df |> filter(model != "Granier") |> filter(pg == "0.08"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
+        coord_cartesian(ylim = c(0, 1250))  +
+        scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+        theme(
+          axis.text.x = element_text(size = 9, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+          legend.title = element_blank(),
+          # legend.box.margin = margin(t = 2, r = 10, b = 0, l = 10),
           legend.text = element_text(size = 8),
           legend.key.size = unit(0.4, "cm"),
-          # legend.position = c(0.8, 0.25))
-          legend.position = "right")
-          #  legend.position = "top")
-      p3 <- tr_bar(tr_bar_all_df2, ab_granier_uncertainty_combined_df, id, tr_m, fill = id, group = id) +
+          legend.spacing.x = unit(1, "mm"),  # This controls spacing between keys
+          legend.position = "top")
+
+      p3 <- tr_bar(tr_bar_all_df, ab_granier_uncertainty_combined_df, id, tr_m) +
         scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
-        # annotate("text", x = 1, y = 1250, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+        guides(fill = "none") +
+        xlab("Source of uncertainty")
+
+      p4 <- rel_bar_wide(rel_bar_df) +
         xlab("Source of uncertainty") +
-        theme(
-          axis.text.x = element_blank()
-        )
-      p4 <- rel_bar(rel_bar_df) +
-        xlab("Source of uncertainty") +
-        # annotate("text", x = 1, y = 60, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+        ylab("Relative contribution (%)") +
         # scale_y_continuous(
         #      sec.axis = sec_axis(~ ., name = "Relative contribution (%)")) +
         theme(
         #   axis.title.y.right = element_text(angle = 90)
           # axis.title.y.left = element_blank(),
-          legend.text = element_text(size = 8),
-          legend.key.size = unit(0.4, "cm"),
-          axis.title.x = element_blank()#,
-          # legend.position = "right"
+          # axis.text.y.left = element_blank(),
+          legend.title = element_blank(),
+          legend.position = c(0.7, 0.75)
         )
 
-# Define the layout with specific widths
-    p1 <- p1 + plot_layout(widths = c(3))
-    p3p4 <- p3 + p4 + plot_layout(widths = c(3, 1))
-
-# Combine your plots
-    p <- p1 / p3p4 +
-      plot_layout(guides = 'collect') +
-      plot_annotation(tag_levels = 'A')
-
-      # Combi
-      # p <- p1 / (p3 + p4) +
-      #   plot_layout(guides = "collect")
-
-      # p <- p + plot_layout(widths = c(3, 1)) +
-      #   plot_annotation(tag_levels = "A") &
-      #   theme(
-      #     plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")
-      #     )
+      p <- (p1 + p2) / (p3 + p4) &
+        plot_annotation(tag_levels = "a") &
+        theme(
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines"),
+          plot.tag = element_text(face = "bold")
+        )
 
       my_ggsave(
-        "figs/tr_bar_comb",
+        "figs/tr_bar_comb2",
         p,
         dpi = 600,
         width = 6.81,
@@ -2298,6 +2329,94 @@ uncertainty_figs_list <- list(
     },
     format = "file"
   ),
+#   tar_target(
+#     tr_bar_comb_plot, {
+#       tr_bar_all_df2 <- tr_bar_all_df |>
+#         mutate(id = ifelse(id == "sapwood_aera", "sarea", id))
+#       id_fct <- c(tr_bar_all_df2$id, as.character(rel_bar_df$id)) |>
+#         unique() #|>
+#         # as.factor()
+#       id_fct <- factor(id_fct, levels = c("dir_only", "dir_dep", "dir_dep_cov", "dep_only", "sarea", "ab", "total"))
+
+#       tr_bar_all_df2 <- tr_bar_all_df2 |>
+#         mutate(id = factor(id, levels = c("dir_only", "dir_dep", "dep_only", "sarea", "total")))
+#       tmp <- tr_bar_all_df2 |> sample_n(2) |> mutate(id = factor(c("dir_dep_cov", "ab"))) |>
+#         mutate(across(where(is.numeric), ~ NA_real_))
+#       # tr_bar_all_df2 <- bind_rows(tr_bar_all_df2, tmp) |>
+#       #   mutate(id = factor(id, levels = id_fct))
+
+#       rel_bar_df2 <- rel_bar_df |>
+#         mutate(id = factor(id, levels = id_fct))
+#       tmp <- rel_bar_df2 |> sample_n(1) |> mutate(id = factor(c("total"))) |>
+#         mutate(across(where(is.numeric), ~ NA_real_))
+#       rel_bar_df2 <- bind_rows(rel_bar_df2, tmp) |>
+#         mutate(id = factor(id, levels = c("dir_only", "dir_dep_cov", "dep_only", "sarea", "ab")))
+
+#       p1 <- tr_bar_ab(tr_bar_ab_df |> filter(pg == "0.08" | model == "Model 4"),  ab_granier_uncertainty_combined_df, pg, tr_m, fill = model, group = model, model4 = FALSE) +
+#         coord_cartesian(ylim = c(0, 1250))  +
+#         scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+#         # annotate("text", x = 1, y = 1250, label = "B", hjust = -1, vjust = 0.5, size = 5) +
+#         labs(fill = "A) Model") +
+#         theme(
+#           axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
+#           # axis.text.y = element_text(size = 8,margin = margin(t = 0, r = 0.5, b = 0, l = 0)),
+#           # axis.title.y.left = element_blank(),
+#           # axis.text.y.left = element_blank(),
+#           legend.text = element_text(size = 8),
+#           legend.key.size = unit(0.4, "cm"),
+#           # legend.position = c(0.8, 0.25))
+#           legend.position = "right")
+#           #  legend.position = "top")
+#       p3 <- tr_bar(tr_bar_all_df2, ab_granier_uncertainty_combined_df, id, tr_m, fill = id, group = id) +
+#         scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) +
+#         # annotate("text", x = 1, y = 1250, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+#         xlab("Source of uncertainty") +
+#         theme(
+#           axis.text.x = element_blank()
+#         )
+#       p4 <- rel_bar(rel_bar_df) +
+#         xlab("Source of uncertainty") +
+#         # annotate("text", x = 1, y = 60, label = "B", hjust = -0.1, vjust = 0.5, size = 5) +
+#         # scale_y_continuous(
+#         #      sec.axis = sec_axis(~ ., name = "Relative contribution (%)")) +
+#         theme(
+#         #   axis.title.y.right = element_text(angle = 90)
+#           # axis.title.y.left = element_blank(),
+#           legend.text = element_text(size = 8),
+#           legend.key.size = unit(0.4, "cm"),
+#           axis.title.x = element_blank()#,
+#           # legend.position = "right"
+#         )
+
+# # Define the layout with specific widths
+#     p1 <- p1 + plot_layout(widths = c(3))
+#     p3p4 <- p3 + p4 + plot_layout(widths = c(3, 1))
+
+# # Combine your plots
+#     p <- p1 / p3p4 +
+#       plot_layout(guides = 'collect') +
+#       plot_annotation(tag_levels = 'A')
+
+#       # Combi
+#       # p <- p1 / (p3 + p4) +
+#       #   plot_layout(guides = "collect")
+
+#       # p <- p + plot_layout(widths = c(3, 1)) +
+#       #   plot_annotation(tag_levels = "A") &
+#       #   theme(
+#       #     plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")
+#       #     )
+
+#       my_ggsave(
+#         "figs/tr_bar_comb",
+#         p,
+#         dpi = 600,
+#         width = 6.81,
+#         height = 6.81
+#       )
+#     },
+#     format = "file"
+#   ),
   tar_target(
     ab_uncertainty_points_plot, {
       tmp1 <- ab_summarized_df_species_xylem_post_ab_fit_draws_species_xylem_0.08

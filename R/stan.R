@@ -3231,6 +3231,64 @@ generate_summary_trait_table_re <- function(fit_summary, data, sp = FALSE) {
    )
 }
 
+generate_summary_trait_table_re2 <- function(fit_summary, data, sp = FALSE) {
+  if (sp) {
+    tmp <- fit_summary |>
+      filter(str_detect(variable, "^beta|A")) |>
+      mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
+      mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
+      add_parameter_names_sp() |>
+      add_level_sp()
+  } else {
+    tmp <- fit_summary |>
+      filter(str_detect(variable, "^beta|alpha|alpha_a|alpha_b|A")) |>
+      mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
+      mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
+      add_parameter_names_seg() |>
+      add_level_seg()
+  }
+
+  sp_index <- tibble(sp = data$sp_id, para2 = seq(1, data$K))
+  seg_index <- tibble(seg = data$sample_id |> unique()) |>
+    mutate(para2 = as.numeric(seg))
+
+  d_all <- tmp |>
+    filter(level_name == "overall") |>
+    mutate(target = "overall")
+
+  d_sp <- tmp |>
+    filter(level_name == "species") |>
+    full_join(sp_index, by = "para2") |>
+    rename(target = sp) |>
+    mutate(target = as.character(target))
+
+  d_seg <- tmp |>
+    filter(level_name == "segments") |>
+    full_join(seg_index, by = "para2") |>
+    rename(target = seg) |>
+    mutate(target = as.character(target))
+
+  bind_rows(d_all, d_sp, d_seg) |>
+    dplyr::select(variable,　level_name, target, param_name, q50, q2.5, q97.5, rhat, ess_bulk) |>
+    rename(
+      variable_name = variable,
+      level = level_name,
+      variable_meaning = param_name,
+      effective_sample_size = ess_bulk
+      ) |>
+    mutate(
+      across(
+        c(q50, q2.5, q97.5),
+        ~ ifelse(
+            variable_meaning %in% c("coefficient a", "intercept for coefficient a"),
+            exp(.x),
+            .x
+          )
+      ),
+      across(where(is.numeric), ~ format(round(.x, 2), nsmall = 2))
+   )
+}
+
 # Function to calculate R2
 calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
   # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_ks)
