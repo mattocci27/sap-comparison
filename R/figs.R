@@ -8,7 +8,8 @@ my_theme <- function(){
     legend.text.align = 0,
     # legend.key.height = unit(0.2, "cm"),
     legend.text = element_text(size = 9),
-    legend.title = element_text(size = 9)
+    legend.title = element_text(size = 9),
+    plot.tag = element_text(face = "bold")
   )
 }
 
@@ -129,7 +130,7 @@ sma_ks <- function(five_spp_csv, ks_trees_csv, log = FALSE)  {
   p2 <- ks_box(ks_trees_csv)
   p1 + p2 +
     plot_layout(nrow = 1, width = c(1.8, 1)) +
-    plot_annotation(tag_levels = "A") &
+    plot_annotation(tag_levels = "a") &
     theme(
       axis.text = element_text(size = 10),
       axis.title = element_text(size = 12)
@@ -701,7 +702,7 @@ line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
   # s2_008 <- tar_read(fit_ab_summary_granier_without_traits2_sap_all_clean_0.08)
 
   xylem_lab2 <- xylem_lab |>
-    select(sp_short, sp_short_chr, xylem_long_fct)
+    dplyr::select(sp_short, sp_short_chr, xylem_long_fct)
 
   d <- read_csv(d) |>
     filter(is.na(removed_k)) |>
@@ -754,8 +755,8 @@ line_pool_multi <- function(d, xylem_lab, s_008, s2_008) {
     geom_line(data = pred_data, aes(x = exp(log_xx), y = exp(log_pred_pool)), lty = 2) +
     facet_wrap(vars(sp_short), ncol = 4, scale = "free") +
     ylab(expression("Sap flux density "(g~m^{-2}~s^{-1}))) +
-    # xlab(expression("K "((Delta~T[max]-Delta~T)/Delta~T))) +
     xlab("K") +
+    scale_color_manual(values = unname(okabe)) +
     labs(col = "") +
     my_theme() +
     theme(
@@ -926,7 +927,7 @@ coef_density <- function(xylem_lab, draws) {
     ylab("")
 
   p1 + p2 +
-    plot_annotation(tag_levels = "A")
+    plot_annotation(tag_levels = "a")
 
 }
 
@@ -1008,7 +1009,7 @@ ab_pg_ribbon <- function(xylem_lab, k_range, fit_summary_combined, coef_a = TRUE
       geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.6) +
       geom_point() +
       geom_line() +
-      scale_fill_discrete(name = "") +
+      scale_fill_manual(name = "", values = unname(okabe)) +
       xlab(expression(Maximum~italic(P[g])~(MPa~m^{-1}))) +
       my_theme() +
       theme(
@@ -1189,7 +1190,7 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
       )
 
   p1 + p2 +
-      plot_annotation(tag_levels = "A")
+      plot_annotation(tag_levels = "a")
 }
 
 # Extract percentiles for model 3 and 4
@@ -1574,6 +1575,7 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
       geom_point() +
       geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.5) +
       geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.5) +
+      scale_color_manual(values = unname(okabe)) +
       xlab(x_label) +
       ylab(y_label) +
       my_theme() +
@@ -1605,7 +1607,7 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
     p_a3 + p_b3 +
     p_a4 + p_b4 +
     plot_layout(ncol = 2) +
-    plot_annotation(tag_levels = "A") &
+    plot_annotation(tag_levels = "a") &
       theme(
         axis.ticks.length = unit(-0.1, "cm"),
         axis.text.x = element_text(size = 8, margin = margin(t = 0.5, r = 0, b = 0, l = 0)),
@@ -1852,7 +1854,7 @@ imp_points <- function(imputed_df_1, rubber_raw_data_csv_1, year_1, month_1, day
   p2 <- dep_fun(df2)
 
   p / p2 +
-    plot_annotation(tag_levels = "A")
+    plot_annotation(tag_levels = "a")
 }
 
 
@@ -2141,7 +2143,8 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
     scale_x_continuous(breaks = c(0, 1, 5, 10)) +
-    xlab(expression("Max-to-min ratios of " * italic(a))) +
+    xlab(expression(italic(a) ~ " range" ~ "(=" ~ italic(a[max]) / italic(a[min]) ~ ")")) +
+    # ylab("") +
     geom_vline(xintercept = 1, lty = 2, col = "grey30") +
     my_theme() +
     theme(
@@ -2152,7 +2155,8 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
     ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
-    xlab(expression("Ranges of " * italic(b))) +
+    xlab(expression(italic(a) ~ " range" ~ "(=" ~ italic(b[max]) - italic(b[min]) ~ ")")) +
+    # ylab("") +
     geom_vline(xintercept = 0, lty = 2, col = "grey30") +
     my_theme() +
     theme(
@@ -2175,12 +2179,16 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
   # extracted_legend <- g_legend(p3)
 
   extracted_legend <- cowplot::get_legend(
-    p1 + guides(color = guide_legend(ncol = 4, title = "")) +
+    p1 +
+     scale_color_manual(values = unname(okabe)) +
+     guides(color = guide_legend(
+      ncol = 4, title = "")) +
       theme(legend.text = element_text(size = 9),
-        # legend.background = element_blank(),
         legend.position = "bottom"))
+
   p <- p1 + p2 +
-    plot_annotation(tag_levels = "A") &
+    plot_annotation(tag_levels = "a") &
+    scale_color_manual(values = unname(okabe)) &
     theme(
       plot.margin = margin(2, 2, 0, 2),
       axis.text.y = element_text(face = "italic", size = 8),

@@ -71,6 +71,7 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "A
         parse = TRUE, size = 3, hjust = 0, vjust = -0.25) +
       facet_grid(. ~ trait, scales = "free") +
       scale_x_log10() +
+      scale_color_manual(values = unname(okabe)) +
       my_theme() +
       theme(
         axis.title.x = element_blank(),
@@ -259,6 +260,7 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
 # Create a dummy plot which will be used only to extract the legend
   p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, color = xylem_long_fct)) +
     geom_point() +
+    scale_color_manual(values = unname(okabe)) +
     theme_void() +
     theme(
       legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
