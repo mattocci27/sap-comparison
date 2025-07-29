@@ -2141,12 +2141,11 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
 
   p1 <- a_df |>
     mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
-    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    ggplot(aes(y = sp_short, x = m, fill = xylem_long_fct, color = xylem_long_fct, shape = xylem_long_fct)) +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
     scale_x_continuous(breaks = c(0, 1, 5, 10)) +
     xlab(expression(italic(a) ~ " range" ~ "(=" ~ italic(a[max]) / italic(a[min]) ~ ")")) +
-    # ylab("") +
     geom_vline(xintercept = 1, lty = 2, col = "grey30") +
     my_theme() +
     theme(
@@ -2154,11 +2153,10 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
 
   p2 <- b_df |>
     mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
-    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    ggplot(aes(y = sp_short, x = m, fill = xylem_long_fct, color = xylem_long_fct, shape = xylem_long_fct)) +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     geom_point() +
-    xlab(expression(italic(a) ~ " range" ~ "(=" ~ italic(b[max]) - italic(b[min]) ~ ")")) +
-    # ylab("") +
+    xlab(expression(italic(b) ~ " range" ~ " = " * "(" * italic(b[max]) - italic(b[min]) * ")")) +
     geom_vline(xintercept = 0, lty = 2, col = "grey30") +
     my_theme() +
     theme(
@@ -2166,7 +2164,7 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
 
   p3 <- a_df |>
     mutate(sp_short = factor(sp_short, levels = sp_short[order(m)])) |>
-    ggplot(aes(y = sp_short, x = m, col = xylem_long_fct)) +
+    ggplot(aes(y = sp_short, x = m, fill = xylem_long_fct, color = xylem_long_fct, shape = xylem_long_fct)) +
     geom_point() +
     geom_errorbar(aes(xmin = ll, xmax = hh), width = 0.2) +
     guides(color = guide_legend(ncol = 4, title = "")) #+
@@ -2182,15 +2180,28 @@ ab_pg_summary_bars <- function(s, d, xylem_lab) {
 
   extracted_legend <- cowplot::get_legend(
     p1 +
-     scale_color_manual(values = unname(okabe)) +
-     guides(color = guide_legend(
-      ncol = 4, title = "")) +
+    scale_color_manual(values = unname(okabe)) +
+    guides(
+        fill = guide_legend(
+          ncol = 4, title = "",
+          override.aes = list(
+            shape = c(21, 22, 23, 24),
+            fill = unname(okabe),
+            # color = rep("black", 4)
+            color = unname(okabe)
+            )),
+        shape = "none",
+        color = "none"
+      ) +
+    #  guides(color = guide_legend(
+    #   ncol = 4, title = "")) +
       theme(legend.text = element_text(size = 9),
         legend.position = "bottom"))
 
   p <- p1 + p2 +
     plot_annotation(tag_levels = "a") &
-    scale_color_manual(values = unname(okabe)) &
+    scale_fill_manual(values = unname(okabe)) &
+    scale_shape_manual(values = c(21, 22, 23, 24)) &
     theme(
       plot.margin = margin(2, 2, 0, 2),
       axis.text.y = element_text(face = "italic", size = 8),
