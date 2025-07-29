@@ -68,7 +68,7 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "a
       geom_point(aes(y = mid, x = exp(val),
         fill = xylem_long_fct,
         # color = xylem_long_fct,
-        shape = xylem_long_fct), color = "black", alpha = 0.5) +
+        shape = xylem_long_fct), color = "black", alpha = 0.5, stroke = 0.25) +
       geom_text(data = r2_data, aes(x = r2_x, y = r2_y, label = r2),
         parse = TRUE, size = 3, hjust = 1, vjust = 0) +
       geom_text(data = r2_data, aes(x = tag_x, y = tag_y, label = inner_tag),
@@ -417,7 +417,7 @@ traits_points_si <- function(pred_data, r2_list = NULL, title = "Segments", sp =
 
 # Create a dummy plot which will be used only to extract the legend
   p3 <- ggplot(fig_data, aes(x = val, y = mid, color = xylem_long_fct)) +
-    geom_point(alpha = 0.5) +
+    geom_point(alpha = 0.6) +
     scale_color_manual(values = unname(okabe)) +
     theme_void() +
     theme(

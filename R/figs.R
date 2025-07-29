@@ -107,7 +107,7 @@ ks_box <- function(data) {
     filter(calib_type == "Pressure") |>
     ggplot(aes(y = ks, x = as.factor(pressure))) +
     geom_boxplot(width = 0.4) +
-    geom_point(alpha = 0.5) +
+    geom_point(alpha = 0.6) +
     facet_grid(rows = vars(species), scale = "free") +
     scale_y_log10() +
     ylab(expression(K[s]~(kg~m^{-1}~s^{-1}~MPa^{-1}))) +
@@ -1153,8 +1153,8 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
     ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
     geom_abline(slope = 1, intercept = 0, lty = 2) +
     geom_point() +
-    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.5) +
-    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.5) +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.6) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.6) +
     scale_x_log10() +
     scale_y_log10() +
     xlab("a - traditional fitting") +
@@ -1176,8 +1176,8 @@ ab_comp_points <- function(pool_csv, seg_csv, xylem_lab) {
     ggplot(aes(x = q50_pool, y = q50_seg, col = xylem_long_fct)) +
     geom_abline(slope = 1, intercept = 0, lty = 2) +
     geom_point() +
-    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.5) +
-    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.5) +
+    geom_errorbar(aes(ymin = q2.5_seg, ymax = q97.5_seg), alpha = 0.6) +
+    geom_errorbar(aes(xmin = q2.5_pool, xmax = q97.5_pool), alpha = 0.6) +
     xlab("b - traditional fitting") +
     ylab("b - multilevel model") +
     coord_cartesian(xlim = c(min_b, max_b), ylim = c(min_b, max_b)) +
@@ -1290,8 +1290,8 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
   } else {
     base_plot +
       geom_point(data = df, aes(x = a_q50, y = b_q50, col = xylem_fct)) +
-      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
-      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.6, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.6, show.legend = FALSE) +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
       scale_colour_manual(
         values = c(
@@ -1356,10 +1356,10 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       scale_shape_manual(values = c(21, 22, 23, 24, 3, 4, 8)) +
       scale_color_manual(values = c(unname(my_col), "black", "black", "black")) +
       scale_x_log10() +
-      geom_point(data = dp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[1], shape = 21, alpha = 0.5) +
-      geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22, alpha = 0.5) +
-      geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23, alpha = 0.5) +
-      geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24, alpha = 0.5) +
+      geom_point(data = dp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[1], shape = 21, alpha = 0.6) +
+      geom_point(data = rp_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[2], shape = 22, alpha = 0.6) +
+      geom_point(data = pa_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[3], shape = 23, alpha = 0.6) +
+      geom_point(data = li_df, aes(x = a_q50, y = b_q50), size = 2.5, fill = my_col[4], shape = 24, alpha = 0.6) +
       geom_sma(data = pub_df, aes(x = a, y = b), method = "sma", se = TRUE, col = "grey40") +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = FALSE) +
       guides(
@@ -1376,9 +1376,9 @@ ab_points_model4_create_plot <- function(df, pub_df, title, with_pub = FALSE) {
       theme(legend.position = c(0.1, 0.7))
   } else {
     base_plot +
-      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
-      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.5, show.legend = FALSE) +
-      geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5, alpha = 0.5) +
+      geom_errorbar(data = df, aes(x = a_q50, ymin = b_q2_5, ymax = b_q97_5, col = xylem_fct), alpha = 0.6, show.legend = FALSE) +
+      geom_errorbar(data = df, aes(xmin = a_q2_5, xmax = a_q97_5, y = b_q50, col = xylem_fct), alpha = 0.6, show.legend = FALSE) +
+      geom_point(data = df, aes(x = a_q50, y = b_q50, fill = xylem_fct, shape = xylem_fct), color = "black", size = 2.5, alpha = 0.6) +
       geom_sma(data = df, aes(x = a_q50, y = b_q50), method = "sma", se = TRUE) +
       scale_fill_manual(values = unname(my_col)) +
       scale_colour_manual(values = unname(my_col)) +
@@ -1572,9 +1572,9 @@ ab_comp_four_models_points <- function(summary12, summary3, summary4, xylem_lab,
     p <- data |>
       ggplot(aes(!!x_q50, !!y_q50, col = xylem_long_fct)) +
       geom_abline(slope = 1, intercept = 0, lty = 2) +
-      geom_point(alpha = 0.5) +
-      geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.5) +
-      geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.5) +
+      geom_point(alpha = 0.6) +
+      geom_errorbar(aes(ymin = !!y_q2_5, ymax = !!y_q97_5), alpha = 0.6) +
+      geom_errorbar(aes(xmin = !!x_q2_5, xmax = !!x_q97_5), alpha = 0.6) +
       scale_color_manual(values = unname(okabe)) +
       xlab(x_label) +
       ylab(y_label) +
