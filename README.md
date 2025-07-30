@@ -13,9 +13,14 @@ Oren Ram
 Code repository to run the analysis and generate the manuscript for Chen et al. "Hydraulic conductivity-induced systematic parameter variation in a widely used thermal dissipation sap-flow technique".
 https://doi.org/xxxx.
 
-## Usage
 
-### Running the analysis
+## Getting Started
+
+### Step 1: Prepare data
+
+Copy or move all .csv files from the `data-shared/` folder into the `data-raw/` folder before running the analysis.
+
+### Step 2: Running the analysis
 
 Use the run.sh script to start the analysis.
 It provides options for running locally, in Docker, or inside an Apptainer/Singularity container.
@@ -36,7 +41,7 @@ Enter number:
 
 Note: If you are working inside a Docker contianer, choose option 1.
 
-### Building the Apptainer container (Linux)
+### Optional: Building the Apptainer container (Linux)
 
 To build the container:
 
