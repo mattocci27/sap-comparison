@@ -911,7 +911,6 @@ segments_xylem_traits_post_ab_mapped_re <- tar_map(
     )
 )
 
-
 tar_combined_segments_noxylem_traits_table_re <- tar_combine(
   segments_noxylem_traits_table_combined_re,
   segments_noxylem_traits_post_ab_mapped_re[["post"]],
@@ -948,14 +947,17 @@ granier_list <- list(
   segments_xylem_post_ab_mapped,
   segments_xylem_traits_post_ab_mapped,
   segments_noxylem_traits_post_ab_mapped,
+
   segments_noxylem_traits_post_ab_mapped_re,
   segments_xylem_traits_post_ab_mapped_re,
-  # segments_noxylem_traits_sp_post_ab_mapped_re,
+
   tar_combined_segments_noxylem_traits_table,
+
   tar_combined_segments_noxylem_traits_table_re,
   tar_combined_segments_noxylem_traits_sp_table_re,
   tar_combined_segments_xylem_traits_table_re,
   tar_combined_segments_xylem_traits_sp_table_re,
+
   tar_combined_segments_xylem_traits_table,
   segments_xylem_draws_mapped,
   tar_combined_segments_xylem_draws,
