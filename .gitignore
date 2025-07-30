@@ -76,6 +76,7 @@ rsconnect/
 #!ms/manuscript.pdf
 
 # !data-raw/*.csv
+!data-shared/*.csv
 test.R
 log/*
 sftp.sh
