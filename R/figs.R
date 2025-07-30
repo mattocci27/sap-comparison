@@ -2527,3 +2527,92 @@ reimp_bin_bar <- function(reimp_bin_df, error = TRUE) {
     p
   }
 }
+
+# fig. 6
+
+ab_violin <- function(pub_ab_csv) {
+
+  d <- read_csv(pub_ab_csv) |>
+    janitor::clean_names() |>
+    filter(!is.na(a) & !is.na(b)) |>
+    mutate(type = factor(type, levels = c("DP", "RP", "NP", "Pa","Li", "Ba", "He")))
+
+  nn <- d |>
+    group_by(type) |>
+    summarise(
+      n = n()
+    )
+
+  p_a <- tibble(
+    type = c("DP", "RP", "NP", "Pa", "Li", "Ba", "He"),
+    p_label = c("italic(P)<0.001", "italic(P)==0.011", "italic(P)==0.141",
+                "italic(P)==0.797", "italic(P)<0.001", "italic(P)==0.055", "italic(Na)"),
+    y_pos = c(1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e6)  # adjust based on your plot scale
+  )
+
+  p_b <- tibble(
+    type = c("DP", "RP", "NP", "Pa", "Li", "Ba", "He"),
+    p_label = c("italic(P)==0.107", "italic(P)==0.443", "italic(P)==0.217",
+                "italic(P)==0.14", "italic(P)<0.001", "italic(P)==0.194", "italic(Na)"),
+    y_pos = rep(3.2, 7)  # adjust based on your plot scale
+  )
+
+  n_b <- tibble(
+    type = c("DP", "RP", "NP", "Pa", "Li", "Ba", "He"),
+    n_label = c("italic(N)==61", "italic(N)==18", "italic(N)==18",
+                "italic(N)==9", "italic(N)==8", "italic(N)==4", "italic(N)==1"),
+    y_pos = rep(0, 7)  # adjust based on your plot scale
+  )
+
+  p1 <- ggplot(d, aes(x = type, y = a)) +
+    geom_violin(aes(fill = type, col = type), trim = FALSE, alpha = 0.6) +
+    geom_jitter(aes(fill = type), width = 0.1, size = 1, alpha = 0.6, shape = 21) +
+    geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.8) + # nolint
+    geom_text(data = p_a, aes(x = type, y = y_pos, label = p_label),
+      parse = TRUE, size = 3.5, vjust = 0) +
+    scale_fill_manual(values = c(unname(okabe)[1:2], "grey70", unname(okabe)[3:4], "grey70", "grey70")) +
+    scale_color_manual(values = c(unname(okabe)[1:2], "grey70", unname(okabe)[3:4], "grey70", "grey70")) +
+    geom_hline(yintercept = 119, lty = 2, col = "grey40") +
+    scale_y_log10(
+      breaks = c(10, 1e2, 1e3, 1e4, 1e5, 1e6),
+      labels = c(expression(10^1), expression(10^2),
+        expression(10^3), expression(10^4),
+        expression(10^5), expression(10^6))
+    ) +
+    ylab(expression(Coefficient~italic(a))) +
+    my_theme() +
+    theme(
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank(),
+      legend.position = "none"
+      )
+
+  p2 <- ggplot(d, aes(x = type, y = b)) +
+    geom_violin(aes(fill = type, col = type), trim = FALSE, alpha = 0.6) +
+    geom_jitter(aes(fill = type), width = 0.1, size = 1, alpha = 0.6, shape = 21) +
+    geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.8) + # nolint
+    geom_text(data = p_b, aes(x = type, y = y_pos, label = p_label),
+      parse = TRUE, size = 3.5, vjust = 0) +
+    geom_text(data = n_b, aes(x = type, y = y_pos, label = n_label),
+      parse = TRUE, size = 3.5, vjust = 0) +
+    scale_fill_manual(values = c(unname(okabe)[1:2], "grey70", unname(okabe)[3:4], "grey70", "grey70")) +
+    scale_color_manual(values = c(unname(okabe)[1:2], "grey70", unname(okabe)[3:4], "grey70", "grey70")) +
+    geom_hline(yintercept = 1.231, lty = 2, col = "grey40") +
+    ylab(expression(Coefficient~italic(b))) +
+    my_theme() +
+    theme(
+      axis.title.x = element_blank(),
+      legend.position = "none"
+      )
+
+  p1 / p2 +
+    plot_annotation(tag_levels = "a") &
+    theme(
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12)
+    )
+
+}
+
+
+

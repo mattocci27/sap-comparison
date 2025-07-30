@@ -2860,6 +2860,22 @@ mul_reg_list <- list(
   NULL
 )
 
+pub_figs_list <- list(
+  tar_target(
+    ab_violin_plot, {
+      p <- ab_violin(pub_ab_csv)
+      my_ggsave(
+        "figs/ab_violin",
+        p,
+        dpi = 600,
+        width = 6.81,
+        height = 6.81
+      )
+    },
+    format = "file"
+  )
+)
+
 append(raw_data_list, main_list) |>
   append(granier_list) |>
   append(tar_impute) |>
@@ -2868,4 +2884,5 @@ append(raw_data_list, main_list) |>
   append(uncertainty_list) |>
   append(uncertainty_figs_list) |>
   append(granier_update_list) |>
-  append(mul_reg_list)
+  append(mul_reg_list) |>
+  append(pub_figs_list)
