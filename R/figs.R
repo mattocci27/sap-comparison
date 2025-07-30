@@ -2543,17 +2543,39 @@ ab_violin <- function(pub_ab_csv) {
       n = n()
     )
 
+  # p_df <- d |>
+  #   group_by(type) |>
+  #   nest() |>
+  #   filter(type != "He") |>
+  #   mutate(p_a = map_dbl(data, \(x) t.test(log(x$a), mu = log(119))$p.val)) |>
+  #   mutate(p_b = map_dbl(data, \(x) t.test(x$b, mu = 1.231, alternaive = "less")$p.val))
+
+  # p_df |>
+  #   dplyr::select(type, p_a, p_b) |>
+  #   mutate(p_a = round(p_a, 3)) |>
+  #   mutate(p_b = round(p_b, 3)) |>
+  #   arrange(type) |>
+  #   as.data.frame()
+  #     type   p_a   p_b
+  # 1   DP 0.000 0.753
+  # 2   RP 0.001 0.238
+  # 3   NP 0.141 0.432
+  # 4   Pa 0.797 0.026
+  # 5   Li 0.000 0.001
+  # 6   Ba 0.105 0.197
+
+
   p_a <- tibble(
     type = c("DP", "RP", "NP", "Pa", "Li", "Ba", "He"),
-    p_label = c("italic(P)<0.001", "italic(P)==0.011", "italic(P)==0.141",
-                "italic(P)==0.797", "italic(P)<0.001", "italic(P)==0.055", "italic(Na)"),
+    p_label = c("italic(P)<0.001", "italic(P)<0.001", "italic(P)==0.141",
+                "italic(P)==0.797", "italic(P)<0.001", "italic(P)==0.105", "italic(Na)"),
     y_pos = c(1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e6)  # adjust based on your plot scale
   )
 
   p_b <- tibble(
     type = c("DP", "RP", "NP", "Pa", "Li", "Ba", "He"),
-    p_label = c("italic(P)==0.107", "italic(P)==0.443", "italic(P)==0.217",
-                "italic(P)==0.14", "italic(P)<0.001", "italic(P)==0.194", "italic(Na)"),
+    p_label = c("italic(P)==0.753", "italic(P)==0.238", "italic(P)==0.432",
+                "italic(P)==0.026", "italic(P)<0.001", "italic(P)==0.197", "italic(Na)"),
     y_pos = rep(3.2, 7)  # adjust based on your plot scale
   )
 

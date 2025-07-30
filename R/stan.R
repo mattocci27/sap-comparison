@@ -3234,14 +3234,14 @@ generate_summary_trait_table_re <- function(fit_summary, data, sp = FALSE) {
 generate_summary_trait_table_re2 <- function(fit_summary, data, sp = FALSE) {
   if (sp) {
     tmp <- fit_summary |>
-      filter(str_detect(variable, "^beta|A")) |>
+      filter(str_detect(variable, "^beta|A|gamma")) |>
       mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
       mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
       add_parameter_names_sp() |>
       add_level_sp()
   } else {
     tmp <- fit_summary |>
-      filter(str_detect(variable, "^beta|alpha|alpha_a|alpha_b|A")) |>
+      filter(str_detect(variable, "^beta|^alpha$|alpha_a|alpha_b|A|gamma")) |>
       mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
       mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
       add_parameter_names_seg() |>
