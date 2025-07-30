@@ -1,23 +1,17 @@
-Can you refine this githube README?
-
-
 # Hydraulic conductivity-induced systematic parameter variation in a widely used thermal dissipation sap-flow technique
 
-Chen, Ya-Jun
-Maenpuen, Phisamai
-Katabuchi, Masatoshi
-Tor-Ngern, Pantana
-Palmroth, Sari
-Zhang, Shubin
-Xiao, Yunxue
-Liu, Meng
-Oren, Ram
+Chen Ya-Jun,
+Maenpuen Phisamai,
+Katabuchi Masatoshi,
+Tor-Ngern Pantana,
+Palmroth Sari,
+Zhang Shubin,
+Xiao Yunxue,
+Liu Meng,
+Oren Ram
 
-Code repository to run the analysis and generate the manuscript for Chen et al. "Hydraulic conductivity-induced systematic parameter variation in a widely used thermal dissipation sap-flow technique
-".
+Code repository to run the analysis and generate the manuscript for Chen et al. "Hydraulic conductivity-induced systematic parameter variation in a widely used thermal dissipation sap-flow technique".
 https://doi.org/xxxx.
-
-
 
 ## Usage
 
