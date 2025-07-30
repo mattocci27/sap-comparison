@@ -3275,8 +3275,8 @@ generate_summary_trait_table_re <- function(fit_summary, data, sp = FALSE) {
       filter(str_detect(variable, "^beta|alpha\\[|A\\[")) |>
       mutate(para1 = parse_variable(variable)[, 2] |> as.numeric()) %>%
       mutate(para2 = parse_variable(variable)[, 3] |> as.numeric()) %>%
-      add_parameter_names_seg2() |>
-      add_level_seg2()
+      add_parameter_names_seg() |>
+      add_level_seg()
   }
 
   sp_index <- tibble(sp = data$sp_id, para2 = seq(1, data$K))
