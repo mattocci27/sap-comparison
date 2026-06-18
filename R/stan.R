@@ -2272,10 +2272,10 @@ generate_trait_fig_data <- function(summary_data, draws, fd_k_traits_csv, xylem_
   if (no_xylem) {
     if (sp_level) {
       coef_a <- draws |>
-        dplyr::select(beta_1_1, beta_2_1) |>
+        dplyr::select(beta_1_1, beta_1_2) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_1_2, beta_2_2) |>
+        dplyr::select(beta_2_1, beta_2_2) |>
         as.matrix()
     } else {
       coef_a <- draws |>
@@ -2412,10 +2412,10 @@ generate_trait_fig_data_re <- function(summary_data, draws, fd_k_traits_csv, xyl
   if (no_xylem) {
     if (sp_level) {
       coef_a <- draws |>
-        dplyr::select(beta_1_1, beta_2_1) |>
+        dplyr::select(beta_1_1, beta_1_2) |>
         as.matrix()
       coef_b <- draws |>
-        dplyr::select(beta_1_2, beta_2_2) |>
+        dplyr::select(beta_2_1, beta_2_2) |>
         as.matrix()
     } else {
       coef_a <- draws |>
@@ -3386,7 +3386,7 @@ generate_summary_trait_table_re2 <- function(fit_summary, data, sp = FALSE) {
 calculate_trait_r2 <- function(draws, beta_int_col, beta_slope_col, obs_start_col, xj) {
   # draws <- tar_read(fit2_draws_segments_xylem_traits_simple_log_ks)
   # beta_int_col <- "beta_1_1"
-  # beta_slope_col <- "beta_2_1"
+  # beta_slope_col <- "beta_1_2"
   # xj <- tar_read(stan_data_noxylem_log_vaf)$xj
   # obs_start_col <- "beta_hat_1"
 
@@ -3424,8 +3424,8 @@ process_draws_and_calculate_trait_r2 <- function(draws, x, sp_level = FALSE, xyl
     a_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_1", "gamma_2", "A_1", x)
     b_r2_q <- calculate_trait_r2(draws_cleaned, "gamma_3", "gamma_4", "A_2", x)
   } else if (sp_level & !xylem) {
-    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_1", "beta_2_1", "beta_hat_1", x)
-    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_2", "beta_2_2", "beta_hat_2", x)
+    a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1_1", "beta_1_2", "beta_hat_1", x)
+    b_r2_q <- calculate_trait_r2(draws_cleaned, "beta_2_1", "beta_2_2", "beta_hat_2", x)
   } else if (!sp_level & !xylem) {
     # seg noxylem
     a_r2_q <- calculate_trait_r2(draws_cleaned, "beta_1", "beta_2", "A_1", x)
