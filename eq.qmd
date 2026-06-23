@@ -99,3 +99,97 @@ b = `r vaf_sp_b_int` + `r vaf_sp_b_slope` Ln VAF
 a = `r ks_sp_a_int` Ks^ `r ks_sp_a_slope`
 
 b = `r ks_sp_b_int` + `r ks_sp_b_slope` Ln Ks
+
+# Trait scaling (mean and SD used for standardization)
+
+```{r}
+d <- read_csv("data/fd_k_traits.csv") |>
+  filter(is.na(removed_k)) |>
+  mutate(log_vaf = log(vaf), log_ks = log(ks))
+
+seg <- d |>
+  group_by(sample_id) |>
+  summarise(log_vaf = mean(log_vaf, na.rm = TRUE),
+            log_ks  = mean(log_ks,  na.rm = TRUE))
+
+sp <- d |>
+  group_by(species) |>
+  summarise(log_vaf = mean(log_vaf, na.rm = TRUE),
+            log_ks  = mean(log_ks,  na.rm = TRUE))
+
+trait_scale <- tibble(
+  level  = c("segment", "segment", "species", "species"),
+  trait  = c("log_vaf", "log_ks",  "log_vaf", "log_ks"),
+  mean   = c(mean(seg$log_vaf, na.rm = TRUE), mean(seg$log_ks, na.rm = TRUE),
+             mean(sp$log_vaf,  na.rm = TRUE), mean(sp$log_ks,  na.rm = TRUE)),
+  sd     = c(sd(seg$log_vaf,   na.rm = TRUE), sd(seg$log_ks,   na.rm = TRUE),
+             sd(sp$log_vaf,    na.rm = TRUE), sd(sp$log_ks,    na.rm = TRUE))
+)
+
+knitr::kable(trait_scale, digits = 4,
+             caption = "Mean and SD of log-transformed traits used for z-scoring")
+```
+
+# Back-transformed equations
+
+```{r}
+# z = (log(trait) - mu) / sigma
+# log(a) = beta[1,1] + beta[1,2]*z
+#         => a = exp(beta[1,1] - beta[1,2]*mu/sigma) * trait^(beta[1,2]/sigma)
+# b = beta[2,1] + beta[2,2]*z
+#     => b = (beta[2,1] - beta[2,2]*mu/sigma) + (beta[2,2]/sigma)*ln(trait)
+
+bt <- function(beta_vec, mu, sigma) {
+  list(
+    a_const = exp(beta_vec[1] - beta_vec[3] * mu / sigma) |> round(2) |> format(nsmall = 2),
+    a_power = (beta_vec[3] / sigma)                       |> round(3) |> format(nsmall = 3),
+    b_const = (beta_vec[2] - beta_vec[4] * mu / sigma)   |> round(3) |> format(nsmall = 3),
+    b_slope = (beta_vec[4] / sigma)                       |> round(3) |> format(nsmall = 3)
+  )
+}
+
+pull_scale <- function(level_val, trait_val, col) {
+  trait_scale |> filter(level == level_val, trait == trait_val) |> pull({{col}})
+}
+
+bt_vaf_seg <- bt(vaf_seg,
+                 pull_scale("segment", "log_vaf", mean),
+                 pull_scale("segment", "log_vaf", sd))
+bt_ks_seg  <- bt(ks_seg,
+                 pull_scale("segment", "log_ks",  mean),
+                 pull_scale("segment", "log_ks",  sd))
+bt_vaf_sp  <- bt(vaf_sp,
+                 pull_scale("species", "log_vaf", mean),
+                 pull_scale("species", "log_vaf", sd))
+bt_ks_sp   <- bt(ks_sp,
+                 pull_scale("species", "log_ks",  mean),
+                 pull_scale("species", "log_ks",  sd))
+```
+
+## Segments
+
+### VAF
+
+a = `r bt_vaf_seg$a_const` VAF^ `r bt_vaf_seg$a_power`
+
+b = `r bt_vaf_seg$b_const` + `r bt_vaf_seg$b_slope` Ln VAF
+
+### Ks
+
+a = `r bt_ks_seg$a_const` Ks^ `r bt_ks_seg$a_power`
+
+b = `r bt_ks_seg$b_const` + `r bt_ks_seg$b_slope` Ln Ks
+
+## Species
+
+### VAF
+
+a = `r bt_vaf_sp$a_const` VAF^ `r bt_vaf_sp$a_power`
+
+b = `r bt_vaf_sp$b_const` + `r bt_vaf_sp$b_slope` Ln VAF
+
+### Ks
+
+a = `r bt_ks_sp$a_const` Ks^ `r bt_ks_sp$a_power`
+
+b = `r bt_ks_sp$b_const` + `r bt_ks_sp$b_slope` Ln Ks
