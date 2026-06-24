@@ -46,7 +46,8 @@ tar_option_set(packages = c(
   "ggpointdensity",
   "boot",
   "ggpubr",
-  "MASS"
+  "MASS",
+  "ggpmisc"
 ))
 
 # tar_option_set(
@@ -1386,6 +1387,16 @@ granier_list <- list(
     format = "file"
   ),
   tar_target(
+    bt_eqs_re,
+    compute_bt_eq_labels(
+      fit5_summary_segments_noxylem_traits_simple_log_vaf,
+      fit5_summary_segments_noxylem_traits_simple_log_ks,
+      fit5_summary_segments_noxylem_traits_sp_simple_log_vaf,
+      fit5_summary_segments_noxylem_traits_sp_simple_log_ks,
+      fd_k_traits_csv
+    )
+  ),
+  tar_target(
     traits_sp_points_main_re_plot, {
       p <- traits_sp_points_main(
         trait_pred_data_noxylem_combined_re,
@@ -1397,6 +1408,28 @@ granier_list <- list(
         )
       my_ggsave(
         "figs/traits_sp_points_main_re",
+        p,
+        dpi = 600,
+        width = 173,
+        height = 110,
+        units = "mm"
+      )
+    },
+    format = "file"
+  ),
+  tar_target(
+    traits_sp_points_main_re_eq_plot, {
+      p <- traits_sp_points_main(
+        trait_pred_data_noxylem_combined_re,
+        trait_pred_data_noxylem_sp_combined_re,
+        vaf_r2_re,
+        ks_r2_re,
+        vaf_sp_r2_re,
+        ks_sp_r2_re,
+        eq_data = bt_eqs_re
+        )
+      my_ggsave(
+        "figs/traits_sp_points_main_re_eq",
         p,
         dpi = 600,
         width = 173,

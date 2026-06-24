@@ -55,7 +55,7 @@ plot_data <- function(data, r2_list, ab_value, plot_title = NULL, inner_tag = "a
     mutate(tag_y = ifelse(ab_value == "a", 1e+4, 4)) |>
     arrange(trait) |>
     # mutate(inner_tag = inner_tag)
-    mutate(inner_tag = paste0("bold(", inner_tag, ")"))
+    mutate(inner_tag = paste0("bold(\"(\") * bold(", inner_tag, ") * bold(\")\")"))
 
   if (sp) {
     r2_data <- r2_data |>
@@ -188,7 +188,91 @@ prepare_x_fake_lab <- function(fig_data) {
     )
 }
 
-traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, vaf_sp_r2, ks_sp_r2) {
+compute_bt_eq_labels <- function(vaf_seg_summary, ks_seg_summary,
+                                 vaf_sp_summary, ks_sp_summary, data_path) {
+  pull_betas <- function(summary) {
+    summary |>
+      filter(str_detect(variable, "^beta\\[")) |>
+      pull(q50)
+  }
+
+  vaf_seg <- pull_betas(vaf_seg_summary)
+  ks_seg  <- pull_betas(ks_seg_summary)
+  vaf_sp  <- pull_betas(vaf_sp_summary)
+  ks_sp   <- pull_betas(ks_sp_summary)
+
+  d <- read_csv(data_path) |>
+    filter(is.na(removed_k)) |>
+    mutate(log_vaf = log(vaf), log_ks = log(ks))
+
+  seg <- d |>
+    group_by(sample_id) |>
+    summarise(log_vaf = mean(log_vaf, na.rm = TRUE),
+              log_ks  = mean(log_ks,  na.rm = TRUE))
+
+  sp <- d |>
+    group_by(species) |>
+    summarise(log_vaf = mean(log_vaf, na.rm = TRUE),
+              log_ks  = mean(log_ks,  na.rm = TRUE))
+
+  sc <- list(
+    seg_vaf = c(mu = mean(seg$log_vaf, na.rm = TRUE), sigma = sd(seg$log_vaf, na.rm = TRUE)),
+    seg_ks  = c(mu = mean(seg$log_ks,  na.rm = TRUE), sigma = sd(seg$log_ks,  na.rm = TRUE)),
+    sp_vaf  = c(mu = mean(sp$log_vaf,  na.rm = TRUE), sigma = sd(sp$log_vaf,  na.rm = TRUE)),
+    sp_ks   = c(mu = mean(sp$log_ks,   na.rm = TRUE), sigma = sd(sp$log_ks,   na.rm = TRUE))
+  )
+
+  # z = (log(trait) - mu) / sigma
+  # log(a) = beta[1,1] + beta[1,2]*z  =>  a = exp(beta[1,1] - beta[1,2]*mu/sigma) * trait^(beta[1,2]/sigma)
+  # b = beta[2,1] + beta[2,2]*z        =>  b = (beta[2,1] - beta[2,2]*mu/sigma) + (beta[2,2]/sigma)*ln(trait)
+  bt <- function(beta_vec, mu, sigma) {
+    list(
+      a_const = exp(beta_vec[1] - beta_vec[3] * mu / sigma),
+      a_power = beta_vec[3] / sigma,
+      b_const = beta_vec[2] - beta_vec[4] * mu / sigma,
+      b_slope = beta_vec[4] / sigma
+    )
+  }
+
+  bt_vaf_seg <- bt(vaf_seg, sc$seg_vaf["mu"], sc$seg_vaf["sigma"])
+  bt_ks_seg  <- bt(ks_seg,  sc$seg_ks["mu"],  sc$seg_ks["sigma"])
+  bt_vaf_sp  <- bt(vaf_sp,  sc$sp_vaf["mu"],  sc$sp_vaf["sigma"])
+  bt_ks_sp   <- bt(ks_sp,   sc$sp_ks["mu"],   sc$sp_ks["sigma"])
+
+  fmt_a <- function(b, trait_sym) {
+    a_str <- format(round(b$a_const, 2), nsmall = 2)
+    p_str <- format(round(b$a_power, 3), nsmall = 3)
+    paste0("italic(a)==", a_str, "%*%", trait_sym, "^", p_str)
+  }
+
+  fmt_b <- function(b, trait_sym) {
+    c_str   <- format(round(b$b_const, 3), nsmall = 3)
+    b_slope <- round(b$b_slope, 3)
+    if (b_slope >= 0) {
+      s_str <- format(b_slope, nsmall = 3)
+      paste0("italic(b)==", c_str, "+", s_str, "%*%ln~", trait_sym)
+    } else {
+      s_str <- format(abs(b_slope), nsmall = 3)
+      paste0("italic(b)==", c_str, "-", s_str, "%*%ln~", trait_sym)
+    }
+  }
+
+  make_df <- function(vaf_label, ks_label) {
+    tibble(
+      trait = factor(c("log_vaf", "log_ks"), levels = c("log_vaf", "log_ks")),
+      label = c(vaf_label, ks_label)
+    )
+  }
+
+  list(
+    seg_a = make_df(fmt_a(bt_vaf_seg, "italic(VAF)"), fmt_a(bt_ks_seg, "italic(K[S])")),
+    seg_b = make_df(fmt_b(bt_vaf_seg, "italic(VAF)"), fmt_b(bt_ks_seg, "italic(K[S])")),
+    sp_a  = make_df(fmt_a(bt_vaf_sp,  "italic(VAF)"), fmt_a(bt_ks_sp,  "italic(K[S])")),
+    sp_b  = make_df(fmt_b(bt_vaf_sp,  "italic(VAF)"), fmt_b(bt_ks_sp,  "italic(K[S])"))
+  )
+}
+
+traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, vaf_sp_r2, ks_sp_r2, eq_data = NULL) {
 
   r2_list <- list(vaf_r2, ks_r2)
   r2_sp_list <- list(vaf_sp_r2, ks_sp_r2)
@@ -264,6 +348,22 @@ traits_sp_points_main <- function(pred_data_seg, pred_data_sp, vaf_r2, ks_r2, va
       legend.box.margin = margin(t = 0, b = 0, unit = "pt"),  # Adjust top and bottom margin of the legend box
       legend.margin = margin(t = 0, r = 0, b = 0, l = 0)  # Adjust the space around the individual legend items
     )
+
+  if (!is.null(eq_data)) {
+    add_eq <- function(p, df, y_pos) {
+      p + geom_text_npc(
+        data = df,
+        # aes(x = Inf, y = y_pos, label = label),
+        aes(npcx = 0.05, npcy = 0.85, label = label),
+        inherit.aes = FALSE,
+        parse = TRUE, size = 2.8, hjust = 0, vjust = 1
+      )
+    }
+    p1 <- add_eq(p1, eq_data$seg_a, 15000)
+    p2 <- add_eq(p2, eq_data$seg_b, 4.1)
+    p3 <- add_eq(p3, eq_data$sp_a,  15000)
+    p4 <- add_eq(p4, eq_data$sp_b,  4.1)
+  }
 
 # Create a dummy plot which will be used only to extract the legend
   p5 <- ggplot(fig_data_sp, aes(x = val, y = mid, fill = xylem_long_fct)) +
