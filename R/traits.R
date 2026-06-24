@@ -166,8 +166,8 @@ prepare_x_fake_lab <- function(fig_data) {
     ungroup() |>
     mutate(mid = mean(mid)) |>
     mutate(trait_lab = case_when(
-      trait == "log_vaf" ~ "VAF~(`%`)",
-      trait == "log_ks" ~ "K[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})",
+      trait == "log_vaf" ~ "italic(VAF)~(`%`)",
+      trait == "log_ks" ~ "italic(K)[S]~(kg~m^{-1}~s^{-1}~MPa^{-1})",
       trait == "log_vf" ~ "VF~(no.~mm^{-2})",
       trait == "log_dh" ~ "D[h]~(µm)",
       trait == "log_swc" ~ "SWC~(`%`)",
