@@ -1,0 +1,42 @@
+---
+fontsize: 12pt
+geometry: margin=1in
+format:
+  docx:
+    toc: false
+    number-sections: false
+    highlight-style: github
+    html-math-method: katex
+---
+
+**Description of the correction:**
+
+We identified a minor error in the post-processing script used to prepare Figure 4.
+The error affected the mapping of Stan output parameters to the equations displayed in Figure 4, during the post-processing step used to express the relationships on the original trait scales.
+As a result, the equations printed in the panels did not correspond to the properly back-transformed relationships for $VAF$ (%) and $K_s$ in the units shown on the axes.
+We have replaced Figure 4 with a corrected version in which the displayed equations, fitted lines, and $R^2$ values are generated using the properly indexed model coefficients.
+We have also made a minor update to the Figure 4 legend to clarify that Table S4 reports model-scale coefficients before back-transformation.
+The correction has only a negligible visual effect on the fitted relationships.
+This correction does not change the underlying model fits, statistical inference, biological interpretation, or conclusions of the study.
+The main effect of this correction is to make the equations directly interpretable for readers using the trait units shown in the figure.
+
+Sincerely,
+
+Chen Ya-Jun and Ram Oren
+
+/newpage
+
+**Fig. 4**
+Relationships between coefficients *a* and *b* and xylem anatomical traits.
+Data are presented at the segment level (left two columns) and species level
+(right two columns).
+*VAF*, vessel lumen area fraction; *K~s~*, sapwood-specific hydraulic conductivity.
+Points and error bars represent the posterior medians
+and 95% credible intervals (CIs) of coefficients for each segment or species, respectively.
+Shaded regions are 95% CIs.
+Additional relationships between coefficients *a* and *b* and other xylem anatomical traits are provided in Supporting Information Fig. S10.
+Details of statistical analyses for each trait, including model-scale coefficients before back-transformation, are shown in Table S4.
+Note: Only 25 species are shown for the trait *VAF* due to missing values in the anatomy measurements.
+
+![](figs/traits_sp_points_main_re_eq.png)
+

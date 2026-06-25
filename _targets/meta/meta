@@ -100,7 +100,7 @@ anova_data_log|stem|dfa9f6d366210cb3|1b6f948e63581fe1|504a599689c2823b|168434262
 anova_data_nolog|stem|445434c3ea70d671|1d31823bf1829f85|504a599689c2823b|-1877230404||t20622.3540841616s|ba8f2f557a4dd502|1405|rds|local|vector|||0.141||
 anova_yml|stem|999fbe0fbdbf17bf|618ae719efe10190|376b81ac39ebdd57|608261183|yml/anova.yml|t20622.354076268s|40b3a10246f0095b|83|file|local|vector|||0.165||
 backtransform_date|function|15baf66a6852ae3d|||||||||||||||
-bt_eqs_re|stem|e570adf148ae422c|9045e5351fe95f5d|4081a64e34361294|-1947379875||t20628.4401543492s|18855d06eb69a217|380|rds|local|vector|||0.127||
+bt_eqs_re|stem|8055cd1fa41d66b2|9045e5351fe95f5d|1d627d6834c174ad|-1947379875||t20629.1223784134s|37c32f96cddbbae6|375|rds|local|vector|||0.128||
 calc_fd|function|2908317ec6abef2c|||||||||||||||
 calc_fd_granier_a|function|4a054a91f6ed05bb|||||||||||||||
 calc_fd_granier_b|function|5a052b406756d3ca|||||||||||||||
@@ -172,7 +172,7 @@ combined_nrmse|stem|6a12e5baa7e47af6|fdf77feb90e8bc3b|a5d880e5bd95aeda|106508051
 combined_nrmse_rest|stem|350c0e21bc670a93|ca72f565df37809c|df1baedd4ef28476|666802194||t20622.3540801222s|4704cb860dc3a9a3|193|rds|local|vector|||0.001||
 compile_model|function|440cd3c27c638fb3|||||||||||||||
 compile_stan_models|object|c67c7e18362778df|||||||||||||||
-compute_bt_eq_labels|function|1541bf52fc3ec717|||||||||||||||
+compute_bt_eq_labels|function|b5548995b4de43be|||||||||||||||
 cond_count_csv|stem|57e9eabf90c08b40|ba3403c0e17c5871|eba47c1af4058cb4|-1297878786|data/cond_count.csv|t20622.3543214004s|b37f5599f3f5b913|7478|file|local|vector|||0.176||
 cond_count_raw_csv|stem|afa1d7fa864c4e3c|3e1e21b3c7839bc2|ef46db3751d8e999|1113861532|data-raw/cond_count_raw.csv|t20622.3543207754s|4a676e8324a82310|3598|file|local|vector|||1.297||
 create_line|function|2569ca6ad9f4adf0|||||||||||||||
@@ -1636,7 +1636,7 @@ traits_seg_points_si_plot|stem|4be09724e3bb8b83|9178fe58186a1f77|dba730159ca43f6
 traits_seg_points_si_re_plot|stem|257688158396f1a1|e25bf8f7e1a2cfed|89f1fdd9a44cb76e|1788716825|figs/traits_seg_points_si_re.png*figs/traits_seg_points_si_re.pdf*figs/traits_seg_points_si_re.tiff|t20628.5705939684s|10b96ef79458e154|4049080|file|local|vector|||2.033|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
 traits_sp_points_main|function|28c7985acf95db05|||||||||||||||
 traits_sp_points_main_plot|stem|f02e5009174a5034|ee7f6258426c2a94|9797e977b26d4527|257327165|figs/traits_sp_points_main.png*figs/traits_sp_points_main.pdf*figs/traits_sp_points_main.tiff|t20628.5707362051s|e809a5be8779fe07|2561769|file|local|vector|||2.982||
-traits_sp_points_main_re_eq_plot|stem|d18d639642afff4e|380aebaa50256a0c|070bda4d881db734|-1579081398|figs/traits_sp_points_main_re_eq.png*figs/traits_sp_points_main_re_eq.pdf*figs/traits_sp_points_main_re_eq.tiff|t20628.5706785419s|47477cf01f6911bc|3001444|file|local|vector|||2.823||
+traits_sp_points_main_re_eq_plot|stem|6a9e78bad402628f|380aebaa50256a0c|e23270a3f84ff178|-1579081398|figs/traits_sp_points_main_re_eq.png*figs/traits_sp_points_main_re_eq.pdf*figs/traits_sp_points_main_re_eq.tiff|t20629.1224139349s|f1ab13b8397a5db7|3000180|file|local|vector|||3.003||
 traits_sp_points_main_re_plot|stem|c05c373d85ba7ffc|d01d4302a38e7132|272b9d69510d69c7|807161612|figs/traits_sp_points_main_re.png*figs/traits_sp_points_main_re.pdf*figs/traits_sp_points_main_re.tiff|t20628.5706256589s|c01f190a8f45745d|2891656|file|local|vector|||2.732||
 traits_sp_points_si_plot|stem|4e82a0ddf38dba84|4410a82a83f942ad|491dc5fe869e6489|-329393411|figs/traits_sp_points_si.png*figs/traits_sp_points_si.pdf*figs/traits_sp_points_si.tiff|t20628.5707015632s|41a2164b308e8cf3|1291072|file|local|vector|||1.982|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|
 traits_sp_points_si_re_plot|stem|768d27d957d31d82|21f415d295ed5fc4|15a21c6cb22df43b|-317632496|figs/traits_sp_points_si_re.png*figs/traits_sp_points_si_re.pdf*figs/traits_sp_points_si_re.tiff|t20628.5706458329s|5b30af6464012b16|1341740|file|local|vector|||1.739|There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf. There was 1 warning in mutate.ℹ In argument trait  fct_releveltrait, log_dh, log_vf.Caused by warning 1 unknown level in f log_vf|

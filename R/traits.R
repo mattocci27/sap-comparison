@@ -242,7 +242,8 @@ compute_bt_eq_labels <- function(vaf_seg_summary, ks_seg_summary,
   fmt_a <- function(b, trait_sym) {
     a_str <- format(round(b$a_const, 2), nsmall = 2)
     p_str <- format(round(b$a_power, 3), nsmall = 3)
-    paste0("italic(a)==", a_str, "%*%", trait_sym, "^", p_str)
+    paste0("italic(a)==", a_str, "~", trait_sym, "^", p_str)
+    # paste0("italic(a)==", a_str, "~", trait_sym, "^{phantom(0)*", p_str, "}")
   }
 
   fmt_b <- function(b, trait_sym) {
@@ -250,10 +251,10 @@ compute_bt_eq_labels <- function(vaf_seg_summary, ks_seg_summary,
     b_slope <- round(b$b_slope, 3)
     if (b_slope >= 0) {
       s_str <- format(b_slope, nsmall = 3)
-      paste0("italic(b)==", c_str, "+", s_str, "%*%ln~", trait_sym)
+      paste0("italic(b)==", c_str, "+", s_str, "~ln~", trait_sym)
     } else {
       s_str <- format(abs(b_slope), nsmall = 3)
-      paste0("italic(b)==", c_str, "-", s_str, "%*%ln~", trait_sym)
+      paste0("italic(b)==", c_str, "-", s_str, "~ln~", trait_sym)
     }
   }
 
