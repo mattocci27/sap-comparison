@@ -18,13 +18,13 @@ We have replaced Figure 4 with a corrected version in which the displayed equati
 We have also made a minor update to the Figure 4 legend to clarify that Table S4 reports model-scale coefficients before back-transformation.
 The correction has only a negligible visual effect on the fitted relationships.
 This correction does not change the underlying model fits, statistical inference, biological interpretation, or conclusions of the study.
-The main effect of this correction is to make the equations directly interpretable for readers using the trait units shown in the figure.
+The primary purpose of this correction is to make the equations directly interpretable for readers using the trait units shown in the figure.
 
 Sincerely,
 
 Chen Ya-Jun and Ram Oren
 
-/newpage
+{{< pagebreak >}}
 
 **Fig. 4**
 Relationships between coefficients *a* and *b* and xylem anatomical traits.

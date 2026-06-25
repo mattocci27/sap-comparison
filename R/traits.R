@@ -234,8 +234,11 @@ compute_bt_eq_labels <- function(vaf_seg_summary, ks_seg_summary,
     )
   }
 
-  bt_vaf_seg <- bt(vaf_seg, sc$seg_vaf["mu"], sc$seg_vaf["sigma"])
-  bt_ks_seg  <- bt(ks_seg,  sc$seg_ks["mu"],  sc$seg_ks["sigma"])
+  # Segment model stores beta as vector[4] in order [a_int, a_slope, b_int, b_slope];
+  # bt() expects SP model column-major order [a_int, b_int, a_slope, b_slope],
+  # so swap indices 2 and 3 before back-transforming.
+  bt_vaf_seg <- bt(vaf_seg[c(1, 3, 2, 4)], sc$seg_vaf["mu"], sc$seg_vaf["sigma"])
+  bt_ks_seg  <- bt(ks_seg[c(1, 3, 2, 4)],  sc$seg_ks["mu"],  sc$seg_ks["sigma"])
   bt_vaf_sp  <- bt(vaf_sp,  sc$sp_vaf["mu"],  sc$sp_vaf["sigma"])
   bt_ks_sp   <- bt(ks_sp,   sc$sp_ks["mu"],   sc$sp_ks["sigma"])
 
